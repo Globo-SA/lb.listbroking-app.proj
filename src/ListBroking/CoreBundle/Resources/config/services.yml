@@ -1,0 +1,7 @@
+parameters:
+#    list_broking_core.example.class: ListBroking\CoreBundle\Example
+
+services:
+#    list_broking_core.example:
+#        class: %list_broking_core.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

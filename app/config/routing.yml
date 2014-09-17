@@ -1,0 +1,4 @@
+list_broking_ui:
+    resource: "@ListBrokingUIBundle/Resources/config/routing.yml"
+    prefix:   /
+

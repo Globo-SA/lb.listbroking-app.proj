@@ -1,0 +1,7 @@
+parameters:
+#    list_broking_ui.example.class: ListBroking\UIBundle\Example
+
+services:
+#    list_broking_ui.example:
+#        class: %list_broking_ui.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

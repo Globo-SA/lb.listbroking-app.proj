@@ -1,0 +1,8 @@
+listbroking.uibundle.tentugal_test:
+    path:     /tentugal
+    defaults: { _controller: ListBrokingUIBundle:Default:tentugal }
+
+
+listbroking.uibundle.samuel_test:
+    path:     /samuel
+    defaults: { _controller: ListBrokingUIBundle:Default:samuel }
