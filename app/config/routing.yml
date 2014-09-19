@@ -2,3 +2,7 @@ list_broking_ui:
     resource: "@ListBrokingUIBundle/Resources/config/routing.yml"
     prefix:   /
 
+adclick_user:
+    resource: "@AdclickUserBundle/Resources/config/routing.yml"
+    prefix:   /
+

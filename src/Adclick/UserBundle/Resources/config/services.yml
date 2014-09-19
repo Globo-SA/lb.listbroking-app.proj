@@ -1,0 +1,3 @@
+services:
+    # FOS\UserBundle\Doctrine\UserManager
+    user_manager: @fos_user.user_manager

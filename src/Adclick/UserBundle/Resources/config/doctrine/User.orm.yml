@@ -1,0 +1,50 @@
+Adclick\UserBundle\Entity\User:
+    type: entity
+    table: fos_user
+    id:
+        id:
+            type: bigint
+            generator: { strategy: AUTO }
+    fields:
+# Timestampable
+        created_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: create } }
+
+        updated_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: update } }
+# End of Timestampable
+
+    manyToOne:
+# Blameable
+        created_by:
+            targetEntity: Adclick\UserBundle\Entity\User
+            joinColumn:
+                name: created_by
+                referencedColumnName: id
+                onDelete: restrict
+            gedmo: { blameable: { on: create } }
+
+        updated_by:
+            targetEntity: Adclick\UserBundle\Entity\User
+            joinColumn:
+                name: updated_by
+                referencedColumnName: id
+                onDelete: restrict
+            gedmo: { blameable: { on: update } }
+# End of blameable
+
+    manyToMany:
+        groups:
+            targetEntity: Group
+            joinTable:
+                name: fos_user_group
+                joinColumns:
+                    user_id:
+                        referencedColumnName: id
+                inverseJoinColumns:
+                    group_id:
+                        referencedColumnName: id

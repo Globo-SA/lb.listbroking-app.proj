@@ -1,0 +1,3 @@
+list_broking_doctrine_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: ListBrokingDoctrineBundle:Default:index }
