@@ -6,3 +6,7 @@ listbroking.uibundle.tentugal_test:
 listbroking.uibundle.samuel_test:
     path:     /samuel
     defaults: { _controller: ListBrokingUIBundle:Default:samuel }
+
+homepage:
+    path:     /
+    defaults: { _controller: ListBrokingUIBundle:Default:index }

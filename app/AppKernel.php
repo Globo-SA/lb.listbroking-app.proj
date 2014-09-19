@@ -17,13 +17,22 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
 
+            // User Bundle
+            new FOS\UserBundle\FOSUserBundle(),
+            new Adclick\UserBundle\AdclickUserBundle(),
+
+            // Core Bundles
             new Adclick\CacheBundle\AdclickCacheBundle(),
             new Adclick\AdvancedConfigurationBundle\AdclickAdvancedConfigurationBundle(),
             new Adclick\DoctrineBehaviorBundle\AdclickDoctrineBehaviorBundle(),
+            new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
 
             // ListBroking Bundles
             new ListBroking\CoreBundle\ListBrokingCoreBundle(),
             new ListBroking\UIBundle\ListBrokingUIBundle(),
+            new ListBroking\AdvancedConfigurationBundle\ListBrokingAdvancedConfigurationBundle(),
+            new ListBroking\DoctrineBundle\ListBrokingDoctrineBundle(),
+            new ListBroking\ExceptionHandlerBundle\ListBrokingExceptionHandlerBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

@@ -24,8 +24,13 @@
         "sensio/framework-extra-bundle": "~3.0",
         "incenteev/composer-parameter-handler": "~2.0",
 
+        "ebidtech/doctrine-repository": "@stable",
+        "ebidtech/ebdate": "@stable",
+
+        "friendsofsymfony/user-bundle": "~2.0@dev",
+
         "adclick/cache-bundle" : "@stable",
-        "adclick/advanced-configuration-bundle" : "@stable",
+        "adclick/advanced-configuration-bundle" : "~0.2",
         "adclick/doctrine-behavior-bundle" : "@stable"
     },
     "require-dev": {

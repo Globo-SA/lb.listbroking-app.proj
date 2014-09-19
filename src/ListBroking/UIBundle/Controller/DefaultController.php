@@ -7,6 +7,10 @@ use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
+    public function indexAction(Request $request){
+        return $this->render('ListBrokingUIBundle:Default:index.html.twig', array());
+    }
+
     public function tentugalAction(Request $request)
     {
 
