@@ -1,0 +1,21 @@
+<?php
+/**
+ *
+ * @author     Samuel Castro <samuel.castro@adclick.pt>
+ * @copyright  2014 Adclick
+ * @license    [LISTBROKING_URL_LICENSE_HERE]
+ *
+ * [LISTBROKING_DISCLAIMER]
+ */
+
+namespace ListBroking\ClientBundle\Repository;
+
+
+interface CampaignRepositoryInterface
+{
+    /**
+     * Method for getting all the clients
+     * @return mixed
+     */
+    public function findAll();
+}
