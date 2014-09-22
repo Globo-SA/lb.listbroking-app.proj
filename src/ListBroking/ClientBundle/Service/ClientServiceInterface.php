@@ -38,7 +38,7 @@ interface ClientServiceInterface {
      * @param $only_active
      * @return mixed
      */
-    public function getClient($id, $only_active = tru);
+    public function getClient($id, $only_active = true);
 
     /**
      * @param bool $only_active
@@ -65,6 +65,6 @@ interface ClientServiceInterface {
      * @param $only_active
      * @return mixed
      */
-    public function getCampaign($id, $only_active = tru);
+    public function getCampaign($id, $only_active = true);
 
 } 
