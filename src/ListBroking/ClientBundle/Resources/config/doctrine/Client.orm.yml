@@ -61,4 +61,4 @@ ListBroking\ClientBundle\Entity\Client:
         campaigns:
             targetEntity: ListBroking\ClientBundle\Entity\Campaign
             mappedBy: client
-            cascade: [persist]
+            cascade: [all]

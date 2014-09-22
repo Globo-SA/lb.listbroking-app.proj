@@ -30,17 +30,17 @@ class ClientService implements ClientServiceInterface
     }
 
     /**
-     * Gets the list of Clients
+     * @param bool $only_active
      * @return mixed|null
      */
-    public function getClientList()
+    public function getClientList($only_active = true)
     {
         // Check if the cache exists
         if (!$this->cache->has('client_list'))
         {
             $this->cache->beginWarmingUp('client_list', 'client');
 
-            $clients = $this->client_repo->findAll();
+            $clients = $this->client_repo->findAll($only_active);
 
             $this->cache->set('client_list', $clients);
         }
@@ -93,18 +93,18 @@ class ClientService implements ClientServiceInterface
     }
 
     /**
-     * Gets a Client by ID
      * @param $id
+     * @param bool $only_active
      * @return mixed|null
      */
-    public function getClient($id)
+    public function getClient($id, $only_active = true)
     {
         // Check if the cache exists
         if (!$this->cache->has('client_list'))
         {
             $this->cache->beginWarmingUp('client_list', 'client');
 
-            $clients = $this->client_repo->findAll();
+            $clients = $this->client_repo->findAll($only_active);
 
             $this->cache->set('client_list', $clients);
         }
@@ -123,17 +123,17 @@ class ClientService implements ClientServiceInterface
     }
 
     /**
-     * Gets the list of Campaigns
-     * @return mixed
+     * @param bool $only_active
+     * @return mixed|null
      */
-    public function getCampaignList()
+    public function getCampaignList($only_active = true)
     {
         // Check if the cache exists
         if (!$this->cache->has('campaign_list'))
         {
             $this->cache->beginWarmingUp('campaign_list', 'campaign');
 
-            $clients = $this->campaign_repo->findAll();
+            $clients = $this->campaign_repo->findAll($only_active);
 
             $this->cache->set('campaign_list', $clients);
         }
@@ -186,18 +186,18 @@ class ClientService implements ClientServiceInterface
     }
 
     /**
-     * Gets a Campaign by ID
      * @param $id
+     * @param bool $only_active
      * @return mixed|null
      */
-    public function getCampaign($id)
+    public function getCampaign($id, $only_active = true)
     {
         // Check if the cache exists
         if (!$this->cache->has('campaign_list'))
         {
             $this->cache->beginWarmingUp('campaign_list', 'campaign');
 
-            $clients = $this->campaign_repo->findAll();
+            $clients = $this->campaign_repo->findAll($only_active);
 
             $this->cache->set('campaign_list', $clients);
         }

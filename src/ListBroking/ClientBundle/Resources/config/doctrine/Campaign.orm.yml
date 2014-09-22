@@ -56,6 +56,5 @@ ListBroking\ClientBundle\Entity\Campaign:
             joinColumn:
                 name: client_id
                 referencedColumnName: id
-                nullable: false
-
+                onDelete: restrict
 # End of blameable

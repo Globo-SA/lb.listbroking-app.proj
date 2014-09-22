@@ -14,8 +14,8 @@ namespace ListBroking\ClientBundle\Repository;
 interface CampaignRepositoryInterface
 {
     /**
-     * Method for getting all the clients
+     * @param bool $only_active
      * @return mixed
      */
-    public function findAll();
+    public function findAll($only_active = true);
 }

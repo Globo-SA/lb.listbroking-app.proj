@@ -14,10 +14,10 @@ namespace ListBroking\ClientBundle\Service;
 interface ClientServiceInterface {
 
     /**
-     * Gets the list of Clients
+     * @param bool $only_active
      * @return mixed
      */
-    public function getClientList();
+    public function getClientList($only_active = true);
 
     /**
      * Add a Client to the list
@@ -34,17 +34,17 @@ interface ClientServiceInterface {
     public function removeClient($id);
 
     /**
-     * Gets a Client by ID
      * @param $id
+     * @param $only_active
      * @return mixed
      */
-    public function getClient($id);
+    public function getClient($id, $only_active = tru);
 
     /**
-     * Gets the list of Campaigns
+     * @param bool $only_active
      * @return mixed
      */
-    public function getCampaignList();
+    public function getCampaignList($only_active = true);
 
     /**
      * Adds a Campaign to the list
@@ -61,10 +61,10 @@ interface ClientServiceInterface {
     public function removeCampaign($id);
 
     /**
-     * Gets a Campaign by ID
      * @param $id
+     * @param $only_active
      * @return mixed
      */
-    public function getCampaign($id);
+    public function getCampaign($id, $only_active = tru);
 
 } 
