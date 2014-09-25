@@ -14,6 +14,7 @@ namespace ListBroking\DoctrineBundle\Repository\ORM;
 use Doctrine\ORM\EntityManagerInterface;
 use ESO\Doctrine\ORM\EntityRepository;
 use ListBroking\DoctrineBundle\Exception\EntityClassMissingException;
+use ListBroking\DoctrineBundle\Exception\EntityObjectInstantiationException;
 use ListBroking\DoctrineBundle\Repository\BaseEntityRepositoryInterface;
 use ListBroking\DoctrineBundle\Tool\InflectorToolInterface;
 
@@ -64,7 +65,8 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
      *
      * @param null|array $preset
      *
-     * @throws \ListBroking\DoctrineBundle\Exception\EntityClassMissingException
+     * @throws EntityClassMissingException
+     * @throws EntityObjectInstantiationException
      * @return mixed
      */
     public function createNewEntity($preset = null)
@@ -75,21 +77,13 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
         }
 
         $object = new $this->entity_class();
-        if (is_array($preset) && !empty($preset))
-        {
-            foreach ($preset as $key => $value)
-            {
-                $method = "set{$this->inflector->camelize($key)}";
-                if (method_exists($object, $method))
-                {
-                    $object->$method($value);
-                }
-            }
+        if (!$preset instanceof $object){
+            throw new EntityObjectInstantiationException("Wrong entity instance for ". $this->getEntityName() . ". Must be " . $this->entity_class . ".");
         }
 
-        $this->entityManager->persist($object);
+        $this->entityManager->persist($preset);
 
-        return $object;
+        return $preset;
     }
 
     /**
@@ -128,6 +122,10 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
     public function createQueryBuilder()
     {
         return parent::createQueryBuilder();
+    }
+
+    public function merge($object){
+        return $this->entityManager->merge($object);
     }
 
 }
