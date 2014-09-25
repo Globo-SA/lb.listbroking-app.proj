@@ -133,6 +133,7 @@ class Client
      * @param Campaign $campaign
      */
     public function addCampaign(Campaign $campaign){
+    	$campaign->setClient($this);
         $this->campaigns[] = $campaign;
     }
 

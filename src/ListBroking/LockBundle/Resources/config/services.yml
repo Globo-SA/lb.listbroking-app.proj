@@ -1,0 +1,7 @@
+parameters:
+#    list_broking_lock.example.class: ListBroking\LockBundle\Example
+
+services:
+#    list_broking_lock.example:
+#        class: %list_broking_lock.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
