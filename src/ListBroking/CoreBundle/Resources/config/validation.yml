@@ -6,3 +6,9 @@ ListBroking\CoreBundle\Entity\Country:
         - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
             fields:   iso_code
             message:  "Iso code is duplicated."
+
+ListBroking\CoreBundle\Entity\Category:
+    constraints:
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+            fields:   name
+            message:  "Name is duplicated."

@@ -15,8 +15,9 @@ ListBroking\CoreBundle\Entity\Category:
             options:
                 default: 0
         name:
-            type: string
+            type:   string
             column: name
+            unique: true
 
 # Timestampable
         created_at:
