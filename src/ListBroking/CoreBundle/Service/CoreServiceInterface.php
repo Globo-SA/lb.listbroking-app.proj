@@ -8,79 +8,113 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
+namespace ListBroking\CoreBundle\Service;
+
 interface CoreServiceInterface {
 
     /**
      * Gets list of countries
+     * @param bool $only_active
      * @return mixed
      */
-    public function getCountryList();
+    public function getCountryList($only_active = true);
 
     /**
-     * Adds a country
+     * Gets a single country
+     * @param $id
      * @return mixed
      */
-    public function addCountry();
+    public function getCountry($id);
 
     /**
-     * Removes a country
+     * Adds a single country
+     * @param $variable
      * @return mixed
      */
-    public function removeCountry();
+    public function addCountry($variable);
 
     /**
-     * Gets a country
+     * Removes a single country
+     * @param $id
      * @return mixed
      */
-    public function getCountry();
+    public function removeCountry($id);
+
+    /**
+     * Updates a single country
+     * @param $country
+     * @return mixed
+     */
+    public function updateCountry($country);
 
     /**
      * Get a list of categories
+     * @param bool $only_active
      * @return mixed
      */
-    public function getCategoryList();
+    public function getCategoryList($only_active = true);
 
     /**
-     * Adss a category
+     * Gets a single category
+     * @param $id
      * @return mixed
      */
-    public function addCategory();
+    public function getCategory($id);
 
     /**
-     * Removes a category
+     * Adds a single category
+     * @param $variable
      * @return mixed
      */
-    public function removeCategory();
+    public function addCategory($variable);
 
 
     /**
-     * Gets a category
+     * Removes a single category
+     * @param $id
      * @return mixed
      */
-    public function getCategory();
+    public function removeCategory($id);
+
+    /**
+     * Updates a single category
+     * @param $category
+     * @return mixed
+     */
+    public function updateCategory($category);
 
     /**
      * Get a list of sub categories
+     * @param bool $only_active
      * @return mixed
      */
-    public function getSubCategoryList();
+    public function getSubCategoryList($only_active = true);
 
     /**
-     * Adss a sub category
+     * Gets a single sub category
+     * @param $id
      * @return mixed
      */
-    public function addSubCategory();
+    public function getSubCategory($id);
 
     /**
-     * Removes a sub category
+     * Adds a single sub category
+     * @param $variable
      * @return mixed
      */
-    public function removeSubCategory();
-
+    public function addSubCategory($variable);
 
     /**
-     * Gets a sub category
+     * Removes a single sub category
+     * @param $id
      * @return mixed
      */
-    public function getSubCategory();
+    public function removeSubCategory($id);
+
+    /**
+     * Updates a single sub category
+     * @param $sub_category
+     * @return mixed
+     */
+    public function updateSubCategory($sub_category);
 }

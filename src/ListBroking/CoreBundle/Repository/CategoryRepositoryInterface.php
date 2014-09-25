@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * @author     Pedro Tentugal <pedro.tentugal@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
@@ -10,6 +10,11 @@
 
 namespace ListBroking\CoreBundle\Repository;
 
-interface CategoryRepositoryInterface {
 
+interface CategoryRepositoryInterface
+{
+    /**
+     * @return mixed
+     */
+    public function findAll();
 } 

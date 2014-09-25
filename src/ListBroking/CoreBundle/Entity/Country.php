@@ -20,6 +20,8 @@ class Country {
 
     protected $id;
 
+    protected $is_active;
+
     protected $name;
 
     protected $iso_code;
@@ -46,6 +48,22 @@ class Country {
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsActive()
+    {
+        return $this->is_active;
+    }
+
+    /**
+     * @param mixed $is_active
+     */
+    public function setIsActive($is_active)
+    {
+        $this->is_active = $is_active;
     }
 
     /**

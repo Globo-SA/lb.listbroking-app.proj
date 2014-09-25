@@ -73,19 +73,12 @@ class Category {
         $this->name = $name;
     }
 
-    /**
-     * @param SubCategory $sub_category
-     */
-    public function addSubCategory(SubCategory $sub_category)
-    {
+    public function addSubCategory(SubCategory $sub_category){
+        $sub_category->setCategory($this);
         $this->sub_categories[] = $sub_category;
     }
 
-    /**
-     * @param SubCategory $sub_category
-     */
-    public function removeSubCategory(SubCategory $sub_category)
-    {
+    public function removeSubCategory(SubCategory $sub_category){
         $this->sub_categories->removeElement($sub_category);
     }
 

@@ -51,6 +51,7 @@ ListBroking\CoreBundle\Entity\SubCategory:
         category:
             targetEntity: ListBroking\CoreBundle\Entity\Category
             joinColumn:
-                name: category_id
+                name:     category_id
                 referencedColumnName: id
                 onDelete: restrict
+                nullable: false

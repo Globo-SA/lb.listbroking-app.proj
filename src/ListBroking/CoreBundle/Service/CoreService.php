@@ -8,114 +8,194 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-class CoreService implements CoreServiceInterface {
+namespace ListBroking\CoreBundle\Service;
 
+use Adclick\CacheBundle\Manager\CacheManagerInterface;
+use ListBroking\CoreBundle\Repository\ORM\CategoryRepository;
+use ListBroking\CoreBundle\Repository\ORM\CountryRepository;
+use ListBroking\CoreBundle\Repository\ORM\SubCategoryRepository;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+class CoreService extends BaseService implements CoreServiceInterface
+{
+
+    private $country_repo;
+    private $category_repo;
+    private $sub_category_repo;
+    const   COUNTRY_LIST = 'country_list';
+    const   COUNTRY_SCOPE = 'country';
+    const   CATEGORY_LIST = 'category_list';
+    const   CATEGORY_SCOPE = 'category';
+    const   SUB_CATEGORY_LIST = 'sub_category_list';
+    const   SUB_CATEGORY_SCOPE = 'sub_category';
+
+    /**
+     * @param CacheManagerInterface $cache
+     * @param ValidatorInterface $validator
+     * @param CountryRepository $country_repo
+     * @param CategoryRepository $category_repo
+     * @param SubCategoryRepository $sub_category_repo
+     */
+    function __construct(CacheManagerInterface $cache, ValidatorInterface $validator, CountryRepository $country_repo, CategoryRepository $category_repo,  SubCategoryRepository $sub_category_repo)
+    {
+        parent::__construct($cache, $validator);
+        $this->category_repo = $category_repo;
+        $this->country_repo = $country_repo;
+        $this->sub_category_repo = $sub_category_repo;
+    }
 
     /**
      * Gets list of countries
+     * @param bool $only_active
      * @return mixed
      */
-    public function getCountryList()
+    public function getCountryList($only_active = true)
     {
-        // TODO: Implement getCountryList() method.
+        return $this->getList(self::COUNTRY_LIST, self::COUNTRY_SCOPE, $this->country_repo, $only_active);
+    }
+
+    /**
+     * @param $id
+     * @return null
+     */
+    public function getCountry($id)
+    {
+        return $this->get(self::COUNTRY_LIST, self::COUNTRY_SCOPE, $this->country_repo, $id);
     }
 
     /**
      * Adds a country
+     * @param $country
      * @return mixed
      */
-    public function addCountry()
+    public function addCountry($country)
     {
-        // TODO: Implement addCountry() method.
+        $this->add(self::COUNTRY_LIST, self::COUNTRY_SCOPE, $this->country_repo, $country);
+        return $this;
     }
 
     /**
      * Removes a country
+     * @param $id
      * @return mixed
      */
-    public function removeCountry()
+    public function removeCountry($id)
     {
-        // TODO: Implement removeCountry() method.
+        $this->remove(self::COUNTRY_LIST, self::COUNTRY_SCOPE, $this->country_repo, $id);
+        return $this;
     }
 
     /**
-     * Gets a country
-     * @return mixed
+     * Updates a single Country
+     * @param $country
+     * @return $this
      */
-    public function getCountry()
-    {
-        // TODO: Implement getCountry() method.
+    public function updateCountry($country){
+        $this->update(self::COUNTRY_LIST, self::COUNTRY_SCOPE, $this->country_repo, $country);
+        return $this;
     }
 
     /**
-     * Get a list of categories
-     * @return mixed
+     * Gets a Category list
+     * @param bool $only_active
+     * @return mixed|null
      */
-    public function getCategoryList()
+    public function getCategoryList($only_active = true)
     {
-        // TODO: Implement getCategoryList() method.
+        return $this->getList(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->category_repo, $only_active);
     }
 
     /**
-     * Adss a category
-     * @return mixed
+     * Gets a single Category
+     * @param $id
+     * @return null
      */
-    public function addCategory()
+    public function getCategory($id)
     {
-        // TODO: Implement addCategory() method.
+        return $this->get(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->category_repo, $id);
     }
 
     /**
-     * Removes a category
-     * @return mixed
+     * Adds a single Category
+     * @param $category
+     * @return $this
      */
-    public function removeCategory()
+    public function addCategory($category)
     {
-        // TODO: Implement removeCategory() method.
+        $this->add(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->category_repo, $category);
+        return $this;
     }
 
     /**
-     * Gets a category
-     * @return mixed
+     * Removes a single Category
+     * @param $id
+     * @return $this
      */
-    public function getCategory()
+    public function removeCategory($id)
     {
-        // TODO: Implement getCategory() method.
+        $this->remove(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->category_repo, $id);
+        return $this;
     }
 
     /**
-     * Get a list of sub categories
-     * @return mixed
+     * Updates a single Category
+     * @param $category
+     * @return $this
      */
-    public function getSubCategoryList()
-    {
-        // TODO: Implement getSubCategoryList() method.
+    public function updateCategory($category){
+        $this->update(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->category_repo, $category);
+        return $this;
     }
 
     /**
-     * Adss a sub category
+     * Gets list of sub_categories
+     * @param bool $only_active
      * @return mixed
      */
-    public function addSubCategory()
+    public function getSubCategoryList($only_active = true)
     {
-        // TODO: Implement addSubCategory() method.
+        return $this->getList(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->sub_category_repo, $only_active);
     }
 
     /**
-     * Removes a sub category
-     * @return mixed
+     * Gets a single SubCategory
+     * @param $id
+     * @return null
      */
-    public function removeSubCategory()
+    public function getSubCategory($id)
     {
-        // TODO: Implement removeSubCategory() method.
+        return $this->get(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->sub_category_repo, $id);
     }
 
     /**
-     * Gets a sub category
+     * Adds a SubCategory
+     * @param $sub_category
      * @return mixed
      */
-    public function getSubCategory()
+    public function addSubCategory($sub_category)
     {
-        // TODO: Implement getSubCategory() method.
+        $this->add(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->sub_category_repo, $sub_category);
+        return $this;
+    }
+
+    /**
+     * Removes a SubCategory
+     * @param $id
+     * @return mixed
+     */
+    public function removeSubCategory($id)
+    {
+        $this->remove(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->sub_category_repo, $id);
+        return $this;
+    }
+
+    /**
+     * Updates a single SubCategory
+     * @param $sub_category
+     * @return $this
+     */
+    public function updateSubCategory($sub_category){
+        $this->update(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->sub_category_repo, $sub_category);
+        return $this;
     }
 }
