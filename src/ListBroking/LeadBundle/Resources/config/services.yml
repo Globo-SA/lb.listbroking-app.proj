@@ -1,0 +1,7 @@
+parameters:
+#    list_broking_lead.example.class: ListBroking\LeadBundle\Example
+
+services:
+#    list_broking_lead.example:
+#        class: %list_broking_lead.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

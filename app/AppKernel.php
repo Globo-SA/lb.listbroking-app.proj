@@ -34,6 +34,7 @@ class AppKernel extends Kernel
             new ListBroking\DoctrineBundle\ListBrokingDoctrineBundle(),
             new ListBroking\ExceptionHandlerBundle\ListBrokingExceptionHandlerBundle(),
             new ListBroking\ClientBundle\ListBrokingClientBundle(),
+            new ListBroking\LeadBundle\ListBrokingLeadBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

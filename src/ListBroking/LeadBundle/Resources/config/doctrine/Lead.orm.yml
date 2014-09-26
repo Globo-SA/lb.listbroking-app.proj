@@ -1,23 +1,28 @@
-ListBroking\CoreBundle\Entity\SubCategory:
-    type: entity
-    table: sub_category
+ListBroking\LeadBundle\Entity\Lead:
+    type:   entity
+    table:  lead
     id:
         id:
             type: bigint
-            id: true
+            id:   true
             generator:
                 strategy: AUTO
     fields:
-        is_active:
-            type: boolean
-            column: is_active
-            nullable: true
-            options:
-                default: 0
-        name:
-            type: string
-            column: name
-
+        phone:
+            type:     string
+            column:   phone
+        is_mobile:
+            type:     boolean
+            column:   is_mobile
+            nullable: false
+                options:
+                    default: 0
+        in_opposition:
+            type:     boolean
+            column:   in_opposition
+            nullable: false
+                options:
+                    default: 0
 # Timestampable
         created_at:
             type: datetime
@@ -48,11 +53,4 @@ ListBroking\CoreBundle\Entity\SubCategory:
                 onDelete: restrict
             gedmo: { blameable: { on: update } }
 # End of blameable
-        category:
-            targetEntity: ListBroking\CoreBundle\Entity\Category
-            inversedBy:   sub_categories
-            joinColumn:
-                name:     category_id
-                referencedColumnName: id
-                onDelete: restrict
-                nullable: false
+    
