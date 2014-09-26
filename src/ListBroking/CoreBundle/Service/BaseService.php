@@ -25,25 +25,32 @@ class BaseService {
     }
 
     /**
+     * Gets a List of entities
      * @param $list_name
      * @param $scope
      * @param $repo
      * @param bool $only_active
      * @return mixed|null
      */
-    protected function getList($list_name, $scope, $repo, $only_active = true)
+    protected function getList($list_name, $scope, $repo, $only_active = false)
     {
+        // Check if entity exists in cache
         if(!$this->cache->has($list_name, $scope)){
             $this->cache->beginWarmingUp($list_name, $scope);
 
             $entities = $repo->findAll();
             $this->cache->set($list_name, $entities, null, $scope);
         }
-
         $entities = $this->cache->get($list_name, $scope);
-        foreach ($entities as $entity) {
-            if (!$entity->getIsActive() && $only_active){
-                unset($entity);
+
+        // Filter by is_active
+        if($only_active){
+            foreach ($entities as $entity) {
+                if (isset($entity['is_active'])
+                    && !$entity['is_active']
+                    && $only_active){
+                    unset($entity);
+                }
             }
         }
 
@@ -51,11 +58,13 @@ class BaseService {
     }
 
     /**
+     * Gets a single entity
      * @param $list_name
      * @param $scope
      * @param $repo
      * @param $id
-     * @return null
+     * @param $hydrate
+     * @return mixed|null
      */
     protected function get($list_name, $scope, $repo,$id, $hydrate = false){
         // Check if entity exists in cache
@@ -82,6 +91,7 @@ class BaseService {
     }
 
     /**
+     * Adds a single entity
      * @param $list_name
      * @param $scope
      * @param $repo
@@ -99,6 +109,7 @@ class BaseService {
     }
 
     /**
+     * Removes a single entity
      * @param $list_name
      * @param $scope
      * @param $repo
@@ -117,6 +128,7 @@ class BaseService {
     }
 
     /**
+     * Updates a single entity
      * @param $list_name
      * @param $scope
      * @param $repo
@@ -132,6 +144,7 @@ class BaseService {
     }
 
     /**
+     * Validates a single entity
      * @param $entity
      * @return bool
      * @throws EntityValidationException
@@ -146,7 +159,9 @@ class BaseService {
     }
 
     /**
+     * Converts a single entity id to an object instance
      * Hydrates by id
+     * @param $repo
      * @param $id
      */
     public function hydrateObject($repo, $id){

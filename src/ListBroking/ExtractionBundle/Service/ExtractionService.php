@@ -40,7 +40,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      * @param bool $only_active
      * @return mixed
      */
-    public function getExtractionList($only_active = true){
+    public function getExtractionList($only_active = false){
         return $this->getList(self::EXTRACTION_LIST, self::EXTRACTION_SCOPE, $this->extraction_repo, $only_active);
 
     }
@@ -48,10 +48,11 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     /**
      * Gets a single extraction
      * @param $id
+     * @param $hydrate
      * @return mixed
      */
-    public function getExtraction($id){
-        return $this->get(self::EXTRACTION_LIST, self::EXTRACTION_SCOPE, $this->extraction_repo, $id);
+    public function getExtraction($id, $hydrate = false){
+        return $this->get(self::EXTRACTION_LIST, self::EXTRACTION_SCOPE, $this->extraction_repo, $id, $hydrate);
 
     }
 
@@ -90,7 +91,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      * @param bool $only_active
      * @return mixed
      */
-    public function getExtractionTemplateList($only_active = true){
+    public function getExtractionTemplateList($only_active = false){
         return $this->getList(self::EXTRACTION_TEMPLATE_LIST, self::EXTRACTION_TEMPLATE_SCOPE, $this->extraction_template_repo, $only_active);
 
     }
@@ -98,9 +99,10 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     /**
      * Gets a single extraction_template
      * @param $id
+     * @param $hydrate
      * @return mixed
      */
-    public function getExtractionTemplate($id){
+    public function getExtractionTemplate($id, $hydrate = false){
         return $this->get(self::EXTRACTION_TEMPLATE_LIST, self::EXTRACTION_TEMPLATE_SCOPE, $this->extraction_template_repo, $id);
 
     }

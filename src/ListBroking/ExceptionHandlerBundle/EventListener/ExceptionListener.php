@@ -14,7 +14,6 @@ namespace ListBroking\ExceptionHandlerBundle\EventListener;
 use ListBroking\AdvancedConfigurationBundle\Service\ListBrokingAdvancedConfigurationInterface;
 use ListBroking\ExceptionHandlerBundle\Entity\ExceptionLog;
 use ListBroking\ExceptionHandlerBundle\Repository\ORM\ExceptionLogRepository;
-use Predis\Response\Error;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
 class ExceptionListener {

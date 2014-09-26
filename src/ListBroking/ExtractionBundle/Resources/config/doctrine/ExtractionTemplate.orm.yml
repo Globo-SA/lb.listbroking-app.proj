@@ -8,6 +8,12 @@ ListBroking\ExtractionBundle\Entity\ExtractionTemplate:
             generator:
                 strategy: AUTO
     fields:
+        is_active:
+            type: boolean
+            column: is_active
+            nullable: true
+            options:
+                default: 0
         name:
             type: string
             column: name

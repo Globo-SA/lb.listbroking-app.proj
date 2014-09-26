@@ -13,8 +13,6 @@ namespace ListBroking\DoctrineBundle\Repository\ORM;
 
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use ESO\Doctrine\ORM\EntityRepository;
 use ESO\Doctrine\ORM\QueryBuilder;
 use ListBroking\DoctrineBundle\Exception\EntityClassMissingException;
@@ -30,16 +28,6 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
     protected $entity_class;
 
     /**
-     * @var string
-     */
-    protected $entityManager;
-
-    /**
-     * @var string
-     */
-    protected $entityName;
-
-    /**
      * @var \ListBroking\DoctrineBundle\Tool\InflectorTool
      */
     protected $inflector;
@@ -53,8 +41,6 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
     ){
         parent::__construct($entityManager, $entityName, $alias);
 
-        $this->entityManager = $entityManager;
-        $this->entityName = $entityName;
         $this->entity_class = $entityClass;
         $this->inflector    = $inflectorTool;
     }
@@ -107,7 +93,7 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
     /**
      * Creates a new object to be used
      *
-     * @param null|array $preset
+     * @param null|object $preset
      *
      * @throws EntityClassMissingException
      * @throws EntityObjectInstantiationException
@@ -159,6 +145,15 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
     }
 
     /**
+     * Updates one entity
+     * @param $object
+     * @return mixed|object
+     */
+    public function merge($object){
+        return $this->entityManager->merge($object);
+    }
+
+    /**
      * Creates a new QueryBuilder instance that is pre-populated for this entity name.
      *
      * @return QueryBuilder
@@ -168,16 +163,13 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
         return parent::createQueryBuilder();
     }
 
-    public function merge($object){
-        return $this->entityManager->merge($object);
-    }
 
     /**
      * @return string
      */
     public function getEntityName()
     {
-        return $this->entityName;
+        return parent::getEntityName();
     }
 
     /**
@@ -185,7 +177,7 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
      */
     public function getEntityManager()
     {
-        return $this->entityManager;
+        return parent::getEntityManager();
     }
 
 }

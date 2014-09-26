@@ -8,6 +8,12 @@ ListBroking\ExtractionBundle\Entity\Extraction:
             generator:
                 strategy: AUTO
     fields:
+        is_active:
+            type: boolean
+            column: is_active
+            nullable: true
+            options:
+                default: 0
         quantity:
             type: integer
             column: quantity

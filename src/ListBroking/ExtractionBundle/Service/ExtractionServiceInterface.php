@@ -18,14 +18,15 @@ interface ExtractionServiceInterface {
      * @param bool $only_active
      * @return mixed
      */
-    public function getExtractionList($only_active = true);
+    public function getExtractionList($only_active = false);
 
     /**
      * Gets a single extraction
      * @param $id
+     * @param $hydrate
      * @return mixed
      */
-    public function getExtraction($id);
+    public function getExtraction($id, $hydrate = false);
 
     /**
      * Adds a single extraction
@@ -53,14 +54,15 @@ interface ExtractionServiceInterface {
      * @param bool $only_active
      * @return mixed
      */
-    public function getExtractionTemplateList($only_active = true);
+    public function getExtractionTemplateList($only_active = false);
 
     /**
      * Gets a single extraction_template
      * @param $id
+     * @param $hydrate
      * @return mixed
      */
-    public function getExtractionTemplate($id);
+    public function getExtractionTemplate($id, $hydrate = false);
 
     /**
      * Adds a single extraction_template

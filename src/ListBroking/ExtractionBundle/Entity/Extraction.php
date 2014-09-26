@@ -21,6 +21,8 @@ class Extraction {
 
     protected $id;
 
+    protected $is_active;
+
     protected $quantity;
 
     protected $filters;
@@ -35,6 +37,22 @@ class Extraction {
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsActive()
+    {
+        return $this->is_active;
+    }
+
+    /**
+     * @param mixed $is_active
+     */
+    public function setIsActive($is_active)
+    {
+        $this->is_active = $is_active;
     }
 
     /**

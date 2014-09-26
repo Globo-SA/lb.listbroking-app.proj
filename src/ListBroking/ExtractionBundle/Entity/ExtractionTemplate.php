@@ -21,6 +21,8 @@ class ExtractionTemplate {
 
     protected $id;
 
+    protected $is_active;
+
     protected $name;
 
     protected $value;
@@ -31,6 +33,22 @@ class ExtractionTemplate {
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsActive()
+    {
+        return $this->is_active;
+    }
+
+    /**
+     * @param mixed $is_active
+     */
+    public function setIsActive($is_active)
+    {
+        $this->is_active = $is_active;
     }
 
     /**
