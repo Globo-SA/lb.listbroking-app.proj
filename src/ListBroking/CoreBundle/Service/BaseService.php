@@ -58,7 +58,7 @@ class BaseService {
      * @return null
      */
     protected function get($list_name, $scope, $repo, $id){
-        // Check if country exists in cache
+        // Check if entity exists in cache
         if (!$this->cache->has($list_name, $scope)){
             $this->cache->beginWarmingUp($list_name, $scope);
 
@@ -66,11 +66,11 @@ class BaseService {
 
             $this->cache->set($list_name, $entities, null, $scope);
         }
-
         // Iterate through the cache and select correct country by $id
         $entities = $this->cache->get($list_name, $scope);
+
         foreach ($entities as $entity) {
-            if ($entity->getId() == $id){
+            if ($entity['id'] == $id){
                 return $entity;
             }
         }

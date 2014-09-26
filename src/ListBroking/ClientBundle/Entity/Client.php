@@ -133,7 +133,7 @@ class Client
      * @param Campaign $campaign
      */
     public function addCampaign(Campaign $campaign){
-    	$campaign->setClient($this);
+        $campaign->setClient($this);
         $this->campaigns[] = $campaign;
     }
 
@@ -143,5 +143,15 @@ class Client
     public function removeCampaign(Campaign $campaign){
         $this->campaigns->removeElement($campaign);
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getCampaigns()
+    {
+        return $this->campaigns;
+    }
+
+
 
 } 
