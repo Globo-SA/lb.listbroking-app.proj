@@ -1,7 +1,6 @@
 <?php
-
 /**
- *
+ * 
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
@@ -9,15 +8,13 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\ClientBundle\Entity;
+namespace ListBroking\ExtractionBundle\Entity;
 
 use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior,
     Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior
     ;
-use ListBroking\ExtractionBundle\Entity\Extraction;
 
-class Campaign
-{
+class ExtractionTemplate {
 
     use TimestampableEntityBehavior,
         BlameableEntityBehavior;
@@ -28,11 +25,7 @@ class Campaign
 
     protected $name;
 
-    protected $description;
-
-    protected $client;
-
-    protected $extractions;
+    protected $value;
 
     /**
      * @return mixed
@@ -61,22 +54,6 @@ class Campaign
     /**
      * @return mixed
      */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param mixed $description
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getName()
     {
         return $this->name;
@@ -93,31 +70,18 @@ class Campaign
     /**
      * @return mixed
      */
-    public function getClient()
+    public function getValue()
     {
-        return $this->client;
+        return $this->value;
     }
 
     /**
-     * @param mixed $client
+     * @param mixed $value
      */
-    public function setClient($client)
+    public function setValue($value)
     {
-        $this->client = $client;
+        $this->value = $value;
     }
 
-    /**
-     * @param Extraction $extraction
-     */
-    public function addExtraction(Extraction $extraction){
-    	$extraction->setCampaign($this);
-        $this->extractions[] = $extraction;
-    }
 
-    /**
-     * @param Extraction $extraction
-     */
-    public function removeExtraction(Extraction $extraction){
-        $this->extractions->removeElement($extraction);
-    }
-}
+} 

@@ -1,6 +1,6 @@
-ListBroking\ClientBundle\Entity\Campaign:
+ListBroking\ExtractionBundle\Entity\ExtractionTemplate:
     type: entity
-    table: campaign
+    table: extraction_template
     id:
         id:
             type: bigint
@@ -17,10 +17,9 @@ ListBroking\ClientBundle\Entity\Campaign:
         name:
             type: string
             column: name
-            unique: true
-        description:
-            type: text
-            column: description
+        value:
+            type: json_array
+            column: filters
 
 # Timestampable
         created_at:
@@ -52,16 +51,3 @@ ListBroking\ClientBundle\Entity\Campaign:
                 onDelete: restrict
             gedmo: { blameable: { on: update } }
 # End of blameable
-        client:
-            targetEntity: ListBroking\ClientBundle\Entity\Client
-            inversedBy: campaigns
-            joinColumn:
-                name: client_id
-                referencedColumnName: id
-                onDelete: restrict
-                nullable: false
-    oneToMany:
-        extractions:
-            targetEntity: ListBroking\ExtractionBundle\Entity\Extraction
-            mappedBy: campaign
-            cascade: [all]

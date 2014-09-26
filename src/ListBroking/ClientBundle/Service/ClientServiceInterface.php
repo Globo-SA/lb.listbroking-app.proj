@@ -23,9 +23,10 @@ interface ClientServiceInterface {
     /**
      * Gets a single client
      * @param $id
+     * @param $hydrate
      * @return mixed
      */
-    public function getClient($id);
+    public function getClient($id, $hydrate = false);
 
     /**
      * Adds a single client
@@ -58,9 +59,10 @@ interface ClientServiceInterface {
     /**
      * Gets a single campaign
      * @param $id
+     * @param $hydrate
      * @return mixed
      */
-    public function getCampaign($id);
+    public function getCampaign($id, $hydrate = false);
 
     /**
      * Adds a single campaign

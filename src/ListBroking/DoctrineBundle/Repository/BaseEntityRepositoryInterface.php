@@ -59,4 +59,19 @@ interface BaseEntityRepositoryInterface {
      * Alias for EntityMannager#flush
      */
     public function flush();
+
+    /**
+     * Creates a new QueryBuilder instance that is pre-populated for this entity name.
+     *
+     * @return QueryBuilder
+     */
+    public function createQueryBuilder();
+
+    /**
+     * Updates one entity
+     * @param $object
+     * @return mixed
+     */
+    public function merge($object);
+
 } 

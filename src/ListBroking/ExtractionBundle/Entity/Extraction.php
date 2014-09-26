@@ -1,7 +1,6 @@
 <?php
-
 /**
- *
+ * 
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
@@ -9,15 +8,13 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\ClientBundle\Entity;
+namespace ListBroking\ExtractionBundle\Entity;
 
 use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior,
     Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior
     ;
-use ListBroking\ExtractionBundle\Entity\Extraction;
 
-class Campaign
-{
+class Extraction {
 
     use TimestampableEntityBehavior,
         BlameableEntityBehavior;
@@ -26,13 +23,13 @@ class Campaign
 
     protected $is_active;
 
-    protected $name;
+    protected $quantity;
 
-    protected $description;
+    protected $filters;
 
-    protected $client;
+    protected $payout;
 
-    protected $extractions;
+    protected $campaign;
 
     /**
      * @return mixed
@@ -61,63 +58,65 @@ class Campaign
     /**
      * @return mixed
      */
-    public function getDescription()
+    public function getFilters()
     {
-        return $this->description;
+        return $this->filters;
     }
 
     /**
-     * @param mixed $description
+     * @param mixed $filters
      */
-    public function setDescription($description)
+    public function setFilters($filters)
     {
-        $this->description = $description;
+        $this->filters = $filters;
     }
 
     /**
      * @return mixed
      */
-    public function getName()
+    public function getPayout()
     {
-        return $this->name;
+        return $this->payout;
     }
 
     /**
-     * @param mixed $name
+     * @param mixed $payout
      */
-    public function setName($name)
+    public function setPayout($payout)
     {
-        $this->name = $name;
+        $this->payout = $payout;
     }
 
     /**
      * @return mixed
      */
-    public function getClient()
+    public function getQuantity()
     {
-        return $this->client;
+        return $this->quantity;
     }
 
     /**
-     * @param mixed $client
+     * @param mixed $quantity
      */
-    public function setClient($client)
+    public function setQuantity($quantity)
     {
-        $this->client = $client;
+        $this->quantity = $quantity;
     }
 
     /**
-     * @param Extraction $extraction
+     * @return mixed
      */
-    public function addExtraction(Extraction $extraction){
-    	$extraction->setCampaign($this);
-        $this->extractions[] = $extraction;
+    public function getCampaign()
+    {
+        return $this->campaign;
     }
 
     /**
-     * @param Extraction $extraction
+     * @param mixed $campaign
      */
-    public function removeExtraction(Extraction $extraction){
-        $this->extractions->removeElement($extraction);
+    public function setCampaign($campaign)
+    {
+        $this->campaign = $campaign;
     }
+
 }
