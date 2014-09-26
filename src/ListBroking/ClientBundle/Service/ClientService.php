@@ -48,10 +48,11 @@ class ClientService extends BaseService implements ClientServiceInterface
     /**
      * Gets a single client
      * @param $id
+     * @param $hydrate
      * @return mixed
      */
-    public function getClient($id){
-        return $this->get(self::CLIENT_LIST, self::CLIENT_SCOPE, $this->client_repo, $id);
+    public function getClient($id, $hydrate = false){
+        return $this->get(self::CLIENT_LIST, self::CLIENT_SCOPE, $this->client_repo, $id, $hydrate);
     }
 
     /**
@@ -96,10 +97,11 @@ class ClientService extends BaseService implements ClientServiceInterface
     /**
      * Gets a single campaign
      * @param $id
+     * @param $hydrate
      * @return mixed
      */
-    public function getCampaign($id){
-        return $this->get(self::CAMPAIGN_LIST, self::CAMPAIGN_SCOPE, $this->campaign_repo, $id);
+    public function getCampaign($id, $hydrate = false){
+        return $this->get(self::CAMPAIGN_LIST, self::CAMPAIGN_SCOPE, $this->campaign_repo, $id, $hydrate);
     }
 
     /**

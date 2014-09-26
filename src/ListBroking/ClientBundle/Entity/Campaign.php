@@ -14,6 +14,7 @@ namespace ListBroking\ClientBundle\Entity;
 use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior,
     Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior
     ;
+use ListBroking\ExtractionBundle\Entity\Extraction;
 
 class Campaign
 {
@@ -30,6 +31,8 @@ class Campaign
     protected $description;
 
     protected $client;
+
+    protected $extractions;
 
     /**
      * @return mixed
@@ -101,5 +104,20 @@ class Campaign
     public function setClient($client)
     {
         $this->client = $client;
+    }
+
+    /**
+     * @param Extraction $extraction
+     */
+    public function addExtraction(Extraction $extraction){
+    	$extraction->setCampaign($this);
+        $this->extractions[] = $extraction;
+    }
+
+    /**
+     * @param Extraction $extraction
+     */
+    public function removeExtraction(Extraction $extraction){
+        $this->extractions->removeElement($extraction);
     }
 }

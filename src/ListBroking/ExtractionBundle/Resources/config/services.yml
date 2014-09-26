@@ -1,0 +1,33 @@
+parameters:
+    listbroking.extractionbundle.extraction.entity.name: ListBrokingExtractionBundle:Extraction
+    listbroking.extractionbundle.extraction.entity.class: ListBroking\ExtractionBundle\Entity\Extraction
+    listbroking.extractionbundle.extraction.repository.class: ListBroking\ExtractionBundle\Repository\ORM\ExtractionRepository
+
+    listbroking.extractionbundle.extraction_template.entity.name: ListBrokingExtractionBundle:ExtractionTemplate
+    listbroking.extractionbundle.extraction_template.entity.class: ListBroking\ExtractionBundle\Entity\ExtractionTemplate
+    listbroking.extractionbundle.extraction_template.repository.class: ListBroking\ExtractionBundle\Repository\ORM\ExtractionTemplateRepository
+
+    listbroking.extraction.service.class: ListBroking\ExtractionBundle\Service\ExtractionService
+
+services:
+    listbroking.extractionbundle.extraction.repository:
+        class: %listbroking.extractionbundle.extraction.repository.class%
+        arguments:
+            entityManager: @doctrine.orm.default_entity_manager
+            entityName: %listbroking.extractionbundle.extraction.entity.name%
+            alias: camp
+            entityClass: %listbroking.extractionbundle.extraction.entity.class%
+            inflector: @inflector.tool
+
+    listbroking.extractionbundle.extraction_template.repository:
+        class: %listbroking.extractionbundle.extraction_template.repository.class%
+        arguments:
+            entityManager: @doctrine.orm.default_entity_manager
+            entityName: %listbroking.extractionbundle.extraction_template.entity.name%
+            alias: camp
+            entityClass: %listbroking.extractionbundle.extraction_template.entity.class%
+            inflector: @inflector.tool
+
+    listbroking.extraction.service:
+        class: %listbroking.extraction.service.class%
+        arguments: [@cache, @validator, @listbroking.extractionbundle.extraction.repository, @listbroking.extractionbundle.extraction_template.repository]

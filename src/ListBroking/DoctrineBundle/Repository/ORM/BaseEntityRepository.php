@@ -30,6 +30,16 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
     protected $entity_class;
 
     /**
+     * @var string
+     */
+    protected $entityManager;
+
+    /**
+     * @var string
+     */
+    protected $entityName;
+
+    /**
      * @var \ListBroking\DoctrineBundle\Tool\InflectorTool
      */
     protected $inflector;
@@ -43,6 +53,8 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
     ){
         parent::__construct($entityManager, $entityName, $alias);
 
+        $this->entityManager = $entityManager;
+        $this->entityName = $entityName;
         $this->entity_class = $entityClass;
         $this->inflector    = $inflectorTool;
     }
@@ -158,6 +170,22 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
 
     public function merge($object){
         return $this->entityManager->merge($object);
+    }
+
+    /**
+     * @return string
+     */
+    public function getEntityName()
+    {
+        return $this->entityName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEntityManager()
+    {
+        return $this->entityManager;
     }
 
 }

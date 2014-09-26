@@ -10,6 +10,7 @@ use ListBroking\CoreBundle\Entity\Country;
 use ListBroking\CoreBundle\Entity\SubCategory;
 use ListBroking\CoreBundle\Exception\EntityValidationException;
 use ListBroking\CoreBundle\Service\CoreService;
+use ListBroking\ExtractionBundle\Entity\Extraction;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -60,30 +61,18 @@ class DefaultController extends Controller
 
     public function samuelAction(Request $request)
     {
-        /** @var ClientService $client_service */
+        $extraction_service = $this->get('listbroking.extraction.service');
         $client_service = $this->get('listbroking.client.service');
-        //$core_service = $this->get('listbroking.core.service');
+        $campaign = $client_service->getCampaign(1, true);
+
+        $extraction = new Extraction();
+        $extraction->setQuantity(1000);
+        $extraction->setFilters(array('clol' => 1));
+        $extraction->setPayout(0.23);
+        $extraction->setCampaign($campaign);
 
 
-        //$client = $client_service->getClient(4);
-
-        $category = $client_service->getClient(4);
-
-//        $client = new Client();
-//        $client->setIsActive(1);
-//        $client->setName("Adclick");
-//        $client->setAccountName("Samuel Castro");
-//        $client->setEmailAddress("samuel.castro@adclick.pt");
-//        $client->setPhone("+351 914i384503");
-//
-//        $campaign = new Campaign();
-//        $campaign->setIsActive(1);
-//        $campaign->setName("Metlife Global");
-//        $campaign->setDescription("A great and cool campaign form awesome stuff");
-//
-//        $client->addCampaign($campaign);
-//
-//        $client_service->addClient($client);
+        $extraction_service->addExtraction($extraction);
 
         return $this->render('ListBrokingUIBundle:Default:samuel.html.twig', array());
     }

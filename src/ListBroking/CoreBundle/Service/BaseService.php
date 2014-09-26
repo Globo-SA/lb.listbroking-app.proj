@@ -57,7 +57,7 @@ class BaseService {
      * @param $id
      * @return null
      */
-    protected function get($list_name, $scope, $repo, $id){
+    protected function get($list_name, $scope, $repo,$id, $hydrate = false){
         // Check if entity exists in cache
         if (!$this->cache->has($list_name, $scope)){
             $this->cache->beginWarmingUp($list_name, $scope);
@@ -71,6 +71,9 @@ class BaseService {
 
         foreach ($entities as $entity) {
             if ($entity['id'] == $id){
+                if($hydrate){
+                    $entity = $this->hydrateObject($repo, $entity['id']);
+                }
                 return $entity;
             }
         }
@@ -140,5 +143,13 @@ class BaseService {
         }
 
         return true;
+    }
+
+    /**
+     * Hydrates by id
+     * @param $id
+     */
+    public function hydrateObject($repo, $id){
+       return  $repo->getEntityManager()->getReference($repo->getEntityName(), $id);
     }
 } 

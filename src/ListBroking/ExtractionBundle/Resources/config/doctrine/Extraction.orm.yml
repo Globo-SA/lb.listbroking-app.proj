@@ -1,6 +1,6 @@
-ListBroking\ClientBundle\Entity\Campaign:
+ListBroking\ExtractionBundle\Entity\Extraction:
     type: entity
-    table: campaign
+    table: extraction
     id:
         id:
             type: bigint
@@ -8,19 +8,15 @@ ListBroking\ClientBundle\Entity\Campaign:
             generator:
                 strategy: AUTO
     fields:
-        is_active:
-            type: boolean
-            column: is_active
-            nullable: true
-            options:
-                default: 0
-        name:
-            type: string
-            column: name
-            unique: true
-        description:
-            type: text
-            column: description
+        quantity:
+            type: integer
+            column: quantity
+        filters:
+            type: json_array
+            column: filters
+        payout:
+            type: float
+            column: payout
 
 # Timestampable
         created_at:
@@ -52,16 +48,10 @@ ListBroking\ClientBundle\Entity\Campaign:
                 onDelete: restrict
             gedmo: { blameable: { on: update } }
 # End of blameable
-        client:
-            targetEntity: ListBroking\ClientBundle\Entity\Client
-            inversedBy: campaigns
+        campaign:
+            targetEntity: ListBroking\ClientBundle\Entity\Campaign
+            inversedBy: extractions
             joinColumn:
-                name: client_id
+                name: campaign_id
                 referencedColumnName: id
                 onDelete: restrict
-                nullable: false
-    oneToMany:
-        extractions:
-            targetEntity: ListBroking\ExtractionBundle\Entity\Extraction
-            mappedBy: campaign
-            cascade: [all]
