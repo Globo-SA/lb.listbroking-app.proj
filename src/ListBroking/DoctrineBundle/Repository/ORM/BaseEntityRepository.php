@@ -11,8 +11,12 @@
 
 namespace ListBroking\DoctrineBundle\Repository\ORM;
 
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use ESO\Doctrine\ORM\EntityRepository;
+use ESO\Doctrine\ORM\QueryBuilder;
 use ListBroking\DoctrineBundle\Exception\EntityClassMissingException;
 use ListBroking\DoctrineBundle\Exception\EntityObjectInstantiationException;
 use ListBroking\DoctrineBundle\Repository\BaseEntityRepositoryInterface;
@@ -58,6 +62,34 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
         $query_builder->setParameter('id', $id);
 
         return $query_builder->getQuery()->getOneOrNullResult();
+    }
+
+    /**
+     * Finds all entities with associations
+     * eagerly fetched by default
+     *
+     * @param bool $eager
+     * @return array
+     */
+    public function findAll($eager = true)
+    {
+        $qb = $this->createQueryBuilder();
+
+        if($eager){
+            /**
+             * Gets all entity associations for passing to fetch mode and
+             * Sets the fetch mode to eager for caching
+             * NOTE: setFetchMode() does not work in orm 2.3
+             */
+            $associations_mappings =  $meta = $this->entityManager->getClassMetadata($this->entity_class)->getAssociationNames();
+            foreach ($associations_mappings as $associations_mapping)
+            {
+                $qb->leftJoin($this->alias() . '.' . $associations_mapping, $associations_mapping);
+                $qb->addSelect($associations_mapping);
+            }
+        }
+
+        return $qb->getQuery()->execute(null, AbstractQuery::HYDRATE_ARRAY);
     }
 
     /**

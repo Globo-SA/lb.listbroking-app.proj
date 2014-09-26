@@ -23,11 +23,11 @@ services:
         arguments:
             entityManager: @doctrine.orm.default_entity_manager
             entityName: %listbroking.clientbundle.campaign.entity.name%
-            alias: cli
+            alias: camp
             entityClass: %listbroking.clientbundle.campaign.entity.class%
             inflector: @inflector.tool
 
     listbroking.client.service:
         class: %listbroking.client.service.class%
-        arguments: [@cache, @listbroking.clientbundle.client.repository, @listbroking.clientbundle.campaign.repository]
+        arguments: [@cache, @validator, @listbroking.clientbundle.client.repository, @listbroking.clientbundle.campaign.repository]
 

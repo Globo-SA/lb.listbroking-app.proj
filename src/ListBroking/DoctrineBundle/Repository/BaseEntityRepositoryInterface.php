@@ -23,6 +23,15 @@ interface BaseEntityRepositoryInterface {
     public function findOneById($id);
 
     /**
+     * Finds all entities with associations
+     * eagerly fetched by default
+     *
+     * @param bool $eager
+     * @return array
+     */
+    public function findAll($eager = true);
+
+    /**
      * Creates a new object to be used
      *
      * @param null|array $preset

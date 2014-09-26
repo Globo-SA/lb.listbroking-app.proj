@@ -2,6 +2,9 @@
 
 namespace ListBroking\UIBundle\Controller;
 
+use ListBroking\ClientBundle\Entity\Campaign;
+use ListBroking\ClientBundle\Entity\Client;
+use ListBroking\ClientBundle\Service\ClientService;
 use ListBroking\CoreBundle\Entity\Category;
 use ListBroking\CoreBundle\Entity\Country;
 use ListBroking\CoreBundle\Entity\SubCategory;
@@ -57,6 +60,31 @@ class DefaultController extends Controller
 
     public function samuelAction(Request $request)
     {
+        /** @var ClientService $client_service */
+        $client_service = $this->get('listbroking.client.service');
+        //$core_service = $this->get('listbroking.core.service');
+
+
+        //$client = $client_service->getClient(4);
+
+        $category = $client_service->getClient(4);
+
+//        $client = new Client();
+//        $client->setIsActive(1);
+//        $client->setName("Adclick");
+//        $client->setAccountName("Samuel Castro");
+//        $client->setEmailAddress("samuel.castro@adclick.pt");
+//        $client->setPhone("+351 914i384503");
+//
+//        $campaign = new Campaign();
+//        $campaign->setIsActive(1);
+//        $campaign->setName("Metlife Global");
+//        $campaign->setDescription("A great and cool campaign form awesome stuff");
+//
+//        $client->addCampaign($campaign);
+//
+//        $client_service->addClient($client);
+
         return $this->render('ListBrokingUIBundle:Default:samuel.html.twig', array());
     }
 }
