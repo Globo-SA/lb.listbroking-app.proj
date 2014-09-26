@@ -1,7 +1,20 @@
 parameters:
-#    list_broking_lock.example.class: ListBroking\LockBundle\Example
+    listbroking.lockbundle.lock.entity.name: ListBrokingLockBundle:Lock
+    listbroking.lockbundle.lock.entity.class: ListBroking\LockBundle\Entity\Lock
+    listbroking.lockbundle.lock.repository.class: ListBroking\LockBundle\Repository\LockRepository
+
+    listbroking.lock.service.class: ListBroking\LockBundle\Service\LockService
 
 services:
-#    list_broking_lock.example:
-#        class: %list_broking_lock.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
+    listbroking.lockbundle.lock.repository:
+        class: %listbroking.lockbundle.lock.repository.class%
+        arguments:
+            entityManager: @doctrine.orm.default_entity_manager
+            entityName: %listbroking.lockbundle.lock.entity.name%
+            alias: lock
+            entityClass: %listbroking.lockbundle.lock.entity.class%
+            inflector: @inflector.tool
+
+    listbroking.lock.service:
+        class: %listbroking.lock.service.class%
+        arguments: [@cache, @validator, @listbroking.lockbundle.lock.repository]

@@ -62,6 +62,8 @@ class DefaultController extends Controller
     {
         /** @var ClientService $client_service */
         $client_service = $this->get('listbroking.client.service');
+        $lock_service = $this->get('listbroking.lock.service');
+
         //$core_service = $this->get('listbroking.core.service');
 
 
