@@ -17,6 +17,7 @@ ListBroking\ClientBundle\Entity\Campaign:
         name:
             type: string
             column: name
+            unique: true
         description:
             type: text
             column: description
@@ -50,6 +51,7 @@ ListBroking\ClientBundle\Entity\Campaign:
                 referencedColumnName: id
                 onDelete: restrict
             gedmo: { blameable: { on: update } }
+# End of blameable
         client:
             targetEntity: ListBroking\ClientBundle\Entity\Client
             inversedBy: campaigns
@@ -57,4 +59,4 @@ ListBroking\ClientBundle\Entity\Campaign:
                 name: client_id
                 referencedColumnName: id
                 onDelete: restrict
-# End of blameable
+                nullable: false

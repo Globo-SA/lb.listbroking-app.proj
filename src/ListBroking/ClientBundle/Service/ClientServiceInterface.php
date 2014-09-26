@@ -14,57 +14,73 @@ namespace ListBroking\ClientBundle\Service;
 interface ClientServiceInterface {
 
     /**
+     * Gets list of clients
      * @param bool $only_active
      * @return mixed
      */
     public function getClientList($only_active = true);
 
     /**
-     * Add a Client to the list
-     * @param $variable
+     * Gets a single client
+     * @param $id
      * @return mixed
      */
-    public function addClient($variable);
+    public function getClient($id);
 
     /**
-     * Removes a Client from the list
+     * Adds a single client
+     * @param $client
+     * @return mixed
+     */
+    public function addClient($client);
+
+    /**
+     * Removes a single client
      * @param $id
      * @return mixed
      */
     public function removeClient($id);
 
     /**
-     * @param $id
-     * @param $only_active
+     * Updates a single country
+     * @param $client
      * @return mixed
      */
-    public function getClient($id, $only_active = true);
+    public function updateClient($client);
 
     /**
+     * Gets list of campaigns
      * @param bool $only_active
      * @return mixed
      */
     public function getCampaignList($only_active = true);
 
     /**
-     * Adds a Campaign to the list
+     * Gets a single campaign
+     * @param $id
+     * @return mixed
+     */
+    public function getCampaign($id);
+
+    /**
+     * Adds a single campaign
      * @param $campaign
      * @return mixed
      */
     public function addCampaign($campaign);
 
     /**
-     * Removes a Campaign from the list
+     * Removes a single campaign
      * @param $id
      * @return mixed
      */
     public function removeCampaign($id);
 
     /**
-     * @param $id
-     * @param $only_active
+     * Updates a single campaign
+     * @param $campaign
      * @return mixed
      */
-    public function getCampaign($id, $only_active = true);
+    public function updateCampaign($campaign);
 
 } 

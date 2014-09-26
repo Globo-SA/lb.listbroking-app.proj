@@ -12,9 +12,4 @@ namespace ListBroking\ClientBundle\Repository;
 
 interface ClientRepositoryInterface {
 
-    /**
-     * @param bool $only_active
-     * @return mixed
-     */
-    public function findAll($only_active = true);
 }

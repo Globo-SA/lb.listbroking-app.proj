@@ -17,6 +17,7 @@ ListBroking\ClientBundle\Entity\Client:
         name:
             type: string
             column: name
+            unique: true
         account_name:
             type: string
             column: account_name
