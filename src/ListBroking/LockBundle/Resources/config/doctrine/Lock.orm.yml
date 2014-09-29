@@ -42,6 +42,14 @@ ListBroking\LockBundle\Entity\Lock:
                 referencedColumnName: id
                 onDelete: restrict
                 nullable: true
+        lead:
+            targetEntity: ListBroking\LeadBundle\Entity\Lead
+            inversedBy: locks
+            joinColumn:
+                name:     lead_id
+                referencedColumnName: id
+                onDelete: restrict
+                nullable: true
         campaign:
             targetEntity: ListBroking\ClientBundle\Entity\Campaign
             joinColumn:

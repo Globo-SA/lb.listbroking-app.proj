@@ -31,6 +31,8 @@ class Lock {
 
     private $type;
 
+    private $lead;
+
     private $client;
 
     private $campaign;
@@ -126,6 +128,22 @@ class Lock {
     public function setExpirationDate($expiration_date)
     {
         $this->expiration_date = $expiration_date;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLead()
+    {
+        return $this->lead;
+    }
+
+    /**
+     * @param mixed $lead
+     */
+    public function setLead($lead)
+    {
+        $this->lead = $lead;
     }
 
     /**

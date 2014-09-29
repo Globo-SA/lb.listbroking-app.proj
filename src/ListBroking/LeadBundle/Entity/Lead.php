@@ -14,6 +14,7 @@ namespace ListBroking\LeadBundle\Entity;
 use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior;
 use Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior;
 use Doctrine\Common\Collections\ArrayCollection;
+use ListBroking\LockBundle\Entity\Lock;
 
 class Lead {
     use TimestampableEntityBehavior,
@@ -31,12 +32,12 @@ class Lead {
 
     protected $contacts;
 
-    /**
-     * @param $contacts
-     */
+    protected $locks;
+
     function __construct()
     {
         $this->contacts = new ArrayCollection();
+        $this->locks = new ArrayCollection();
     }
 
     /**
@@ -132,5 +133,15 @@ class Lead {
      */
     public function removeContacts(Contact $contact){
         $this->contacts->removeElement($contact);
+    }
+    
+
+    public function addLocks(Lock $lock){
+    	$lock->setLead($this);
+        $this->locks[] = $lock;
+    }
+    
+    public function removeLocks(Lock $lock){
+        $this->locks->removeElement($lock);
     }
 } 

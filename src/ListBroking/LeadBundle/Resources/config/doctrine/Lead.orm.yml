@@ -65,3 +65,7 @@ ListBroking\LeadBundle\Entity\Lead:
             targetEntity: ListBroking\LeadBundle\Entity\Contact
             mappedBy:     lead
             cascade:      [all]
+        locks:
+            targetEntity: ListBroking\LockBundle\Entity\Lock
+            mappedBy:     lead
+            cascade:      [all]
