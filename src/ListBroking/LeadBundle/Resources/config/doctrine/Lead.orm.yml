@@ -15,14 +15,14 @@ ListBroking\LeadBundle\Entity\Lead:
             type:     boolean
             column:   is_mobile
             nullable: false
-                options:
-                    default: 0
+            options:
+                default: 0
         in_opposition:
             type:     boolean
             column:   in_opposition
             nullable: false
-                options:
-                    default: 0
+            options:
+                default: 0
 # Timestampable
         created_at:
             type: datetime
@@ -53,4 +53,15 @@ ListBroking\LeadBundle\Entity\Lead:
                 onDelete: restrict
             gedmo: { blameable: { on: update } }
 # End of blameable
-    
+        country:
+            targetEntity: ListBroking\CoreBundle\Entity\Country
+            joinColumn:
+                name:                 country_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
+    oneToMany:
+        contacts:
+            targetEntity: ListBroking\LeadBundle\Entity\Contact
+            mappedBy:     lead
+            cascade:      [all]

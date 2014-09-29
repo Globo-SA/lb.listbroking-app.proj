@@ -34,7 +34,7 @@ class Lead {
     /**
      * @param $contacts
      */
-    function __construct($contacts)
+    function __construct()
     {
         $this->contacts = new ArrayCollection();
     }
@@ -120,10 +120,17 @@ class Lead {
     }
 
     /**
-     * @param mixed $contacts
+     * @param Contact $contact
      */
-    public function setContacts($contacts)
-    {
-        $this->contacts = $contacts;
+    public function addContacts(Contact $contact){
+        $contact->setLead($this);
+        $this->contacts[] = $contact;
+    }
+
+    /**
+     * @param Contact $contact
+     */
+    public function removeContacts(Contact $contact){
+        $this->contacts->removeElement($contact);
     }
 } 

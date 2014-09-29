@@ -64,7 +64,7 @@ ListBroking\LeadBundle\Entity\Contact:
 # End of blameable
         lead:
             targetEntity: ListBroking\LeadBundle\Entity\Lead
-            inversedBy:   leads
+            inversedBy:   contacts
             joinColumn:
                 name:                 lead_id
                 referencedColumnName: id
@@ -72,7 +72,7 @@ ListBroking\LeadBundle\Entity\Contact:
                 nullable:             false
         source:
             targetEntity: ListBroking\LeadBundle\Entity\Source
-            inversedBy:   sources
+            inversedBy:   contacts
             joinColumn:
                 name:                 source_id
                 referencedColumnName: id
@@ -80,57 +80,56 @@ ListBroking\LeadBundle\Entity\Contact:
                 nullable:             false
         owner:
             targetEntity: ListBroking\LeadBundle\Entity\Owner
-            inversedBy:   owners
+            inversedBy:   contacts
             joinColumn:
                 name:                 owner_id
                 referencedColumnName: id
                 onDelete:             restrict
                 nullable:             false
         sub_category:
-              targetEntity: ListBroking\CoreBundle\Entity\SubCategory
-              inversedBy:   sub_categories
-              joinColumn:
-                  name:                 sub_category_id
-                  referencedColumnName: id
-                  onDelete:             restrict
-                  nullable:             false
+            targetEntity: ListBroking\CoreBundle\Entity\SubCategory
+            inversedBy:   contacts
+            joinColumn:
+                name:                 sub_category_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
         gender:
-              targetEntity: ListBroking\LeadBundle\Entity\Gender
-              inversedBy:   genders
-              joinColumn:
-                  name:                 gender_id
-                  referencedColumnName: id
-                  onDelete:             restrict
-                  nullable:             false
+            targetEntity: ListBroking\LeadBundle\Entity\Gender
+            inversedBy:   contacts
+            joinColumn:
+                name:                 gender_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
         district:
-              targetEntity: ListBroking\LeadBundle\Entity\District
-              inversedBy:   districts
-              joinColumn:
-                  name:                 district_id
-                  referencedColumnName: id
-                  onDelete:             restrict
-                  nullable:             false
+            targetEntity: ListBroking\LeadBundle\Entity\District
+            inversedBy:   contacts
+            joinColumn:
+                name:                 district_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
         county:
-              targetEntity: ListBroking\LeadBundle\Entity\County
-              inversedBy:   counties
-              joinColumn:
-                  name:                 county_id
-                  referencedColumnName: id
-                  onDelete:             restrict
-                  nullable:             false
+            targetEntity: ListBroking\LeadBundle\Entity\County
+            inversedBy:   contacts
+            joinColumn:
+                name:                 county_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
         parish:
-              targetEntity: ListBroking\LeadBundle\Entity\Parish
-              inversedBy:   parishes
-              joinColumn:
-                  name:                 parish_id
-                  referencedColumnName: id
-                  onDelete:             restrict
-                  nullable:             false
+            targetEntity: ListBroking\LeadBundle\Entity\Parish
+            inversedBy:   contacts
+            joinColumn:
+                name:                 parish_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
         country:
-              targetEntity: ListBroking\LeadBundle\Entity\Country
-              inversedBy:   countries
-              joinColumn:
-                  name:                 country_id
-                  referencedColumnName: id
-                  onDelete:             restrict
-                  nullable:             false
+            targetEntity: ListBroking\CoreBundle\Entity\Country
+            joinColumn:
+                name:                 country_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false

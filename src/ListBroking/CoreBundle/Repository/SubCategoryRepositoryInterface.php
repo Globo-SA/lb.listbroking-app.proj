@@ -13,8 +13,4 @@ namespace ListBroking\CoreBundle\Repository;
 
 interface SubCategoryRepositoryInterface
 {
-    /**
-     * @return mixed
-     */
-    public function findAll();
 }

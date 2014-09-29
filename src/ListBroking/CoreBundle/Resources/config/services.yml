@@ -19,7 +19,7 @@ services:
         arguments:
             entityManager:  @doctrine.orm.default_entity_manager
             entityName:     %listbroking.corebundle.country.entity.name%
-            alias:          cbc
+            alias:          ctr
             entityClass:    %listbroking.corebundle.country.entity.class%
             inflector:      @inflector.tool
     listbroking.corebundle.category.repository:
@@ -27,7 +27,7 @@ services:
         arguments:
             entityManager:  @doctrine.orm.default_entity_manager
             entityName:     %listbroking.corebundle.category.entity.name%
-            alias:          cbc
+            alias:          cat
             entityClass:    %listbroking.corebundle.category.entity.class%
             inflector:      @inflector.tool
     listbroking.corebundle.subcategory.repository:
@@ -35,7 +35,7 @@ services:
         arguments:
             entityManager:  @doctrine.orm.default_entity_manager
             entityName:     %listbroking.corebundle.subcategory.entity.name%
-            alias:          cbc
+            alias:          sct
             entityClass:    %listbroking.corebundle.subcategory.entity.class%
             inflector:      @inflector.tool
 

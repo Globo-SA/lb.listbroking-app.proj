@@ -24,15 +24,7 @@ class DefaultController extends Controller
         $core_service = $this->get('listbroking.core.service');
 
         $category = $core_service->getCategory(1);
-
-
-        $sub_category = new SubCategory();
-        $sub_category->setIsActive(1);
-        $sub_category->setName('Grandes');
-
-        $category->addSubCategory($sub_category);
-
-        $core_service->updateCategory($category);
+        json_encode($category);
 
 //        $form = $this->createForm('country_form', $country);
 //        if ($request->getMethod() == 'POST'){

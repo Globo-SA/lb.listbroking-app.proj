@@ -13,6 +13,7 @@ namespace ListBroking\CoreBundle\Entity;
 use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior,
     Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior
     ;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class SubCategory {
     use TimestampableEntityBehavior,
@@ -25,6 +26,14 @@ class SubCategory {
     protected $name;
 
     protected $category;
+
+    protected $contacts;
+
+    function __construct()
+    {
+        $this->contacts = new ArrayCollection();
+    }
+
 
     /**
      * @return mixed
@@ -81,4 +90,20 @@ class SubCategory {
     {
         $this->category = $category;
     }
-} 
+
+    /**
+     * @return mixed
+     */
+    public function getContacts()
+    {
+        return $this->contacts;
+    }
+
+    /**
+     * @param mixed $contacts
+     */
+    public function setContacts($contacts)
+    {
+        $this->contacts = $contacts;
+    }
+}

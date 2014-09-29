@@ -56,3 +56,8 @@ ListBroking\CoreBundle\Entity\SubCategory:
                 referencedColumnName: id
                 onDelete: restrict
                 nullable: false
+    oneToMany:
+        contacts:
+            targetEntity: ListBroking\LeadBundle\Entity\Contact
+            mappedBy:     sub_category
+            cascade:      [all]

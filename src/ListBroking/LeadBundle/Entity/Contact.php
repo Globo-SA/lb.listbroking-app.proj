@@ -52,6 +52,8 @@ class Contact {
 
     protected $parish;
 
+    protected $country;
+
     /**
      * @return mixed
      */
@@ -316,5 +318,19 @@ class Contact {
         $this->sub_category = $sub_category;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getCountry()
+    {
+        return $this->country;
+    }
 
+    /**
+     * @param mixed $country
+     */
+    public function setCountry($country)
+    {
+        $this->country = $country;
+    }
 }

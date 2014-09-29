@@ -1,6 +1,6 @@
 <?php
 /**
- *
+ * 
  * @author     Pedro Tentugal <pedro.tentugal@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
@@ -8,11 +8,12 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\CoreBundle\Repository\ORM;
+namespace ListBroking\LeadBundle\Repository\ORM;
 
-use ListBroking\CoreBundle\Repository\CategoryRepositoryInterface;
+
 use ListBroking\DoctrineBundle\Repository\ORM\BaseEntityRepository;
+use ListBroking\LeadBundle\Repository\OwnerRepositoryInterface;
 
-class CategoryRepository extends BaseEntityRepository implements CategoryRepositoryInterface
-{
-}
+class OwnerRepository extends BaseEntityRepository implements OwnerRepositoryInterface{
+
+} 

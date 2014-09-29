@@ -21,6 +21,8 @@ class Owner {
 
     protected $id;
 
+    protected $is_active;
+
     protected $name;
 
     protected $account_name;
@@ -37,7 +39,7 @@ class Owner {
 
     protected $contacts;
 
-    function __construct($contacts, $sources)
+    function __construct()
     {
         $this->contacts = new ArrayCollection();
         $this->sources  = new ArrayCollection();
@@ -76,11 +78,18 @@ class Owner {
     }
 
     /**
-     * @param mixed $contacts
+     * @param Contact $contact
      */
-    public function setContacts($contacts)
-    {
-        $this->contacts = $contacts;
+    public function addContacts(Contact $contact){
+        $contact->setOwner($this);
+        $this->contacts[] = $contact;
+    }
+
+    /**
+     * @param Contact $contact
+     */
+    public function removeContacts(Contact $contact){
+        $this->contacts->removeElement($contact);
     }
 
     /**
@@ -171,12 +180,13 @@ class Owner {
         return $this->sources;
     }
 
-    /**
-     * @param mixed $sources
-     */
-    public function setSources($sources)
-    {
-        $this->sources = $sources;
+    public function addSources(Source $source){
+        $source->setOwner($this);
+        $this->sources[] = $source;
+    }
+
+    public function removeSources(Source $source){
+        $this->sources->removeElement($source);
     }
 
 
