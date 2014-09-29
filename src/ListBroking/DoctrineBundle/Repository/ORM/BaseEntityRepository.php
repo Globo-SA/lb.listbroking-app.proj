@@ -59,7 +59,7 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
 
         $query_builder->setParameter('id', $id);
 
-        return $query_builder->getQuery()->getOneOrNullResult();
+        return $query_builder->getQuery()->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY);
     }
 
     /**

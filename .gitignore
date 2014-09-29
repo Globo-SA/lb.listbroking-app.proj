@@ -41,3 +41,6 @@
 # IDEs
 /.idea
 /.nbproject
+
+# Mac stuff
+.DS_Store

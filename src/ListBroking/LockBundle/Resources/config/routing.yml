@@ -1,0 +1,3 @@
+list_broking_lock_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: ListBrokingLockBundle:Default:index }

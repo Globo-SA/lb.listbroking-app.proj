@@ -53,18 +53,29 @@ class DefaultController extends Controller
 
     public function samuelAction(Request $request)
     {
-        $extraction_service = $this->get('listbroking.extraction.service');
-        $client_service = $this->get('listbroking.client.service');
-        $campaign = $client_service->getCampaign(1, true);
 
-        $extraction = new Extraction();
-        $extraction->setQuantity(1000);
-        $extraction->setFilters(array('clol' => 1));
-        $extraction->setPayout(0.23);
-        $extraction->setCampaign($campaign);
+        $lock_service = $this->get('listbroking.lock.service');
+        $locks = $lock_service->getLockList();
+        $lock_filters = array(
+            array( //ReservedLockType
+                'type' => 1,
+            ),
+            array( //CategoryLockType
+                'type' => 4,
+                'category_id' => 2,
+                'expiration_date' => 1411689600
+            ),
+            array( // SubCategoryLockType
+                'type' => 5,
+                'category_id' => 3,
+                'sub_category_id' => 20,
+                'expiration_date' => 1420070400
+            ),
+        );
 
+        $engine = $lock_service->startEngine();
 
-        $extraction_service->addExtraction($extraction);
+        $engine->compileFilters($lock_filters);
 
         return $this->render('ListBrokingUIBundle:Default:samuel.html.twig', array());
     }

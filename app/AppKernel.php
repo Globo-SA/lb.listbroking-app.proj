@@ -36,12 +36,14 @@ class AppKernel extends Kernel
             new ListBroking\ClientBundle\ListBrokingClientBundle(),
             new ListBroking\ExtractionBundle\ListBrokingExtractionBundle(),
             new ListBroking\LeadBundle\ListBrokingLeadBundle(),
+            new ListBroking\LockBundle\ListBrokingLockBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
+            $bundles[] = new RaulFraile\Bundle\LadybugBundle\RaulFraileLadybugBundle();
         }
 
         return $bundles;

@@ -43,14 +43,9 @@ class BaseService {
         }
         $entities = $this->cache->get($list_name, $scope);
 
-        // Filter by is_active
-        if($only_active){
-            foreach ($entities as $entity) {
-                if (isset($entity['is_active'])
-                    && !$entity['is_active']
-                    && $only_active){
-                    unset($entity);
-                }
+        foreach ($entities as $entity) {
+            if (isset($entity['is_active']) && !$entity['is_active'] && $only_active){
+                unset($entity);
             }
         }
 
@@ -75,7 +70,7 @@ class BaseService {
 
             $this->cache->set($list_name, $entities, null, $scope);
         }
-        // Iterate through the cache and select correct country by $id
+        // Iterate through the cache and select correct entity by $id
         $entities = $this->cache->get($list_name, $scope);
 
         foreach ($entities as $entity) {
@@ -116,9 +111,9 @@ class BaseService {
      * @param $id
      */
     protected function remove($list_name, $scope, $repo, $id){
-        // Finds and removes the country
-        $country = $repo->findOneById($id);
-        $repo->remove($country);
+        // Finds and removes the entity
+        $entity = $repo->findOneById($id);
+        $repo->remove($entity);
         $repo->flush();
 
         // Invalidate the cache
