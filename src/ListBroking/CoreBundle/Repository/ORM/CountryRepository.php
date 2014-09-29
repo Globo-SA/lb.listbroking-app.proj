@@ -15,11 +15,4 @@ use ListBroking\DoctrineBundle\Repository\ORM\BaseEntityRepository;
 
 class CountryRepository extends BaseEntityRepository implements CountryRepositoryInterface
 {
-    /**
-     * @return mixed
-     */
-    public function findAll()
-    {
-        return $this->createQueryBuilder()->getQuery()->getResult();
-    }
 }

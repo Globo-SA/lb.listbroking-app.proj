@@ -1,0 +1,98 @@
+parameters:
+    listbroking.leadbundle.contact.entity.name:       ListBrokingLeadBundle:Contact
+    listbroking.leadbundle.contact.entity.class:      ListBroking\leadBundle\Entity\Contact
+    listbroking.leadbundle.contact.repository.class:  ListBroking\LeadBundle\Repository\ORM\ContactRepository
+
+    listbroking.leadbundle.county.entity.name:       ListBrokingLeadBundle:County
+    listbroking.leadbundle.county.entity.class:      ListBroking\leadBundle\Entity\County
+    listbroking.leadbundle.county.repository.class:  ListBroking\LeadBundle\Repository\ORM\CountyRepository
+
+    listbroking.leadbundle.district.entity.name:       ListBrokingLeadBundle:District
+    listbroking.leadbundle.district.entity.class:      ListBroking\leadBundle\Entity\District
+    listbroking.leadbundle.district.repository.class:  ListBroking\LeadBundle\Repository\ORM\DistrictRepository
+
+    listbroking.leadbundle.gender.entity.name:       ListBrokingLeadBundle:Gender
+    listbroking.leadbundle.gender.entity.class:      ListBroking\leadBundle\Entity\Gender
+    listbroking.leadbundle.gender.repository.class:  ListBroking\LeadBundle\Repository\ORM\GenderRepository
+
+    listbroking.leadbundle.lead.entity.name:       ListBrokingLeadBundle:Lead
+    listbroking.leadbundle.lead.entity.class:      ListBroking\leadBundle\Entity\Lead
+    listbroking.leadbundle.lead.repository.class:  ListBroking\LeadBundle\Repository\ORM\LeadRepository
+
+    listbroking.leadbundle.owner.entity.name:       ListBrokingLeadBundle:Owner
+    listbroking.leadbundle.owner.entity.class:      ListBroking\leadBundle\Entity\Owner
+    listbroking.leadbundle.owner.repository.class:  ListBroking\LeadBundle\Repository\ORM\OwnerRepository
+
+    listbroking.leadbundle.parish.entity.name:       ListBrokingLeadBundle:Parish
+    listbroking.leadbundle.parish.entity.class:      ListBroking\leadBundle\Entity\Parish
+    listbroking.leadbundle.parish.repository.class:  ListBroking\LeadBundle\Repository\ORM\ParishRepository
+
+    listbroking.leadbundle.source.entity.name:       ListBrokingLeadBundle:Source
+    listbroking.leadbundle.source.entity.class:      ListBroking\leadBundle\Entity\Source
+    listbroking.leadbundle.source.repository.class:  ListBroking\LeadBundle\Repository\ORM\SourceRepository
+
+services:
+    listbroking.leadbundle.contact.repository:
+        class: %listbroking.leadbundle.contact.repository.class%
+        arguments:
+            entityManager:  @doctrine.orm.default_entity_manager
+            entityName:     %listbroking.leadbundle.contact.entity.name%
+            alias:          cont
+            entityClass:    %listbroking.leadbundle.contact.entity.class%
+            inflector:      @inflector.tool
+    listbroking.leadbundle.county.repository:
+        class: %listbroking.leadbundle.county.repository.class%
+        arguments:
+            entityManager:  @doctrine.orm.default_entity_manager
+            entityName:     %listbroking.leadbundle.county.entity.name%
+            alias:          coun
+            entityClass:    %listbroking.leadbundle.county.entity.class%
+            inflector:      @inflector.tool
+    listbroking.leadbundle.district.repository:
+        class: %listbroking.leadbundle.district.repository.class%
+        arguments:
+            entityManager:  @doctrine.orm.default_entity_manager
+            entityName:     %listbroking.leadbundle.district.entity.name%
+            alias:          dist
+            entityClass:    %listbroking.leadbundle.district.entity.class%
+            inflector:      @inflector.tool
+    listbroking.leadbundle.gender.repository:
+        class: %listbroking.leadbundle.gender.repository.class%
+        arguments:
+            entityManager:  @doctrine.orm.default_entity_manager
+            entityName:     %listbroking.leadbundle.gender.entity.name%
+            alias:          gend
+            entityClass:    %listbroking.leadbundle.gender.entity.class%
+            inflector:      @inflector.tool
+    listbroking.leadbundle.lead.repository:
+        class: %listbroking.leadbundle.lead.repository.class%
+        arguments:
+            entityManager:  @doctrine.orm.default_entity_manager
+            entityName:     %listbroking.leadbundle.lead.entity.name%
+            alias:          lead
+            entityClass:    %listbroking.leadbundle.lead.entity.class%
+            inflector:      @inflector.tool
+    listbroking.leadbundle.owner.repository:
+        class: %listbroking.leadbundle.owner.repository.class%
+        arguments:
+            entityManager:  @doctrine.orm.default_entity_manager
+            entityName:     %listbroking.leadbundle.owner.entity.name%
+            alias:          own
+            entityClass:    %listbroking.leadbundle.owner.entity.class%
+            inflector:      @inflector.tool
+    listbroking.leadbundle.parish.repository:
+        class: %listbroking.leadbundle.parish.repository.class%
+        arguments:
+            entityManager:  @doctrine.orm.default_entity_manager
+            entityName:     %listbroking.leadbundle.parish.entity.name%
+            alias:          pari
+            entityClass:    %listbroking.leadbundle.parish.entity.class%
+            inflector:      @inflector.tool
+    listbroking.leadbundle.source.repository:
+        class: %listbroking.leadbundle.source.repository.class%
+        arguments:
+            entityManager:  @doctrine.orm.default_entity_manager
+            entityName:     %listbroking.leadbundle.source.entity.name%
+            alias:          sour
+            entityClass:    %listbroking.leadbundle.source.entity.class%
+            inflector:      @inflector.tool

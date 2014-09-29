@@ -15,11 +15,4 @@ use ListBroking\DoctrineBundle\Repository\ORM\BaseEntityRepository;
 
 class SubCategoryRepository extends BaseEntityRepository implements SubCategoryRepositoryInterface
 {
-    /**
-     * @return mixed
-     */
-    public function findAll()
-    {
-        return $this->createQueryBuilder()->getQuery()->getResult();
-    }
-} 
+}

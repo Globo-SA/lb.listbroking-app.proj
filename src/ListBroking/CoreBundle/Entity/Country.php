@@ -13,6 +13,10 @@ namespace ListBroking\CoreBundle\Entity;
 use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior,
     Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior
     ;
+use Doctrine\Common\Collections\ArrayCollection;
+use ListBroking\LeadBundle\Entity\Contact;
+use ListBroking\LeadBundle\Entity\Lead;
+use ListBroking\LeadBundle\Entity\Source;
 
 class Country {
     use TimestampableEntityBehavior,
@@ -25,6 +29,7 @@ class Country {
     protected $name;
 
     protected $iso_code;
+
 
     /**
      * @return mixed
@@ -81,4 +86,4 @@ class Country {
     {
         $this->iso_code = $iso_code;
     }
-} 
+}
