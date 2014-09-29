@@ -60,32 +60,28 @@ class DefaultController extends Controller
 
     public function samuelAction(Request $request)
     {
-        /** @var ClientService $client_service */
-        $client_service = $this->get('listbroking.client.service');
         $lock_service = $this->get('listbroking.lock.service');
+        $locks = $lock_service->getLockList();
+        $lock_filters = array(
+            array( //ReservedLockType
+                'type' => 1,
+            ),
+            array( //CategoryLockType
+                'type' => 4,
+                'category_id' => 2,
+                'expiration_date' => 1411689600
+            ),
+            array( // SubCategoryLockType
+                'type' => 5,
+                'category_id' => 3,
+                'sub_category_id' => 20,
+                'expiration_date' => 1420070400
+            ),
+        );
 
-        //$core_service = $this->get('listbroking.core.service');
+        $engine = $lock_service->startEngine();
 
-
-        //$client = $client_service->getClient(4);
-
-        $category = $client_service->getClient(4);
-
-//        $client = new Client();
-//        $client->setIsActive(1);
-//        $client->setName("Adclick");
-//        $client->setAccountName("Samuel Castro");
-//        $client->setEmailAddress("samuel.castro@adclick.pt");
-//        $client->setPhone("+351 914i384503");
-//
-//        $campaign = new Campaign();
-//        $campaign->setIsActive(1);
-//        $campaign->setName("Metlife Global");
-//        $campaign->setDescription("A great and cool campaign form awesome stuff");
-//
-//        $client->addCampaign($campaign);
-//
-//        $client_service->addClient($client);
+        $engine->compileFilters($lock_filters);
 
         return $this->render('ListBrokingUIBundle:Default:samuel.html.twig', array());
     }

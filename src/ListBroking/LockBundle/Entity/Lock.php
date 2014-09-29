@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
@@ -10,10 +10,18 @@
 
 namespace ListBroking\LockBundle\Entity;
 
+use ListBroking\LockBundle\Engine\LockEngine;
 use ListBroking\LockBundle\Exception\InvalidLockStatusException;
 use ListBroking\LockBundle\Exception\InvalidLockTypeException;
 
+use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior,
+    Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior
+    ;
+
 class Lock {
+
+    use TimestampableEntityBehavior,
+        BlameableEntityBehavior;
 
     private $id;
 
@@ -23,23 +31,13 @@ class Lock {
 
     private $type;
 
-    /* ENUMS */
-    private $lock_status = array ();
-    private $lock_types = array ();
+    private $client;
 
-    function __construct()
-    {
-       $this->lock_status[] = 'LOCK_STATUS_OPEN';
-       $this->lock_status[] = 'LOCK_STATUS_CLOSED';
-       $this->lock_status[] = 'LOCK_STATUS_EXPIRED';
+    private $campaign;
 
-       $this->lock_types[] = 'LOCK_TYPE_RESERVED';
-       $this->lock_types[] = 'LOCK_TYPE_CLIENT';
-       $this->lock_types[] = 'LOCK_TYPE_CAMPAIGN';
-       $this->lock_types[] = 'LOCK_TYPE_CATEGORY';
-       $this->lock_types[] = 'LOCK_TYPE_SUB_CATEGORY';
-    }
+    private $category;
 
+    private $sub_category;
 
     /**
      * Saves a future timestamp for the lock expiration time
@@ -85,9 +83,9 @@ class Lock {
      */
     public function setStatus($status)
     {
-        if(!in_array($status, $this->lock_status))
+        if(!in_array($status, array_keys(LockEngine::lockStatus())))
         {
-            throw new InvalidLockStatusException('Invalid lock status, must be: ' . print_r(array_values($this->lock_status)));
+            throw new InvalidLockStatusException('Invalid lock status, must be: ' . print_r(LockEngine::lockStatus()));
         }
 
         $this->status = $status;
@@ -107,8 +105,8 @@ class Lock {
      */
     public function setType($type)
     {
-        if(!in_array($type, $this->lock_types)){
-            throw new InvalidLockTypeException('Invalid lock type, must be: ' . print_r((array_values($this->lock_types))));
+        if(!in_array($type, array_keys(LockEngine::lockTypes()))){
+            throw new InvalidLockTypeException('Invalid lock type, must be: ' . print_r(LockEngine::lockTypes()));
         }
 
         $this->type = $type;
@@ -129,4 +127,69 @@ class Lock {
     {
         $this->expiration_date = $expiration_date;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getCampaign()
+    {
+        return $this->campaign;
+    }
+
+    /**
+     * @param mixed $campaign
+     */
+    public function setCampaign($campaign)
+    {
+        $this->campaign = $campaign;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param mixed $category
+     */
+    public function setCategory($category)
+    {
+        $this->category = $category;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
+     * @param mixed $client
+     */
+    public function setClient($client)
+    {
+        $this->client = $client;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSubCategory()
+    {
+        return $this->sub_category;
+    }
+
+    /**
+     * @param mixed $sub_category
+     */
+    public function setSubCategory($sub_category)
+    {
+        $this->sub_category = $sub_category;
+    }
+
 }

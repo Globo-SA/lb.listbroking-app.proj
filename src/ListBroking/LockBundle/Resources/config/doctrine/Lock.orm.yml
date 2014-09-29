@@ -1,6 +1,6 @@
 ListBroking\LockBundle\Entity\Lock:
     type: entity
-    table: lock
+    table: lb_lock
     id:
         id:
             type: bigint
@@ -23,7 +23,6 @@ ListBroking\LockBundle\Entity\Lock:
         expiration_date:
             type: bigint
             column: expiration_date
-
 # Timestampable
         created_at:
             type: datetime
@@ -35,22 +34,32 @@ ListBroking\LockBundle\Entity\Lock:
             nullable: true
             gedmo: { timestampable: { on: update } }
 # End of Timestampable
-
-# Blameable
     manyToOne:
-        created_by:
-            targetEntity: Adclick\UserBundle\Entity\User
+        client:
+            targetEntity: ListBroking\ClientBundle\Entity\Client
             joinColumn:
-                name: created_by
+                name:     client_id
                 referencedColumnName: id
                 onDelete: restrict
-            gedmo: { blameable: { on: create } }
-
-        updated_by:
-            targetEntity: Adclick\UserBundle\Entity\User
+                nullable: true
+        campaign:
+            targetEntity: ListBroking\ClientBundle\Entity\Campaign
             joinColumn:
-                name: updated_by
+                name:     campaign_id
                 referencedColumnName: id
                 onDelete: restrict
-            gedmo: { blameable: { on: update } }
-# End of blameable
+                nullable: true
+        category:
+            targetEntity: ListBroking\CoreBundle\Entity\Category
+            joinColumn:
+                name:     category_id
+                referencedColumnName: id
+                onDelete: restrict
+                nullable: true
+        sub_category:
+            targetEntity: ListBroking\CoreBundle\Entity\SubCategory
+            joinColumn:
+                name:     sub_category_id
+                referencedColumnName: id
+                onDelete: restrict
+                nullable: true

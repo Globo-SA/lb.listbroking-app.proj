@@ -29,6 +29,8 @@
 
         "friendsofsymfony/user-bundle": "~2.0@dev",
 
+        "raulfraile/ladybug-bundle": "dev-master",
+
         "adclick/cache-bundle" : "@stable",
         "adclick/advanced-configuration-bundle" : "~0.2",
         "adclick/doctrine-behavior-bundle" : "@stable"

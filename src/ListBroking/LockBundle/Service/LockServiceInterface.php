@@ -11,6 +11,8 @@
 namespace ListBroking\LockBundle\Service;
 
 
+use ListBroking\LockBundle\Engine\LockEngine;
+
 interface LockServiceInterface {
 
     /**
@@ -47,4 +49,10 @@ interface LockServiceInterface {
      * @return mixed
      */
     public function updateLock($lock);
+
+    /**
+     * Gets an instance of the LockEngine
+     * @return LockEngine
+     */
+    public function startEngine();
 } 

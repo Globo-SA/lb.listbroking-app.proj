@@ -11,24 +11,22 @@
 namespace ListBroking\LockBundle\Service;
 
 
-use Adclick\CacheBundle\Manager\CacheManagerInterface;
-use ListBroking\CoreBundle\Service\BaseService;
-use ListBroking\LockBundle\Repository\LockRepository;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use ListBroking\LockBundle\Engine\LockEngine;
+use ListBroking\LockBundle\Repository\ORM\LockRepository;
 
-class LockService extends BaseService {
+/**
+ * This service can not use a cache system, as locks are too volatile.
+ * So every action should be a database call.
+ * Class LockService
+ * @package ListBroking\LockBundle\Service
+ */
+class LockService implements LockServiceInterface {
 
-    private $cache;
-    private $validator;
     private $lock_repo;
+    private $engine;
 
-    const CLIENT_LIST = 'lock_list';
-    const CLIENT_SCOPE = 'lock';
-
-    function __construct(CacheManagerInterface $cache, ValidatorInterface $validator, LockRepository $lock_repo)
+    function __construct(LockRepository $lock_repo)
     {
-        $this->cache = $cache;
-        $this->validator = $validator;
         $this->lock_repo = $lock_repo;
     }
 
@@ -38,7 +36,10 @@ class LockService extends BaseService {
      * @return mixed
      */
     public function getLockList($only_active = true){
-        return $this->getList(self::LOCK_LIST, self::LOCK_SCOPE, $this->lock_repo, $only_active);
+
+        $entities = $this->lock_repo->findAll();
+
+        return $entities;
     }
 
     /**
@@ -47,7 +48,9 @@ class LockService extends BaseService {
      * @return mixed
      */
     public function getLock($id){
-        return $this->get(self::LOCK_LIST, self::LOCK_SCOPE, $this->lock_repo, $id);
+        $entity = $this->lock_repo->findOneById($id);
+
+        return $entity;
     }
 
     /**
@@ -56,7 +59,11 @@ class LockService extends BaseService {
      * @return mixed
      */
     public function addLock($lock){
-        $this->add(self::LOCK_LIST, self::LOCK_SCOPE, $this->lock_repo, $lock);
+
+        // Create new entity
+        $this->lock_repo->createNewEntity($lock);
+        $this->lock_repo->flush();
+
         return $this;
     }
 
@@ -66,7 +73,10 @@ class LockService extends BaseService {
      * @return mixed
      */
     public function removeLock($id){
-        $this->remove(self::LOCK_LIST, self::LOCK_SCOPE, $this->lock_repo, $id);
+        $entity = $this->lock_repo->findOneById($id);
+        $this->lock_repo->remove($entity);
+        $this->lock_repo->flush();
+
         return $this;
     }
 
@@ -76,7 +86,19 @@ class LockService extends BaseService {
      * @return mixed
      */
     public function updateLock($lock){
-        $this->update(self::LOCK_LIST, self::LOCK_SCOPE, $this->lock_repo, $lock);
+        $this->lock_repo->merge($lock);
+        $this->lock_repo->flush();
+
         return $this;
     }
-} 
+
+    /**
+     * Gets an instance of the LockEngine
+     * @return LockEngine
+     */
+    public function startEngine(){
+        $this->engine = new LockEngine($this->lock_repo);
+
+        return $this->engine;
+    }
+}

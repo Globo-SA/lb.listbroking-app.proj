@@ -1,9 +1,12 @@
 parameters:
     listbroking.lockbundle.lock.entity.name: ListBrokingLockBundle:Lock
     listbroking.lockbundle.lock.entity.class: ListBroking\LockBundle\Entity\Lock
-    listbroking.lockbundle.lock.repository.class: ListBroking\LockBundle\Repository\LockRepository
+    listbroking.lockbundle.lock.repository.class: ListBroking\LockBundle\Repository\ORM\LockRepository
+
+    listbroking.lock.engine.class: ListBroking\LockBundle\Engine\LockEngine
 
     listbroking.lock.service.class: ListBroking\LockBundle\Service\LockService
+
 
 services:
     listbroking.lockbundle.lock.repository:
@@ -11,10 +14,10 @@ services:
         arguments:
             entityManager: @doctrine.orm.default_entity_manager
             entityName: %listbroking.lockbundle.lock.entity.name%
-            alias: lock
+            alias: lloc
             entityClass: %listbroking.lockbundle.lock.entity.class%
             inflector: @inflector.tool
 
     listbroking.lock.service:
         class: %listbroking.lock.service.class%
-        arguments: [@cache, @validator, @listbroking.lockbundle.lock.repository]
+        arguments: [@listbroking.lockbundle.lock.repository]

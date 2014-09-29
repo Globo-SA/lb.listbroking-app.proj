@@ -13,4 +13,11 @@ namespace ListBroking\LockBundle\Repository;
 
 interface LockRepositoryInterface {
 
+    /**
+     * Finds all locks of a given lead
+     * @param $ids
+     * @return mixed
+     */
+    public function findByLead($ids);
+
 } 
