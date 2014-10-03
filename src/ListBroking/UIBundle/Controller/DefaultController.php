@@ -11,6 +11,7 @@ use ListBroking\CoreBundle\Entity\SubCategory;
 use ListBroking\CoreBundle\Exception\EntityValidationException;
 use ListBroking\CoreBundle\Service\CoreService;
 use ListBroking\ExtractionBundle\Entity\Extraction;
+use ListBroking\LockBundle\Engine\LockEngine;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -55,27 +56,74 @@ class DefaultController extends Controller
     {
 
         $lock_service = $this->get('listbroking.lock.service');
-        $locks = $lock_service->getLockList();
+
         $lock_filters = array(
-            array( //ReservedLockType
+            array( //NoLocksFilter
                 'type' => 1,
+                'filters' => array(
+                    array(
+                        'interval' =>  new \DateTime()
+                    )
+                )
             ),
-            array( //CategoryLockType
+            array( //ReservedLockType
+                'type' => 2,
+                'filters' => array(
+                    array(
+                        'interval' =>  new \DateTime('- 1 week')
+                    )
+                )
+            ),
+            array( //ClientLockType
+                'type' => 3,
+                'filters' =>  array(
+                    array(
+                        'client_id' => 2,
+                        'interval' => new \DateTime('- 4 month')
+                    ),
+                    array(
+                        'client_id' => 4,
+                        'interval' => new \DateTime('- 5 week')
+                    )
+                )
+            ),
+            array( //CampaignFilter
                 'type' => 4,
-                'category_id' => 2,
-                'expiration_date' => 1411689600
+                'filters' => array(
+                    array(
+                        'client_id' => 4,
+                        'campaign_id' => 2,
+                        'interval' => new \DateTime('- 2 month')
+                    )
+                )
+            ),
+            array( //Category
+                'type' => 5,
+                'filters' =>  array(
+                    array(
+                        'category_id' => 2,
+                        'interval' => new \DateTime('- 9 month')
+                    ),
+                )
             ),
             array( // SubCategoryLockType
-                'type' => 5,
-                'category_id' => 3,
-                'sub_category_id' => 20,
-                'expiration_date' => 1420070400
+                'type' => 6,
+                'filters' => array(
+                    array(
+                        'category_id' => 2,
+                        'sub_category_id' => 2,
+                        'interval' => new \DateTime('- 8 month')
+                    )
+                )
             ),
         );
 
         $engine = $lock_service->startEngine();
+        $qb = $engine->compileFilters($lock_filters);
 
-        $engine->compileFilters($lock_filters);
+        ladybug_dump($qb->getQuery()->getSQL());
+        ladybug_dump_die($qb->getQuery()->getArrayResult());
+
 
         return $this->render('ListBrokingUIBundle:Default:samuel.html.twig', array());
     }

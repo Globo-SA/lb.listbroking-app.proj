@@ -21,7 +21,7 @@ ListBroking\LockBundle\Entity\Lock:
             type: smallint
             column: type
         expiration_date:
-            type: bigint
+            type: datetime
             column: expiration_date
 # Timestampable
         created_at:
@@ -49,7 +49,6 @@ ListBroking\LockBundle\Entity\Lock:
                 name:     lead_id
                 referencedColumnName: id
                 onDelete: restrict
-                nullable: true
         campaign:
             targetEntity: ListBroking\ClientBundle\Entity\Campaign
             joinColumn:

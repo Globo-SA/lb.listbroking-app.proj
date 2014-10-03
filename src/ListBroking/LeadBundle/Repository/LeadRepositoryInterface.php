@@ -13,4 +13,8 @@ namespace ListBroking\LeadBundle\Repository;
 
 interface LeadRepositoryInterface {
 
+    /**
+     * @return string
+     */
+    public function getAlias();
 } 

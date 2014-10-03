@@ -11,6 +11,7 @@
 namespace ListBroking\LockBundle\Service;
 
 
+use ListBroking\LeadBundle\Repository\ORM\LeadRepository;
 use ListBroking\LockBundle\Engine\LockEngine;
 use ListBroking\LockBundle\Repository\ORM\LockRepository;
 
@@ -22,12 +23,14 @@ use ListBroking\LockBundle\Repository\ORM\LockRepository;
  */
 class LockService implements LockServiceInterface {
 
+    private $lead_repo;
     private $lock_repo;
     private $engine;
 
-    function __construct(LockRepository $lock_repo)
+    function __construct(LockRepository $lock_repo, LeadRepository $lead_repo)
     {
         $this->lock_repo = $lock_repo;
+        $this->lead_repo = $lead_repo;
     }
 
     /**
@@ -97,7 +100,7 @@ class LockService implements LockServiceInterface {
      * @return LockEngine
      */
     public function startEngine(){
-        $this->engine = new LockEngine($this->lock_repo);
+        $this->engine = new LockEngine($this->lead_repo);
 
         return $this->engine;
     }

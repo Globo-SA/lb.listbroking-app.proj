@@ -10,77 +10,89 @@
 
 namespace ListBroking\LockBundle\Engine;
 
+use ListBroking\LeadBundle\Repository\ORM\LeadRepository;
+use ListBroking\LockBundle\Engine\LockFilterType\CampaignLockFilter;
+use ListBroking\LockBundle\Engine\LockFilterType\CategoryLockFilter;
+use ListBroking\LockBundle\Engine\LockFilterType\ClientLockFilter;
+use ListBroking\LockBundle\Engine\LockFilterType\NoLocksLockFilter;
+use ListBroking\LockBundle\Engine\LockFilterType\ReservedLockFilter;
+use ListBroking\LockBundle\Engine\LockFilterType\SubCategoryLockFilter;
 use ListBroking\LockBundle\Entity\Lock;
-use ListBroking\LockBundle\Repository\ORM\LockRepository;
+use ListBroking\LockBundle\Exception\InvalidFilterObjectException;
 
 class LockEngine
 {
 
     /**
-     * @var FilterInterface[]
+     * @var LockFilterInterface[]
      */
     private $filters;
 
     /**
-     * @var string[]
+     * @var LeadRepository
      */
-    private $lock_status;
-
     private $repo;
 
     /**
-     * Array of the currently existing FilterInterface class_names
+     * Array of the currently existing Filters
      * @return array
      */
     public static function filters()
     {
-        return array(
-            1 => 'ReservedFilter',
-            2 => 'ClientFilter',
-            3 => 'CampaignFilter',
-            4 => 'CategoryFilter',
-            5 => 'SubCategoryFilter'
+        // Instantiate the filters
+        /** @var FilterInterface[] $filters */
+        $filters = array(
+            1 => new NoLocksLockFilter(1),
+            2 => new ReservedLockFilter(2),
+            3 => new ClientLockFilter(3),
+            4 => new CampaignLockFilter(4, 3),
+            5 => new CategoryLockFilter(5),
+            6 => new SubCategoryLockFilter(6, 5)
         );
+
+        return $filters;
+    }
+
+    function __construct(LeadRepository $repo)
+    {
+        $this->repo = $repo;
+        $this->filters = LockEngine::filters();
     }
 
     /**
-     * Array of the currently existing LockStatus class_names
-     * @return array
+     * Compiles the filters into a runnable QueryBuilder Object
+     * @param $objs
+     * @return \ESO\Doctrine\ORM\QueryBuilder
+     * @throws InvalidFilterObjectException
      */
-    public static function lockStatus()
-    {
-        return array(
-            1 => 'LOCK_STATUS_OPEN',
-            2 => 'LOCK_STATUS_EXPIRED'
-        );
-    }
-
-    function __construct(LockRepository $repo)
-    {
-        $this->repo = $repo;
-
-        // Instantiates the Filter classes
-        foreach (LockEngine::filters() as $key => $type)
-        {
-            $class = 'ListBroking\\LockBundle\\Engine\FilterType\\' . $type;
-            $this->filters[$key] = new $class($key);
-        }
-
-        $this->lock_status = LockEngine::lockStatus();
-    }
-
-    public function compileFilters($lock_filters){
+    public function compileFilters($objs){
 
         $qb = $this->repo->createQueryBuilder();
-        foreach($lock_filters as $filter){
 
-            /** @var FilterInterface $filter_type */
-            $filter_type = $this->filters[$filter['type']];
-            $filter_type->addJoin($qb, $filter);
+        $baseOrX = $qb->expr()->orX();
 
+        // Check if there are filters
+        if(!empty($objs)){
+
+            foreach($objs as $obj)
+            {
+                // Validate the filters array
+                if (!array_key_exists('type', $obj) || !array_key_exists('filters', $obj))
+                {
+                    throw new InvalidFilterObjectException('Filter object is invalid, must be: ' . json_encode(array('type' => '', 'filters' => '')));
+                }
+
+                /** @var LockFilterInterface $filter_type */
+                $filter_type = $this->filters[$obj['type']];
+                $filter_type->addFilter($baseOrX, $qb, $obj['filters']);
+            }
         }
 
-        ladybug_dump_die($qb->getQuery()->getSQL());
+        // LEFT OUTER JOIN
+        $qb->leftJoin($this->repo->getAlias() . '.locks', 'locks', 'WITH', $baseOrX);
+        $qb->andWhere('locks.lead IS NULL');
+
+        return $qb;
     }
     /**
      * Runs the lock negotiation stage and finds

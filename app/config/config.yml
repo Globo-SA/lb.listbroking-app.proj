@@ -62,6 +62,9 @@ doctrine:
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         auto_mapping: true
+        dql:
+            datetime_functions:
+                interval: L
 
 # Swiftmailer Configuration
 swiftmailer:

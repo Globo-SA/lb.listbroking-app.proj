@@ -20,4 +20,4 @@ services:
 
     listbroking.lock.service:
         class: %listbroking.lock.service.class%
-        arguments: [@listbroking.lockbundle.lock.repository]
+        arguments: [@listbroking.lockbundle.lock.repository, @listbroking.leadbundle.lead.repository]
