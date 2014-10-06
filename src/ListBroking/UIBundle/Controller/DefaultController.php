@@ -56,74 +56,105 @@ class DefaultController extends Controller
     {
 
         $lock_service = $this->get('listbroking.lock.service');
+//        $lock = $lock_service->getLock(8);
+//
+//        $lock_repo = $this->get('listbroking.lockbundle.lock_history.repository');
+//        $lock_repo->createFromLock($lock);
 
-        $lock_filters = array(
-            array( //NoLocksFilter
-                'type' => 1,
-                'filters' => array(
-                    array(
-                        'interval' =>  new \DateTime()
-                    )
-                )
-            ),
-            array( //ReservedLockType
-                'type' => 2,
-                'filters' => array(
-                    array(
-                        'interval' =>  new \DateTime('- 1 week')
-                    )
-                )
-            ),
-            array( //ClientLockType
-                'type' => 3,
-                'filters' =>  array(
-                    array(
-                        'client_id' => 2,
-                        'interval' => new \DateTime('- 4 month')
-                    ),
-                    array(
-                        'client_id' => 4,
-                        'interval' => new \DateTime('- 5 week')
-                    )
-                )
-            ),
-            array( //CampaignFilter
-                'type' => 4,
-                'filters' => array(
-                    array(
-                        'client_id' => 4,
-                        'campaign_id' => 2,
-                        'interval' => new \DateTime('- 2 month')
-                    )
-                )
-            ),
-            array( //Category
-                'type' => 5,
-                'filters' =>  array(
-                    array(
-                        'category_id' => 2,
-                        'interval' => new \DateTime('- 9 month')
-                    ),
-                )
-            ),
-            array( // SubCategoryLockType
-                'type' => 6,
-                'filters' => array(
-                    array(
-                        'category_id' => 2,
-                        'sub_category_id' => 2,
-                        'interval' => new \DateTime('- 8 month')
-                    )
-                )
-            ),
-        );
 
-        $engine = $lock_service->startEngine();
-        $qb = $engine->compileFilters($lock_filters);
-
-        ladybug_dump($qb->getQuery()->getSQL());
-        ladybug_dump_die($qb->getQuery()->getArrayResult());
-
+        $lock_service->removeLock(3);
+//        $lock_filters = array(
+//            array( //NoLocksFilter
+//                'type' => 1,
+//                'filters' => array(
+//                    array(
+//                        'interval' =>  new \DateTime()
+//                    )
+//                )
+//            ),
+//            array( //ReservedLockType
+//                'type' => 2,
+//                'filters' => array(
+//                    array(
+//                        'interval' =>  new \DateTime('- 1 week')
+//                    )
+//                )
+//            ),
+//            array( //ClientLockType
+//                'type' => 3,
+//                'filters' =>  array(
+//                    array(
+//                        'client_id' => 2,
+//                        'interval' => new \DateTime('- 4 month')
+//                    ),
+//                    array(
+//                        'client_id' => 4,
+//                        'interval' => new \DateTime('- 5 week')
+//                    )
+//                )
+//            ),
+//            array( //CampaignFilter
+//                'type' => 4,
+//                'filters' => array(
+//                    array(
+//                        'client_id' => 4,
+//                        'campaign_id' => 2,
+//                        'interval' => new \DateTime('- 2 month')
+//                    )
+//                )
+//            ),
+//            array( //Category
+//                'type' => 5,
+//                'filters' =>  array(
+//                    array(
+//                        'category_id' => 2,
+//                        'interval' => new \DateTime('- 9 month')
+//                    ),
+//                )
+//            ),
+//            array( // SubCategoryLockType
+//                'type' => 6,
+//                'filters' => array(
+//                    array(
+//                        'category_id' => 2,
+//                        'sub_category_id' => 2,
+//                        'interval' => new \DateTime('- 8 month')
+//                    )
+//                )
+//            ),
+//        );
+//
+//        $contact_filters = array(
+//            array(
+//                'type' => 1,
+//                'filters' =>
+//                    array(
+//                        array(
+//                        'field' => 'gender',
+//                        'opt' => 'equal',
+//                        'value' => array(2)
+//                        ),
+//                        array(
+//                            'field' => 'country',
+//                            'opt' => 'equal',
+//                            'value' => array(1,2)
+//                        ),
+//                        array(
+//                            'field' => 'birthdate',
+//                            'opt' => 'between',
+//                            'value' => array('1978-01-02', '1987-06-28')
+//                        )
+//                    )
+//            ),
+//        );
+//
+//        $engine = $lock_service->startEngine();
+//        $qb = $engine->compileFilters($lock_filters, $contact_filters);
+//
+//        ladybug_dump($qb->getQuery()->getSQL());
+//        ladybug_dump($qb->getQuery()->getParameters()->toArray());
+//        ladybug_dump_die($qb->getQuery()->getArrayResult());
+//
 
         return $this->render('ListBrokingUIBundle:Default:samuel.html.twig', array());
     }

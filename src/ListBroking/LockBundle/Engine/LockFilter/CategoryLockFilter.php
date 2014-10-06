@@ -8,8 +8,7 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\LockBundle\Engine\LockFilterType;
-
+namespace ListBroking\LockBundle\Engine\LockFilter;
 
 use Doctrine\ORM\Query\Expr\Orx;
 use ESO\Doctrine\ORM\QueryBuilder;
@@ -17,8 +16,7 @@ use ListBroking\LockBundle\Engine\LockFilterInterface;
 use ListBroking\LockBundle\Exception\InvalidFilterObjectException;
 use ListBroking\LockBundle\Exception\InvalidFilterTypeException;
 
-class NoLocksLockFilter implements LockFilterInterface {
-
+class CategoryLockFilter implements LockFilterInterface {
 
     /**
      * @var int
@@ -30,7 +28,7 @@ class NoLocksLockFilter implements LockFilterInterface {
      */
     public $parent;
 
-    function __construct($type_id)
+    public function __construct($type_id)
     {
         $this->type_id = $type_id;
     }
@@ -45,27 +43,33 @@ class NoLocksLockFilter implements LockFilterInterface {
      */
     public function addFilter(Orx $orX, QueryBuilder $qb, $filters)
     {
-        /**
-         * Lock Type isn't used for this filter !!
-         */
-
         foreach ($filters as $key => $filter)
         {
             // Validate filter array
-            if(!array_key_exists('interval', $filter)){
-                throw new InvalidFilterObjectException('Invalid filter object must be:' . json_encode(array('interval' => '')));
-            }
-            if(!($filter['interval'] instanceof \DateTime)){
-                throw new InvalidFilterTypeException('The filter interval field must be an instance of \DateTime()');
+            if(!array_key_exists('category_id', $filter)
+                || !array_key_exists('interval', $filter)){
+                throw new InvalidFilterObjectException(
+                    'Invalid filter object must be: array(\'category_id\' => \'\', \'interval\' => \'\'), in ' .
+                    __CLASS__ );
             }
 
-            // Check for all locks
+            if(!($filter['interval'] instanceof \DateTime)){
+                throw new InvalidFilterTypeException(
+                    'The filter interval field must be an instance of \DateTime(), in '
+                    . __CLASS__);
+            }
+
             $orX->add(
                 $qb->expr()->andX(
-                    "(locks.expiration_date >= :no_locks_locks_filter_expiration_date_{$key})"
+                    'locks.expiration_date <= CURRENT_TIMESTAMP()',
+                    'locks.type = :category_locks_type',
+                    "locks.category = :category_locks_category_id_{$key}",
+                    "(locks.expiration_date >= :category_locks_filter_expiration_date_{$key})"
                 )
             );
-            $qb->setParameter("no_locks_locks_filter_expiration_date_{$key}", $filter['interval']);
+            $qb->setParameter('category_locks_type', $this->type_id);
+            $qb->setParameter("category_locks_category_id_{$key}", $filter['category_id']);
+            $qb->setParameter("category_locks_filter_expiration_date_{$key}", $filter['interval']);
 
             // Step up to the parent and filter
             if($this->parent){

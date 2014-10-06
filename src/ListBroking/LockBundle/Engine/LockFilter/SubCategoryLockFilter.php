@@ -8,7 +8,7 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\LockBundle\Engine\LockFilterType;
+namespace ListBroking\LockBundle\Engine\LockFilter;
 
 use Doctrine\ORM\Query\Expr\Orx;
 use ESO\Doctrine\ORM\QueryBuilder;
@@ -47,11 +47,17 @@ class SubCategoryLockFilter implements LockFilterInterface {
         foreach ($filters as $key => $filter)
         {
             // Validate filter array
-            if(!array_key_exists('sub_category_id', $filter) || !array_key_exists('interval', $filter)){
-                throw new InvalidFilterObjectException('Invalid filter object must be:' . json_encode(array('sub_category_id' => '', 'interval' => '')));
+            if(!array_key_exists('sub_category_id', $filter)
+                || !array_key_exists('interval', $filter)){
+                throw new InvalidFilterObjectException(
+                    'Invalid filter object must be: array(\'sub_category_id\' => \'\', \'interval\' => \'\'), in ' .
+                    __CLASS__);
             }
+
             if(!($filter['interval'] instanceof \DateTime)){
-                throw new InvalidFilterTypeException('The filter interval field must be an instance of \DateTime()');
+                throw new InvalidFilterTypeException(
+                    'The filter interval field must be an instance of \DateTime(), in ' .
+                    __CLASS__);
             }
 
             $orX->addMultiple(

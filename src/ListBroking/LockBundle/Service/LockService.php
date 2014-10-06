@@ -11,6 +11,7 @@
 namespace ListBroking\LockBundle\Service;
 
 
+use ListBroking\CoreBundle\Service\BaseService;
 use ListBroking\LeadBundle\Repository\ORM\LeadRepository;
 use ListBroking\LockBundle\Engine\LockEngine;
 use ListBroking\LockBundle\Repository\ORM\LockRepository;
@@ -21,7 +22,7 @@ use ListBroking\LockBundle\Repository\ORM\LockRepository;
  * Class LockService
  * @package ListBroking\LockBundle\Service
  */
-class LockService implements LockServiceInterface {
+class LockService extends BaseService implements LockServiceInterface {
 
     private $lead_repo;
     private $lock_repo;
@@ -76,11 +77,22 @@ class LockService implements LockServiceInterface {
      * @return mixed
      */
     public function removeLock($id){
-        $entity = $this->lock_repo->findOneById($id);
+        $entity = $this->hydrateObject($this->lock_repo, $id);
         $this->lock_repo->remove($entity);
         $this->lock_repo->flush();
 
         return $this;
+    }
+
+    /**
+     * Removes expire locks
+     * NOTE: Locks are always moved to a _log table
+     * @param $days
+     * @return int
+     */
+    public function removeExpiredLocks($days)
+    {
+        return $this->lock_repo->removeByExpirationDate($days);
     }
 
     /**

@@ -8,7 +8,7 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\LockBundle\Engine\LockFilterType;
+namespace ListBroking\LockBundle\Engine\LockFilter;
 
 use Doctrine\ORM\Query\Expr\Orx;
 use ESO\Doctrine\ORM\QueryBuilder;
@@ -16,8 +16,8 @@ use ListBroking\LockBundle\Engine\LockFilterInterface;
 use ListBroking\LockBundle\Exception\InvalidFilterObjectException;
 use ListBroking\LockBundle\Exception\InvalidFilterTypeException;
 
-class ClientLockFilter implements LockFilterInterface
-{
+class ClientLockFilter implements LockFilterInterface {
+
     /**
      * @var int
      */
@@ -46,12 +46,19 @@ class ClientLockFilter implements LockFilterInterface
         foreach ($filters as $key => $filter)
         {
             // Validate filter array
-            if(!array_key_exists('client_id', $filter) || !array_key_exists('interval', $filter)){
-                throw new InvalidFilterObjectException('Invalid filter object must be:' . json_encode(array('client_id' => '', 'interval' => '')));
+            if(!array_key_exists('client_id', $filter)
+                || !array_key_exists('interval', $filter)){
+                throw new InvalidFilterObjectException(
+                    'Invalid filter object must be: array(\'client_od\' => \'\', \'interval\' => \'\'), in ' .
+                    __CLASS__ );
             }
+
             if(!($filter['interval'] instanceof \DateTime)){
-                throw new InvalidFilterTypeException('The filter interval field must be an instance of \DateTime()');
+                throw new InvalidFilterTypeException(
+                    'The filter interval field must be an instance of \DateTime(), in '
+                    . __CLASS__);
             }
+
 
             // Check for locks on the client
             $orX->add(

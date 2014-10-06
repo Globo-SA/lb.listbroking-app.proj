@@ -44,6 +44,13 @@ interface LockServiceInterface {
     public function removeLock($id);
 
     /**
+     * Removes expire locks
+     * @param $days
+     * @return mixed
+     */
+    public function removeExpiredLocks($days);
+
+    /**
      * Updates a single country
      * @param $lock
      * @return mixed

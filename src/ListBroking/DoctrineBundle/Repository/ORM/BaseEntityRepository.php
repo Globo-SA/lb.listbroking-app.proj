@@ -180,4 +180,17 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
         return parent::getEntityManager();
     }
 
+    public function getEntityColumns(){
+
+        $column_names = $this->entityManager->getClassMetadata($this->entityName)->getColumnNames();
+        $association_map = $this->entityManager->getClassMetadata($this->entityName)->getAssociationMappings();
+
+        $association_column_names = array();
+        foreach($association_map as $key => $association){
+            $association_column_names[] = $key . '_id';
+
+        }
+        return  array_merge($column_names, $association_column_names);
+    }
+
 }

@@ -10,6 +10,7 @@
 
 namespace ListBroking\LockBundle\Repository\ORM;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Statement;
 use Doctrine\ORM\AbstractQuery;
 use ListBroking\DoctrineBundle\Repository\ORM\BaseEntityRepository;
@@ -42,5 +43,35 @@ SQL;
         return $stmt->fetchAll();
     }
 
+    /**
+     * Removes locks by expiration date
+     * NOTE: An EventListener is used to send
+     * the locks to a _log table before there are removed
+     * @param $days
+     * @return int
+     */
+    public function removeByExpirationDate($days)
+    {
 
+        /** @var Connection $conn */
+        $conn = $this->entityManager->getConnection();
+
+        $column_names = implode(',', $this->getEntityColumns());
+
+        $sql = <<<SQL
+            INSERT INTO lb_lock_history ({$column_names})
+            SELECT {$column_names}
+            FROM lb_lock
+            WHERE expiration_date < :expiration_date;
+
+            DELETE FROM lb_lock
+            WHERE expiration_date < :expiration_date;
+SQL;
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(array(
+            'expiration_date' => date("Y-m-d h:i:s", strtotime("- {$days} days"))
+        ));
+
+        return $stmt->rowCount();
+    }
 }
