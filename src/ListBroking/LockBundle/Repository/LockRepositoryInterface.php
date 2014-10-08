@@ -20,4 +20,13 @@ interface LockRepositoryInterface {
      */
     public function findByLead($ids);
 
+
+    /**
+     * Removes locks by expiration date
+     * NOTE: An EventListener is used to send
+     * the locks to a _log table before there are removed
+     * @param $days
+     * @return mixed
+     */
+    public function removeByExpirationDate($days);
 } 

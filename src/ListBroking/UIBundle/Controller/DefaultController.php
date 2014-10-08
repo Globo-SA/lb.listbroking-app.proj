@@ -11,6 +11,7 @@ use ListBroking\CoreBundle\Entity\SubCategory;
 use ListBroking\CoreBundle\Exception\EntityValidationException;
 use ListBroking\CoreBundle\Service\CoreService;
 use ListBroking\ExtractionBundle\Entity\Extraction;
+use ListBroking\LockBundle\Engine\LockEngine;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -55,27 +56,105 @@ class DefaultController extends Controller
     {
 
         $lock_service = $this->get('listbroking.lock.service');
-        $locks = $lock_service->getLockList();
-        $lock_filters = array(
-            array( //ReservedLockType
-                'type' => 1,
-            ),
-            array( //CategoryLockType
-                'type' => 4,
-                'category_id' => 2,
-                'expiration_date' => 1411689600
-            ),
-            array( // SubCategoryLockType
-                'type' => 5,
-                'category_id' => 3,
-                'sub_category_id' => 20,
-                'expiration_date' => 1420070400
-            ),
-        );
+//        $lock = $lock_service->getLock(8);
+//
+//        $lock_repo = $this->get('listbroking.lockbundle.lock_history.repository');
+//        $lock_repo->createFromLock($lock);
 
-        $engine = $lock_service->startEngine();
 
-        $engine->compileFilters($lock_filters);
+        $lock_service->removeLock(3);
+//        $lock_filters = array(
+//            array( //NoLocksFilter
+//                'type' => 1,
+//                'filters' => array(
+//                    array(
+//                        'interval' =>  new \DateTime()
+//                    )
+//                )
+//            ),
+//            array( //ReservedLockType
+//                'type' => 2,
+//                'filters' => array(
+//                    array(
+//                        'interval' =>  new \DateTime('- 1 week')
+//                    )
+//                )
+//            ),
+//            array( //ClientLockType
+//                'type' => 3,
+//                'filters' =>  array(
+//                    array(
+//                        'client_id' => 2,
+//                        'interval' => new \DateTime('- 4 month')
+//                    ),
+//                    array(
+//                        'client_id' => 4,
+//                        'interval' => new \DateTime('- 5 week')
+//                    )
+//                )
+//            ),
+//            array( //CampaignFilter
+//                'type' => 4,
+//                'filters' => array(
+//                    array(
+//                        'client_id' => 4,
+//                        'campaign_id' => 2,
+//                        'interval' => new \DateTime('- 2 month')
+//                    )
+//                )
+//            ),
+//            array( //Category
+//                'type' => 5,
+//                'filters' =>  array(
+//                    array(
+//                        'category_id' => 2,
+//                        'interval' => new \DateTime('- 9 month')
+//                    ),
+//                )
+//            ),
+//            array( // SubCategoryLockType
+//                'type' => 6,
+//                'filters' => array(
+//                    array(
+//                        'category_id' => 2,
+//                        'sub_category_id' => 2,
+//                        'interval' => new \DateTime('- 8 month')
+//                    )
+//                )
+//            ),
+//        );
+//
+//        $contact_filters = array(
+//            array(
+//                'type' => 1,
+//                'filters' =>
+//                    array(
+//                        array(
+//                        'field' => 'gender',
+//                        'opt' => 'equal',
+//                        'value' => array(2)
+//                        ),
+//                        array(
+//                            'field' => 'country',
+//                            'opt' => 'equal',
+//                            'value' => array(1,2)
+//                        ),
+//                        array(
+//                            'field' => 'birthdate',
+//                            'opt' => 'between',
+//                            'value' => array('1978-01-02', '1987-06-28')
+//                        )
+//                    )
+//            ),
+//        );
+//
+//        $engine = $lock_service->startEngine();
+//        $qb = $engine->compileFilters($lock_filters, $contact_filters);
+//
+//        ladybug_dump($qb->getQuery()->getSQL());
+//        ladybug_dump($qb->getQuery()->getParameters()->toArray());
+//        ladybug_dump_die($qb->getQuery()->getArrayResult());
+//
 
         return $this->render('ListBrokingUIBundle:Default:samuel.html.twig', array());
     }

@@ -1,12 +1,10 @@
-ListBroking\LockBundle\Entity\Lock:
+ListBroking\LockBundle\Entity\LockHistory:
     type: entity
-    table: lb_lock
+    table: lb_lock_history
     id:
         id:
             type: bigint
             id: true
-            generator:
-                strategy: AUTO
     fields:
         is_active:
             type: boolean
@@ -44,7 +42,6 @@ ListBroking\LockBundle\Entity\Lock:
                 nullable: true
         lead:
             targetEntity: ListBroking\LeadBundle\Entity\Lead
-            inversedBy: locks
             joinColumn:
                 name:     lead_id
                 referencedColumnName: id
