@@ -17,9 +17,15 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
 
+            // Extra Symfony Bundles
+            new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+
             // User Bundle
             new FOS\UserBundle\FOSUserBundle(),
             new Adclick\UserBundle\AdclickUserBundle(),
+
+            // Extraction Help
+            new Liuggio\ExcelBundle\LiuggioExcelBundle(),
 
             // Core Bundles
             new Adclick\CacheBundle\AdclickCacheBundle(),

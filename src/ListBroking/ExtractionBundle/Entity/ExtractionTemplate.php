@@ -25,7 +25,7 @@ class ExtractionTemplate {
 
     protected $name;
 
-    protected $value;
+    protected $template;
 
     /**
      * @return mixed
@@ -70,18 +70,16 @@ class ExtractionTemplate {
     /**
      * @return mixed
      */
-    public function getValue()
+    public function getTemplate()
     {
-        return $this->value;
+        return $this->template;
     }
 
     /**
-     * @param mixed $value
+     * @param mixed $template
      */
-    public function setValue($value)
+    public function setTemplate($template)
     {
-        $this->value = $value;
+        $this->template = $template;
     }
-
-
-} 
+}

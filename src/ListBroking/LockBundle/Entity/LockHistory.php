@@ -77,15 +77,9 @@ class LockHistory  {
 
     /**
      * @param mixed $status
-     * @throws InvalidLockStatusException
      */
     public function setStatus($status)
     {
-        if(!in_array($status, array_keys(LockEngine::lockStatus())))
-        {
-            throw new InvalidLockStatusException('Invalid lock status, must be: ' . print_r(LockEngine::lockStatus()));
-        }
-
         $this->status = $status;
     }
 
@@ -99,14 +93,9 @@ class LockHistory  {
 
     /**
      * @param mixed $type
-     * @throws InvalidLockTypeException
      */
     public function setType($type)
     {
-        if(!in_array($type, array_keys(LockEngine::lockTypes()))){
-            throw new InvalidLockTypeException('Invalid lock type, must be: ' . print_r(LockEngine::lockTypes()));
-        }
-
         $this->type = $type;
     }
 

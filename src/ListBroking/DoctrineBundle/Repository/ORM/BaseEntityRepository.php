@@ -50,16 +50,25 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
      *
      * @param $id
      *
+     * @param bool $hydrate
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return \Doctrine\ORM\QueryBuilder
      */
-    public function findOneById($id)
+    public function findOneById($id, $hydrate = false)
     {
         $query_builder = $this->createQueryBuilder()
             ->andWhere("{$this->alias()}.id = :id");
 
         $query_builder->setParameter('id', $id);
 
-        return $query_builder->getQuery()->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY);
+        if($hydrate){
+            $entities =  $query_builder->getQuery()->getOneOrNullResult();
+
+        }else{
+            $entities =  $query_builder->getQuery()->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY);
+        }
+
+        return $entities;
     }
 
     /**
@@ -67,9 +76,10 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
      * eagerly fetched by default
      *
      * @param bool $eager
+     * @param bool $hydrate
      * @return array
      */
-    public function findAll($eager = true)
+    public function findAll($eager = true, $hydrate = false)
     {
         $qb = $this->createQueryBuilder();
 
@@ -87,7 +97,14 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
             }
         }
 
-        return $qb->getQuery()->execute(null, AbstractQuery::HYDRATE_ARRAY);
+        if($hydrate){
+            $entity =  $qb->getQuery()->execute();
+
+        }else{
+            $entity =  $qb->getQuery()->execute(null, AbstractQuery::HYDRATE_ARRAY);
+        }
+
+        return $entity;
     }
 
     /**
@@ -187,10 +204,41 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
 
         $association_column_names = array();
         foreach($association_map as $key => $association){
-            $association_column_names[] = $key . '_id';
-
+            if(!in_array($key, array("created_by", "updated_by"))){
+                $association_column_names[] = $key . '_id';
+            }
         }
         return  array_merge($column_names, $association_column_names);
     }
+    public function getColumnNames(){
 
+        return  $this->entityManager->getClassMetadata($this->entityName)->getColumnNames();
+    }
+    public function getAssociationNames(){
+
+        return  $this->entityManager->getClassMetadata($this->entityName)->getAssociationNames();
+    }
+
+    /**
+     * @return string
+     */
+    public function getEntityClass()
+    {
+        return $this->entity_class;
+    }
+
+    /**
+     * @return \ListBroking\DoctrineBundle\Tool\InflectorTool
+     */
+    public function getInflector()
+    {
+        return $this->inflector;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlias(){
+        return $this->alias();
+    }
 }

@@ -36,6 +36,35 @@ interface ExtractionServiceInterface {
     public function addExtraction($extraction);
 
     /**
+     * Set the Extraction filters
+     * @param $id
+     * @param $lock_filters
+     * @param $contact_filters
+     * @return mixed
+     */
+    public function setExtractionFilters($id, $lock_filters, $contact_filters);
+
+    /**
+     * Adds a Lock Filter to an Extraction
+     * @param $id
+     * @param $type
+     * @param $new_filters
+     * @internal param $filter
+     * @return mixed
+     */
+    public function addExtractionLockFilters($id, $type, $new_filters);
+
+    /**
+     * Adds a Contact Filter to an Extraction
+     * @param $id
+     * @param $type
+     * @param $new_filters
+     * @internal param $filter
+     * @return mixed
+     */
+    public function addExtractionContactFilters($id, $type, $new_filters);
+
+    /**
      * Removes a single extraction
      * @param $id
      * @return mixed
@@ -84,4 +113,14 @@ interface ExtractionServiceInterface {
      * @return mixed
      */
     public function updateExtractionTemplate($extraction_template);
+
+    /**
+     * Exports Leads using a given type
+     * @param $extraction_template
+     * @param $leads_array
+     * @param $type
+     * @param array $info
+     * @return mixed
+     */
+    public function exportExtraction($extraction_template, $leads_array, $type, $info = array());
 } 

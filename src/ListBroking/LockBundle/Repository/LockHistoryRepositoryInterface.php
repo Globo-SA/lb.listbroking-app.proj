@@ -11,6 +11,8 @@
 namespace ListBroking\LockBundle\Repository;
 
 
+use ListBroking\DoctrineBundle\Exception\EntityClassMissingException;
+
 interface LockHistoryRepositoryInterface {
 
     /**

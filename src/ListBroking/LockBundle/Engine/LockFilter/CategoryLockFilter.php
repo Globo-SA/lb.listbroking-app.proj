@@ -23,11 +23,6 @@ class CategoryLockFilter implements LockFilterInterface {
      */
     public $type_id;
 
-    /**
-     * @var int
-     */
-    public $parent;
-
     public function __construct($type_id)
     {
         $this->type_id = $type_id;
@@ -54,9 +49,7 @@ class CategoryLockFilter implements LockFilterInterface {
             }
 
             if(!($filter['interval'] instanceof \DateTime)){
-                throw new InvalidFilterTypeException(
-                    'The filter interval field must be an instance of \DateTime(), in '
-                    . __CLASS__);
+                $filter['interval'] = new \DateTime($filter['interval']['date'], new \DateTimeZone($filter['interval']['timezone']));
             }
 
             $orX->add(
@@ -70,11 +63,6 @@ class CategoryLockFilter implements LockFilterInterface {
             $qb->setParameter('category_locks_type', $this->type_id);
             $qb->setParameter("category_locks_category_id_{$key}", $filter['category_id']);
             $qb->setParameter("category_locks_filter_expiration_date_{$key}", $filter['interval']);
-
-            // Step up to the parent and filter
-            if($this->parent){
-                $this->parent->addFilter($orX, $qb, array($filter));
-            }
         }
     }
 } 

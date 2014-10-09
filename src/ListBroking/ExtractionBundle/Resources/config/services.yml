@@ -30,4 +30,4 @@ services:
 
     listbroking.extraction.service:
         class: %listbroking.extraction.service.class%
-        arguments: [@cache, @validator, @listbroking.extractionbundle.extraction.repository, @listbroking.extractionbundle.extraction_template.repository]
+        arguments: [@cache, @validator, @listbroking.extractionbundle.extraction.repository, @listbroking.extractionbundle.extraction_template.repository, @phpexcel]

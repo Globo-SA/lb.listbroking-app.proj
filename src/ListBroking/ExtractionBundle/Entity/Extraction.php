@@ -19,6 +19,11 @@ class Extraction {
     use TimestampableEntityBehavior,
         BlameableEntityBehavior;
 
+    const STATUS_CONFIGURATION = 0;
+    const STATUS_FILTRATION = 1;
+    const STATUS_CONFIRMATION = 2;
+    const STATUS_FINAL = 3;
+
     protected $id;
 
     protected $is_active;
@@ -28,6 +33,8 @@ class Extraction {
     protected $filters;
 
     protected $payout;
+
+    protected $status;
 
     protected $campaign;
 
@@ -101,6 +108,22 @@ class Extraction {
     public function setQuantity($quantity)
     {
         $this->quantity = $quantity;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param mixed $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
     }
 
     /**

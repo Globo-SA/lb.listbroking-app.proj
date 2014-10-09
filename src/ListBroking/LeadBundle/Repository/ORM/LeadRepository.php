@@ -16,11 +16,4 @@ use ListBroking\LeadBundle\Repository\LeadRepositoryInterface;
 
 class LeadRepository extends BaseEntityRepository implements LeadRepositoryInterface {
 
-    /**
-     * @return string
-     */
-    public function getAlias(){
-        return $this->alias();
-    }
-
 } 

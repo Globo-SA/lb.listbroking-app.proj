@@ -24,9 +24,11 @@
         "sensio/framework-extra-bundle": "~3.0",
         "incenteev/composer-parameter-handler": "~2.0",
         "phpunit/phpunit": "4.2.*",
-
+        "doctrine/doctrine-fixtures-bundle": "2.2.*",
         "ebidtech/doctrine-repository": "@stable",
         "ebidtech/ebdate": "@stable",
+
+        "liuggio/ExcelBundle": "2.0.*",
 
         "friendsofsymfony/user-bundle": "~2.0@dev",
 
