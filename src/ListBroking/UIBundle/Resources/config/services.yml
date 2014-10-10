@@ -1,7 +1,16 @@
 parameters:
+    listbroking.uibundle.dashboard.controller.class: ListBroking\UIBundle\Controller\DashboardController
+    listbroking.uibundle.extraction.controller.class: ListBroking\UIBundle\Controller\ExtractionController
     listbroking.uibundle.form.type.class: ListBroking\UIBundle\Form\Type\CountryFormType
 
 services:
+    listbroking.uibundle.dashboard.controller:
+        class: %listbroking.uibundle.dashboard.controller.class%
+        arguments: [@router, @twig]
+    listbroking.uibundle.extraction.controller:
+        class: %listbroking.uibundle.extraction.controller.class%
+        arguments: [@router, @twig, @session]
+
     listbroking.uibundle.form.type:
         class:  %listbroking.uibundle.form.type.class%
         tags:

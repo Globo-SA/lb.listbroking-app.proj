@@ -1,0 +1,71 @@
+{% extends 'ListBrokingUIBundle::template.html.twig' %}
+{% block main_title %}Extraction{% endblock %}
+{% block sub_title %}wizard{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <i class="fa fa-wrench"></i>
+                    <h3 class="box-title">List of existing extractions</h3>
+                    <div class="pull-right box-tools">
+                        <a href="{{ path('extraction_configuration') }}" class="btn btn-primary btn-flat"><i class="fa fa-thumb-tack"></i>&#32;NEW EXTRACTION</a>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+                    <table id="example1" class="table table-hover" style="display: none;">
+                        <thead>
+                        <tr>
+                            <th>Rendering engine</th>
+                            <th>Browser</th>
+                            <th>Platform(s)</th>
+                            <th>Engine version</th>
+                            <th>Progress</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Trident</td>
+                            <td>Internet
+                                Explorer 4.0
+                            </td>
+                            <td>Win 95+</td>
+                            <td> 4</td>
+                            <td>
+                                <div class="progress xs">
+                                    <div class="progress-bar progress-bar-info" style="width: 55%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Trident</td>
+                            <td>Internet
+                                Explorer 5.0
+                            </td>
+                            <td>Win 95+</td>
+                            <td>5</td>
+                            <td>
+                                <div class="progress xs">
+                                    <div class="progress-bar progress-bar-success" style="width: 100%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Rendering engine</th>
+                            <th>Browser</th>
+                            <th>Platform(s)</th>
+                            <th>Engine version</th>
+                            <th>Progress</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+    </div><!-- /.row -->
+{% endblock %}
