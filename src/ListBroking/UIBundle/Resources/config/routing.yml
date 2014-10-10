@@ -1,3 +1,15 @@
+dashboard_index:
+    path: /
+    defaults: { _controller: listbroking.uibundle.dashboard.controller:indexAction }
+
+extraction_index:
+    path: /extraction/wizard
+    defaults: { _controller: listbroking.uibundle.extraction.controller:indexAction }
+
+extraction_configuration:
+    path: /extraction/wizard/configuration
+    defaults: { _controller: listbroking.uibundle.extraction.controller:configurationAction }
+
 listbroking.uibundle.tentugal_test:
     path:     /tentugal
     defaults: { _controller: ListBrokingUIBundle:Default:tentugal }
