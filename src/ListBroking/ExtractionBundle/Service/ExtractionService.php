@@ -91,17 +91,15 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     /**
      * Set the Extraction filters
      * @param $id
-     * @param $lock_filters
-     * @param $contact_filters
+     * @param $filters
+     * @internal param $lock_filters
+     * @internal param $contact_filters
      * @return mixed
      */
-    public function setExtractionFilters($id, $lock_filters, $contact_filters)
+    public function setExtractionFilters($id, $filters)
     {
         $extraction = $this->getExtraction($id, true);
-        $extraction->setFilters(array(
-            'lock_filters' => $lock_filters,
-            'contact_filters'  => $contact_filters
-        ));
+        $extraction->setFilters($filters);
 
         $this->updateExtraction($extraction);
     }
@@ -285,7 +283,6 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             $active_sheet->setCellValue("{$header_column}1", $label);
             $header_column++;
         }
-
         $line = 2;
         foreach ($leads_array as $contact)
         {
@@ -309,6 +306,39 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     }
 
     /**
+     * Used to import a file with Leads
+     * @param $filename
+     * @internal param $filename
+     * @return mixed
+     */
+    public function importExtraction($filename)
+    {
+        $active = $php_excel_obj = \PHPExcel_IOFactory::load($filename)->getActiveSheet();
+        $last_row = $active->getHighestRow();
+        $last_column = $active->getHighestColumn();
+
+        $headers = array();
+        $lead_array = array();
+        for($i = 1; $i <= $last_row; $i++){
+
+            $j = 0;
+            $column = 'A';
+            while($column <= $last_column){
+                if($i == 1){
+                    $headers[] = $active->getCell("{$column}1")->getValue();
+                }
+                else{
+                    $lead_array[$i-1][$headers[$j]] = $active->getCell("{$column}{$i}")->getValue();
+                }
+                $column++;
+                $j++;
+            }
+        }
+        return $lead_array;
+    }
+
+
+    /**
      * Generates the filename and generate a filename for it
      * @param $name
      * @param $extension
@@ -319,7 +349,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $filename = 'exports/' . $name . '-' . date('Y-m-d') . '.' . $extension;
 
         return strtolower(preg_replace('/\s/i', '-', $filename));
-}
+    }
 
 
 } 

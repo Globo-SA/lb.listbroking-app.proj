@@ -38,11 +38,12 @@ interface ExtractionServiceInterface {
     /**
      * Set the Extraction filters
      * @param $id
-     * @param $lock_filters
-     * @param $contact_filters
+     * @param $filters
+     * @internal param $lock_filters
+     * @internal param $contact_filters
      * @return mixed
      */
-    public function setExtractionFilters($id, $lock_filters, $contact_filters);
+    public function setExtractionFilters($id, $filters);
 
     /**
      * Adds a Lock Filter to an Extraction
@@ -123,4 +124,12 @@ interface ExtractionServiceInterface {
      * @return mixed
      */
     public function exportExtraction($extraction_template, $leads_array, $type, $info = array());
+
+    /**
+     * Used to import a file with Leads
+     * @param $filename
+     * @internal param $filename
+     * @return mixed
+     */
+    public function importExtraction($filename);
 } 

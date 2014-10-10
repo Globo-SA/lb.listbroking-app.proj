@@ -8,16 +8,16 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\LockBundle\Engine\ContactFilter;
+namespace ListBroking\LockBundle\Engine\LeadFilter;
 
 
 use Doctrine\ORM\Query\Expr\Andx;
 use ESO\Doctrine\ORM\QueryBuilder;
-use ListBroking\LockBundle\Engine\ContactFilterInterface;
+use ListBroking\LockBundle\Engine\LeadFilterInterface;
 use ListBroking\LockBundle\Exception\InvalidFilterObjectException;
 use ListBroking\LockBundle\Exception\InvalidFilterTypeException;
 
-class BasicContactFilter implements ContactFilterInterface {
+class BasicLeadFilter implements LeadFilterInterface {
 
     /**
      * @param Andx $andx
@@ -31,8 +31,7 @@ class BasicContactFilter implements ContactFilterInterface {
     {
         foreach($filters as $filter){
 
-            // Add the join alias
-            $filter['field'] = 'contacts.' . $filter['field'];
+            $filter['field'] = 'lead.' . $filter['field'];
 
             // Generate an unique id for each filter to avoid collisions
             $uid = uniqid();

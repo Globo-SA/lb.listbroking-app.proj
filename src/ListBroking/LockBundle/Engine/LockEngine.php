@@ -13,6 +13,7 @@ namespace ListBroking\LockBundle\Engine;
 use ListBroking\LeadBundle\Repository\ORM\ContactRepository;
 use ListBroking\LeadBundle\Repository\ORM\LeadRepository;
 use ListBroking\LockBundle\Engine\ContactFilter\BasicContactFilter;
+use ListBroking\LockBundle\Engine\LeadFilter\BasicLeadFilter;
 use ListBroking\LockBundle\Engine\LockFilter\CampaignLockFilter;
 use ListBroking\LockBundle\Engine\LockFilter\CategoryLockFilter;
 use ListBroking\LockBundle\Engine\LockFilter\ClientLockFilter;
@@ -33,6 +34,11 @@ class LockEngine
      * @var ContactFilterInterface[]
      */
     private $contact_filter_types;
+
+    /**
+     * @var LeadFilterInterface[]
+     */
+    private $lead_filter_types;
 
     /**
      * @var LeadRepository
@@ -58,6 +64,9 @@ class LockEngine
         );
         $this->contact_filter_types = array(
             1 => new BasicContactFilter()
+        );
+        $this->lead_filter_types = array(
+            1 => new BasicLeadFilter()
         );
     }
 
@@ -124,12 +133,40 @@ class LockEngine
 
         }
 
+        // Check if there are lead filters
+        if(array_key_exists('lead_filters',$filters) && !empty($filters['lead_filters'])){
+            $leadsAndX = $qb->expr()->andX();
+            foreach($filters['lead_filters'] as $type => $lead_filter){
+
+                // Validate the filters array
+                if (!array_key_exists('filters', $lead_filter)
+                    || !is_array($lead_filter['filters'])
+                )
+                {
+                    throw new InvalidFilterObjectException(
+                        'Invalid filter, must be: array(\'type\' => \'\', \'filters\' => array()), in ' .
+                        __CLASS__);
+                }
+
+                /** @var leadFilterInterface $lead_filter_type */
+                $lead_filter_type = $this->lead_filter_types[$type];
+                $lead_filter_type->addFilter($leadsAndX, $qb, $lead_filter['filters']);
+            }
+            $qb->andWhere($leadsAndX);
+        }
+
         // Cleanup the SELECT
         foreach ($this->lead_repo->getColumnNames() as $column){
-            $qb->addSelect($this->lead_repo->getAlias() . '.' . $column);
+            if(!in_array($column, array('created_by','updated_by', 'created_at', 'updated_at'))){
+                $qb->addSelect($this->lead_repo->getAlias() . '.' . $column . ' as ' . $column);
+            }
         }
-        foreach ($this->contact_repo->getColumnNames() as $column){
-            $qb->addSelect('contacts.' . $column);
+        foreach ($this->contact_repo->getColumnNames() as $column2){
+            if($column2 != 'id'){
+                $qb->addSelect('contacts.' . $column2);
+            }else{
+                $qb->addSelect('contacts.' . $column2 . ' as ' . 'contact_id');
+            }
         }
         foreach ($this->contact_repo->getAssociationNames() as $association){
             if(!in_array($association, array('lead','created_by','updated_by'))){
@@ -140,7 +177,7 @@ class LockEngine
 
         // Group by Lead to get only
         // one contact per lead
-        $qb->groupBy('lead');
+        $qb->groupBy('lead.id');
 
         return $qb;
     }
