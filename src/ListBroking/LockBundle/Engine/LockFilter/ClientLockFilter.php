@@ -54,11 +54,8 @@ class ClientLockFilter implements LockFilterInterface {
             }
 
             if(!($filter['interval'] instanceof \DateTime)){
-                throw new InvalidFilterTypeException(
-                    'The filter interval field must be an instance of \DateTime(), in '
-                    . __CLASS__);
+                $filter['interval'] = new \DateTime($filter['interval']['date'], new \DateTimeZone($filter['interval']['timezone']));
             }
-
 
             // Check for locks on the client
             $orX->add(

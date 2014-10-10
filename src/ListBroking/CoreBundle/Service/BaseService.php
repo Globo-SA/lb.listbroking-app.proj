@@ -134,7 +134,7 @@ class BaseService {
             $this->cache->invalidateScope($scope);
         }
 
-        $repo->merge($entity);
+        $repo->persist($entity);
         $repo->flush();
     }
 
@@ -160,6 +160,6 @@ class BaseService {
      * @param $id
      */
     public function hydrateObject($repo, $id){
-       return  $repo->getEntityManager()->getReference($repo->getEntityName(), $id);
+       return $repo->findOneById($id, true);
     }
 } 

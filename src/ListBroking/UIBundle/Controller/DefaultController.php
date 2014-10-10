@@ -2,6 +2,8 @@
 
 namespace ListBroking\UIBundle\Controller;
 
+use Doctrine\ORM\AbstractQuery;
+use ESO\Doctrine\ORM\QueryBuilder;
 use ListBroking\ClientBundle\Entity\Campaign;
 use ListBroking\ClientBundle\Entity\Client;
 use ListBroking\ClientBundle\Service\ClientService;
@@ -11,9 +13,11 @@ use ListBroking\CoreBundle\Entity\SubCategory;
 use ListBroking\CoreBundle\Exception\EntityValidationException;
 use ListBroking\CoreBundle\Service\CoreService;
 use ListBroking\ExtractionBundle\Entity\Extraction;
+use ListBroking\ExtractionBundle\Entity\ExtractionTemplate;
 use ListBroking\LockBundle\Engine\LockEngine;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class DefaultController extends Controller
 {
@@ -54,107 +58,116 @@ class DefaultController extends Controller
 
     public function samuelAction(Request $request)
     {
+        $e_service = $this->get('listbroking.extraction.service');
 
-        $lock_service = $this->get('listbroking.lock.service');
-//        $lock = $lock_service->getLock(8);
-//
-//        $lock_repo = $this->get('listbroking.lockbundle.lock_history.repository');
-//        $lock_repo->createFromLock($lock);
+        $lock_filters = array(
+            1 => array( //NoLocksFilter
+                'filters' => array(
+                    array(
+                        'interval' =>  new \DateTime()
+                    )
+                )
+            ),
+            2 => array( //ReservedLockType
+                'filters' => array(
+                    array(
+                        'interval' =>  new \DateTime('- 1 week')
+                    )
+                )
+            ),
+            3 => array( //ClientLockType
+                'filters' =>  array(
+                    array(
+                        'client_id' => 2,
+                        'interval' => new \DateTime('- 4 month')
+                    ),
+                    array(
+                        'client_id' => 4,
+                        'interval' => new \DateTime('- 5 week')
+                    )
+                )
+            ),
+            4 => array( //CampaignFilter
+                'filters' => array(
+                    array(
+                        'client_id' => 4,
+                        'campaign_id' => 2,
+                        'interval' => new \DateTime('- 2 month')
+                    )
+                )
+            ),
+            5 => array( //Category
+                'filters' =>  array(
+                    array(
+                        'category_id' => 2,
+                        'interval' => new \DateTime('- 9 month')
+                    ),
+                )
+            ),
+            6 => array( // SubCategoryLockType
+                'filters' => array(
+                    array(
+                        'category_id' => 2,
+                        'sub_category_id' => 2,
+                        'interval' => new \DateTime('- 8 month')
+                    )
+                )
+            ),
+        );
 
+        $contact_filters = array(
+            1 => array( //BaseContactFilter
+                'filters' =>
+                    array(
+                        array(
+                        'field' => 'gender',
+                        'opt' => 'equal',
+                        'value' => array(53)
+                        ),
+                        array(
+                        'field' => 'postalcode1',
+                        'opt' => 'equal',
+                        'value' => array(4100, 2100)
+                        ),
+                        array(
+                        'field' => 'id',
+                        'opt' => 'not_equal',
+                        'value' => array(76802)
+                        ),
+                        array(
+                            'field' => 'country',
+                            'opt' => 'equal',
+                            'value' => array(74,75,76)
+                        ),
+                        array(
+                            'field' => 'birthdate',
+                            'opt' => 'between',
+                            'value' => array('1954-01-02', '1996-06-28')
+                        )
+                    )
+            ),
+        );
 
-        $lock_service->removeLock(3);
-//        $lock_filters = array(
-//            array( //NoLocksFilter
-//                'type' => 1,
-//                'filters' => array(
-//                    array(
-//                        'interval' =>  new \DateTime()
-//                    )
-//                )
-//            ),
-//            array( //ReservedLockType
-//                'type' => 2,
-//                'filters' => array(
-//                    array(
-//                        'interval' =>  new \DateTime('- 1 week')
-//                    )
-//                )
-//            ),
-//            array( //ClientLockType
-//                'type' => 3,
-//                'filters' =>  array(
-//                    array(
-//                        'client_id' => 2,
-//                        'interval' => new \DateTime('- 4 month')
-//                    ),
-//                    array(
-//                        'client_id' => 4,
-//                        'interval' => new \DateTime('- 5 week')
-//                    )
-//                )
-//            ),
-//            array( //CampaignFilter
-//                'type' => 4,
-//                'filters' => array(
-//                    array(
-//                        'client_id' => 4,
-//                        'campaign_id' => 2,
-//                        'interval' => new \DateTime('- 2 month')
-//                    )
-//                )
-//            ),
-//            array( //Category
-//                'type' => 5,
-//                'filters' =>  array(
-//                    array(
-//                        'category_id' => 2,
-//                        'interval' => new \DateTime('- 9 month')
-//                    ),
-//                )
-//            ),
-//            array( // SubCategoryLockType
-//                'type' => 6,
-//                'filters' => array(
-//                    array(
-//                        'category_id' => 2,
-//                        'sub_category_id' => 2,
-//                        'interval' => new \DateTime('- 8 month')
-//                    )
-//                )
-//            ),
-//        );
-//
-//        $contact_filters = array(
-//            array(
-//                'type' => 1,
-//                'filters' =>
-//                    array(
-//                        array(
-//                        'field' => 'gender',
-//                        'opt' => 'equal',
-//                        'value' => array(2)
-//                        ),
-//                        array(
-//                            'field' => 'country',
-//                            'opt' => 'equal',
-//                            'value' => array(1,2)
-//                        ),
-//                        array(
-//                            'field' => 'birthdate',
-//                            'opt' => 'between',
-//                            'value' => array('1978-01-02', '1987-06-28')
-//                        )
-//                    )
-//            ),
-//        );
-//
-//        $engine = $lock_service->startEngine();
-//        $qb = $engine->compileFilters($lock_filters, $contact_filters);
-//
-//        ladybug_dump($qb->getQuery()->getSQL());
-//        ladybug_dump($qb->getQuery()->getParameters()->toArray());
-//        ladybug_dump_die($qb->getQuery()->getArrayResult());
-//
+        $lead_filters = array(
+            1 => array( //BaseLeadFilter
+                'filters' =>
+                    array(
+                        array(
+                        'field' => 'id',
+                        'opt' => 'not_equal',
+                        'value' => array(300443)
+                        ),
+                    )
+            ),
+        );
+
+        $extraction['filters'] = array(
+            'lock_filters' => $lock_filters,
+            'contact_filters' => $contact_filters,
+            'lead_filters' => $lead_filters
+        );
+
+        $e_service->setExtractionFilters(5,$extraction['filters']);
 
         return $this->render('ListBrokingUIBundle:Default:samuel.html.twig', array());
     }

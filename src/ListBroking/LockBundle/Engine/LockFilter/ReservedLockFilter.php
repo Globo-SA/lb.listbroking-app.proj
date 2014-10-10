@@ -24,11 +24,6 @@ class ReservedLockFilter implements LockFilterInterface
      */
     public $type_id;
 
-    /**
-     * @var int
-     */
-    public $parent;
-
     function __construct($type_id)
     {
         $this->type_id = $type_id;
@@ -54,9 +49,7 @@ class ReservedLockFilter implements LockFilterInterface
             }
 
             if(!($filter['interval'] instanceof \DateTime)){
-                throw new InvalidFilterTypeException(
-                    'The filter interval field must be an instance of \DateTime(), in '
-                    . __CLASS__);
+                $filter['interval'] = new \DateTime($filter['interval']['date'], new \DateTimeZone($filter['interval']['timezone']));
             }
 
             // Check for reserved locks
@@ -70,11 +63,6 @@ class ReservedLockFilter implements LockFilterInterface
             $qb->setParameter('reserved_locks_type', $this->type_id);
 
             $qb->setParameter("reserved_locks_filter_expiration_date_{$key}", $filter['interval']);
-
-            // Step up to the parent and filter
-            if($this->parent){
-                $this->parent->addFilter($orX, $qb, array($filter));
-            }
         }
     }
 

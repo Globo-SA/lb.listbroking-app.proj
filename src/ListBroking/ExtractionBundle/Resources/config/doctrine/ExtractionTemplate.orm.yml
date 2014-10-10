@@ -17,9 +17,9 @@ ListBroking\ExtractionBundle\Entity\ExtractionTemplate:
         name:
             type: string
             column: name
-        value:
+        template:
             type: json_array
-            column: filters
+            column: template
 
 # Timestampable
         created_at:
