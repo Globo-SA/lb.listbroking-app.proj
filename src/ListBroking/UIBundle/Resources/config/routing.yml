@@ -1,3 +1,7 @@
+# Used to expose routing to the client-side code
+fos_js_routing:
+    resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
+
 dashboard_index:
     path: /
     defaults: { _controller: listbroking.uibundle.dashboard.controller:indexAction }
@@ -9,6 +13,18 @@ extraction_index:
 extraction_configuration:
     path: /extraction/wizard/configuration
     defaults: { _controller: listbroking.uibundle.extraction.controller:configurationAction }
+
+ajax_lists:
+    path: /ajax/lists
+    defaults: { _controller: listbroking.uibundle.ajax.controller:listsAction }
+    options:
+        expose: true
+
+ajax_form_submit:
+    path: /ajax/form/submit/{name}
+    defaults: { _controller: listbroking.uibundle.ajax.controller:formSubmissionAction }
+    options:
+        expose: true
 
 listbroking.uibundle.tentugal_test:
     path:     /tentugal

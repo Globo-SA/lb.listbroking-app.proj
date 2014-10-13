@@ -11,35 +11,59 @@
 namespace ListBroking\UIBundle\Controller;
 
 
-use Symfony\Component\HttpFoundation\Request;
+use ListBroking\ClientBundle\Form\ClientType;
+use ListBroking\ExtractionBundle\Service\ExtractionService;
+use ListBroking\UIBundle\Service\UIService;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 class ExtractionController {
 
-    private $router;
-    private $twig;
-    private $session;
 
-    function __construct($router, $twig, Session $session)
+    /**
+     * @var \Twig_Environment
+     */
+    private $twig;
+
+    /**
+     * @var ExtractionService
+     */
+    private $e_service;
+    /**
+     * @var UIService
+     */
+    private $ui_service;
+
+    function __construct(\Twig_Environment $twig, ExtractionService $e_service, UIService $ui_service)
     {
-        $this->router = $router;
         $this->twig = $twig;
-        $this->session = $session;
+        $this->e_service = $e_service;
+        $this->ui_service = $ui_service;
     }
 
-    public function indexAction(Request $request){
+    public function indexAction(){
+
+        $extractions = $this->e_service->getExtractionList();
 
         return new Response($this->twig->render(
             'ListBrokingUIBundle:Extraction:index.html.twig',
-            array()
+            array(
+                'extractions'  => $extractions
+            )
         ));
     }
-    public function configurationAction(Request $request){
+
+    public function configurationAction(){
+
+        $instance = uniqid();
+        $forms = array(
+            'client' => $this->ui_service->generateFormView("client_{$instance}", new ClientType())
+        );
 
         return new Response($this->twig->render(
             'ListBrokingUIBundle:Extraction:configuration.html.twig',
-            array()
+            array(
+                'forms' => $forms
+            )
         ));
     }
 } 

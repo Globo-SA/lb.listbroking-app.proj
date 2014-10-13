@@ -1,15 +1,28 @@
 parameters:
+    listbroking.uibundle.service.class: ListBroking\UIBundle\Service\UIService
+
     listbroking.uibundle.dashboard.controller.class: ListBroking\UIBundle\Controller\DashboardController
     listbroking.uibundle.extraction.controller.class: ListBroking\UIBundle\Controller\ExtractionController
+    listbroking.uibundle.ajax.controller.class: ListBroking\UIBundle\Controller\AjaxController
+
     listbroking.uibundle.form.type.class: ListBroking\UIBundle\Form\Type\CountryFormType
 
 services:
+    listbroking.uibundle.service:
+        class: %listbroking.uibundle.service.class%
+        arguments: [@listbroking.client.service, @listbroking.extraction.service, @form.factory, @security.csrf.token_manager]
+
     listbroking.uibundle.dashboard.controller:
         class: %listbroking.uibundle.dashboard.controller.class%
         arguments: [@router, @twig]
+
     listbroking.uibundle.extraction.controller:
         class: %listbroking.uibundle.extraction.controller.class%
-        arguments: [@router, @twig, @session]
+        arguments: [@twig, @listbroking.extraction.service, @listbroking.uibundle.service]
+
+    listbroking.uibundle.ajax.controller:
+        class: %listbroking.uibundle.ajax.controller.class%
+        arguments: [@listbroking.uibundle.service]
 
     listbroking.uibundle.form.type:
         class:  %listbroking.uibundle.form.type.class%

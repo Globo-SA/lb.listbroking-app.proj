@@ -1,3 +1,7 @@
+/**
+ * Created by scastro on 11/10/14.
+ */
+
 (function ($, App)
 {
     $(function() {
@@ -10,9 +14,7 @@
             "bInfo": true,
             "bAutoWidth": false
         })
-        .fadeIn('slow');
-
-        $('select').select2();
+        ;
     });
 }
 )(jQuery, ListBroking)

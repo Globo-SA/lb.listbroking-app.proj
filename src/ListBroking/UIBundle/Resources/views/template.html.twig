@@ -46,6 +46,9 @@
         {% include 'ListBrokingUIBundle:layout:footer.html.twig' %}
     </div>
 {% include 'ListBrokingUIBundle:layout:javascripts.html.twig' %}
-{% block javascripts %}{% endblock %}
+{% block javascripts %}
+    {# Used to expose routing to the client-side code #}
+    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+{% endblock %}
 </body>
 </html>

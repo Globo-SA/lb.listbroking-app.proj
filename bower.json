@@ -24,12 +24,12 @@
   "dependencies": {
     "jquery": "~2.1.1",
     "jquery-file-upload": "~9.8.0",
+    "jqueryui": "~1.11.1",
     "bootstrap": "~3.2.0",
     "backbone": "~1.1.2",
     "backbone-forms": "~0.14.0",
     "fontawesome": "~4.2.0",
     "adminlte": "~1.2.1",
-    "jqueryui": "~1.11.1",
     "select2": "~3.5.1",
     "select2-bootstrap-css": "~1.4.1"
   }

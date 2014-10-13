@@ -24,6 +24,9 @@ class AppKernel extends Kernel
             new FOS\UserBundle\FOSUserBundle(),
             new Adclick\UserBundle\AdclickUserBundle(),
 
+            // Exposes routing to the client-side
+            new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
+
             // Extraction Help
             new Liuggio\ExcelBundle\LiuggioExcelBundle(),
 

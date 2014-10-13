@@ -1,0 +1,30 @@
+{% import "@ListBrokingUI/global_macros.html.twig" as macros %}
+
+<table id="example1" class="table table-hover">
+    <thead>
+    <tr>
+        <th>Active</th>
+        <th>Quantity</th>
+        <th>Payout</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for extraction in extractions %}
+    <tr>
+        <td>{{ macros.isActive(extraction.is_active) }}</td>
+        <td>{{ extraction.quantity }}</td>
+        <td>{{ extraction.payout }}</td>
+        <td>{{ macros.progress(extraction.status) }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+        <th>Active</th>
+        <th>Quantity</th>
+        <th>Payout</th>
+        <th>Status</th>
+    </tr>
+    </tfoot>
+</table>
