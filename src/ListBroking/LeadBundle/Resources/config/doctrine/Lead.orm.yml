@@ -69,3 +69,7 @@ ListBroking\LeadBundle\Entity\Lead:
             targetEntity: ListBroking\LockBundle\Entity\Lock
             mappedBy:     lead
             cascade:      [all]
+    manyToMany:
+        extractions:
+            targetEntity: ListBroking\ExtractionBundle\Entity\Extraction
+            mappedBy:     leads

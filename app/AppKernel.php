@@ -21,6 +21,10 @@ class AppKernel extends Kernel
             new FOS\UserBundle\FOSUserBundle(),
             new Adclick\UserBundle\AdclickUserBundle(),
 
+            // API Bundle
+            new FOS\RestBundle\FOSRestBundle(),
+            new JMS\SerializerBundle\JMSSerializerBundle(),
+
             // Core Bundles
             new Adclick\CacheBundle\AdclickCacheBundle(),
             new Adclick\AdvancedConfigurationBundle\AdclickAdvancedConfigurationBundle(),
@@ -37,6 +41,7 @@ class AppKernel extends Kernel
             new ListBroking\ExtractionBundle\ListBrokingExtractionBundle(),
             new ListBroking\LeadBundle\ListBrokingLeadBundle(),
             new ListBroking\LockBundle\ListBrokingLockBundle(),
+            new ListBroking\APIBundle\ListBrokingAPIBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

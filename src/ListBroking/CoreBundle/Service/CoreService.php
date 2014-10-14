@@ -56,11 +56,24 @@ class CoreService extends BaseService implements CoreServiceInterface
 
     /**
      * @param $id
+     * @param bool $hydrate
      * @return null
      */
-    public function getCountry($id)
+    public function getCountry($id, $hydrate = false)
     {
-        return $this->get(self::COUNTRY_LIST, self::COUNTRY_SCOPE, $this->country_repo, $id);
+        return $this->get(self::COUNTRY_LIST, self::COUNTRY_SCOPE, $this->country_repo, $id, $hydrate);
+    }
+
+    /**
+     * @param $code
+     * @param bool $hydrate
+     * @return mixed
+     */
+    public function getCountryByCode($code, $hydrate = false)
+    {
+        $entity = $this->country_repo->getCountryByCode($code, $hydrate);
+
+        return $entity;
     }
 
     /**
@@ -108,11 +121,12 @@ class CoreService extends BaseService implements CoreServiceInterface
     /**
      * Gets a single Category
      * @param $id
+     * @param bool $hydrate
      * @return null
      */
-    public function getCategory($id)
+    public function getCategory($id, $hydrate = false)
     {
-        return $this->get(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->category_repo, $id);
+        return $this->get(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->category_repo, $id, $hydrate);
     }
 
     /**
@@ -160,11 +174,12 @@ class CoreService extends BaseService implements CoreServiceInterface
     /**
      * Gets a single SubCategory
      * @param $id
+     * @param bool $hydrate
      * @return null
      */
-    public function getSubCategory($id)
+    public function getSubCategory($id, $hydrate = false)
     {
-        return $this->get(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->sub_category_repo, $id);
+        return $this->get(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->sub_category_repo, $id, $hydrate);
     }
 
     /**

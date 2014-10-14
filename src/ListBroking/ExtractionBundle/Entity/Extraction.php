@@ -13,6 +13,7 @@ namespace ListBroking\ExtractionBundle\Entity;
 use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior,
     Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior
     ;
+use ListBroking\LeadBundle\Entity\Lead;
 
 class Extraction {
 
@@ -30,6 +31,8 @@ class Extraction {
     protected $payout;
 
     protected $campaign;
+
+    protected $leads;
 
     /**
      * @return mixed
@@ -119,4 +122,12 @@ class Extraction {
         $this->campaign = $campaign;
     }
 
+    public function addLead(Lead $lead){
+        $lead->addExtraction($this);
+        $this->leads[] = $lead;
+    }
+
+    public function removeLead(Lead $lead){
+        $this->leads->removeElement($lead);
+    }
 }
