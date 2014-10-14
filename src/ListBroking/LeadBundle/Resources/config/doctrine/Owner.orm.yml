@@ -11,7 +11,7 @@ ListBroking\LeadBundle\Entity\Owner:
         is_active:
             type:         boolean
             column:       is_active
-            nullphpable:  true
+            nullable:  true
             options:
                 default: 0
         name:
@@ -53,7 +53,7 @@ ListBroking\LeadBundle\Entity\Owner:
         country:
             targetEntity: ListBroking\CoreBundle\Entity\Country
             joinColumn:
-                name:                 owner_id
+                name:                 country_id
                 referencedColumnName: id
                 onDelete:             restrict
     oneToMany:

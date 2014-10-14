@@ -15,6 +15,8 @@ use ListBroking\CoreBundle\Service\CoreService;
 use ListBroking\ExtractionBundle\Entity\Extraction;
 use ListBroking\ExtractionBundle\Entity\ExtractionTemplate;
 use ListBroking\LockBundle\Engine\LockEngine;
+use ListBroking\LeadBundle\Entity\Contact;
+use ListBroking\LeadBundle\Entity\Lead;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Stopwatch\Stopwatch;
@@ -28,18 +30,39 @@ class DefaultController extends Controller
     public function tentugalAction(Request $request)
     {
         $core_service = $this->get('listbroking.core.service');
-
-        $category = $core_service->getCategory(1);
+        $extraction_service = $this->get('listbroking.extraction.service');
+        $lead_service = $this->get('listbroking.lead.service');
+        $campaign_service = $this->get('listbroking.client.service');
+        $country = $core_service->getCountry(7, true);
+        $category = $core_service->getCategory(1, true);
+        $campaign = $campaign_service->getCampaign(1, true);
         json_encode($category);
 
-//        $form = $this->createForm('country_form', $country);
-//        if ($request->getMethod() == 'POST'){
-//            $form->handleRequest($request);
-//
-//            if ($form->isValid()){
-//                $core_service->updateCountry($country);
-//            }
-//        }
+        $lead = new Lead();
+        $lead->setCountry($country);
+        $lead->setInOpposition(0);
+        $lead->setIsMobile(0);
+        $lead->setPhone('913226556');
+        $lead_service->addLead($lead);
+
+        $extraction = new Extraction();
+        $extraction->setIsActive(1);
+        $extraction->setPayout(1);
+        $extraction->setQuantity(10);
+        $extraction->setFilters('jsons');
+        $extraction->setCampaign($campaign);
+        $extraction->addLead($lead);
+        $extraction_service->addExtraction($extraction);
+
+
+        $form = $this->createForm('country_form', $country);
+        if ($request->getMethod() == 'POST'){
+            $form->handleRequest($request);
+
+            if ($form->isValid()){
+                $core_service->updateCountry($country);
+            }
+        }
 
 //        try {
 //            $country = new Country();

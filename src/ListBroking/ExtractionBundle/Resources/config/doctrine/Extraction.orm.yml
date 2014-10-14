@@ -64,3 +64,15 @@ ListBroking\ExtractionBundle\Entity\Extraction:
                 name: campaign_id
                 referencedColumnName: id
                 onDelete: restrict
+    manyToMany:
+        leads:
+            targetEntity: ListBroking\LeadBundle\Entity\Lead
+            inversedBy:   extractions
+            joinTable:
+                name:         extractions_leads
+                joinColumns:
+                    extraction_id:
+                        referencedColumnName: id
+                inverseJoinColumns:
+                    lead_id:
+                        referencedColumnName: id

@@ -1,0 +1,6 @@
+list_broking_api_page:
+    type:         rest
+    prefix:       /v1
+    name_prefix:  api_1_
+    resource:     listbroking.api.lead.controller
+

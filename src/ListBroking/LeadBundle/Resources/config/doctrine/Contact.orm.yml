@@ -109,7 +109,7 @@ ListBroking\LeadBundle\Entity\Contact:
                 name:                 district_id
                 referencedColumnName: id
                 onDelete:             restrict
-                nullable:             false
+                nullable:             true
         county:
             targetEntity: ListBroking\LeadBundle\Entity\County
             inversedBy:   contacts
@@ -117,7 +117,7 @@ ListBroking\LeadBundle\Entity\Contact:
                 name:                 county_id
                 referencedColumnName: id
                 onDelete:             restrict
-                nullable:             false
+                nullable:             true
         parish:
             targetEntity: ListBroking\LeadBundle\Entity\Parish
             inversedBy:   contacts
@@ -125,7 +125,7 @@ ListBroking\LeadBundle\Entity\Contact:
                 name:                 parish_id
                 referencedColumnName: id
                 onDelete:             restrict
-                nullable:             false
+                nullable:             true
         country:
             targetEntity: ListBroking\CoreBundle\Entity\Country
             joinColumn:

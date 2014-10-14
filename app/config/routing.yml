@@ -1,3 +1,8 @@
+list_broking_api:
+    type:     rest
+    prefix:   /api
+    resource: "@ListBrokingAPIBundle/Resources/config/routing.yml"
+
 list_broking_ui:
     resource: "@ListBrokingUIBundle/Resources/config/routing.yml"
     prefix:   /
@@ -5,4 +10,3 @@ list_broking_ui:
 adclick_user:
     resource: "@AdclickUserBundle/Resources/config/routing.yml"
     prefix:   /
-

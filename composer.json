@@ -31,6 +31,8 @@
         "liuggio/ExcelBundle": "2.0.*",
 
         "friendsofsymfony/user-bundle": "~2.0@dev",
+        "friendsofsymfony/rest-bundle": "~1.4",
+        "jms/serializer-bundle": "~0.13",
 
         "raulfraile/ladybug-bundle": "dev-master",
 

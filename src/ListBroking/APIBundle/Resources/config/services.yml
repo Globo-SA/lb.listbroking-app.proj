@@ -1,0 +1,12 @@
+parameters:
+    listbroking.api.lead.controller.class: ListBroking\APIBundle\Controller\APIController
+    listbroking.apibundle.service.class:   ListBroking\APIBundle\Service\APIService
+
+services:
+    listbroking.api.lead.controller:
+        class:     %listbroking.api.lead.controller.class%
+        arguments: [@listbroking.api.service]
+
+    listbroking.api.service:
+        class:     %listbroking.apibundle.service.class%
+        arguments: [@listbroking.lead.service, @listbroking.core.service, @listbroking.contact.service, @request_stack]
