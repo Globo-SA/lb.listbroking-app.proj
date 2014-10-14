@@ -1,0 +1,14 @@
+{% form_theme forms.extraction '@ListBrokingUI/forms/form_theme.html.twig' %}
+{{ form_start(forms.extraction) }}
+    {{ form_row(forms.extraction.is_active) }}
+    {{ form_row(forms.extraction.client) }}
+    {{ form_row(forms.extraction.campaign, {icon: 'bookmark'}) }}
+    {{ form_row(forms.extraction.name) }}
+    {{ form_row(forms.extraction.status, {icon: 'bookmark-o'}) }}
+    {{ form_row(forms.extraction.quantity, {icon: 'phone'}) }}
+    {{ form_row(forms.extraction.payout, {icon: 'envelope'}) }}
+
+<button type="submit" class="btn btn-primary btn-flat">
+    <i class="fa fa-check"></i>&#32;Save
+</button>
+{{ form_end(forms.extraction) }}

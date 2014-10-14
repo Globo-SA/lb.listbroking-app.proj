@@ -22,6 +22,17 @@
                 });
             }
         });
+
+        $('#existing_extractions').on('change', function(val, added, removed){
+            $("#extraction_chooser").attr('action', App.routing.generate('extraction_filtering', {extraction_id : val.val}));
+        });
+
+        $("#extraction_chooser").submit(function(e){
+            var extraction_id = $('#existing_extractions').select2('val');
+            if(extraction_id == ''){
+                e.preventDefault();
+            }
+        });
     });
 }
 )(jQuery, ListBroking)

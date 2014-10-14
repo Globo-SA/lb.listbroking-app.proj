@@ -11,8 +11,10 @@
 namespace ListBroking\UIBundle\Service;
 
 
+use ListBroking\ClientBundle\Form\CampaignType;
 use ListBroking\ClientBundle\Form\ClientType;
 use ListBroking\ClientBundle\Service\ClientService;
+use ListBroking\ExtractionBundle\Form\ExtractionType;
 use ListBroking\ExtractionBundle\Service\ExtractionService;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormFactory;
@@ -43,7 +45,7 @@ class UIService implements UIServiceInterface {
         ClientService $c_service,
         ExtractionService $e_service,
         FormFactory $form_factory,
-        CsrfTokenManager $csrf_token_manager
+        CsrfTokenManagerInterface $csrf_token_manager
 
     )
     {
@@ -58,25 +60,31 @@ class UIService implements UIServiceInterface {
      * Gets a list of entities using the services
      * provided in various bundles
      * @param $type
-     * @param $parent
+     * @param $parent_type
      * @param $parent_id
      * @throws \Exception
-     * @internal param $name
      * @return mixed
      */
-    public function getEntityList($type, $parent, $parent_id){
+    public function getEntityList($type, $parent_type, $parent_id){
 
         if(empty($type)){
             throw new \Exception("Type can not be empty", 400);
         }
 
-        if(empty($parent)){
+        $list = array();
+        if(empty($parent_type)){
             switch($type){
                 case 'client':
                     $list = $this->c_service->getClientList();
                     break;
                 case 'campaign':
-                    $list = $this->c_service->getCampaignList();
+                    $tmp_list = $this->c_service->getCampaignList();
+                    foreach ($tmp_list as $obj){
+                        $obj['name'] = $obj['client']['name'] . ' - ' . $obj['name'];
+
+                        $list[] = $obj;
+                    }
+
                     break;
                 case 'extraction':
                     $list = $this->e_service->getExtractionList();
@@ -86,7 +94,7 @@ class UIService implements UIServiceInterface {
                     break;
             }
         }else{
-            switch($parent){
+            switch($parent_type){
                 case 'client':
                     $parents = $this->c_service->getClientList();
                     break;
@@ -97,11 +105,9 @@ class UIService implements UIServiceInterface {
                     $parents = $this->e_service->getExtractionList();
                     break;
                 default:
-                    throw new \Exception("Invalid List parent, {$parent}", 400);
+                    throw new \Exception("Invalid Parent Type, {$parent_type}", 400);
                     break;
             }
-
-            $list = array();
 
             foreach($parents as $parent){
                 // If there's a parent an id must be given
@@ -119,30 +125,36 @@ class UIService implements UIServiceInterface {
 
     /**
      * Generic way to submit multiple types of forms
-     * @param $name
+     * @param $form_name
      * @param $request Request
      * @throws \Exception
      * @return string
      */
-    public function submitForm($name, $request)
+    public function submitForm($form_name, $request)
     {
-        if(empty($name)){
+        if(empty($form_name)){
             throw new \Exception("Form name can't be empty", 400);
         }
 
-        $split = explode('_', $name);
+        $split = explode('_', $form_name);
         $type = $split[0];
         unset($split);
 
         $result = null;
         switch($type){
             case 'client':
-                $form = $this->form_factory->createNamed($name, new ClientType());
+                $form = $this->form_factory->createNamed($form_name, new ClientType());
                 $form->handleRequest($request);
 
                 if($form->isValid()){
                    $client = $form->getData();
-                    $this->c_service->addClient($client);
+                    if($client->getId()){
+                        $this->c_service->updateClient($client);
+                    }
+                    else{
+
+                        $this->c_service->addClient($client);
+                    }
 
                     $result = array(
                         "success" => true,
@@ -156,12 +168,58 @@ class UIService implements UIServiceInterface {
                         "msg" => "Form has errors"
                     );
                 }
-
-
                 break;
             case 'campaign':
+                $form = $this->form_factory->createNamed($form_name, new CampaignType());
+                $form->handleRequest($request);
+
+                if($form->isValid()){
+                    $campaign = $form->getData();
+
+                    // Convert client id to Object
+                    $client = $this->c_service->getClient($campaign->getClient(), true);
+                    $campaign->setClient($client);
+
+                    $this->c_service->addCampaign($campaign);
+
+                    $result = array(
+                        "success" => true,
+                        "id" => $campaign->getId(),
+                        "msg" => "Form successfully saved!"
+                    );
+                }else{
+                    $result = array(
+                        "success" => false,
+                        "errors" => $this->getErrorsAsArray($form),
+                        "msg" => "Form has errors"
+                    );
+                }
                 break;
             case 'extraction':
+                $form = $this->form_factory->createNamed($form_name, new ExtractionType());
+                $form->handleRequest($request);
+
+                if($form->isValid()){
+                    $extraction = $form->getData();
+
+                    // Convert campaign id to Object
+                    $campaign = $this->c_service->getCampaign($extraction->getCampaign(), true);
+                    $extraction->setCampaign($campaign);
+
+                    $this->e_service->addExtraction($extraction);
+
+                    $result = array(
+                        "success" => true,
+                        "id" => $campaign->getId(),
+                        "msg" => "Form successfully saved!"
+                    );
+                }else{
+                    $result = array(
+                        "success" => false,
+                        "errors" => $this->getErrorsAsArray($form),
+                        "msg" => "Form has errors"
+                    );
+                }
                 break;
             default:
                 throw new \Exception("Invalid form type, {$type}", 400);
@@ -169,7 +227,7 @@ class UIService implements UIServiceInterface {
         }
 
         // Generates a new csrf token
-        $result['new_csrf'] = $this->generateNewCsrfToken($type);
+        $result['new_csrf'] = $this->generateNewCsrfToken($form_name);
 
         return $result;
     }
@@ -192,14 +250,13 @@ class UIService implements UIServiceInterface {
 
     /**
      * Generates a new form view
-     * @param $name
      * @param $type
      * @return mixed
      */
-    function generateFormView($name, $type)
+    function generateFormView($type)
     {
 
-        return $this->form_factory->createNamed($name, $type)->createView();
+        return $this->form_factory->create($type)->createView();
     }
 
     /**

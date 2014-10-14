@@ -7,7 +7,7 @@
     $(function() {
         "use strict";
 
-        $('form').submit(function(e){
+        $('form:not([data-type=simple])').submit(function(e){
             e.preventDefault();
 
             var $form = $(this);
@@ -20,7 +20,7 @@
 
             $.ajax({
                 type: "POST",
-                url: App.routing.generate('ajax_form_submit', { name: form_name }),
+                url: App.routing.generate('ajax_form_submit', { form_name: form_name }),
                 dataType: 'json',
                 data: form_data,
                 success: function(data){
@@ -28,22 +28,27 @@
                     var response = data.response;
 
                     // Get the form and remove errors and old values
-                    $form = $("[name=" + response.name + "]");
-                    console.log($form.find("#" + response.name + "__token").val());
+                    $form = $("[name=" + response.form_name + "]");
                     $form.find('.form-group')
                         .removeClass('has-error')
                     ;
                     $form.find('.help-block')
-                        .text('')
+                         .text(null)
+                    ;
+                    $form.find('.global-errors')
+                         .text(null)
                     ;
                     $form.find('select,input,textarea')
-                        .val(null)
-                        .iCheck('uncheck')
+                         .val(null)
+                    ;
+                    $form.find('[type=checkbox]')
+                         .iCheck('uncheck')
+                    $form.find('[type=hidden][data-select-mode]')
+                         .select2("val", null)
                     ;
 
                     // Refresh the csrf_token
-                    $form.find("#" + response.name + "__token").val(response.new_csrf);
-                    console.log($form.find("#" + response.name + "__token").val());
+                    $form.find("#" + response.form_name + "__token").val(response.new_csrf);
 
                     // Show success msg with edit link
                     var edit_link =
@@ -73,14 +78,46 @@
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     var response = jqXHR.responseJSON.response;
-                    $.each(response, function(form_name, fields){
-                        $.each(fields, function(field_name, error){
-                            var $field = $('#' + form_name + "_" + field_name);
-                            var $form_group = $field.parents('.form-group').addClass('has-error');
-                            $form_group.find('.help-block').text(error);
-                        });
-                    });
 
+                    // Get the form and remove errors and old values
+                    $form = $("[name=" + response.form_name + "]");
+
+                    // Refresh the csrf_token
+                    $form.find("#" + response.form_name + "__token").val(response.new_csrf);
+
+                    $form.find('.form-group')
+                        .removeClass('has-error')
+                    ;
+                    $form.find('.help-block')
+                        .text('')
+                    ;
+                    $form.find('.global-errors')
+                        .text(null)
+                    ;
+
+                    var errors = response.errors;
+                    for (var key in errors) {
+                        if(!isNaN(parseInt(key))){
+                               $form.append('<p class="text-danger global-errors">' + errors[key] + '</p>');
+                        }else{
+                            if (errors.hasOwnProperty(key)) {
+                                $.each(errors[key], function(field_name, error){
+                                    var $field = $('#' + key + "_" + field_name);
+                                    $field.parents('.form-group')
+                                        .addClass('has-error').
+                                        find('.help-block')
+                                        .text(error);
+                                 });
+                            }
+                        }
+                    };
+
+                    // Remove loading from the sumbmit button
+                    var $submit_btn = $form.find("button[type=submit]");
+                    $submit_btn.html($submit_btn.data('old_html'));
+
+                    // Loading Widget, stop when everything is loaded
+                    $('#loading_widget').fadeOut();
                 }
             });
         })

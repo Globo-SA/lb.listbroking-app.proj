@@ -17,6 +17,7 @@ ListBroking\ExtractionBundle\Entity\Extraction:
         name:
             type: string
             column: name
+            unique: true
         status:
             type: smallint
             column: status
@@ -26,6 +27,7 @@ ListBroking\ExtractionBundle\Entity\Extraction:
         filters:
             type: json_array
             column: filters
+            nullable: true
         payout:
             type: float
             column: payout

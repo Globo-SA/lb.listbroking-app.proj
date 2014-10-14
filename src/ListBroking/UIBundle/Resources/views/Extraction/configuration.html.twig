@@ -4,7 +4,7 @@
 {% block content %}
     <div class="row">
         <div class="col-xs-12">
-        {% embed 'ListBrokingUIBundle:partials:generic_box.html.twig' with {collapsed : true} %}
+        {% embed 'ListBrokingUIBundle:embeds:generic_box.html.twig' with {collapsed : true} %}
             {% block box_classes %}box-primary{% endblock %}
             {% block box_title %}
                 <i class="fa fa-wrench"></i>&nbsp;Configure a new Extraction !
@@ -24,13 +24,10 @@
                 </div>
                 <div class="row" id="existing_form">
                     <div class="col-md-6">
-                        {% embed 'ListBrokingUIBundle:partials:generic_box.html.twig' %}
+                        {% embed 'ListBrokingUIBundle:embeds:generic_box.html.twig' %}
                             {% block box_classes %}box-info{% endblock %}
                             {% block box_body %}
                                 {% include '@ListBrokingUI/Extraction/_configuration/existing_form.html.twig' %}
-                            {% endblock %}
-                            {% block box_footer %}
-                                <button type="button" class="btn btn-default btn-flat"><i class="fa fa-share"></i>&nbsp;Continue</button>
                             {% endblock %}
                         {% endembed %}
                      </div>
@@ -46,7 +43,7 @@
         </div>
         <!-- /.col-xs-12 -->
     </div><!-- /.row -->
-    {% embed '@ListBrokingUI/partials/generic_modal.html.twig' with { modal_id : 'entity_creator'}%}
+    {% embed '@ListBrokingUI/embeds/generic_modal.html.twig' with { modal_id : 'entity_creator'}%}
         {% block modal_title %}Create a new %%ENTITY%%{% endblock %}
         {% block modal_body %}{% endblock %}
         {% block modal_footer %}{% endblock %}

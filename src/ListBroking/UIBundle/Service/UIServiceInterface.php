@@ -18,28 +18,27 @@ interface UIServiceInterface
      * Gets a list of entities using the services
      * provided in various bundles
      * @param $type
-     * @param $parent
+     * @param $parent_type
      * @param $parent_id
-     * @throws \Exception
+     * @internal param $parent
      * @internal param $name
      * @return mixed
      */
-    function getEntityList($type, $parent, $parent_id);
+    function getEntityList($type, $parent_type, $parent_id);
 
     /**
-     * @param $name
+     * @param $form_name
      * @param $request
      * @return mixed
      */
-    function submitForm($name, $request);
+    function submitForm($form_name, $request);
 
     /**
      * Generates a new form view
-     * @param $name
      * @param $type
      * @return mixed
      */
-    function generateFormView($name, $type);
+    function generateFormView($type);
 
     /**
      * Generates a new CSRF token

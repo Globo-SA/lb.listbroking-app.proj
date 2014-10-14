@@ -20,3 +20,7 @@
     -moz-box-shadow:    none;
     box-shadow:         none;
 }
+
+.box-body form {
+    margin-bottom: 10px;
+}

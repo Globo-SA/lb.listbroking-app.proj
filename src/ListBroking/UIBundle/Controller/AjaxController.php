@@ -33,12 +33,12 @@ class AjaxController {
      */
     public function listsAction(Request $request){
         try{
-            $this->validateRequest($request);
+            //$this->validateRequest($request);
 
             $type = $request->get('type', '');
-            $parent = $request->get('parent', '');
+            $parent_type = $request->get('parent_type', '');
             $parent_id = $request->get('parent_id', '');
-            $list = $this->ui_service->getEntityList($type, $parent, $parent_id);
+            $list = $this->ui_service->getEntityList($type, $parent_type, $parent_id);
 
             return $this->createJsonResponse($list);
 
@@ -48,21 +48,23 @@ class AjaxController {
         }
     }
 
-    public function formSubmissionAction(Request $request, $name){
+    public function formSubmissionAction(Request $request, $form_name){
         try{
             $this->validateRequest($request);
 
-            $result = $this->ui_service->submitForm($name, $request);
+            $result = $this->ui_service->submitForm($form_name, $request);
             if($result['success']){
 
                 return $this->createJsonResponse(
                     array_merge(
-                        array("name" => $name), $result
+                        array("form_name" => $form_name), $result
                     )
                 );
             }
 
-            return $this->createJsonResponse($result, 400);
+            return $this->createJsonResponse(array_merge(
+                array("form_name" => $form_name), $result
+            ), 400);
 
         }catch(\Exception $e){
             return $this->createJsonResponse($e->getMessage(), $e->getCode());

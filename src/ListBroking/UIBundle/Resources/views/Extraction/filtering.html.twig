@@ -1,0 +1,22 @@
+{% extends 'ListBrokingUIBundle::template.html.twig' %}
+{% block main_title %}Extraction{% endblock %}
+{% block sub_title %}wizard{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+        {% embed 'ListBrokingUIBundle:embeds:generic_box.html.twig' with {collapsed : true} %}
+            {% block box_classes %}box-primary{% endblock %}
+            {% block box_title %}
+                <i class="fa fa-wrench"></i>&nbsp;Filtering stage !
+            {% endblock %}
+            {% block box_tools %}
+            {% endblock %}
+            {% block box_body %}
+
+            {% endblock %}
+            {% block box_footer %}{% endblock %}
+        {% endembed %}
+        </div>
+        <!-- /.col-xs-12 -->
+    </div><!-- /.row -->
+{% endblock %}

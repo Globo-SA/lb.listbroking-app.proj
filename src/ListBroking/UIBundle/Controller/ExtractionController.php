@@ -11,10 +11,14 @@
 namespace ListBroking\UIBundle\Controller;
 
 
+use ListBroking\ClientBundle\Form\CampaignType;
 use ListBroking\ClientBundle\Form\ClientType;
+use ListBroking\ExtractionBundle\Form\ExtractionType;
 use ListBroking\ExtractionBundle\Service\ExtractionService;
 use ListBroking\UIBundle\Service\UIService;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ExtractionController {
 
@@ -54,15 +58,30 @@ class ExtractionController {
 
     public function configurationAction(){
 
-        $instance = uniqid();
         $forms = array(
-            'client' => $this->ui_service->generateFormView("client_{$instance}", new ClientType())
+            'client' => $this->ui_service->generateFormView(new ClientType()),
+            'campaign' => $this->ui_service->generateFormView(new CampaignType()),
+            'extraction' => $this->ui_service->generateFormView(new ExtractionType())
         );
 
         return new Response($this->twig->render(
             'ListBrokingUIBundle:Extraction:configuration.html.twig',
             array(
                 'forms' => $forms
+            )
+        ));
+    }
+
+    public function filteringAction(Request $request, $extraction_id){
+
+        $extraction = $this->e_service->getExtraction($extraction_id);
+        if(!$extraction){
+            throw new HttpException(404, "Extraction not found!");
+        }
+
+        return new Response($this->twig->render(
+            'ListBrokingUIBundle:Extraction:filtering.html.twig',
+            array(
             )
         ));
     }

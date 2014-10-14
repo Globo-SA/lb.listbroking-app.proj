@@ -11,8 +11,14 @@ extraction_index:
     defaults: { _controller: listbroking.uibundle.extraction.controller:indexAction }
 
 extraction_configuration:
-    path: /extraction/wizard/configuration
+    path: /extraction/wizard/configuration-1
     defaults: { _controller: listbroking.uibundle.extraction.controller:configurationAction }
+
+extraction_filtering:
+    path: /extraction/wizard/{extraction_id}/filtering-2
+    defaults: { _controller: listbroking.uibundle.extraction.controller:filteringAction }
+    options:
+        expose: true
 
 ajax_lists:
     path: /ajax/lists
@@ -21,7 +27,7 @@ ajax_lists:
         expose: true
 
 ajax_form_submit:
-    path: /ajax/form/submit/{name}
+    path: /ajax/form/submit/{form_name}
     defaults: { _controller: listbroking.uibundle.ajax.controller:formSubmissionAction }
     options:
         expose: true

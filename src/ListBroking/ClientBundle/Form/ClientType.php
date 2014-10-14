@@ -10,6 +10,16 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class ClientType extends AbstractType
 {
+
+    private $uniqid;
+
+    function __construct()
+    {
+        // An UniqueID is appended to the
+        // name to avoid form collisions
+        $this->uniqid = uniqid();
+    }
+
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -56,6 +66,7 @@ class ClientType extends AbstractType
      */
     public function getName()
     {
-        return 'client';
+
+        return 'client_' . $this->uniqid;
     }
 }

@@ -5,8 +5,6 @@ parameters:
     listbroking.uibundle.extraction.controller.class: ListBroking\UIBundle\Controller\ExtractionController
     listbroking.uibundle.ajax.controller.class: ListBroking\UIBundle\Controller\AjaxController
 
-    listbroking.uibundle.form.type.class: ListBroking\UIBundle\Form\Type\CountryFormType
-
 services:
     listbroking.uibundle.service:
         class: %listbroking.uibundle.service.class%
@@ -23,8 +21,3 @@ services:
     listbroking.uibundle.ajax.controller:
         class: %listbroking.uibundle.ajax.controller.class%
         arguments: [@listbroking.uibundle.service]
-
-    listbroking.uibundle.form.type:
-        class:  %listbroking.uibundle.form.type.class%
-        tags:
-          - { name: form.type, alias: country_form }
