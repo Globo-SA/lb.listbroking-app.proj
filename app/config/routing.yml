@@ -1,5 +1,4 @@
 list_broking_api:
-    type:     rest
     prefix:   /api
     resource: "@ListBrokingAPIBundle/Resources/config/routing.yml"
 

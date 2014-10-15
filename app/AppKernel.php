@@ -41,6 +41,7 @@ class AppKernel extends Kernel
             new ListBroking\ExtractionBundle\ListBrokingExtractionBundle(),
             new ListBroking\LeadBundle\ListBrokingLeadBundle(),
             new ListBroking\LockBundle\ListBrokingLockBundle(),
+            //API Bundle
             new ListBroking\APIBundle\ListBrokingAPIBundle(),
         );
 

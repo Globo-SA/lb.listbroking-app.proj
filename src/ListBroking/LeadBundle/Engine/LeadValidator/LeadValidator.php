@@ -42,8 +42,8 @@ class LeadValidator extends BaseValidator {
         $this->validatePhone($this->lead['phone']);
         $phone = $this->lead['phone'];
         $validations['phone']         = $phone;
-        if ($validations[''] == ) {
-            $validations['is_mobile']     = $this->checkMobilePhone($phone, $this->lead['country']);
+        if ($validations['country']->getIsoCode() == 'PT') {
+            $validations['is_mobile']     = $this->checkMobilePhone($phone, $validations['country']->getIsoCode());
         }
         $validations['repeated_lead'] = $this->checkLeadExistance($phone);
 //        ladybug_dump_die($validations);
@@ -67,9 +67,9 @@ class LeadValidator extends BaseValidator {
      */
     private function checkMobilePhone($phone, $country){
         if (preg_match('/' . $this->mobile_prefixs[$country] . '/', $phone)){
-            return true;
+            return 1;
         }
-        return false;
+        return 0;
     }
 
     /**

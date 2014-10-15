@@ -1,6 +1,4 @@
 list_broking_api_page:
-    type:         rest
-    prefix:       /v1
-    name_prefix:  api_1_
-    resource:     listbroking.api.lead.controller
-
+    path:     /v1/lead/create
+    defaults: { _controller: listbroking.api.lead.controller:setLeadAction }
+    methods:  [GET]

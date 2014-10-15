@@ -59,6 +59,7 @@ class LeadService implements LeadServiceInterface {
 
     /**
      * @param $phone
+     * @param bool $hydrate
      * @return mixed
      */
     public function getLeadByPhone($phone, $hydrate = false){
@@ -124,6 +125,11 @@ class LeadService implements LeadServiceInterface {
         return $entity;
     }
 
+    /**
+     * @param $email
+     * @param bool $hydrate
+     * @return array|mixed
+     */
     public function getContactsByEmail($email, $hydrate = false){
         $entity = $this->contact_repo->getContactsByEmail($email, $hydrate);
 

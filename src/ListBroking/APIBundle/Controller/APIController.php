@@ -11,7 +11,6 @@
 namespace ListBroking\APIBundle\Controller;
 
 use ListBroking\APIBundle\Service\APIService;
-use ListBroking\LeadBundle\Exception\LeadValidationException;
 use Symfony\Component\HttpFoundation\Request;
 
 class APIController
@@ -28,16 +27,10 @@ class APIController
 
     /**
      * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function getLeadAction(Request $request){
-        if (!$request->isMethod('GET')){
-            // TODO: throw new APIException or just error??
-        }
-
-        try{
-            $this->api_service->processRequest();
-        } catch (LeadValidationException $e){
-            $response = $e->getMessage();
-        }
+    public function setLeadAction(Request $request){
+        $token = $request->get('token');
+        return $this->api_service->processRequest($token);
     }
 }

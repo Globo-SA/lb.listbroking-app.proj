@@ -2,11 +2,32 @@ parameters:
     listbroking.api.lead.controller.class: ListBroking\APIBundle\Controller\APIController
     listbroking.apibundle.service.class:   ListBroking\APIBundle\Service\APIService
 
+    listbroking.api.token.listener.class:  ListBroking\APIBundle\EventListener\TokenGeneratorListener
+
+    listbroking.api.apitoken.entity.name:       ListBrokingAPIBundle:APIToken
+    listbroking.api.apitoken.entity.class:      ListBroking\APIBundle\Entity\APIToken
+    listbroking.api.apitoken.repository.class:  ListBroking\APIBundle\Repository\ORM\APITokenRepository
+
 services:
     listbroking.api.lead.controller:
         class:     %listbroking.api.lead.controller.class%
         arguments: [@listbroking.api.service]
 
+    listbroking.apibundle.apitoken.repository:
+        class: %listbroking.api.apitoken.repository.class%
+        arguments:
+            entityManager:  @doctrine.orm.default_entity_manager
+            entityName:     %listbroking.api.apitoken.entity.name%
+            alias:          apit
+            entityClass:    %listbroking.api.apitoken.entity.class%
+            inflector:      @inflector.tool
+
     listbroking.api.service:
         class:     %listbroking.apibundle.service.class%
-        arguments: [@listbroking.lead.service, @listbroking.core.service, @listbroking.contact.service, @request_stack]
+        arguments: [@listbroking.lead.service, @listbroking.core.service, @listbroking.contact.service, @request_stack, @listbroking.apibundle.apitoken.repository]
+
+    listbroking.api.token.listener:
+        class:     %listbroking.api.token.listener.class%
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+
