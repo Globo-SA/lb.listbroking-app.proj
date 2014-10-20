@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="{{ _charset }}" />
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+
+    <title>{% block title %}ListBroking - Filter, extract and connect{% endblock %}</title>
+
+    {% include 'ListBrokingUIBundle:layout:stylesheets.html.twig' %}
+    {% block stylesheets %}{% endblock %}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" sizes="512×512" href="{{ asset('touch-icon-512x512.png') }}">
+    <link rel="apple-touch-icon" sizes="144×144" href="{{ asset('touch-icon-144x144.png') }}">
+    <link rel="apple-touch-icon" sizes="114×114" href="{{ asset('touch-icon-114x114.png') }}">
+    <link rel="apple-touch-icon" sizes="72×72" href="{{ asset('touch-icon-72x72.png') }}">
+    <link rel="apple-touch-icon" sizes="57×57" href="{{ asset('touch-icon-57x57.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('touch-icon.png') }}">
+    <link rel="apple-touch-icon-precomposed" sizes="512×512" href="{{ asset('apple-touch-icon-512x512-precomposed.png') }}">
+    <link rel="apple-touch-icon-precomposed" sizes="144×144" href="{{ asset('apple-touch-icon-144x144-precomposed.png') }}">
+    <link rel="apple-touch-icon-precomposed" sizes="114×114" href="{{ asset('apple-touch-icon-114x114-precomposed.png') }}">
+    <link rel="apple-touch-icon-precomposed" sizes="72×72" href="{{ asset('apple-touch-icon-72x72-precomposed.png') }}">
+    <link rel="apple-touch-icon-precomposed" sizes="57×57" href="{{ asset('apple-touch-icon-57x57-precomposed.png') }}">
+    <link rel="apple-touch-icon-precomposed" href="{{ asset('touch-icon-precomposed.png') }}">
+    {% block header %}{% endblock %}
+</head>
+<body class="skin-black">
+    {% include 'ListBrokingUIBundle:layout:headerbar.html.twig' %}
+    <div class="wrapper row-offcanvas row-offcanvas-left">
+        {% block body %}
+            {% include 'ListBrokingUIBundle:layout:menu-side.html.twig' %}
+            <aside class="right-side">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    {% include 'ListBrokingUIBundle:layout:flashmsgs.html.twig' %}
+                    <h1>
+                        {% block main_title %}{% endblock %}
+                        <small>{% block sub_title %}{% endblock %}</small>
+                    </h1>
+                    {% include 'ListBrokingUIBundle:layout:breadcrumbs.html.twig' %}
+                </section>
+                <section class="content">
+                    {% block content %}{% endblock %}
+                </section>
+            </aside>
+        {% endblock %}
+        {% include 'ListBrokingUIBundle:layout:footer.html.twig' %}
+    </div>
+{% include 'ListBrokingUIBundle:layout:javascripts.html.twig' %}
+{% block javascripts %}
+    {# Used to expose routing to the client-side code #}
+    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+{% endblock %}
+</body>
+</html>

@@ -34,7 +34,7 @@
 
         "jms/serializer-bundle": "~0.13",
         "friendsofsymfony/user-bundle": "~2.0@dev",
-        "friendsofsymfony/rest-bundle": "~1.4",
+
         "friendsofsymfony/jsrouting-bundle": "2.0.*@dev",
 
         "raulfraile/ladybug-bundle": "dev-master",

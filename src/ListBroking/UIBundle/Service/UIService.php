@@ -17,7 +17,6 @@ use ListBroking\ClientBundle\Service\ClientService;
 use ListBroking\ExtractionBundle\Form\ExtractionType;
 use ListBroking\ExtractionBundle\Service\ExtractionService;
 use ListBroking\LeadBundle\Service\LeadService;
-use ListBroking\LockBundle\Service\LockService;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactory;
@@ -55,7 +54,6 @@ class UIService implements UIServiceInterface {
         LeadService $l_service,
         FormFactory $form_factory,
         CsrfTokenManagerInterface $csrf_token_manager
-
     )
     {
         $this->c_service = $c_service;
@@ -84,7 +82,6 @@ class UIService implements UIServiceInterface {
      * @return mixed
      */
     public function getEntityList($type, $parent_type, $parent_id){
-
         if(empty($type)){
             throw new \Exception("Type can not be empty", 400);
         }
@@ -126,7 +123,6 @@ class UIService implements UIServiceInterface {
                     throw new \Exception("Invalid Parent Type, {$parent_type}", 400);
                     break;
             }
-
             foreach($parents as $parent){
                 // If there's a parent an id must be given
                 // of nothing will be added to the list
@@ -173,7 +169,6 @@ class UIService implements UIServiceInterface {
 
                         $this->c_service->addClient($client);
                     }
-
                     $result = array(
                         "success" => true,
                         "id" => $client->getId(),
@@ -290,6 +285,4 @@ class UIService implements UIServiceInterface {
     {
         return $this->csrf_token_manager->refreshToken($intention)->getValue();
     }
-
-
-} 
+}

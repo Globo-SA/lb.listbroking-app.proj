@@ -15,6 +15,7 @@ services:
             - @form.factory
             - @security.csrf.token_manager
 
+
     listbroking.uibundle.dashboard.controller:
         class: %listbroking.uibundle.dashboard.controller.class%
         arguments: [@router, @twig]
@@ -26,3 +27,4 @@ services:
     listbroking.uibundle.ajax.controller:
         class: %listbroking.uibundle.ajax.controller.class%
         arguments: [@listbroking.uibundle.service]
+

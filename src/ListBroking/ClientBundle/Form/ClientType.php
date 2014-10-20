@@ -10,7 +10,6 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class ClientType extends AbstractType
 {
-
     private $uniqid;
 
     function __construct()
@@ -66,7 +65,6 @@ class ClientType extends AbstractType
      */
     public function getName()
     {
-
         return 'client_' . $this->uniqid;
     }
 }

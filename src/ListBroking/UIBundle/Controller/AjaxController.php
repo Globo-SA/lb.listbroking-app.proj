@@ -52,6 +52,7 @@ class AjaxController {
             $parent_id = $request->get('parent_id', '');
             $list = $this->ui_service->getEntityList($type, $parent_type, $parent_id);
 
+
             return $this->createJsonResponse($list);
 
         }catch (\Exception $e){
@@ -65,6 +66,7 @@ class AjaxController {
             $this->validateRequest($request);
 
             $result = $this->ui_service->submitForm($form_name, $request);
+
             if($result['success']){
 
                 return $this->createJsonResponse(
@@ -98,7 +100,7 @@ class AjaxController {
     }
 
     /**
-     * Validates the Ajax Resquest
+     * Validates the Ajax Request
      * @param $request Request
      * @throws \Exception
      */
