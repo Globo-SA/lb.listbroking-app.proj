@@ -24,3 +24,24 @@
 .box-body form {
     margin-bottom: 10px;
 }
+
+.help-block{
+    font-size: 14px;
+}
+
+.popover-content label {
+    font-size: 13px;
+    padding-top: 6px;
+}
+.popover-content .input-sm{
+    height: 22px;
+    padding: 0px;
+}
+
+.col-md-0 {
+    width: 4.33333333%;
+}
+
+.add_collection {
+    margin-bottom: 2px !important;
+}

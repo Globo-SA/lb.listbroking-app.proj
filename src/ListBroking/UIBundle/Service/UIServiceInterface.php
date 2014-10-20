@@ -15,6 +15,12 @@ interface UIServiceInterface
 {
 
     /**
+     * Group leads by lock and count them
+     * @return array
+     */
+    public function countByLock();
+
+    /**
      * Gets a list of entities using the services
      * provided in various bundles
      * @param $type
@@ -36,9 +42,10 @@ interface UIServiceInterface
     /**
      * Generates a new form view
      * @param $type
+     * @param bool $view
      * @return mixed
      */
-    function generateFormView($type);
+    function generateForm($type, $view = true);
 
     /**
      * Generates a new CSRF token

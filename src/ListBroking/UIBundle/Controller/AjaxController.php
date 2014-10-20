@@ -26,6 +26,18 @@ class AjaxController {
         $this->ui_service = $ui_service;
     }
 
+    public function countLeads(Request $request){
+
+        try{
+            //$this->validateRequest($request);
+            $leads_by_lock = $this->ui_service->countByLock();
+            return $this->createJsonResponse($leads_by_lock);
+        }catch (\Exception $e){
+
+            return $this->createJsonResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
     /**
      * Used to get lists of entities
      * @param Request $request
@@ -33,7 +45,7 @@ class AjaxController {
      */
     public function listsAction(Request $request){
         try{
-            //$this->validateRequest($request);
+            $this->validateRequest($request);
 
             $type = $request->get('type', '');
             $parent_type = $request->get('parent_type', '');

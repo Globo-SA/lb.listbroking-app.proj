@@ -38,7 +38,7 @@ class BaseService {
         if(!$this->cache->has($list_name, $scope)){
             $this->cache->beginWarmingUp($list_name, $scope);
 
-            $entities = $repo->findAll();
+            $entities = $repo->findAll(false);
             $this->cache->set($list_name, $entities, null, $scope);
         }
         $entities = $this->cache->get($list_name, $scope);

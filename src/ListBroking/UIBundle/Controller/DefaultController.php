@@ -81,116 +81,119 @@ class DefaultController extends Controller
 
     public function samuelAction(Request $request)
     {
-        $e_service = $this->get('listbroking.extraction.service');
+//        $e_service = $this->get('listbroking.extraction.service');
+//
+//        $lock_filters = array(
+//            1 => array( //NoLocksFilter
+//                'filters' => array(
+//                    array(
+//                        'interval' =>  new \DateTime()
+//                    )
+//                )
+//            ),
+//            2 => array( //ReservedLockType
+//                'filters' => array(
+//                    array(
+//                        'interval' =>  new \DateTime('- 1 week')
+//                    )
+//                )
+//            ),
+//            3 => array( //ClientLockType
+//                'filters' =>  array(
+//                    array(
+//                        'client_id' => 2,
+//                        'interval' => new \DateTime('- 4 month')
+//                    ),
+//                    array(
+//                        'client_id' => 4,
+//                        'interval' => new \DateTime('- 5 week')
+//                    )
+//                )
+//            ),
+//            4 => array( //CampaignFilter
+//                'filters' => array(
+//                    array(
+//                        'client_id' => 4,
+//                        'campaign_id' => 2,
+//                        'interval' => new \DateTime('- 2 month')
+//                    )
+//                )
+//            ),
+//            5 => array( //Category
+//                'filters' =>  array(
+//                    array(
+//                        'category_id' => 2,
+//                        'interval' => new \DateTime('- 9 month')
+//                    ),
+//                )
+//            ),
+//            6 => array( // SubCategoryLockType
+//                'filters' => array(
+//                    array(
+//                        'category_id' => 2,
+//                        'sub_category_id' => 2,
+//                        'interval' => new \DateTime('- 8 month')
+//                    )
+//                )
+//            ),
+//        );
+//
+//        $contact_filters = array(
+//            1 => array( //BaseContactFilter
+//                'filters' =>
+//                    array(
+//                        array(
+//                        'field' => 'gender',
+//                        'opt' => 'equal',
+//                        'value' => array(53)
+//                        ),
+//                        array(
+//                        'field' => 'postalcode1',
+//                        'opt' => 'equal',
+//                        'value' => array(4100, 2100)
+//                        ),
+//                        array(
+//                        'field' => 'id',
+//                        'opt' => 'not_equal',
+//                        'value' => array(76802)
+//                        ),
+//                        array(
+//                            'field' => 'country',
+//                            'opt' => 'equal',
+//                            'value' => array(74,75,76)
+//                        ),
+//                        array(
+//                            'field' => 'birthdate',
+//                            'opt' => 'between',
+//                            'value' => array('1954-01-02', '1996-06-28')
+//                        )
+//                    )
+//            ),
+//        );
+//
+//        $lead_filters = array(
+//            1 => array( //BaseLeadFilter
+//                'filters' =>
+//                    array(
+//                        array(
+//                        'field' => 'id',
+//                        'opt' => 'not_equal',
+//                        'value' => array(300443)
+//                        ),
+//                    )
+//            ),
+//        );
+//
+//        $extraction['filters'] = array(
+//            'lock_filters' => $lock_filters,
+//            'contact_filters' => $contact_filters,
+//            'lead_filters' => $lead_filters
+//        );
+//
+//        $e_service->setExtractionFilters(5,$extraction['filters']);
 
-        $lock_filters = array(
-            1 => array( //NoLocksFilter
-                'filters' => array(
-                    array(
-                        'interval' =>  new \DateTime()
-                    )
-                )
-            ),
-            2 => array( //ReservedLockType
-                'filters' => array(
-                    array(
-                        'interval' =>  new \DateTime('- 1 week')
-                    )
-                )
-            ),
-            3 => array( //ClientLockType
-                'filters' =>  array(
-                    array(
-                        'client_id' => 2,
-                        'interval' => new \DateTime('- 4 month')
-                    ),
-                    array(
-                        'client_id' => 4,
-                        'interval' => new \DateTime('- 5 week')
-                    )
-                )
-            ),
-            4 => array( //CampaignFilter
-                'filters' => array(
-                    array(
-                        'client_id' => 4,
-                        'campaign_id' => 2,
-                        'interval' => new \DateTime('- 2 month')
-                    )
-                )
-            ),
-            5 => array( //Category
-                'filters' =>  array(
-                    array(
-                        'category_id' => 2,
-                        'interval' => new \DateTime('- 9 month')
-                    ),
-                )
-            ),
-            6 => array( // SubCategoryLockType
-                'filters' => array(
-                    array(
-                        'category_id' => 2,
-                        'sub_category_id' => 2,
-                        'interval' => new \DateTime('- 8 month')
-                    )
-                )
-            ),
-        );
 
-        $contact_filters = array(
-            1 => array( //BaseContactFilter
-                'filters' =>
-                    array(
-                        array(
-                        'field' => 'gender',
-                        'opt' => 'equal',
-                        'value' => array(53)
-                        ),
-                        array(
-                        'field' => 'postalcode1',
-                        'opt' => 'equal',
-                        'value' => array(4100, 2100)
-                        ),
-                        array(
-                        'field' => 'id',
-                        'opt' => 'not_equal',
-                        'value' => array(76802)
-                        ),
-                        array(
-                            'field' => 'country',
-                            'opt' => 'equal',
-                            'value' => array(74,75,76)
-                        ),
-                        array(
-                            'field' => 'birthdate',
-                            'opt' => 'between',
-                            'value' => array('1954-01-02', '1996-06-28')
-                        )
-                    )
-            ),
-        );
 
-        $lead_filters = array(
-            1 => array( //BaseLeadFilter
-                'filters' =>
-                    array(
-                        array(
-                        'field' => 'id',
-                        'opt' => 'not_equal',
-                        'value' => array(300443)
-                        ),
-                    )
-            ),
-        );
-
-        $extraction['filters'] = array(
-            'lock_filters' => $lock_filters,
-            'contact_filters' => $contact_filters,
-            'lead_filters' => $lead_filters
-        );
-
-        $e_service->setExtractionFilters(5,$extraction['filters']);
 
         return $this->render('ListBrokingUIBundle:Default:samuel.html.twig', array());
     }

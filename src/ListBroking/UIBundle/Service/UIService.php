@@ -16,7 +16,10 @@ use ListBroking\ClientBundle\Form\ClientType;
 use ListBroking\ClientBundle\Service\ClientService;
 use ListBroking\ExtractionBundle\Form\ExtractionType;
 use ListBroking\ExtractionBundle\Service\ExtractionService;
+use ListBroking\LeadBundle\Service\LeadService;
+use ListBroking\LockBundle\Service\LockService;
 use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
@@ -32,6 +35,11 @@ class UIService implements UIServiceInterface {
      * @var ExtractionService
      */
     private $e_service;
+
+    /**
+     * @var LeadService
+     */
+    private $l_service;
     /**
      * @var FormFactory
      */
@@ -44,6 +52,7 @@ class UIService implements UIServiceInterface {
     function __construct(
         ClientService $c_service,
         ExtractionService $e_service,
+        LeadService $l_service,
         FormFactory $form_factory,
         CsrfTokenManagerInterface $csrf_token_manager
 
@@ -51,10 +60,19 @@ class UIService implements UIServiceInterface {
     {
         $this->c_service = $c_service;
         $this->e_service = $e_service;
+        $this->l_service = $l_service;
         $this->form_factory = $form_factory;
         $this->csrf_token_manager = $csrf_token_manager;
     }
 
+    /**
+     * Group leads by lock and count them
+     * @return array
+     */
+    public function countByLock(){
+
+        return $this->l_service->countByLock();
+    }
 
     /**
      * Gets a list of entities using the services
@@ -251,12 +269,16 @@ class UIService implements UIServiceInterface {
     /**
      * Generates a new form view
      * @param $type
-     * @return mixed
+     * @param bool $view
+     * @return FormBuilderInterface|Form
      */
-    function generateFormView($type)
+    function generateForm($type, $view = false)
     {
-
-        return $this->form_factory->create($type)->createView();
+        $form = $this->form_factory->createBuilder($type);
+        if($view){
+            return $form->getForm()->createView();
+        }
+        return $form;
     }
 
     /**

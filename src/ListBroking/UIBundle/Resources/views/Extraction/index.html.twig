@@ -1,10 +1,10 @@
-{% extends 'ListBrokingUIBundle::template.html.twig' %}
+{% extends '@ListBrokingUI/base.html.twig' %}
 {% block main_title %}Extraction{% endblock %}
 {% block sub_title %}wizard{% endblock %}
 {% block content %}
     <div class="row">
         <div class="col-xs-12">
-            {% embed 'ListBrokingUIBundle:embeds:generic_box.html.twig' with {collapsed : true} %}
+            {% embed '@ListBrokingUI/_partials/embeds/generic_box.html.twig' with {collapsed : true} %}
                 {% block box_classes %}box-info{% endblock %}
                 {% block box_title %}List of existing extractions{% endblock %}
                 {% block box_tools %}

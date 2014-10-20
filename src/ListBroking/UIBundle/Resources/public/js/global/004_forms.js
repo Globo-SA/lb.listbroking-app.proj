@@ -7,7 +7,7 @@
     $(function() {
         "use strict";
 
-        $('form:not([data-type=simple])').submit(function(e){
+        $('form[data-form-type=ajax]').submit(function(e){
             e.preventDefault();
 
             var $form = $(this);
@@ -120,7 +120,31 @@
                     $('#loading_widget').fadeOut();
                 }
             });
-        })
+        });
+
+        var $list = $('#email_list');
+        var emailCount = $list.data('initial-count');
+        $('#add-another-email').click(function(){
+
+            var newWidget = $list.data('prototype');
+            newWidget = newWidget.replace(/__name__/g , emailCount);
+            emailCount++;
+
+            // create a new list element and add it to the list
+            var newLi = $('<li></li>').html(newWidget);
+
+            var $removeFormA = $('<a href="#">delete this tag</a>');
+            $removeFormA.on('click', function(e) {
+                // prevent the link from creating a "#" on the URL
+                e.preventDefault();
+
+                // remove the li for the tag form
+                newLi.remove();
+            });
+            newLi.append($removeFormA);
+            newLi.appendTo($list);
+
+        });
     });
 }
 )(jQuery, ListBroking)

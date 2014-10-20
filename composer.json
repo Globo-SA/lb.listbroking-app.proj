@@ -24,19 +24,18 @@
         "sensio/framework-extra-bundle": "~3.0",
         "incenteev/composer-parameter-handler": "~2.0",
         "phpunit/phpunit": "4.2.*",
+
         "doctrine/doctrine-fixtures-bundle": "2.2.*",
+
         "ebidtech/doctrine-repository": "@stable",
         "ebidtech/ebdate": "@stable",
 
         "liuggio/ExcelBundle": "2.0.*",
 
-        "friendsofsymfony/user-bundle": "~2.0@dev",
-<<<<<<< HEAD
-        "friendsofsymfony/rest-bundle": "~1.4",
         "jms/serializer-bundle": "~0.13",
-=======
+        "friendsofsymfony/user-bundle": "~2.0@dev",
+        "friendsofsymfony/rest-bundle": "~1.4",
         "friendsofsymfony/jsrouting-bundle": "2.0.*@dev",
->>>>>>> Started the UI
 
         "raulfraile/ladybug-bundle": "dev-master",
 
@@ -74,7 +73,7 @@
     "extra": {
         "symfony-app-dir": "app",
         "symfony-web-dir": "web",
-        "symfony-assets-install": "symlink",
+        "symfony-assets-install": "relative",
         "incenteev-parameters": {
             "file": "app/config/parameters.yml"
         },

@@ -7,7 +7,7 @@
     $(function() {
         "use strict";
 
-        $('table').dataTable({
+        $('[data-toggle=simple_table]').dataTable({
             "bPaginate": true,
             "bLengthChange": false,
             "bSort": true,

@@ -7,9 +7,12 @@ parameters:
     listbroking.lockbundle.lock_history.entity.class: ListBroking\LockBundle\Entity\LockHistory
     listbroking.lockbundle.lock_history.repository.class: ListBroking\LockBundle\Repository\ORM\LockHistoryRepository
 
-    listbroking.lock.engine.class: ListBroking\LockBundle\Engine\LockEngine
-    listbroking.lock.service.class: ListBroking\LockBundle\Service\LockService
-    listbroking.lock.rotate.command.class: ListBroking\LockBundle\Command\RotateExpiredLocksCommand
+    listbroking.lockbundle.engine.class: ListBroking\LockBundle\Engine\LockEngine
+    listbroking.lockbundle.service.class: ListBroking\LockBundle\Service\LockService
+    listbroking.lockbundle.rotate.command.class: ListBroking\LockBundle\Command\RotateExpiredLocksCommand
+
+    listbroking.lockbundle.json.form.type.class: ListBroking\LockBundle\Form\Type\JsonType
+    listbroking.lockbundle.filters.form.class: ListBroking\LockBundle\Form\FiltersForm
 
 services:
     listbroking.lockbundle.lock.repository:
@@ -31,11 +34,23 @@ services:
             inflector: @inflector.tool
 
     listbroking.lock.service:
-        class: %listbroking.lock.service.class%
+        class: %listbroking.lockbundle.service.class%
         arguments: [@listbroking.lockbundle.lock.repository, @listbroking.leadbundle.lead.repository, @listbroking.leadbundle.contact.repository]
 
     listbroking.lock.rotate.command:
-        class: %listbroking.lock.rotate.command.class%
+        class: %listbroking.lockbundle.rotate.command.class%
         arguments: [@listbroking.advanced_configuration.service, @listbroking.lock.service]
         tags:
           - { name: console.command, alias: rotate_logs }
+
+
+    listbroking.lockbundle.filters.form:
+        class:  %listbroking.lockbundle.filters.form.class%
+        arguments: [@listbroking.core.service, @listbroking.contact.service, @listbroking.client.service ]
+        tags:
+          - { name: form.type, alias: filters }
+
+    listbroking.lockbundle.json.form.type:
+        class: %listbroking.lockbundle.json.form.type.class%
+        tags:
+          - { name: form.type, alias: json }

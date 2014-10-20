@@ -20,6 +20,12 @@ extraction_filtering:
     options:
         expose: true
 
+ajax_count_leads:
+    path: /ajax/count/leads
+    defaults: { _controller: listbroking.uibundle.ajax.controller:countLeads }
+    options:
+        expose: true
+
 ajax_lists:
     path: /ajax/lists
     defaults: { _controller: listbroking.uibundle.ajax.controller:listsAction }

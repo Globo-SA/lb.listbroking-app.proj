@@ -1,18 +1,48 @@
-{% extends 'ListBrokingUIBundle::template.html.twig' %}
+{% extends '@ListBrokingUI/base.html.twig' %}
 {% block main_title %}Extraction{% endblock %}
 {% block sub_title %}wizard{% endblock %}
 {% block content %}
     <div class="row">
         <div class="col-xs-12">
-        {% embed 'ListBrokingUIBundle:embeds:generic_box.html.twig' with {collapsed : true} %}
-            {% block box_classes %}box-primary{% endblock %}
+        {% embed '@ListBrokingUI/_partials/embeds/generic_box.html.twig' with {collapsed : true} %}
+            {% block box_classes %}{% endblock %}
             {% block box_title %}
                 <i class="fa fa-wrench"></i>&nbsp;Filtering stage !
             {% endblock %}
             {% block box_tools %}
             {% endblock %}
             {% block box_body %}
-
+                <div class="box-group" id="filtering">
+                    <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+                    <div class="panel box box-primary">
+                        <div class="box-header">
+                            <h4 class="box-title">
+                                <a data-toggle="collapse" data-parent="#filtering" href="#filters">
+                                    Filters
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="filters" class="panel-collapse collapse in">
+                            <div class="box-body">
+                                {% include '@ListBrokingUI/_partials/forms/filters.html.twig' %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel box box-success">
+                        <div class="box-header">
+                            <h4 class="box-title">
+                                <a data-toggle="collapse" data-parent="#filtering" href="#success">
+                                    Summary
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="success" class="panel-collapse collapse">
+                            <div class="box-body">
+                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {% endblock %}
             {% block box_footer %}{% endblock %}
         {% endembed %}

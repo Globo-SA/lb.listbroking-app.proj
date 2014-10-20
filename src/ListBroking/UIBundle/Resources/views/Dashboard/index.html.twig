@@ -1,4 +1,4 @@
-{% extends 'ListBrokingUIBundle::template.html.twig' %}
+{% extends '@ListBrokingUI/base.html.twig' %}
 {% block main_title %}Dashboard{% endblock %}
 {% block sub_title %}Statistics{% endblock %}
 {% block content %}
@@ -7,7 +7,7 @@
             <!-- small box -->
             <div class="small-box bg-aqua">
                 <div class="inner">
-                    <h3>6.039.453</h3>
+                    <h3 data-bind="text: total"></h3>
                     <p>Total number of leads!</p>
                 </div>
                 <div class="icon">
@@ -23,7 +23,7 @@
             <!-- small box -->
             <div class="small-box bg-green">
                 <div class="inner">
-                    <h3>4.039.453</h3>
+                    <h3 data-bind="text: open"></h3>
                     <p>Usable leads</p>
                 </div>
                 <div class="icon">
@@ -39,7 +39,7 @@
             <!-- small box -->
             <div class="small-box bg-red">
                 <div class="inner">
-                    <h3>2.000.00 </h3>
+                    <h3 data-bind="text: lock"></h3>
                     <p>Locked Leads</p>
                 </div>
                 <div class="icon">

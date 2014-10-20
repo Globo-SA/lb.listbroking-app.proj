@@ -174,4 +174,15 @@ class LeadService implements LeadServiceInterface {
 
         return $this;
     }
+
+    /**
+     * Group leads by lock and count them
+     * @return array
+     */
+    public function countByLock()
+    {
+        return $this->lead_repo->countByLock();
+    }
+
+
 }
