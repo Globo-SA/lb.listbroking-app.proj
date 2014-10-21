@@ -41,6 +41,8 @@ class FiltersForm extends AbstractType
         $this->cd_service = $cd_service;
         $this->cl_service = $cl_service;
 
+        $default_country = $this->c_service->getCountryByCode('PT');
+
         $expiration_choices = array(
           '' => '',
           '-1 week' => '1 Week ago',
@@ -73,26 +75,115 @@ class FiltersForm extends AbstractType
                         )
                     ),
                     array(
-                        'name' => 'birthdate_range',
-                        'type' => 'text',
-                        'options' => array(
-                            'attr' => array(
-                                'data-toggle' => 'daterangepicker',
-                                'placeholder' => 'Select one...',
-                                'class' => 'form-control'
-                            ),
-                            'label' => 'Birthdate Range',
-                        )
-                    ),
-                    array(
                         'name' => 'email',
-                        'type' => 'email',
+                        'type' => 'hidden',
                         'options' => array(
                             'attr' => array(
-                                'placeholder' => 'Select one...',
+                                'data-select-mode' => 'open',
+                                'placeholder' => 'Write and press enter...',
                                 'class' => 'form-control'
                             ),
                             'label' => 'Email',
+                        )
+                    ),
+                    array(
+                        'name' => 'birthdate_range',
+                        'type' => 'collection',
+                        'options' => array(
+                            'attr' => array(
+                                'data-collection' => 'true',
+                                'class' => 'col-md-12'
+                            ),
+                            'type' => new RangeType('birthdate_range', 'Birthdate Range'),
+                            'allow_add' => true,
+                            'allow_delete' => true,
+                            'label' => 'SubCategory'
+                        )
+                    )
+                )
+            ),
+            "location" => array(
+                'label' => 'Location',
+                'fields' => array(
+                    array(
+                        'name' => 'country',
+                        'type' => 'choice',
+                        'options' => array(
+                            'data' => array($default_country['id']),
+                            'multiple' => true,
+                            'attr' => array(
+                                'data-select-mode' => 'local',
+                                'placeholder' => 'Select one or more...',
+                                'class' => 'form-control'
+                            ),
+                            'label' => 'Country',
+                            'choices' => $this->getChoicesArray($this->c_service->getCountryList())
+                        )
+                    ),
+                    array(
+                        'name' => 'district',
+                        'type' => 'choice',
+                        'options' => array(
+                            'multiple' => true,
+                            'attr' => array(
+                                'data-select-mode' => 'local',
+                                'placeholder' => 'Select one or more...',
+                                'class' => 'form-control'
+                            ),
+                            'label' => 'District',
+                            'choices' => $this->getChoicesArray($this->cd_service->getDistrictList())
+                        )
+                    ),
+                    array(
+                        'name' => 'county',
+                        'type' => 'choice',
+                        'options' => array(
+                            'multiple' => true,
+                            'attr' => array(
+                                'data-select-mode' => 'local',
+                                'placeholder' => 'Select one or more...',
+                                'class' => 'form-control'
+                            ),
+                            'label' => 'County',
+                            'choices' => $this->getChoicesArray($this->cd_service->getCountyList())
+                        )
+                    ),
+                    array(
+                        'name' => 'parish',
+                        'type' => 'choice',
+                        'options' => array(
+                            'multiple' => true,
+                            'attr' => array(
+                                'data-select-mode' => 'local',
+                                'placeholder' => 'Select one or more...',
+                                'class' => 'form-control'
+                            ),
+                            'label' => 'Parish',
+                            'choices' => $this->getChoicesArray($this->cd_service->getParishList())
+                        )
+                    ),
+                    array(
+                        'name' => 'postalcode1',
+                        'type' => 'hidden',
+                        'options' => array(
+                            'attr' => array(
+                                'data-select-mode' => 'open',
+                                'placeholder' => 'Write and press enter...',
+                                'class' => 'form-control'
+                            ),
+                            'label' => 'Postalcode1',
+                        )
+                    ),
+                    array(
+                        'name' => 'postalcode2',
+                        'type' => 'hidden',
+                        'options' => array(
+                            'attr' => array(
+                                'data-select-mode' => 'open',
+                                'placeholder' => 'Write and press enter...',
+                                'class' => 'form-control'
+                            ),
+                            'label' => 'Postalcode2',
                         )
                     ),
                 ),
@@ -155,91 +246,6 @@ class FiltersForm extends AbstractType
                             ),
                             'label' => 'SubCategory',
                             'choices' => $this->getChoicesArray($this->c_service->getSubCategoryList())
-                        )
-                    ),
-                ),
-            ),
-            "location" => array(
-                'label' => 'Location',
-                'fields' => array(
-                    array(
-                        'name' => 'country',
-                        'type' => 'choice',
-                        'options' => array(
-                            'multiple' => true,
-                            'attr' => array(
-                                'data-select-mode' => 'local',
-                                'placeholder' => 'Select one or more...',
-                                'class' => 'form-control'
-                            ),
-                            'label' => 'Country',
-                            'choices' => $this->getChoicesArray($this->c_service->getCountryList())
-                        )
-                    ),
-                    array(
-                        'name' => 'district',
-                        'type' => 'choice',
-                        'options' => array(
-                            'multiple' => true,
-                            'attr' => array(
-                                'data-select-mode' => 'local',
-                                'placeholder' => 'Select one or more...',
-                                'class' => 'form-control'
-                            ),
-                            'label' => 'District',
-                            'choices' => $this->getChoicesArray($this->cd_service->getDistrictList())
-                        )
-                    ),
-                    array(
-                        'name' => 'county',
-                        'type' => 'choice',
-                        'options' => array(
-                            'multiple' => true,
-                            'attr' => array(
-                                'data-select-mode' => 'local',
-                                'placeholder' => 'Select one or more...',
-                                'class' => 'form-control'
-                            ),
-                            'label' => 'County',
-                            'choices' => $this->getChoicesArray($this->cd_service->getCountyList())
-                        )
-                    ),
-                    array(
-                        'name' => 'parish',
-                        'type' => 'choice',
-                        'options' => array(
-                            'multiple' => true,
-                            'attr' => array(
-                                'data-select-mode' => 'local',
-                                'placeholder' => 'Select one or more...',
-                                'class' => 'form-control'
-                            ),
-                            'label' => 'Parish',
-                            'choices' => $this->getChoicesArray($this->cd_service->getParishList())
-                        )
-                    ),
-                    array(
-                        'name' => 'postalcode1',
-                        'type' => 'text',
-                        'options' => array(
-                            'attr' => array(
-                                'data-multiple-range' => true,
-                                'placeholder' => 'Choose one or more range...',
-                                'class' => 'form-control'
-                            ),
-                            'label' => 'Postalcode 1',
-                        )
-                    ),
-                    array(
-                        'name' => 'postalcode2',
-                        'type' => 'text',
-                        'options' => array(
-                            'attr' => array(
-                                'data-multiple-range' => true,
-                                'placeholder' => 'Choose one or more ranges...',
-                                'class' => 'form-control'
-                            ),
-                            'label' => 'Postalcode 2',
                         )
                     ),
                 ),
@@ -326,6 +332,52 @@ class FiltersForm extends AbstractType
                         )
                     ),
                 ),
+            ),
+            'category_locks' => array(
+                'label' => 'Category Locks',
+                'fields' => array(
+                    array(
+                        'name' => 'not_category_lock',
+                        'type' => 'collection',
+                        'options' => array(
+                            'attr' => array(
+                                'data-collection' => 'true',
+                                'class' => 'col-md-12'
+                            ),
+                            'type' => new LockType(
+                                        'category',
+                                        'Category',
+                                        $this->getChoicesArray($this->c_service->getCategoryList()),
+                                        $expiration_choices),
+                            'allow_add' => true,
+                            'allow_delete' => true,
+                            'label' => 'Category'
+                        )
+                    ),
+                ),
+            ),
+            'sub_category_locks' => array(
+                'label' => 'SubCategory Locks',
+                'fields' => array(
+                    array(
+                        'name' => 'not_sub_category_lock',
+                        'type' => 'collection',
+                        'options' => array(
+                            'attr' => array(
+                                'data-collection' => 'true',
+                                'class' => 'col-md-12'
+                            ),
+                            'type' => new LockType(
+                                        'sub_category',
+                                        'SubCategory',
+                                        $this->getChoicesArray($this->c_service->getSubCategoryList()),
+                                        $expiration_choices),
+                            'allow_add' => true,
+                            'allow_delete' => true,
+                            'label' => 'SubCategory'
+                        )
+                    ),
+                ),
             )
         );
     }
@@ -341,6 +393,7 @@ class FiltersForm extends AbstractType
             $virtual_form = $builder->create($group_name, 'form', array(
                 'label' => $group['label'],
                 'virtual' => true,
+                'label_attr' => array('class' => 'text-blue'),
                 'attr' => array('class' => 'row')
             ));
             foreach ($group['fields'] as $filter)

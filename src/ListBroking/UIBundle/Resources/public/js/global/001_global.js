@@ -6,9 +6,15 @@
     $(function () {
         "use strict";
 
-        // Select2 Ajax widgets
+        // Select2 widgets
         $("[data-select-mode=local]").each(function(){
             $(this).select2();
+        });
+
+        $("[data-select-mode=open]").each(function(){
+            $(this).select2({
+                tags: [],
+            });
         });
 
         $("[data-select-mode=ajax]").each(function () {
@@ -60,25 +66,6 @@
             });
         });
 
-        // Datepickers
-        $('[data-toggle=daterangepicker]').daterangepicker({
-                ranges: {
-                    '18-24 Years': [moment().subtract(24, 'years'), moment().subtract(18, 'years')],
-                    '25-34 Years': [moment().subtract(34, 'years'), moment().subtract(25, 'years')],
-                    '35-44 Years': [moment().subtract(44, 'years'), moment().subtract(35, 'years')],
-                    '45-54 Years': [moment().subtract(54, 'years'), moment().subtract(45, 'years')],
-                    '55-64 Years': [moment().subtract(64, 'years'), moment().subtract(55, 'years')],
-                    '65-90 Years': [moment().subtract(90, 'years'), moment().subtract(65, 'years')]
-                },
-                startDate: moment().subtract('days', 29),
-                endDate: moment()
-            },
-            function(start, end) {
-                var range_start = moment().format('YYYY') - end.format('YYYY');
-                var range_end = moment().format('YYYY') - start.format('YYYY');
-                $('#filters_contact_details_birthdate_range').next('.help-block').html('Range: <strong>' + range_start + '-' + range_end + ' Years</strong>');
-            });
-
         $('[data-toggle=datepicker]').daterangepicker({
             singleDatePicker: true,
             startDate: moment()
@@ -95,5 +82,7 @@
                 $label.tooltip()
             }
         });
+
+        $("[data-mask]").inputmask();
     });
 })(jQuery, ListBroking)

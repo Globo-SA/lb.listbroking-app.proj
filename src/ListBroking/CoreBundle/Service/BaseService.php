@@ -76,7 +76,7 @@ class BaseService {
         foreach ($entities as $entity) {
             if ($entity['id'] == $id){
                 if($hydrate){
-                    $entity = $this->hydrateObject($repo, $entity['id']);
+                    $entity = $repo->findOneById($entity['id']);
                 }
                 return $entity;
             }

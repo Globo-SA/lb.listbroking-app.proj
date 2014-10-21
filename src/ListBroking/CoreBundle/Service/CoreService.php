@@ -71,9 +71,30 @@ class CoreService extends BaseService implements CoreServiceInterface
      */
     public function getCountryByCode($code, $hydrate = false)
     {
-        $entity = $this->country_repo->getCountryByCode($code, $hydrate);
+        //$entity = $this->country_repo->getCountryByCode($code, $hydrate);
+        //return $entity;
 
-        return $entity;
+        // Check if entity exists in cache
+        if (!$this->cache->has(self::COUNTRY_LIST, self::COUNTRY_SCOPE)){
+            $this->cache->beginWarmingUp(self::COUNTRY_LIST, self::COUNTRY_SCOPE);
+
+            $entities = $this->country_repo->findAll();
+
+            $this->cache->set(self::COUNTRY_LIST, $entities, null, self::COUNTRY_SCOPE);
+        }
+        // Iterate through the cache and select correct entity by $id
+        $entities = $this->cache->get(self::COUNTRY_LIST, self::COUNTRY_SCOPE);
+
+        foreach ($entities as $entity) {
+            if ($entity['iso_code'] == strtoupper($code)){
+                if($hydrate){
+                    $entity = $this->country_repo->findOneById($entity['id']);
+                }
+                return $entity;
+            }
+        }
+
+        return null;
     }
 
     /**
