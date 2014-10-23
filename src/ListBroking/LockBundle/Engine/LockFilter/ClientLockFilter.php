@@ -46,15 +46,13 @@ class ClientLockFilter implements LockFilterInterface {
         foreach ($filters as $key => $filter)
         {
             // Validate filter array
-            if(!array_key_exists('client_id', $filter)
-                || !array_key_exists('interval', $filter)){
-                throw new InvalidFilterObjectException(
-                    'Invalid filter object must be: array(\'client_od\' => \'\', \'interval\' => \'\'), in ' .
-                    __CLASS__ );
+            if(!array_key_exists('client', $filter) || empty($filter['client'])
+                || !array_key_exists('interval', $filter) || empty($filters['interval'])){
+                continue;
             }
 
             if(!($filter['interval'] instanceof \DateTime)){
-                $filter['interval'] = new \DateTime($filter['interval']['date'], new \DateTimeZone($filter['interval']['timezone']));
+                $filter['interval'] = new \DateTime($filter['interval']);
             }
 
             // Check for locks on the client
@@ -67,7 +65,7 @@ class ClientLockFilter implements LockFilterInterface {
                 )
             );
             $qb->setParameter('client_locks_type', $this->type_id);
-            $qb->setParameter("client_locks_client_id_{$key}", $filter['client_id']);
+            $qb->setParameter("client_locks_client_id_{$key}", $filter['client']);
             $qb->setParameter("client_locks_filter_expiration_date_{$key}", $filter['interval']);
         }
     }

@@ -48,15 +48,13 @@ class CampaignLockFilter implements LockFilterInterface {
         foreach ($filters as $key => $filter)
         {
             // Validate filter array
-            if(!array_key_exists('campaign_id', $filter)
-                || !array_key_exists('interval', $filter)){
-                throw new InvalidFilterObjectException(
-                    'Invalid filter object must be: array(\'campaign_id\' => \'\', \'interval\' => \'\'), in ' .
-                    __CLASS__ );
+            if(!array_key_exists('campaign', $filter) || empty($filter['campaign'])
+                || !array_key_exists('interval', $filter) || empty($filter['interval'])){
+                continue;
             }
 
             if(!($filter['interval'] instanceof \DateTime)){
-                $filter['interval'] = new \DateTime($filter['interval']['date'], new \DateTimeZone($filter['interval']['timezone']));
+                $filter['interval'] = new \DateTime($filter['interval']);
             }
 
             $orX->addMultiple(
@@ -76,12 +74,23 @@ class CampaignLockFilter implements LockFilterInterface {
                     )
                 )
             );
+
+            // Query the child to get the parent
+            $sub_qb = $qb->getEntityManager()->createQueryBuilder();
+            $sub_qb
+                ->select('camp')
+                ->from('ListBroking\ClientBundle\Entity\Campaign', 'camp')
+                ->where('camp.id = :campaign')
+                ->setParameter('campaign', $filter['campaign'])
+            ;
+            $campaign = $sub_qb->getQuery()->getOneOrNullResult();
+
             $qb->setParameter('campaign_locks_type', $this->type_id);
-            $qb->setParameter("campaign_locks_campaign_id_{$key}", $filter['campaign_id']);
+            $qb->setParameter("campaign_locks_campaign_id_{$key}", $filter['campaign']);
             $qb->setParameter("campaign_locks_filter_expiration_date_{$key}", $filter['interval']);
 
             $qb->setParameter('campaign_locks_client_type', $this->parent_id);
-            $qb->setParameter("campaign_locks_client_id_{$key}", $filter['client_id']);
+            $qb->setParameter("campaign_locks_client_id_{$key}", $campaign->getClient());
         }
     }
 } 

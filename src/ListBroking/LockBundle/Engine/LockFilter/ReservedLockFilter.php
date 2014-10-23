@@ -42,14 +42,12 @@ class ReservedLockFilter implements LockFilterInterface
         foreach ($filters as $key => $filter)
         {
             // Validate filter array
-            if(!array_key_exists('interval', $filter)){
-                throw new InvalidFilterObjectException(
-                    'Invalid filter object must be: array( \'interval\' => \'\'), in ' .
-                    __CLASS__ );
+            if(!array_key_exists('interval', $filter) || empty($filter['interval'])){
+                continue;
             }
 
             if(!($filter['interval'] instanceof \DateTime)){
-                $filter['interval'] = new \DateTime($filter['interval']['date'], new \DateTimeZone($filter['interval']['timezone']));
+                $filter['interval'] = new \DateTime($filter['interval']);
             }
 
             // Check for reserved locks

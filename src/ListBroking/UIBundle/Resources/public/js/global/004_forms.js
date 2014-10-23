@@ -7,6 +7,14 @@
     $(function() {
         "use strict";
 
+        $('form').bind("keyup keypress", function(e) {
+            var code = e.keyCode || e.which;
+            if (code  == 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
         $('form[data-form-type=ajax]').submit(function(e){
             e.preventDefault();
 

@@ -55,7 +55,7 @@ class LockType extends AbstractType
     {
         $builder
             ->add($this->name, 'choice', array(
-                'multiple' => true,
+                'required' => false,
                 'attr' => array(
                     'data-select-mode' => 'local',
                     'placeholder' => 'Select one or more...',
@@ -64,7 +64,9 @@ class LockType extends AbstractType
                 'label' => $this->label,
                 'choices' => $this->choices
             ))
-            ->add('expiration_date', 'choice', array(
+            ->add('interval', 'choice', array(
+                'required' => false,
+
                 'attr' => array(
                     'data-select-mode' => 'local',
                     'placeholder' => 'Select one...',

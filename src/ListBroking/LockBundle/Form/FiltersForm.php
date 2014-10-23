@@ -61,10 +61,11 @@ class FiltersForm extends AbstractType
                 'label' => 'Contact Details',
                 'fields' => array(
                     array(
-                        'name' => 'gender',
+                        'name' => 'contact:gender',
                         'type' => 'choice',
                         'options' => array(
                             'multiple' => true,
+                            'required' => false,
                             'attr' => array(
                                 'data-select-mode' => 'local',
                                 'placeholder' => 'Select one or more...',
@@ -75,9 +76,10 @@ class FiltersForm extends AbstractType
                         )
                     ),
                     array(
-                        'name' => 'email',
+                        'name' => 'contact:email',
                         'type' => 'hidden',
                         'options' => array(
+                            'required' => false,
                             'attr' => array(
                                 'data-select-mode' => 'open',
                                 'placeholder' => 'Write and press enter...',
@@ -87,9 +89,10 @@ class FiltersForm extends AbstractType
                         )
                     ),
                     array(
-                        'name' => 'birthdate_range',
+                        'name' => 'contact:birthdate',
                         'type' => 'collection',
                         'options' => array(
+                            'required' => false,
                             'attr' => array(
                                 'data-collection' => 'true',
                                 'class' => 'col-md-12'
@@ -97,7 +100,7 @@ class FiltersForm extends AbstractType
                             'type' => new RangeType('birthdate_range', 'Birthdate Range'),
                             'allow_add' => true,
                             'allow_delete' => true,
-                            'label' => 'SubCategory'
+                            'label' => 'Birthdate'
                         )
                     )
                 )
@@ -106,11 +109,12 @@ class FiltersForm extends AbstractType
                 'label' => 'Location',
                 'fields' => array(
                     array(
-                        'name' => 'country',
+                        'name' => 'contact:country',
                         'type' => 'choice',
                         'options' => array(
                             'data' => array($default_country['id']),
                             'multiple' => true,
+                            'required' => false,
                             'attr' => array(
                                 'data-select-mode' => 'local',
                                 'placeholder' => 'Select one or more...',
@@ -121,10 +125,11 @@ class FiltersForm extends AbstractType
                         )
                     ),
                     array(
-                        'name' => 'district',
+                        'name' => 'contact:district',
                         'type' => 'choice',
                         'options' => array(
                             'multiple' => true,
+                            'required' => false,
                             'attr' => array(
                                 'data-select-mode' => 'local',
                                 'placeholder' => 'Select one or more...',
@@ -135,10 +140,11 @@ class FiltersForm extends AbstractType
                         )
                     ),
                     array(
-                        'name' => 'county',
+                        'name' => 'contact:county',
                         'type' => 'choice',
                         'options' => array(
                             'multiple' => true,
+                            'required' => false,
                             'attr' => array(
                                 'data-select-mode' => 'local',
                                 'placeholder' => 'Select one or more...',
@@ -149,10 +155,11 @@ class FiltersForm extends AbstractType
                         )
                     ),
                     array(
-                        'name' => 'parish',
+                        'name' => 'contact:parish',
                         'type' => 'choice',
                         'options' => array(
                             'multiple' => true,
+                            'required' => false,
                             'attr' => array(
                                 'data-select-mode' => 'local',
                                 'placeholder' => 'Select one or more...',
@@ -163,9 +170,10 @@ class FiltersForm extends AbstractType
                         )
                     ),
                     array(
-                        'name' => 'postalcode1',
+                        'name' => 'contact:postalcode1',
                         'type' => 'hidden',
                         'options' => array(
+                            'required' => false,
                             'attr' => array(
                                 'data-select-mode' => 'open',
                                 'placeholder' => 'Write and press enter...',
@@ -175,9 +183,10 @@ class FiltersForm extends AbstractType
                         )
                     ),
                     array(
-                        'name' => 'postalcode2',
+                        'name' => 'contact:postalcode2',
                         'type' => 'hidden',
                         'options' => array(
+                            'required' => false,
                             'attr' => array(
                                 'data-select-mode' => 'open',
                                 'placeholder' => 'Write and press enter...',
@@ -192,10 +201,11 @@ class FiltersForm extends AbstractType
                 'label' => 'Ownership, Source and Categorization',
                 'fields' => array(
                     array(
-                        'name' => 'owner',
+                        'name' => 'contact:owner',
                         'type' => 'choice',
                         'options' => array(
                             'multiple' => true,
+                            'required' => false,
                             'attr' => array(
                                 'data-select-mode' => 'local',
                                 'placeholder' => 'Select one or more...',
@@ -206,10 +216,11 @@ class FiltersForm extends AbstractType
                         )
                     ),
                     array(
-                        'name' => 'source',
+                        'name' => 'contact:source',
                         'type' => 'choice',
                         'options' => array(
                             'multiple' => true,
+                            'required' => false,
                             'attr' => array(
                                 'data-select-mode' => 'local',
                                 'placeholder' => 'Select one or more...',
@@ -220,11 +231,12 @@ class FiltersForm extends AbstractType
                         )
                     ),
                     array(
-                        'name' => 'category',
+                        'name' => 'contact:category',
                         'type' => 'choice',
                         'options' => array(
                             'disabled' => 'disabeld',
                             'multiple' => true,
+                            'required' => false,
                             'attr' => array(
                                 'data-select-mode' => 'local',
                                 'placeholder' => 'Select one or more...',
@@ -235,10 +247,11 @@ class FiltersForm extends AbstractType
                         )
                     ),
                     array(
-                        'name' => 'sub_category',
+                        'name' => 'contact:sub_category',
                         'type' => 'choice',
                         'options' => array(
                             'multiple' => true,
+                            'required' => false,
                             'attr' => array(
                                 'data-select-mode' => 'local',
                                 'placeholder' => 'Select one or more...',
@@ -254,11 +267,12 @@ class FiltersForm extends AbstractType
                 'label' => 'Basic Lead Locks',
                 'fields' => array(
                     array(
-                        'name' => 'not_locked',
+                        'name' => 'lock:no_locks_lock_filter',
                         'type' => 'checkbox',
                         'options' => array(
                             'value' => 1, //NoLocksFilter
                             'data' => true,
+                            'required' => false,
                             'attr' => array(
                                 'data-toggle' => 'tooltip',
                                 'data-trigger' => 'hover',
@@ -270,11 +284,12 @@ class FiltersForm extends AbstractType
                         )
                     ),
                     array(
-                        'name' => 'not_reserved',
+                        'name' => 'lock:reserved_lock_filter',
                         'type' => 'checkbox',
                         'options' => array(
                             'value' => 2, //ReservedLockType
                             'data' => true,
+                            'required' => false,
                             'attr' => array(
                                 'data-toggle' => 'tooltip',
                                 'data-trigger' => 'hover',
@@ -291,9 +306,10 @@ class FiltersForm extends AbstractType
                 'label' => 'Client Locks',
                 'fields' => array(
                     array(
-                        'name' => 'not_client_lock',
+                        'name' => 'lock:client_lock_filter',
                         'type' => 'collection',
                         'options' => array(
+                            'required' => false,
                             'attr' => array(
                                 'data-collection' => 'true',
                                 'class' => 'col-md-12'
@@ -314,9 +330,10 @@ class FiltersForm extends AbstractType
                 'label' => 'Campaign Locks',
                 'fields' => array(
                     array(
-                        'name' => 'not_campaign_lock',
+                        'name' => 'lock:campaign_lock_filter',
                         'type' => 'collection',
                         'options' => array(
+                            'required' => false,
                             'attr' => array(
                                 'data-collection' => 'true',
                                 'class' => 'col-md-12'
@@ -337,8 +354,9 @@ class FiltersForm extends AbstractType
                 'label' => 'Category Locks',
                 'fields' => array(
                     array(
-                        'name' => 'not_category_lock',
+                        'name' => 'lock:category_lock_filter',
                         'type' => 'collection',
+                        'required' => false,
                         'options' => array(
                             'attr' => array(
                                 'data-collection' => 'true',
@@ -360,8 +378,9 @@ class FiltersForm extends AbstractType
                 'label' => 'SubCategory Locks',
                 'fields' => array(
                     array(
-                        'name' => 'not_sub_category_lock',
+                        'name' => 'lock:sub_category_lock_filter',
                         'type' => 'collection',
+                        'required' => false,
                         'options' => array(
                             'attr' => array(
                                 'data-collection' => 'true',

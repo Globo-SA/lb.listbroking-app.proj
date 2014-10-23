@@ -11,8 +11,11 @@
 
            var $collectionHolder = $(this);
 
-           $collectionHolder.data('index', $collectionHolder.find('[data-id]').length);
-           addTagForm($collectionHolder);
+           var index = $collectionHolder.find('[data-id]').length;
+           $collectionHolder.data('index', index);
+           if(index == 0){
+               addTagForm($collectionHolder);
+           }
 
            $collectionHolder.find('.add_collection').on('click', function(e) {
                e.preventDefault();
@@ -20,7 +23,13 @@
                // add a new tag form (see next code block)
                addTagForm($collectionHolder);
            });
+
+           $collectionHolder.find('.del_collection').on('click', function(e) {
+               e.preventDefault();
+               $(this).parent('div').remove();
+           });
        });
+        initDateRangePickers($('form'));
 
         function addTagForm($collectionHolder) {
             var prototype = $collectionHolder.data('prototype');
@@ -31,19 +40,25 @@
 
             $newForm.find('.del_collection').on('click', function(e) {
                 e.preventDefault();
-                $('#'+ $(this).data('id')).remove();
+                $(this).parent('div').remove();
             });
 
             $collectionHolder.data('index', index + 1);
 
-            $collectionHolder.find('.add_collection').before($newForm);
+            $collectionHolder.find('.add_collection').after($newForm);
 
             // Select2 Ajax widgets
             $collectionHolder.find("[data-select-mode=local]").select2();
             $("[data-mask]").inputmask();
 
+            initDateRangePickers($collectionHolder);
+
+        }
+
+        function initDateRangePickers($this){
             // Datepickers
-            $collectionHolder.find('[data-toggle=daterangepicker]').daterangepicker({
+            $this.find('[data-toggle=daterangepicker]').daterangepicker({
+                    format: 'YYYY/MM/DD',
                     ranges: {
                         '18-24 Years': [moment().subtract(24, 'years'), moment().subtract(18, 'years')],
                         '25-34 Years': [moment().subtract(34, 'years'), moment().subtract(25, 'years')],
@@ -52,13 +67,20 @@
                         '55-64 Years': [moment().subtract(64, 'years'), moment().subtract(55, 'years')],
                         '65-90 Years': [moment().subtract(90, 'years'), moment().subtract(65, 'years')]
                     },
-                    startDate: moment().subtract('days', 29),
+                    startDate: moment().subtract(29, 'days'),
                     endDate: moment()
                 },
                 function(start, end) {
                     var range_start = moment().format('YYYY') - end.format('YYYY');
                     var range_end = moment().format('YYYY') - start.format('YYYY');
-                    $('#filters_contact_details_birthdate_range').next('.help-block').html('Range: <strong>' + range_start + '-' + range_end + ' Years</strong>');
+
+                    var $datepicker = this.element;
+                    var $help = $datepicker.next('.help-block');
+                    if($help.length == 0){
+                        $datepicker.after('<div class="help-block"></div>');
+                        $help = $datepicker.next('.help-block');
+                    }
+                    $help.html('Range: <strong>' + range_start + '-' + range_end + ' Years</strong>');
                 });
         }
     });

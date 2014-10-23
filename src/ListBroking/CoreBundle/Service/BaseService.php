@@ -62,6 +62,11 @@ class BaseService {
      * @return mixed|null
      */
     protected function get($list_name, $scope, $repo,$id, $hydrate = false){
+
+        if($hydrate){
+            return $repo->findOneById($id, true);
+        }
+
         // Check if entity exists in cache
         if (!$this->cache->has($list_name, $scope)){
             $this->cache->beginWarmingUp($list_name, $scope);
@@ -75,9 +80,6 @@ class BaseService {
 
         foreach ($entities as $entity) {
             if ($entity['id'] == $id){
-                if($hydrate){
-                    $entity = $repo->findOneById($entity['id']);
-                }
                 return $entity;
             }
         }

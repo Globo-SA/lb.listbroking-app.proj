@@ -93,6 +93,9 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
             foreach ($associations_mappings as $associations_mapping)
             {
                 $qb->leftJoin($this->alias() . '.' . $associations_mapping, $associations_mapping);
+                if(!in_array($associations_mapping, array('created_by', 'updated_by'))){
+
+                }
                 $qb->addSelect($associations_mapping);
             }
         }

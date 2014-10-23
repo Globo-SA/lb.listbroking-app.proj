@@ -22,7 +22,7 @@ services:
 
     listbroking.uibundle.extraction.controller:
         class: %listbroking.uibundle.extraction.controller.class%
-        arguments: [@twig, @router, @listbroking.extraction.service, @listbroking.uibundle.service]
+        arguments: [@twig, @router, @listbroking.extraction.service, @listbroking.lock.service, @listbroking.uibundle.service]
 
     listbroking.uibundle.ajax.controller:
         class: %listbroking.uibundle.ajax.controller.class%

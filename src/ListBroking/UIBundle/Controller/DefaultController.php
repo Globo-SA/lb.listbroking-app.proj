@@ -192,8 +192,9 @@ class DefaultController extends Controller
 //
 //        $e_service->setExtractionFilters(5,$extraction['filters']);
 
-
-
+        $c_service = $this->get('listbroking.core.service');
+        $sub = $c_service->getSubCategory(136);
+        ladybug_dump_die($sub);
 
         return $this->render('ListBrokingUIBundle:Default:samuel.html.twig', array());
     }

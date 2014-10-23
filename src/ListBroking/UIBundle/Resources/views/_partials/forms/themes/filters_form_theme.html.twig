@@ -41,8 +41,13 @@
         {% if form.parent.vars.block_prefixes.1 == 'filters' %}
             <blockquote>
         {% endif %}
-            {% if form.vars.block_prefixes.1 not in ['filter', 'collection'] %}
+            {% if form.vars.block_prefixes.1 == 'checkbox' %}
+                {{ form_widget(form) }}&nbsp;
                 {{ form_label(form) }}
+            {% else %}
+                {% if form.vars.block_prefixes.1 not in ['filter', 'collection'] %}
+                    {{ form_label(form) }}
+                {% endif %}
             {% endif %}
             {{ form_widget(form) }}
         {% if form.parent.vars.block_prefixes.1 == 'filters' %}

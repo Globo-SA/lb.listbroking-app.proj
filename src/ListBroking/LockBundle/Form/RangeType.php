@@ -46,6 +46,7 @@ class RangeType extends AbstractType
         $builder
             ->add($this->name, 'text', array(
                 'label' => $this->label,
+                'required' => false,
                 'attr' => array(
                     'data-toggle' => 'daterangepicker',
                     'placeholder' => 'Select one...',

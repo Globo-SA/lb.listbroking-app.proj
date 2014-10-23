@@ -14,7 +14,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class TextType extends AbstractType
+class ContactType extends AbstractType
 {
 
     private $uniqid;
@@ -22,21 +22,15 @@ class TextType extends AbstractType
     /**
      * @var
      */
-    private $name;
+    private $field;
 
-    /**
-     * @var
-     */
-    private $options;
-
-    function __construct($name, $options)
+    function __construct($field)
     {
         // An UniqueID is appended to the
         // name to avoid form collisions
         $this->uniqid = uniqid();
 
-        $this->name = $name;
-        $this->options = $options;
+        $this->field = $field;
     }
 
     /**
@@ -46,7 +40,18 @@ class TextType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add($this->name, 'text', $options);
+            ->add($this->field['name'], $this->field['type'], $this->field['options'])
+            ->add('opt', 'choice', array(
+                'label' => 'Operation',
+                'choices' => array('equal' => 'Equal', 'not_equal' => 'Not Equal'),
+                'attr' => array(
+                    'class' => 'form-control',
+                    'data-select-mode' => 'local',
+                    'placeholder' => 'Select one...',
+                    )
+                )
+            )
+            ;
     }
 
     /**
