@@ -27,7 +27,7 @@ class ExtractionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('is_active')
+            ->add('is_active', 'checkbox', array('data' => true))
             ->add('name')
             ->add('client', 'hidden', array(
                 "mapped" => false,
@@ -49,7 +49,7 @@ class ExtractionType extends AbstractType
             )))
             ->add('status', 'choice', array(
                 'attr' => array(
-                    "data-select" => "normal"
+                    "data-select-mode" => "local"
                 ),
                 'choices' => array(
                      0 => 'STATUS_CONFIGURATION',

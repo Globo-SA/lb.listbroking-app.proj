@@ -1,5 +1,5 @@
-{% form_theme forms.client '@ListBrokingUI/forms/themes/form_theme.html.twig' %}
-{{ form_start(forms.client) }}
+{% form_theme forms.client '@ListBrokingUI/forms/form_theme.html.twig' %}
+{{ form_start(forms.client, {attr: {'data-form-type' :'ajax'}}) }}
     {{ form_row(forms.client.is_active) }}
     {{ form_row(forms.client.name, {icon: 'bookmark'}) }}
     {{ form_row(forms.client.account_name, {icon: 'bookmark-o'}) }}

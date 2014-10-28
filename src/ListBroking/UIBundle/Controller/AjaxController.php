@@ -45,7 +45,7 @@ class AjaxController {
      */
     public function listsAction(Request $request){
         try{
-            $this->validateRequest($request);
+            //$this->validateRequest($request);
 
             $type = $request->get('type', '');
             $parent_type = $request->get('parent_type', '');

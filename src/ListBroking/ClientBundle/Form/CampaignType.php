@@ -27,7 +27,7 @@ class CampaignType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('is_active')
+            ->add('is_active', 'checkbox', array('data' => true))
             ->add('client', 'hidden', array('attr' => array(
                 "data-select-mode" => "ajax",
                 "data-select-type" => "client",

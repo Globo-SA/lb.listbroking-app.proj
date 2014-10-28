@@ -26,7 +26,7 @@ class ClientType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('is_active')
+            ->add('is_active', 'checkbox', array('data' => true))
             ->add('name')
             ->add('account_name')
             ->add('phone')

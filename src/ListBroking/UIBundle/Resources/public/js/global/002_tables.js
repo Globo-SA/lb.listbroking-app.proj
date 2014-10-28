@@ -7,14 +7,19 @@
     $(function() {
         "use strict";
 
-        $('[data-toggle=simple_table]').dataTable({
+        $('[data-toggle=simple_table]').on('init.dt', function () {
+            $('select[name=leads_table_length]').select2();
+        }).dataTable({
             "bPaginate": true,
-            "bLengthChange": false,
+            "bLengthChange": true,
             "bSort": true,
             "bInfo": true,
             "bAutoWidth": false
+        });
+
+        $('.exclude_lead').on('click',function(){
+            $(this).next('button').slide('left', 'slow');
         })
-        ;
     });
 }
 )(jQuery, ListBroking)

@@ -1,5 +1,5 @@
-{% form_theme forms.campaign '@ListBrokingUI/forms/themes/form_theme.html.twig' %}
-{{ form_start(forms.campaign) }}
+{% form_theme forms.campaign '@ListBrokingUI/forms/form_theme.html.twig' %}
+{{ form_start(forms.campaign, {attr: {'data-form-type' :'ajax'}}) }}
     {{ form_row(forms.campaign.is_active) }}
     {{ form_row(forms.campaign.client) }}
     {{ form_row(forms.campaign.name, {icon: 'bookmark-o'}) }}

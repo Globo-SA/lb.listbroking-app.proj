@@ -32,7 +32,7 @@ class BaseService {
      * @param bool $only_active
      * @return mixed|null
      */
-    protected function getList($list_name, $scope, $repo, $only_active = false)
+    protected function getList($list_name, $scope, $repo, $only_active = true)
     {
         // Check if entity exists in cache
         if(!$this->cache->has($list_name, $scope)){
@@ -42,14 +42,13 @@ class BaseService {
             $this->cache->set($list_name, $entities, null, $scope);
         }
         $entities = $this->cache->get($list_name, $scope);
-
-        foreach ($entities as $entity) {
-            if (isset($entity['is_active']) && !$entity['is_active'] && $only_active){
-                unset($entity);
+        foreach ($entities as $key => $entity) {
+            if (array_key_exists('is_active', $entity) && $only_active && !$entity['is_active']){
+                unset($entities[$key]);
             }
         }
 
-        return $entities;
+        return array_values($entities);
     }
 
     /**

@@ -13,6 +13,7 @@ namespace ListBroking\DoctrineBundle\Repository\ORM;
 
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 use ESO\Doctrine\ORM\EntityRepository;
 use ESO\Doctrine\ORM\QueryBuilder;
 use ListBroking\DoctrineBundle\Exception\EntityClassMissingException;
@@ -101,10 +102,11 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
         }
 
         if($hydrate){
-            $entity =  $qb->getQuery()->execute();
-
+            $entity =  $qb->getQuery()->execute(null, Query::HYDRATE_OBJECT);
         }else{
-            $entity =  $qb->getQuery()->execute(null, AbstractQuery::HYDRATE_ARRAY);
+            $entity = $qb->getQuery()
+                ->setHint(Query::HINT_INCLUDE_META_COLUMNS, true)
+                ->execute(null, Query::HYDRATE_ARRAY);
         }
 
         return $entity;

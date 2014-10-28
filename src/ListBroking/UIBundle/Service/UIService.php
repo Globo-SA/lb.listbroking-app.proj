@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
@@ -24,7 +24,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
-class UIService implements UIServiceInterface {
+class UIService implements UIServiceInterface
+{
 
     /**
      * @var ClientService
@@ -67,7 +68,8 @@ class UIService implements UIServiceInterface {
      * Group leads by lock and count them
      * @return array
      */
-    public function countByLock(){
+    public function countByLock()
+    {
 
         return $this->l_service->countByLock();
     }
@@ -81,57 +83,44 @@ class UIService implements UIServiceInterface {
      * @throws \Exception
      * @return mixed
      */
-    public function getEntityList($type, $parent_type, $parent_id){
-        if(empty($type)){
+    public function getEntityList($type, $parent_type, $parent_id)
+    {
+        if (empty($type))
+        {
             throw new \Exception("Type can not be empty", 400);
         }
 
         $list = array();
-        if(empty($parent_type)){
-            switch($type){
-                case 'client':
-                    $list = $this->c_service->getClientList();
-                    break;
-                case 'campaign':
-                    $tmp_list = $this->c_service->getCampaignList();
-                    foreach ($tmp_list as $obj){
-                        $obj['name'] = $obj['client']['name'] . ' - ' . $obj['name'];
+        switch ($type)
+        {
+            case 'client':
+                $list = $this->c_service->getClientList();
+                break;
+            case 'campaign':
+                $tmp_list = $this->c_service->getCampaignList();
+                foreach ($tmp_list as $key => $obj)
+                {
+                    if(!empty($parent_id) && $obj['client_id'] == $parent_id){
+                        $client = $this->c_service->getClient($obj['client_id']);
+                        $obj['name'] = $client['name'] . ' - ' . $obj['name'];
 
-                        $list[] = $obj;
-                    }
-
-                    break;
-                case 'extraction':
-                    $list = $this->e_service->getExtractionList();
-                    break;
-                default:
-                    throw new \Exception("Invalid List, {$type}", 400);
-                    break;
-            }
-        }else{
-            switch($parent_type){
-                case 'client':
-                    $parents = $this->c_service->getClientList();
-                    break;
-                case 'campaign':
-                    $parents = $this->c_service->getCampaignList();
-                    break;
-                case 'extraction':
-                    $parents = $this->e_service->getExtractionList();
-                    break;
-                default:
-                    throw new \Exception("Invalid Parent Type, {$parent_type}", 400);
-                    break;
-            }
-            foreach($parents as $parent){
-                // If there's a parent an id must be given
-                // of nothing will be added to the list
-                if(!empty($parent_id) && $parent_id == $parent['id']){
-                    foreach($parent[$type . 's'] as $obj){
                         $list[] = $obj;
                     }
                 }
-            }
+
+                break;
+            case 'extraction':
+                $tmp_list = $this->e_service->getExtractionList();
+                foreach ($tmp_list as $key => $obj)
+                {
+                    if(!empty($parent_id) && $obj['campaign_id'] == $parent_id){
+                        $list[] = $obj;
+                    }
+                }
+                break;
+            default:
+                throw new \Exception("Invalid List, {$type}", 400);
+                break;
         }
 
         return $list;
@@ -146,7 +135,8 @@ class UIService implements UIServiceInterface {
      */
     public function submitForm($form_name, $request)
     {
-        if(empty($form_name)){
+        if (empty($form_name))
+        {
             throw new \Exception("Form name can't be empty", 400);
         }
 
@@ -155,17 +145,20 @@ class UIService implements UIServiceInterface {
         unset($split);
 
         $result = null;
-        switch($type){
+        switch ($type)
+        {
             case 'client':
                 $form = $this->form_factory->createNamed($form_name, new ClientType());
                 $form->handleRequest($request);
 
-                if($form->isValid()){
-                   $client = $form->getData();
-                    if($client->getId()){
+                if ($form->isValid())
+                {
+                    $client = $form->getData();
+                    if ($client->getId())
+                    {
                         $this->c_service->updateClient($client);
-                    }
-                    else{
+                    } else
+                    {
 
                         $this->c_service->addClient($client);
                     }
@@ -174,7 +167,8 @@ class UIService implements UIServiceInterface {
                         "id" => $client->getId(),
                         "msg" => "Form successfully saved!"
                     );
-                }else{
+                } else
+                {
                     $result = array(
                         "success" => false,
                         "errors" => $this->getErrorsAsArray($form),
@@ -186,7 +180,8 @@ class UIService implements UIServiceInterface {
                 $form = $this->form_factory->createNamed($form_name, new CampaignType());
                 $form->handleRequest($request);
 
-                if($form->isValid()){
+                if ($form->isValid())
+                {
                     $campaign = $form->getData();
 
                     // Convert client id to Object
@@ -200,7 +195,8 @@ class UIService implements UIServiceInterface {
                         "id" => $campaign->getId(),
                         "msg" => "Form successfully saved!"
                     );
-                }else{
+                } else
+                {
                     $result = array(
                         "success" => false,
                         "errors" => $this->getErrorsAsArray($form),
@@ -212,7 +208,8 @@ class UIService implements UIServiceInterface {
                 $form = $this->form_factory->createNamed($form_name, new ExtractionType());
                 $form->handleRequest($request);
 
-                if($form->isValid()){
+                if ($form->isValid())
+                {
                     $extraction = $form->getData();
 
                     // Convert campaign id to Object
@@ -226,7 +223,8 @@ class UIService implements UIServiceInterface {
                         "id" => $campaign->getId(),
                         "msg" => "Form successfully saved!"
                     );
-                }else{
+                } else
+                {
                     $result = array(
                         "success" => false,
                         "errors" => $this->getErrorsAsArray($form),
@@ -249,12 +247,15 @@ class UIService implements UIServiceInterface {
     {
         $errors = array();
 
-        foreach ($form->getErrors() as $error) {
+        foreach ($form->getErrors() as $error)
+        {
             $errors[] = $error->getMessage();
         }
 
-        foreach ($form->all() as $child) {
-            if ($err = $this->getErrorsAsArray($child)) {
+        foreach ($form->all() as $child)
+        {
+            if ($err = $this->getErrorsAsArray($child))
+            {
                 $errors[$form->getName()][$child->getName()] = $err;
             }
         }
@@ -270,7 +271,8 @@ class UIService implements UIServiceInterface {
     function generateForm($type, $view = false)
     {
         $form = $this->form_factory->createBuilder($type);
-        if($view){
+        if ($view)
+        {
             return $form->getForm()->createView();
         }
         return $form;

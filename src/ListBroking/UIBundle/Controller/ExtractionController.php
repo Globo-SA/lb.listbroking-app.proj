@@ -68,7 +68,7 @@ class ExtractionController
         $extractions = $this->e_service->getExtractionList();
 
         return new Response($this->twig->render(
-            'ListBrokingUIBundle:Extraction:index.html.twig',
+            'ListBrokingUIBundle:Extraction:0-index.html.twig',
             array(
                 'extractions' => $extractions
             )
@@ -86,7 +86,7 @@ class ExtractionController
         );
 
         return new Response($this->twig->render(
-            'ListBrokingUIBundle:Extraction:configuration.html.twig',
+            'ListBrokingUIBundle:Extraction:1-configuration.html.twig',
             array(
                 'forms' => $forms
             )
@@ -137,7 +137,7 @@ class ExtractionController
 
 
         return new Response($this->twig->render(
-            'ListBrokingUIBundle:Extraction:filtering.html.twig',
+            'ListBrokingUIBundle:Extraction:2-filtering.html.twig',
             array(
                 'extraction' => $extraction,
                 'forms' => $forms,

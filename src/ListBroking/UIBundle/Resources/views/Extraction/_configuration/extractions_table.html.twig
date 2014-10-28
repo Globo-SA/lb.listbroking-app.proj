@@ -1,11 +1,12 @@
-{% import "@ListBrokingUI/global_macros.html.twig" as macros %}
+{% import "@ListBrokingUI/_partials/macros/table_macros.html.twig" as macros %}
 
 <table id="example1" class="table table-hover" data-toggle="simple_table">
     <thead>
     <tr>
         <th>Active</th>
-        <th>Quantity</th>
+        <th>Name</th>
         <th>Payout</th>
+        <th>Quantity</th>
         <th>Status</th>
         <th></th>
     </tr>
@@ -14,8 +15,9 @@
     {% for extraction in extractions %}
     <tr>
         <td>{{ macros.isActive(extraction.is_active) }}</td>
-        <td>{{ extraction.quantity }}</td>
+        <td>{{ extraction.name }}</td>
         <td>{{ extraction.payout }}</td>
+        <td>{{ extraction.quantity }}</td>
         <td>{{ macros.progress(extraction.status) }}</td>
         <td class="col-md-0"><a href="{{ path('extraction_filtering', { extraction_id : extraction.id }) }}" class="btn btn-sm btn-default pull-right"><i class="fa fa-pencil-square-o"></i>&nbsp;EDIT</a></td>
     </tr>
@@ -24,8 +26,9 @@
     <tfoot>
     <tr>
         <th>Active</th>
-        <th>Quantity</th>
+        <th>Name</th>
         <th>Payout</th>
+        <th>Quantity</th>
         <th>Status</th>
     </tr>
     </tfoot>

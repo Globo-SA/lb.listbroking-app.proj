@@ -5,6 +5,14 @@
 (function ($, App) {
     $(function () {
         "use strict";
+        // Extra animations
+        jQuery.fn.extend({
+            slide: function(direction, time) {
+                return this.each(function() {
+                    $(this).toggle('slide', {direction: direction}, time);
+                });
+            }
+        });
 
         // Select2 widgets
         $("[data-select-mode=local]").each(function(){

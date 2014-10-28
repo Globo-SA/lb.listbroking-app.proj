@@ -22,7 +22,7 @@
                                 </a>
                             </h4>
                         </div>
-                        <div id="filters" class="panel-collapse collapse {% if leads|length < 0 %}in{% endif %}">
+                        <div id="filters" class="panel-collapse collapse {% if leads|length <= 0 %}in{% endif %}">
                             <div class="box-body">
                                 {% include '@ListBrokingUI/_partials/forms/filters.html.twig' %}
                             </div>

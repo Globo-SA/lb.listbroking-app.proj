@@ -1,4 +1,4 @@
-{% import "@ListBrokingUI/global_macros.html.twig" as macros %}
+{% import "@ListBrokingUI/_partials/macros/table_macros.html.twig" as macros %}
 
 <table id="leads_table" class="table table-hover" data-toggle="simple_table">
     <thead>
@@ -13,8 +13,10 @@
         <th>County</th>
         <th>Parish</th>
         <th>Owner</th>
+        <th>Source</th>
         <th>Category</th>
         <th>SubCategory</th>
+        <th>Exclude?</th>
     </tr>
     </thead>
     <tbody>
@@ -30,8 +32,15 @@
         <td>{{ lead.county }}</td>
         <td>{{ lead.parish }}</td>
         <td>{{ lead.owner }}</td>
+        <td>{{ lead.source }}</td>
         <td>{{ lead.category }}</td>
         <td>{{ lead.sub_category }}</td>
+        <td>
+            <div class="btn-group">
+                <button class="exclude_lead btn btn-flat btn-xs btn-warning"><i class="fa fa-times"></i></button>
+                <button class="btn btn-flat btn-xs btn-danger" style="position:absolute; display: none;">exclude?</button>
+            </div>
+        </td>
     </tr>
     {% endfor %}
     </tbody>
@@ -47,8 +56,10 @@
         <th>County</th>
         <th>Parish</th>
         <th>Owner</th>
+        <th>Source</th>
         <th>Category</th>
         <th>SubCategory</th>
+        <th>Exclude?</th>
     </tr>
     </tfoot>
 </table>
