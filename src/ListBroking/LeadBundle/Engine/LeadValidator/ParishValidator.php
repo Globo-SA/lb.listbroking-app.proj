@@ -29,7 +29,7 @@ class ParishValidator extends BaseValidator {
      */
     public function validate($validations){
         if (isset($this->lead['parish'])){
-            $validations['parish'] = $this->lead['parish'];
+            $validations['parish'] = $this->service->getParishByName($this->lead['parish'], true);
         } else {
             $validations['parish'] = null;
         }

@@ -72,6 +72,11 @@ class ContactDetailsService extends BaseService implements ContactRepositoryInte
         return $this->get(self::COUNTY_SCOPE . '_list', self::COUNTY_SCOPE, $this->county_repo, $id, $hydrate);
     }
 
+    /**
+     * @param $name
+     * @param bool $hydrate
+     * @return mixed
+     */
     public function getCountyByName($name, $hydrate = false){
         $entity = $this->county_repo->getCountyByName($name, $hydrate);
 
@@ -123,6 +128,17 @@ class ContactDetailsService extends BaseService implements ContactRepositoryInte
     }
 
     /**
+     * @param $name
+     * @param bool $hydrate
+     * @return mixed
+     */
+    public function getDistrictByName($name, $hydrate = false){
+        $entity = $this->district_repo->getDistrictByName($name, $hydrate);
+
+        return $entity;
+    }
+
+    /**
      * @param $district
      * @return $this
      */
@@ -164,6 +180,17 @@ class ContactDetailsService extends BaseService implements ContactRepositoryInte
      */
     public function getGender($id, $hydrate = false){
         return $this->get(self::GENDER_SCOPE . '_list', self::GENDER_SCOPE, $this->gender_repo, $id, $hydrate);
+    }
+
+    /**
+     * @param $name
+     * @param bool $hydrate
+     * @return mixed
+     */
+    public function getGenderByName($name, $hydrate = false){
+        $entity = $this->gender_repo->getGenderByName($name, $hydrate);
+
+        return $entity;
     }
 
     /**
@@ -264,6 +291,12 @@ class ContactDetailsService extends BaseService implements ContactRepositoryInte
         return $this->get(self::PARISH_SCOPE . '_list', self::PARISH_SCOPE, $this->parish_repo,$id, $hydrate);
     }
 
+    public function getParishByName($name, $hydrate = false){
+        $entity = $this->parish_repo->getParishByName($name, $hydrate);
+
+        return $entity;
+    }
+
     /**
      * @param $parish
      * @return $this
@@ -315,6 +348,16 @@ class ContactDetailsService extends BaseService implements ContactRepositoryInte
      */
     public function getSourceByName($name, $hydrate = false){
         $entity = $this->source_repo->getSourceByName($name, $hydrate);
+        return $entity;
+    }
+
+    /**
+     * @param $external_id
+     * @param bool $hydrate
+     * @return mixed
+     */
+    public function getByExternalId($external_id, $hydrate = false){
+        $entity = $this->source_repo->getByExternalId($external_id, $hydrate);
         return $entity;
     }
 

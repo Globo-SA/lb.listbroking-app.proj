@@ -11,6 +11,7 @@
 namespace ListBroking\CoreBundle\Engine\CoreValidator;
 
 
+use ListBroking\CoreBundle\Exception\CoreValidationException;
 use Symfony\Component\HttpFoundation\Request;
 
 class CountryValidator extends BaseValidator {
@@ -19,7 +20,8 @@ class CountryValidator extends BaseValidator {
     {
         parent::__construct($service, $request);
         $this->countries = array(
-            'PT' => 'Portugal'
+            'PT' => 'Portugal',
+            'FR' => 'France'
         );
     }
 

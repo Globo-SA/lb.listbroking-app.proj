@@ -29,7 +29,7 @@ class DistrictValidator extends BaseValidator {
      */
     public function validate($validations){
         if (isset($this->lead['district'])){
-            $validations['district'] = $this->lead['district'];
+            $validations['district'] = $this->service->getDistrictByName($this->lead['district'], true);
         } else {
             $validations['district'] = null;
         }

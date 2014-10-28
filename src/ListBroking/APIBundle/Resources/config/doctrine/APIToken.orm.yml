@@ -1,0 +1,48 @@
+ListBroking\APIBundle\Entity\APIToken:
+    type: entity
+    table: api_token
+    id:
+        id:
+            type: bigint
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            column: name
+            unique: true
+        token:
+            type:   string(255)
+            column: token
+
+# Timestampable
+        created_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: create } }
+
+        updated_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: update } }
+# End of Timestampable
+
+# Blameable
+    manyToOne:
+        created_by:
+            targetEntity: Adclick\UserBundle\Entity\User
+            joinColumn:
+                name: created_by
+                referencedColumnName: id
+                onDelete: restrict
+            gedmo: { blameable: { on: create } }
+
+        updated_by:
+            targetEntity: Adclick\UserBundle\Entity\User
+            joinColumn:
+                name: updated_by
+                referencedColumnName: id
+                onDelete: restrict
+            gedmo: { blameable: { on: update } }
+# End of blameable

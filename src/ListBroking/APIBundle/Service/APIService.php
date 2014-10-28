@@ -13,9 +13,13 @@ namespace ListBroking\APIBundle\Service;
 
 
 use ListBroking\APIBundle\Engine\APIValidator\BaseAPIValidator;
+use ListBroking\APIBundle\Entity\APIToken;
+use ListBroking\APIBundle\Exception\APIException;
+use ListBroking\APIBundle\Repository\ORM\APITokenRepository;
 use ListBroking\CoreBundle\Engine\CoreValidator\CategoryValidator;
 use ListBroking\CoreBundle\Engine\CoreValidator\CountryValidator;
 use ListBroking\CoreBundle\Exception\CoreValidationException;
+use ListBroking\CoreBundle\Service\BaseService;
 use ListBroking\CoreBundle\Service\CoreService;
 use ListBroking\LeadBundle\Engine\LeadValidator\ContactValidator;
 use ListBroking\LeadBundle\Engine\LeadValidator\CountyValidator;
@@ -26,15 +30,15 @@ use ListBroking\LeadBundle\Engine\LeadValidator\OwnerValidator;
 use ListBroking\LeadBundle\Engine\LeadValidator\ParishValidator;
 use ListBroking\LeadBundle\Engine\LeadValidator\SourceValidator;
 use ListBroking\LeadBundle\Entity\Contact;
-use ListBroking\LeadBundle\Entity\County;
 use ListBroking\LeadBundle\Entity\Lead;
 use ListBroking\LeadBundle\Exception\LeadValidationException;
 use ListBroking\LeadBundle\Service\ContactDetailsService;
 use ListBroking\LeadBundle\Service\LeadService;
+use ListBroking\LockBundle\Entity\Lock;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Response;
 
-class APIService {
+class APIService extends BaseService implements APIServiceInterface {
 
     protected $lead_service;
     protected $core_service;
@@ -43,16 +47,23 @@ class APIService {
     protected $request;
     protected $validation_service;
     protected $validators;
+
+    protected $api_token_repo;
+
     protected $lead_country;
+    const API_LIST = 'apitoken_list';
+    const API_SCOPE = 'apitoken';
 
     /**
      * @param LeadService $leadService
      * @param CoreService $coreService
      * @param ContactDetailsService $contactDetailsService
      * @param RequestStack $requestStack
+     * @param APITokenRepository $tokenRepository
      */
-    public function __construct(LeadService $leadService, CoreService $coreService, ContactDetailsService $contactDetailsService, RequestStack $requestStack)
+    public function __construct(LeadService $leadService, CoreService $coreService, ContactDetailsService $contactDetailsService, RequestStack $requestStack, APITokenRepository $tokenRepository)
     {
+        $this->api_token_repo = $tokenRepository;
         $this->lead_service = $leadService;
         $this->core_service = $coreService;
         $this->contact_detail_service = $contactDetailsService;
@@ -71,24 +82,45 @@ class APIService {
             new DistrictValidator($this->contact_detail_service, $this->request),
             new GenderValidator($this->contact_detail_service, $this->request),
             new ParishValidator($this->contact_detail_service, $this->request),
+            new CountyValidator($this->contact_detail_service, $this->request)
         );
         $this->validations = array();
     }
 
+    /**
+     * @return JsonResponse
+     * @throws \ListBroking\APIBundle\Exception\APIException
+     */
     public function processRequest(){
+
         // validate request parameters to check if it's empty
-        $this->validation_service->checkEmptyFields($this->request);
+        $token = $this->getTokenByName($this->request->get('token_name'), 'true');
         try {
+            $this->validation_service->checkEmptyFields($this->request);
+            $this->checkRequestToken($token);
             foreach ($this->validators as $validator){
                 $this->validations = $validator->validate($this->validations);
             }
+//            ladybug_dump_die($this->validations);
             $this->saveLead();
+            $response = "Lead successfully saved.";
+            return $this->createJsonResponse($response);
         } catch (CoreValidationException $e) {
-            echo "Exception found - " . $e->getMessage(), "\r\n";
-            $response = new Response(); // TODO: http code and message JsonResponse
+            $response = "Exception found - " . $e->getMessage();
+            $response = $this->createJsonResponse($response, '400');
         } catch (LeadValidationException $e) {
-            echo "Exception found - " . $e->getMessage(), "\r\n";
-            $response = new Response(); // TODO: http code and message JsonResponse
+            $response = "Exception found - " . $e->getMessage();
+            $response = $this->createJsonResponse($response, '400');
+        } catch (APIException $e){
+            $response = "Exception found - " . $e->getMessage();
+            $response = $this->createJsonResponse($response, '401');
+        }
+        return $response;
+    }
+
+    private function checkRequestToken($token){
+        if ($token == null || $token->getToken() !=  $this->request->get('token')){
+            throw new APIException("Unauthorized access.");
         }
     }
 
@@ -96,16 +128,30 @@ class APIService {
         if ($this->validations['repeated_lead'] != null){
             $this->saveContact($this->validations['repeated_lead']);
         } else {
+            $lead = $this->request->get('lead');
+            $resting_date = $lead['resting_date'];
+            if (!isset($resting_date) || empty($resting_date)) {
+                throw new APIException("No resting time defined.");
+            }
             $lead = new Lead();
             $lead->setCountry($this->validations['country']);
-            $lead->setIsMobile(0);          // TODO: make validation to phone mobile and add it here
+            $lead->setIsMobile($this->validations['is_mobile']);
             $lead->setInOpposition(0);      // TODO: check if it's in opposition
             $lead->setPhone($this->validations['phone']);
+//            $lock = new Lock();
+//            $lock->setExpirationDate($resting_date);
+//            $lock->setType(1);
+//            $lock->setLead($lead);
+//            $lead->addLocks($lock);
             $this->lead_service->addLead($lead, true);
             $this->saveContact($lead);
         }
     }
 
+    /**
+     * @param $lead
+     * @return $this
+     */
     private function saveContact($lead){
         $contact = new Contact();
         $contact->setCountry($this->validations['country']);
@@ -121,9 +167,71 @@ class APIService {
         $contact->setSource($this->validations['source']);
         $contact->setPostalcode1($this->validations['postalcode1']);
         $contact->setOwner($this->validations['owner']);
+
         if (isset($this->validations['postalcode2'])){
             $contact->setPostalcode2($this->validations['postalcode2']);
         }
+
+        ladybug_dump_die($this->validations);
         return $this->lead_service->addContact($contact);
+    }
+
+    /**
+     * @param $response
+     * @param int $code
+     * @return JsonResponse
+     */
+    private function createJsonResponse($response, $code = 200){
+        return new JsonResponse(array(
+                "code" => $code,
+                "response" => $response
+            ), $code);
+    }
+
+    /**
+     * @param $token
+     * @return $this
+     */
+    public function addToken($token){
+        $this->add(self::API_LIST, self::API_SCOPE, $this->api_token_repo, $token);
+        return $this;
+    }
+
+    /**
+     * @param $token_id
+     * @return $this
+     */
+    public function removeToken($token_id){
+        $this->remove(self::API_LIST, self::API_SCOPE, $this->api_token_repo, $token_id);
+        return $this;
+    }
+
+    /**
+     * @param $token_id
+     * @param bool $hydrate
+     * @return mixed|null
+     */
+    public function getToken($token_id, $hydrate = false){
+        return $this->get(self::API_LIST, self::API_SCOPE, $this->api_token_repo, $token_id, $hydrate);
+    }
+
+    /**
+     * @param $token
+     * @return $this
+     */
+    public function updateToken($token){
+        $this->update(self::API_LIST, self::API_SCOPE, $this->api_token_repo, $token);
+        return $this;
+    }
+
+    /**
+     * @param $token
+     * @param bool $hydrate
+     * @return array|mixed
+     */
+    public function getTokenByName($token, $hydrate = false){
+        $entity = $this->api_token_repo->getTokenByName($token, $hydrate);
+
+        return $entity;
     }
 }

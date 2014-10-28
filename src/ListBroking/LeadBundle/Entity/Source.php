@@ -27,7 +27,7 @@ class Source {
 
     protected $name;
 
-    protected $lc_source_page_id;
+    protected $external_id;
 
     protected $is_active;
 
@@ -66,17 +66,17 @@ class Source {
     /**
      * @return mixed
      */
-    public function getLcSourcePageId()
+    public function getExternalId()
     {
-        return $this->lc_source_page_id;
+        return $this->external_id;
     }
 
     /**
-     * @param mixed $lc_source_page_id
+     * @param $external_id
      */
-    public function setLcSourcePageId($lc_source_page_id)
+    public function setExternalId($external_id)
     {
-        $this->lc_source_page_id = $lc_source_page_id;
+        $this->external_id = $external_id;
     }
 
     /**

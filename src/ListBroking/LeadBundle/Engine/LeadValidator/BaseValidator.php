@@ -26,7 +26,7 @@ class BaseValidator implements LeadValidatorInterface {
     public function __construct($service, Request $request)
     {
         $this->service = $service;
-        $this->lead = $request->query->get('lead');
+        $this->lead = $request->get('lead');
     }
 
     /**

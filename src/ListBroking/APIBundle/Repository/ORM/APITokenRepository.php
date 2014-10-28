@@ -8,20 +8,14 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\LeadBundle\Repository\ORM;
+namespace ListBroking\APIBundle\Repository\ORM;
 
-
+use Doctrine\ORM\AbstractQuery;
+use ListBroking\APIBundle\Repository\APITokenRepositoryInterface;
 use ListBroking\DoctrineBundle\Repository\ORM\BaseEntityRepository;
-use ListBroking\LeadBundle\Repository\DistrictRepositoryInterface;
 
-class DistrictRepository extends BaseEntityRepository implements DistrictRepositoryInterface {
-    /**
-     * @param $name
-     * @param bool $hydrate
-     * @return mixed
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
-    public function getDistrictByName($name, $hydrate = false)
+class APITokenRepository extends BaseEntityRepository implements APITokenRepositoryInterface {
+    public function getTokenByName($name, $hydrate = false)
     {
         $query_builder = $this->createQueryBuilder()
             ->andWhere("{$this->alias()}.name = :name");

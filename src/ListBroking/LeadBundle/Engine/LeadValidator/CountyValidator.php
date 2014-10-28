@@ -29,7 +29,7 @@ class CountyValidator extends BaseValidator {
      */
     public function validate($validations){
         if (isset($this->lead['county'])){
-            $validations['county'] = $this->lead['county'];
+            $validations['county'] = $this->service->getCountyByName($this->lead['county'], true);
         } else {
             $validations['county'] = null;
         }
