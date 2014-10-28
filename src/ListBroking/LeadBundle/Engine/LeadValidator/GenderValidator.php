@@ -32,11 +32,13 @@ class GenderValidator extends BaseValidator {
     public function validate($validations){
 
         if (!isset($this->lead['gender'])){
-            throw new LeadValidationException("Gender not sent.\n");
+            throw new LeadValidationException("Gender not sent. " . var_dump($this->lead));
         }
 
         parent::validateEmpty($this->lead['gender'], 'gender');
         $validations['gender'] = $this->parameterizeGender($this->lead['gender']);
+
+        $validations['gender']  = $this->service->getGender($validations['gender'], true);
 
         return $validations;
     }

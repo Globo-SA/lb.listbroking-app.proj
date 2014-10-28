@@ -30,11 +30,11 @@ use ListBroking\LeadBundle\Engine\LeadValidator\OwnerValidator;
 use ListBroking\LeadBundle\Engine\LeadValidator\ParishValidator;
 use ListBroking\LeadBundle\Engine\LeadValidator\SourceValidator;
 use ListBroking\LeadBundle\Entity\Contact;
-use ListBroking\LeadBundle\Entity\County;
 use ListBroking\LeadBundle\Entity\Lead;
 use ListBroking\LeadBundle\Exception\LeadValidationException;
 use ListBroking\LeadBundle\Service\ContactDetailsService;
 use ListBroking\LeadBundle\Service\LeadService;
+use ListBroking\LockBundle\Entity\Lock;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -82,7 +82,7 @@ class APIService extends BaseService implements APIServiceInterface {
             new DistrictValidator($this->contact_detail_service, $this->request),
             new GenderValidator($this->contact_detail_service, $this->request),
             new ParishValidator($this->contact_detail_service, $this->request),
-            new County($this->contact_detail_service, $this->request)
+            new CountyValidator($this->contact_detail_service, $this->request)
         );
         $this->validations = array();
     }
@@ -94,16 +94,14 @@ class APIService extends BaseService implements APIServiceInterface {
     public function processRequest(){
 
         // validate request parameters to check if it's empty
-        $this->validation_service->checkEmptyFields($this->request);
-        if (!$this->request->isMethod('GET')){
-            return $this->createJsonResponse("HTTP method must be PUT.", '405');
-        }
-        $token = $this->getTokenByName($this->request->query->get('token_name'), 'true');
+        $token = $this->getTokenByName($this->request->get('token_name'), 'true');
         try {
+            $this->validation_service->checkEmptyFields($this->request);
             $this->checkRequestToken($token);
             foreach ($this->validators as $validator){
                 $this->validations = $validator->validate($this->validations);
             }
+//            ladybug_dump_die($this->validations);
             $this->saveLead();
             $response = "Lead successfully saved.";
             return $this->createJsonResponse($response);
@@ -121,7 +119,7 @@ class APIService extends BaseService implements APIServiceInterface {
     }
 
     private function checkRequestToken($token){
-        if ($token == null || $token->getToken() !=  $this->request->query->get('token')){
+        if ($token == null || $token->getToken() !=  $this->request->get('token')){
             throw new APIException("Unauthorized access.");
         }
     }
@@ -130,11 +128,21 @@ class APIService extends BaseService implements APIServiceInterface {
         if ($this->validations['repeated_lead'] != null){
             $this->saveContact($this->validations['repeated_lead']);
         } else {
+            $lead = $this->request->get('lead');
+            $resting_date = $lead['resting_date'];
+            if (!isset($resting_date) || empty($resting_date)) {
+                throw new APIException("No resting time defined.");
+            }
             $lead = new Lead();
             $lead->setCountry($this->validations['country']);
             $lead->setIsMobile($this->validations['is_mobile']);
             $lead->setInOpposition(0);      // TODO: check if it's in opposition
             $lead->setPhone($this->validations['phone']);
+//            $lock = new Lock();
+//            $lock->setExpirationDate($resting_date);
+//            $lock->setType(1);
+//            $lock->setLead($lead);
+//            $lead->addLocks($lock);
             $this->lead_service->addLead($lead, true);
             $this->saveContact($lead);
         }
@@ -159,9 +167,12 @@ class APIService extends BaseService implements APIServiceInterface {
         $contact->setSource($this->validations['source']);
         $contact->setPostalcode1($this->validations['postalcode1']);
         $contact->setOwner($this->validations['owner']);
+
         if (isset($this->validations['postalcode2'])){
             $contact->setPostalcode2($this->validations['postalcode2']);
         }
+
+        ladybug_dump_die($this->validations);
         return $this->lead_service->addContact($contact);
     }
 

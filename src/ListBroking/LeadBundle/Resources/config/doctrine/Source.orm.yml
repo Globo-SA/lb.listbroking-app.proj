@@ -18,6 +18,10 @@ ListBroking\LeadBundle\Entity\Source:
             type:   string
             column: name
             unique: true
+        external_id:
+            type:   integer
+            column: external_id
+            unique: true
 
 # Timestampable
         created_at:

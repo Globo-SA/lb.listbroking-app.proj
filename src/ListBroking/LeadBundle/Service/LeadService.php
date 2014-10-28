@@ -152,9 +152,9 @@ class LeadService implements LeadServiceInterface {
      * @throws \ListBroking\DoctrineBundle\Exception\EntityObjectInstantiationException
      */
     public function addContact($contact){
-
         $this->contact_repo->createNewEntity($contact);
         $this->contact_repo->flush();
+        ladybug_dump_die($contact);
 
         return $this;
     }

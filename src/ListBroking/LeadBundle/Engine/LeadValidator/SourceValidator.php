@@ -31,25 +31,32 @@ class SourceValidator extends BaseValidator {
      * @throws LeadValidationException
      */
     public function validate($validations){
-        if (isset($this->lead['source_name'])) {
-            parent::validateEmpty($this->lead['source_name'], 'source');
-            $validations['source'] = $this->service->getSourceByName($this->lead['source_name'], true);
-            if ($validations['source'] == null){
-                if (isset($this->lead['source_page_id'])){
-                    parent::validateEmpty($this->lead['source_page_id'], 'source_page_id');
+        // If external_id is set will try to find it by external_id
+        if (isset($this->lead['external_id'])) {
+            parent::validateEmpty($this->lead['external_id'], 'external_id');
+            $source = $this->checkExternalIdExistance($this->lead['external_id'], true);
+            if (isset($source)) {
+                $validations['source'] = $source;
+            } elseif (isset($this->lead['source_name'])) {      // if it wasn't found by ID will try to find it by source name
+                $source = $this->service->getSourceByName($this->lead['source_name'], true);
+                if (isset($source)){
+                    $validations['source'] = $this->service->addSource($source);
+                } else {
+                    // if it doesn't exist will add the new source if it has both source_name and external_id
+                    parent::validateEmpty($this->lead['source_name'], 'source');
                     $validations['source'] = $this->lead['source_name'];
                     $source = new Source();
                     $source->setName($this->lead['source_name']);
                     $source->setIsActive(1);
                     $source->setCountry($validations['country']);
-                    $source->setLcSourcePageId($this->lead['source_page_id']); // TODO: Add source_page_id to URL
+                    $source->setExternalId($this->lead['external_id']); // TODO: Add source_page_id to URL
                     $source->setOwner($validations['owner']);
-                    $this->service->addSource($source);
-                } else {
-                    throw new LeadValidationException("The lead['source_page_id'] must be sent if the Source doesn't exist yet.");
+                    $validations['source'] = $this->service->addSource($source);
                 }
-;            }
-        } elseif(isset($this->lead['source_id'])) {
+            } else {
+                throw new LeadValidationException("The lead['external_id'] and lead['source_name'] must be both sent if the Source doesn't exist yet.");
+            }
+        } elseif(isset($this->lead['source_id'])) {     // if it has the source_id will get by it's ID instead
             parent::validateEmpty($this->lead['source_id'], 'source');
             $validations['source'] = $this->service->getSource($this->lead['source_id'], true);
             if ($validations['source'] == null){
@@ -59,6 +66,18 @@ class SourceValidator extends BaseValidator {
             throw new LeadValidationException("The field lead['source_name/source_id'] must be sent.");
         }
 
+        if (!isset($validations['source'])){
+            throw new LeadValidationException("Source could not be obtained." . var_dump($validations['source']));
+        }
+
         return $validations;
+    }
+
+    /**
+     * @param $source_page_id
+     * @return mixed
+     */
+    private function checkExternalIdExistance($external_id){
+        return $this->service->getByExternalId($external_id, true);
     }
 } 

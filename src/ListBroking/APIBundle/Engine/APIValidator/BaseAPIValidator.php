@@ -24,8 +24,8 @@ class BaseAPIValidator implements APIServiceLeadValidatorInterface {
     public function __construct()
     {
         $this->fields_to_validate = array(
-            "phone",
             "email",                // TODO add to advanced configuration
+            "phone",
             "ipaddress",
         );
     }
@@ -37,10 +37,12 @@ class BaseAPIValidator implements APIServiceLeadValidatorInterface {
      */
     public function checkEmptyFields(Request $request)
     {
-        $leads = $request->query->get('lead');
-
+        $lead = $request->get('lead');
+        if (!isset($lead) || !is_array($lead)){
+            throw new APIException("The leads array cannot be empty and must be an array.");
+        }
         foreach ($this->fields_to_validate as $key){
-            if (!array_key_exists($key, $leads) || empty($leads[$key]))
+            if (!isset($lead[$key]) || !array_key_exists($key, $lead) || empty($lead[$key]))
             {
                 throw new APIException("The field ". $key . " cannot be empty.");
             }

@@ -107,10 +107,6 @@ class Lock {
      */
     public function setType($type)
     {
-        if(!in_array($type, array_keys(LockEngine::lockTypes()))){
-            throw new InvalidLockTypeException('Invalid lock type, must be: ' . print_r(LockEngine::lockTypes()));
-        }
-
         $this->type = $type;
     }
 

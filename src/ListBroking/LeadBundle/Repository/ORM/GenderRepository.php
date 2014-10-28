@@ -15,5 +15,23 @@ use ListBroking\DoctrineBundle\Repository\ORM\BaseEntityRepository;
 use ListBroking\LeadBundle\Repository\GenderRepositoryInterface;
 
 class GenderRepository extends BaseEntityRepository implements GenderRepositoryInterface{
+    /**
+     * @param $name
+     * @param bool $hydrate
+     * @return mixed
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getGenderByName($name, $hydrate = false)
+    {
+        $query_builder = $this->createQueryBuilder()
+            ->andWhere("{$this->alias()}.name = :name");
+
+        $query_builder->setParameter('name', $name);
+        if ($hydrate){
+            return $query_builder->getQuery()->getOneOrNullResult();
+        }
+
+        return $query_builder->getQuery()->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY);
+    }
 
 } 
