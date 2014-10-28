@@ -71,9 +71,30 @@ class CoreService extends BaseService implements CoreServiceInterface
      */
     public function getCountryByCode($code, $hydrate = false)
     {
-        $entity = $this->country_repo->getCountryByCode($code, $hydrate);
+        //$entity = $this->country_repo->getCountryByCode($code, $hydrate);
+        //return $entity;
 
-        return $entity;
+        // Check if entity exists in cache
+        if (!$this->cache->has(self::COUNTRY_LIST, self::COUNTRY_SCOPE)){
+            $this->cache->beginWarmingUp(self::COUNTRY_LIST, self::COUNTRY_SCOPE);
+
+            $entities = $this->country_repo->findAll();
+
+            $this->cache->set(self::COUNTRY_LIST, $entities, null, self::COUNTRY_SCOPE);
+        }
+        // Iterate through the cache and select correct entity by $id
+        $entities = $this->cache->get(self::COUNTRY_LIST, self::COUNTRY_SCOPE);
+
+        foreach ($entities as $entity) {
+            if ($entity['iso_code'] == strtoupper($code)){
+                if($hydrate){
+                    $entity = $this->country_repo->findOneById($entity['id']);
+                }
+                return $entity;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -168,7 +189,7 @@ class CoreService extends BaseService implements CoreServiceInterface
      */
     public function getSubCategoryList($only_active = true)
     {
-        return $this->getList(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->sub_category_repo, $only_active);
+        return $this->getList(self::SUB_CATEGORY_LIST, self::SUB_CATEGORY_SCOPE, $this->sub_category_repo, $only_active);
     }
 
     /**
@@ -179,7 +200,7 @@ class CoreService extends BaseService implements CoreServiceInterface
      */
     public function getSubCategory($id, $hydrate = false)
     {
-        return $this->get(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->sub_category_repo, $id, $hydrate);
+        return $this->get(self::SUB_CATEGORY_LIST, self::SUB_CATEGORY_SCOPE, $this->sub_category_repo, $id, $hydrate);
     }
 
     /**
@@ -189,7 +210,7 @@ class CoreService extends BaseService implements CoreServiceInterface
      */
     public function addSubCategory($sub_category)
     {
-        $this->add(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->sub_category_repo, $sub_category);
+        $this->add(self::SUB_CATEGORY_LIST, self::SUB_CATEGORY_SCOPE, $this->sub_category_repo, $sub_category);
         return $this;
     }
 
@@ -200,7 +221,7 @@ class CoreService extends BaseService implements CoreServiceInterface
      */
     public function removeSubCategory($id)
     {
-        $this->remove(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->sub_category_repo, $id);
+        $this->remove(self::SUB_CATEGORY_LIST, self::SUB_CATEGORY_SCOPE, $this->sub_category_repo, $id);
         return $this;
     }
 
@@ -210,7 +231,7 @@ class CoreService extends BaseService implements CoreServiceInterface
      * @return $this
      */
     public function updateSubCategory($sub_category){
-        $this->update(self::CATEGORY_LIST, self::CATEGORY_SCOPE, $this->sub_category_repo, $sub_category);
+        $this->update(self::SUB_CATEGORY_LIST, self::SUB_CATEGORY_SCOPE, $this->sub_category_repo, $sub_category);
         return $this;
     }
 }

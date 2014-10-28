@@ -1,0 +1,20 @@
+{% extends '@ListBrokingUI/base.html.twig' %}
+{% block main_title %}Extraction{% endblock %}
+{% block sub_title %}wizard{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+            {% embed '@ListBrokingUI/_partials/embeds/generic_box.html.twig' with {collapsed : true} %}
+                {% block box_classes %}box-info{% endblock %}
+                {% block box_title %}List of existing extractions{% endblock %}
+                {% block box_tools %}
+                    <a href="{{ path('extraction_configuration') }}" class="btn btn-primary btn-flat" data-load="start">
+                        <i class="fa fa-thumb-tack"></i>&nbsp;NEW EXTRACTION
+                    </a>
+                {% endblock %}
+                {% block box_body %}
+                    {% include '@ListBrokingUI/Extraction/_configuration/extractions_table.html.twig' %}
+                {% endblock %}
+            {% endembed %}
+    </div><!-- /.row -->
+{% endblock %}

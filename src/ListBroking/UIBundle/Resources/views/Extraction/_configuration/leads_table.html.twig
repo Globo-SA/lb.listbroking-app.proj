@@ -1,0 +1,65 @@
+{% import "@ListBrokingUI/_partials/macros/table_macros.html.twig" as macros %}
+
+<table id="leads_table" class="table table-hover" data-toggle="simple_table">
+    <thead>
+    <tr>
+        <th>Phone</th>
+        <th>Gender</th>
+        <th>Birthdate</th>
+        <th>Country</th>
+        <th>Postalcode1</th>
+        <th>Postalcode2</th>
+        <th>District</th>
+        <th>County</th>
+        <th>Parish</th>
+        <th>Owner</th>
+        <th>Source</th>
+        <th>Category</th>
+        <th>SubCategory</th>
+        <th>Exclude?</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for lead in leads %}
+    <tr>
+        <td>{{ lead.phone }}</td>
+        <td>{{ lead.gender }}</td>
+        <td>{{ lead.birthdate|date('Y-m-d') }}</td>
+        <td>{{ lead.country }}</td>
+        <td>{{ lead.postalcode1 }}</td>
+        <td>{{ lead.postalcode2 }}</td>
+        <td>{{ lead.district }}</td>
+        <td>{{ lead.county }}</td>
+        <td>{{ lead.parish }}</td>
+        <td>{{ lead.owner }}</td>
+        <td>{{ lead.source }}</td>
+        <td>{{ lead.category }}</td>
+        <td>{{ lead.sub_category }}</td>
+        <td>
+            <div class="btn-group">
+                <button class="exclude_lead btn btn-flat btn-xs btn-warning"><i class="fa fa-times"></i></button>
+                <button class="btn btn-flat btn-xs btn-danger" style="position:absolute; display: none;">exclude?</button>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+        <th>Phone</th>
+        <th>Gender</th>
+        <th>Birthdate</th>
+        <th>Country</th>
+        <th>Postalcode1</th>
+        <th>Postalcode2</th>
+        <th>District</th>
+        <th>County</th>
+        <th>Parish</th>
+        <th>Owner</th>
+        <th>Source</th>
+        <th>Category</th>
+        <th>SubCategory</th>
+        <th>Exclude?</th>
+    </tr>
+    </tfoot>
+</table>

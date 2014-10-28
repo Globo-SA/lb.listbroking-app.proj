@@ -55,18 +55,130 @@ class LockEngine
         $this->contact_repo = $contact_repo;
 
         $this->lock_filter_types = array(
-            1 => new NoLocksLockFilter(1),
-            2 => new ReservedLockFilter(2),
-            3 => new ClientLockFilter(3),
-            4 => new CampaignLockFilter(4, 3),
-            5 => new CategoryLockFilter(5),
-            6 => new SubCategoryLockFilter(6, 5)
+            'no_locks_lock_filter' => new NoLocksLockFilter(1),
+            'reserved_lock_filter' => new ReservedLockFilter(2),
+            'client_lock_filter' => new ClientLockFilter(3),
+            'campaign_lock_filter' => new CampaignLockFilter(4, 3),
+            'category_lock_filter' => new CategoryLockFilter(5),
+            'sub_category_lock_filter' => new SubCategoryLockFilter(6, 5)
         );
         $this->contact_filter_types = array(
             1 => new BasicContactFilter()
         );
         $this->lead_filter_types = array(
             1 => new BasicLeadFilter()
+        );
+    }
+
+    public function prepareFilters($filters){
+        $lock_filters = array();
+        $contact_filters = array();
+        $lead_filters = array();
+        foreach ($filters as $name => $values){
+
+            // Remove empty filters
+            if(empty($values)){
+                continue;
+            }
+
+            list($type, $field) = explode(':', $name);
+
+            if($type == 'contact'){
+                // Split values
+                $ranges = array();
+                if(!is_array($values)){
+                    $values = explode(',', $values);
+                    foreach ($values as $key => $value)
+                    {
+                        // Check if its a range
+                        if(preg_match('/-/i', $value)){
+                            $ranges = explode('-', $value);
+                            unset($values[$key]);
+                        }
+                    }
+                }
+
+                // Birthdate Widget is a bit different !!
+                if($field == 'birthdate'){
+                    foreach ($values as $key => $value)
+                    {
+                        if(!empty($value['birthdate_range'])){
+                            $contact_filters[1]['filters'][] = array(
+                                'field' => $field,
+                                'opt' => 'between',
+                                'value' => explode('-', $value['birthdate_range'])
+
+                            );
+                        }
+                    }
+                    continue;
+                }
+
+                if(count($ranges) > 0){
+                    $contact_filters[1]['filters'][] = array(
+                        'field' => $field,
+                        'opt' => 'between',
+                        'value' => $ranges
+
+                    );
+                }
+
+                if(count($values) > 0){
+                    $contact_filters[1]['filters'][] = array(
+                        'field' => $field,
+                        'opt' => 'equal',
+                        'value' => is_array($values) ? array_values($values) : array($values)
+                    );
+                }
+            }
+            else{
+                switch ($field){
+                    case 'no_locks_lock_filter':
+                        $lock_filters[$field]['filters'][] = array(
+                            'interval' => new \DateTime()
+                        );
+                    break;
+                    case 'reserved_lock_filter':
+                        $lock_filters[$field]['filters'][] = array(
+                            'interval' => new \DateTime('- 1 week')
+                        );
+                    break;
+                    default:
+                        foreach ($values as $key => $value)
+                        {
+                            foreach ($value as $key2 => $value2){
+
+                                // Remove empty filters
+                                if(empty($value2)){
+                                    // Unset the filter as its invalid
+                                    unset($values[$key]);
+                                    continue;
+                                }
+                                if(!is_array($value2)){
+                                    // Remove invalid filters
+                                    if(empty($value2)){
+                                        unset($values[$key][$key2]);
+                                    }else{
+                                        $values[$key][$key2] = $value2;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Remove empty filters
+                        if(!empty($values)){
+                            $lock_filters[$field]['filters'] = $values;
+                        }
+                        break;
+                }
+
+            }
+        }
+
+        return array(
+            'lock_filters' => $lock_filters,
+            'contact_filters' => $contact_filters,
+            'lead_filters' => $lead_filters
         );
     }
 
@@ -79,6 +191,7 @@ class LockEngine
      * @return \ESO\Doctrine\ORM\QueryBuilder
      */
     public function compileFilters($filters = array()){
+
         $qb = $this->lead_repo->createQueryBuilder();
 
         // Check if there are lock filters
@@ -97,17 +210,20 @@ class LockEngine
                 }
 
                 /** @var LockFilterInterface $lock_filter_type */
+
                 $lock_filter_type = $this->lock_filter_types[$type];
                 $lock_filter_type->addFilter($locksOrX, $qb, $lock_filter['filters']);
             }
 
             // LEFT OUTER JOIN
             $qb->leftJoin($this->lead_repo->getAlias() . '.locks', 'locks', 'WITH', $locksOrX);
+
             $qb->andWhere('locks.lead IS NULL');
         }
 
         // Check if there are contact filters
         if(array_key_exists('contact_filters',$filters) && !empty($filters['contact_filters'])){
+
             $contactsAndX = $qb->expr()->andX();
             foreach($filters['contact_filters'] as $type => $contact_filter){
 
@@ -132,6 +248,7 @@ class LockEngine
             $qb->join($this->lead_repo->getAlias() . '.contacts', 'contacts');
 
         }
+        $qb->groupBy($this->lead_repo->getAlias() . '.id');
 
         // Check if there are lead filters
         if(array_key_exists('lead_filters',$filters) && !empty($filters['lead_filters'])){
@@ -174,6 +291,8 @@ class LockEngine
                 $qb->addSelect("{$association}_entity.name as {$association}");
             }
         }
+        $qb->join('sub_category_entity.category', "category_entity");
+        $qb->addSelect("category_entity.name as category");
 
         // Group by Lead to get only
         // one contact per lead

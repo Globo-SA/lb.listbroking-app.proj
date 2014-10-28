@@ -47,15 +47,13 @@ class SubCategoryLockFilter implements LockFilterInterface {
         foreach ($filters as $key => $filter)
         {
             // Validate filter array
-            if(!array_key_exists('sub_category_id', $filter)
-                || !array_key_exists('interval', $filter)){
-                throw new InvalidFilterObjectException(
-                    'Invalid filter object must be: array(\'sub_category_id\' => \'\', \'interval\' => \'\'), in ' .
-                    __CLASS__);
+            if(!array_key_exists('sub_category', $filter) || empty($filter['sub_category'])
+                || !array_key_exists('interval', $filter) || empty($filter['interval'])){
+                continue;
             }
 
             if(!($filter['interval'] instanceof \DateTime)){
-                $filter['interval'] = new \DateTime($filter['interval']['date'], new \DateTimeZone($filter['interval']['timezone']));
+                $filter['interval'] = new \DateTime($filter['interval']);
             }
 
             $orX->addMultiple(
@@ -68,17 +66,28 @@ class SubCategoryLockFilter implements LockFilterInterface {
                     ),
                     $qb->expr()->andX(
                         'locks.type = :sub_category_locks_category_type',
-                        "locks.category = :sub_category_locks_category_id_{$key}",
+                        "locks.category = :sub_category_locks_category_{$key}",
                         "(locks.expiration_date >= CURRENT_TIMESTAMP())"
                     ),
                 )
             );
+
+            // Query the child to get the parent
+            $sub_qb = $qb->getEntityManager()->createQueryBuilder();
+            $sub_qb
+                ->select('sub')
+                ->from('ListBroking\CoreBundle\Entity\SubCategory', 'sub')
+                ->where('sub.id = :sub_category')
+                ->setParameter('sub_category', $filter['sub_category'])
+            ;
+            $sub_category = $sub_qb->getQuery()->getOneOrNullResult();
+
             $qb->setParameter('sub_category_locks_type', $this->type_id);
-            $qb->setParameter("sub_category_locks_sub_category_id_{$key}", $filter['sub_category_id']);
+            $qb->setParameter("sub_category_locks_sub_category_id_{$key}", $filter['sub_category']);
             $qb->setParameter("sub_category_locks_filter_expiration_date_{$key}", $filter['interval']);
 
             $qb->setParameter('sub_category_locks_category_type', $this->parent_id);
-            $qb->setParameter("sub_category_locks_category_id_{$key}", $filter['category_id']);
+            $qb->setParameter("sub_category_locks_category_{$key}", $sub_category->getCategory());
 
 
         }

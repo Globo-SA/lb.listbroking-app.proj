@@ -1,0 +1,52 @@
+{% extends '@ListBrokingUI/base.html.twig' %}
+{% block main_title %}Extraction{% endblock %}
+{% block sub_title %}wizard{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+        {% embed '@ListBrokingUI/_partials/embeds/generic_box.html.twig' with {collapsed : true} %}
+            {% block box_classes %}{% endblock %}
+            {% block box_title %}
+                <i class="fa fa-wrench"></i>&nbsp;Filtering stage !
+            {% endblock %}
+            {% block box_tools %}
+            {% endblock %}
+            {% block box_body %}
+                <div class="box-group" id="filtering">
+                    <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+                    <div class="panel box box-primary">
+                        <div class="box-header">
+                            <h4 class="box-title">
+                                <a data-toggle="collapse" data-parent="#filtering" href="#filters">
+                                    Filters
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="filters" class="panel-collapse collapse {% if leads|length <= 0 %}in{% endif %}">
+                            <div class="box-body">
+                                {% include '@ListBrokingUI/_partials/forms/filters.html.twig' %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel box box-success">
+                        <div class="box-header">
+                            <h4 class="box-title">
+                                <a data-toggle="collapse" data-parent="#filtering" href="#success">
+                                    Summary
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="success" class="panel-collapse collapse {% if leads|length > 0 %}in{% endif %}">
+                            <div class="box-body">
+                                {% include '@ListBrokingUI/Extraction/_configuration/leads_table.html.twig' %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endblock %}
+            {% block box_footer %}{% endblock %}
+        {% endembed %}
+        </div>
+        <!-- /.col-xs-12 -->
+    </div><!-- /.row -->
+{% endblock %}

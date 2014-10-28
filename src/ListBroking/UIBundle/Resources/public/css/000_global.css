@@ -1,0 +1,86 @@
+.icon-large{
+    font-size: 20px;
+}
+
+.loading > a, .loading > a:hover{
+    color: rgb(114, 175, 210) !important;
+    background-color: rgba(0, 0, 0, 0) !important;
+}
+
+.row-margin{
+    margin-bottom: 15px;
+}
+
+.alert{
+    margin-left: 0;
+}
+
+.btn-link {
+    -webkit-box-shadow: none;
+    -moz-box-shadow:    none;
+    box-shadow:         none;
+}
+
+.box-body form {
+    margin-bottom: 10px;
+}
+
+.help-block{
+    font-size: 14px;
+}
+
+.popover-content label {
+    font-size: 13px;
+    padding-top: 6px;
+}
+.popover-content .input-sm{
+    height: 22px;
+    padding: 0px;
+}
+
+.col-md-0 {
+    width: 4.33333333%;
+}
+
+.add_collection {
+    margin-left: -23px;
+    margin-bottom: 8px;
+    z-index: 10001;
+    position: relative;
+}
+
+.del_collection {
+    margin-right: 25px;
+}
+
+.col-md-12 > .form-group.col-md-3{
+    padding-left: 0px;
+}
+form .col-md-12 > .col-md-3{
+    padding-right: 2px;
+}
+
+form .col-md-12 {
+    padding-left: 0px;
+}
+
+form .col-md-12 > .col-md-3{
+    padding-right: 2px;
+}
+@media (max-width: 970px) {
+    form .col-md-12 .col-md-3{
+        float: left;
+        width: 100%;
+    }
+    .add_collection {
+        float: right;
+    }
+    .del_collection {
+        margin-right: 22px;
+    }
+
+}
+
+blockquote {
+    padding: 0px 20px;
+}

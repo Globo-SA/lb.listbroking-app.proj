@@ -1,0 +1,41 @@
+<div class="row">
+    {# NEW CLIENT BOX #}
+    <div class="col-md-6">
+        {% embed '@ListBrokingUI/_partials/embeds/generic_box.html.twig' %}
+            {% block box_classes %}box-info{% endblock %}
+            {% block box_title %}
+                <i class="fa fa-wrench"></i>&nbsp;New Client
+            {% endblock %}
+            {% block box_body %}
+                {% include '@ListBrokingUI/_partials/forms/client.html.twig' %}
+            {% endblock %}
+        {% endembed %}
+    </div>
+
+    {# NEW CAMPAIGN BOX #}
+    <div class="col-md-6">
+        {% embed '@ListBrokingUI/_partials/embeds/generic_box.html.twig' %}
+            {% block box_classes %}box-info{% endblock %}
+            {% block box_title %}
+                <i class="fa fa-wrench"></i>&nbsp;New Campaign
+            {% endblock %}
+            {% block box_body %}
+                {% include '@ListBrokingUI/_partials/forms/campaign.html.twig' %}
+            {% endblock %}
+        {% endembed %}
+    </div>
+</div>
+<div class="row">
+    {# NEW EXTRACTION BOX #}
+    <div class="col-md-6">
+        {% embed '@ListBrokingUI/_partials/embeds/generic_box.html.twig' %}
+            {% block box_classes %}box-info{% endblock %}
+            {% block box_title %}
+                <i class="fa fa-wrench"></i>&nbsp;New Extraction
+            {% endblock %}
+            {% block box_body %}
+                {% include '@ListBrokingUI/_partials/forms/extraction.html.twig' %}
+            {% endblock %}
+        {% endembed %}
+    </div>
+</div>

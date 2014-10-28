@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="{{ _charset }}" />
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <title>{% block title %}ListBroking - Filter, extract and connect{% endblock %}</title>
+    {% include '@ListBrokingUI/_layout/stylesheets.html.twig' %}
+    {% block stylesheets %}{% endblock %}
+    {% include '@ListBrokingUI/_layout/mobile-icons.html.twig' %}
+    {% block header %}{% endblock %}
+</head>
+<body class="skin-black">
+{% include '@ListBrokingUI/_layout/headerbar.html.twig' %}
+<div class="wrapper row-offcanvas row-offcanvas-left">
+    {% block body %}
+        {% include '@ListBrokingUI/_layout/menu-side.html.twig' %}
+        <aside class="right-side">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                {% include '@ListBrokingUI/_layout/flashmsgs.html.twig' %}
+                <h1>
+                    {% block main_title %}{% endblock %}
+                    <small>{% block sub_title %}{% endblock %}</small>
+                </h1>
+                {% include '@ListBrokingUI/_layout/breadcrumbs.html.twig' %}
+            </section>
+            <section class="content">
+                {% block content %}{% endblock %}
+            </section>
+        </aside>
+    {% endblock %}
+    {% include '@ListBrokingUI/_layout/footer.html.twig' %}
+</div>
+{% include '@ListBrokingUI/_layout/javascripts.html.twig' %}
+{% block javascripts %}
+    {# Used to expose routing to the client-side code #}
+    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,6 @@
+ListBroking\ExtractionBundle\Entity\Extraction:
+   constraints:
+       - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+           fields:   name
+           message:  "Name is duplicated."
+

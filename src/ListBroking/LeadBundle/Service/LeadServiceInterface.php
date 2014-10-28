@@ -31,4 +31,10 @@ interface LeadServiceInterface {
     public function removeContact($id);
 
     public function updateContact($contact);
+
+    /**
+     * Group leads by lock and count them
+     * @return array
+     */
+    public function countByLock();
 } 

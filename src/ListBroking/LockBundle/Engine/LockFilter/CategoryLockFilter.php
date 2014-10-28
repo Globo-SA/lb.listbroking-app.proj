@@ -41,15 +41,13 @@ class CategoryLockFilter implements LockFilterInterface {
         foreach ($filters as $key => $filter)
         {
             // Validate filter array
-            if(!array_key_exists('category_id', $filter)
-                || !array_key_exists('interval', $filter)){
-                throw new InvalidFilterObjectException(
-                    'Invalid filter object must be: array(\'category_id\' => \'\', \'interval\' => \'\'), in ' .
-                    __CLASS__ );
+            if(!array_key_exists('category', $filter) || empty($filter['category'])
+                || !array_key_exists('interval', $filter) || empty($filter['interval'])){
+                continue;
             }
 
             if(!($filter['interval'] instanceof \DateTime)){
-                $filter['interval'] = new \DateTime($filter['interval']['date'], new \DateTimeZone($filter['interval']['timezone']));
+                $filter['interval'] = new \DateTime($filter['interval']);
             }
 
             $orX->add(
@@ -61,7 +59,7 @@ class CategoryLockFilter implements LockFilterInterface {
                 )
             );
             $qb->setParameter('category_locks_type', $this->type_id);
-            $qb->setParameter("category_locks_category_id_{$key}", $filter['category_id']);
+            $qb->setParameter("category_locks_category_id_{$key}", $filter['category']);
             $qb->setParameter("category_locks_filter_expiration_date_{$key}", $filter['interval']);
         }
     }

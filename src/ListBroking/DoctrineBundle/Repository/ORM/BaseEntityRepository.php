@@ -13,6 +13,7 @@ namespace ListBroking\DoctrineBundle\Repository\ORM;
 
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 use ESO\Doctrine\ORM\EntityRepository;
 use ESO\Doctrine\ORM\QueryBuilder;
 use ListBroking\DoctrineBundle\Exception\EntityClassMissingException;
@@ -93,15 +94,19 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
             foreach ($associations_mappings as $associations_mapping)
             {
                 $qb->leftJoin($this->alias() . '.' . $associations_mapping, $associations_mapping);
+                if(!in_array($associations_mapping, array('created_by', 'updated_by'))){
+
+                }
                 $qb->addSelect($associations_mapping);
             }
         }
 
         if($hydrate){
-            $entity =  $qb->getQuery()->execute();
-
+            $entity =  $qb->getQuery()->execute(null, Query::HYDRATE_OBJECT);
         }else{
-            $entity =  $qb->getQuery()->execute(null, AbstractQuery::HYDRATE_ARRAY);
+            $entity = $qb->getQuery()
+                ->setHint(Query::HINT_INCLUDE_META_COLUMNS, true)
+                ->execute(null, Query::HYDRATE_ARRAY);
         }
 
         return $entity;

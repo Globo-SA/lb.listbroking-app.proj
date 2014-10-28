@@ -13,4 +13,17 @@ namespace ListBroking\LeadBundle\Repository;
 
 interface LeadRepositoryInterface {
 
+    /**
+     * @param $phone
+     * @param bool $hydrate
+     * @return mixed
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getLeadByPhone($phone, $hydrate = false);
+
+    /**
+     * Group leads by lock and count them
+     * @return array
+     */
+    public function countByLock();
 } 
