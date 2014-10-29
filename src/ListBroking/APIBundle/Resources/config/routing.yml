@@ -1,4 +1,4 @@
 list_broking_api_page:
     path:     /v1/lead/create
     defaults: { _controller: listbroking.api.lead.controller:setLeadAction }
-    methods:  [GET]
+    methods:  [POST]

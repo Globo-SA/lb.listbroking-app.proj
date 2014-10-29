@@ -31,8 +31,8 @@ class AppKernel extends Kernel
             new Liuggio\ExcelBundle\LiuggioExcelBundle(),
 
             // API Bundle
-            new FOS\RestBundle\FOSRestBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
+            new ListBroking\APIBundle\ListBrokingAPIBundle(),
 
             // Core Bundles
             new Adclick\CacheBundle\AdclickCacheBundle(),
@@ -50,9 +50,6 @@ class AppKernel extends Kernel
             new ListBroking\ExtractionBundle\ListBrokingExtractionBundle(),
             new ListBroking\LeadBundle\ListBrokingLeadBundle(),
             new ListBroking\LockBundle\ListBrokingLockBundle(),
-
-            //API Bundle
-            new ListBroking\APIBundle\ListBrokingAPIBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

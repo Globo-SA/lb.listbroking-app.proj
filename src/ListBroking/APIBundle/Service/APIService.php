@@ -129,7 +129,7 @@ class APIService extends BaseService implements APIServiceInterface {
             $this->saveContact($this->validations['repeated_lead']);
         } else {
             $lead = $this->request->get('lead');
-            $resting_date = $lead['resting_date'];
+            $resting_date = new \DateTime($lead['resting_date']);
             if (!isset($resting_date) || empty($resting_date)) {
                 throw new APIException("No resting time defined.");
             }
@@ -138,12 +138,14 @@ class APIService extends BaseService implements APIServiceInterface {
             $lead->setIsMobile($this->validations['is_mobile']);
             $lead->setInOpposition(0);      // TODO: check if it's in opposition
             $lead->setPhone($this->validations['phone']);
-//            $lock = new Lock();
-//            $lock->setExpirationDate($resting_date);
-//            $lock->setType(1);
-//            $lock->setLead($lead);
-//            $lead->addLocks($lock);
-            $this->lead_service->addLead($lead, true);
+            $lock = new Lock();
+            $lock->setExpirationDate($resting_date);
+            $lock->setType(1);
+            $lock->setLead($lead);
+            $lock->setIsActive(1);
+            $lock->setStatus(1);
+            $lead->addLocks($lock);
+            $this->lead_service->addLead($lead);
             $this->saveContact($lead);
         }
     }
@@ -172,7 +174,6 @@ class APIService extends BaseService implements APIServiceInterface {
             $contact->setPostalcode2($this->validations['postalcode2']);
         }
 
-        ladybug_dump_die($this->validations);
         return $this->lead_service->addContact($contact);
     }
 
