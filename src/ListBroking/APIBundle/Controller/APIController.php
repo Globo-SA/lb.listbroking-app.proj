@@ -11,7 +11,6 @@
 namespace ListBroking\APIBundle\Controller;
 
 use ListBroking\APIBundle\Service\APIService;
-use Symfony\Component\HttpFoundation\Request;
 
 class APIController
 {
@@ -26,11 +25,9 @@ class APIController
     }
 
     /**
-     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function setLeadAction(Request $request){
-        $token = $request->get('token');
-        return $this->api_service->processRequest($token);
+    public function setLeadAction(){
+        return $this->api_service->processRequest();
     }
 }

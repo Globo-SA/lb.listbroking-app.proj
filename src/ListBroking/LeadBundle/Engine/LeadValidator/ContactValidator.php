@@ -18,11 +18,11 @@ class ContactValidator extends BaseValidator {
 
     /**
      * @param $service
-     * @param $request
+     * @param $lead
      */
-    public function __construct($service, Request $request)
+    public function __construct($service, $lead)
     {
-        parent::__construct($service, $request);
+        parent::__construct($service, $lead);
         $this->fields = $this->service->getContactFields();
         // TODO: ADVANCED CONFIGURATION TO ALLOW TO CHOOSE WHICH FIELDS TO UNSET
         unset($this->fields['id']);
@@ -80,8 +80,9 @@ class ContactValidator extends BaseValidator {
      * @throws LeadValidationException
      */
     private function validateBirthdate($birthdate){
-        if (!preg_match('/\d{4}-[0-1][12]-([0-2][0-9]|3[0-1])/', $birthdate) && !preg_match('/([0-2][0-9]|3[0-1])-[0-1][12]-\d{4}/', $birthdate) && !preg_match('[0-1][12]-([0-2][0-9]|3[0-1])-\d{4}', $birthdate)){
-            throw new LeadValidationException("Date format not correct.\n");
+        if (!preg_match('/\d{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[0-1])/', $birthdate) && !preg_match('/([0-2][0-9]|3[0-1])-(0[1-9]|1[0-2])-\d{4}/', $birthdate) && !preg_match('/(0[1-9]|1[0-2])-([0-2][0-9]|3[0-1])-\d{4}/', $birthdate)){
+            ladybug_dump($birthdate);
+            throw new LeadValidationException("Birthdate format not correct.\n");
         }
         return true;
     }

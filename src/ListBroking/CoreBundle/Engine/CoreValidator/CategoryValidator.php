@@ -15,9 +15,9 @@ use ListBroking\CoreBundle\Exception\CoreValidationException;
 use Symfony\Component\HttpFoundation\Request;
 
 class CategoryValidator extends BaseValidator {
-    public function __construct($service, Request $request)
+    public function __construct($service, $lead)
     {
-        parent::__construct($service, $request);
+        parent::__construct($service, $lead);
     }
 
     public function validate($validations){

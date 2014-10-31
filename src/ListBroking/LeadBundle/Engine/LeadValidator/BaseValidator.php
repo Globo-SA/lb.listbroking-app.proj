@@ -13,7 +13,6 @@ namespace ListBroking\LeadBundle\Engine\LeadValidator;
 
 use ListBroking\LeadBundle\Engine\LeadValidatorInterface;
 use ListBroking\LeadBundle\Exception\LeadValidationException;
-use Symfony\Component\HttpFoundation\Request;
 
 class BaseValidator implements LeadValidatorInterface {
 
@@ -23,10 +22,10 @@ class BaseValidator implements LeadValidatorInterface {
      * @param $service
      * @param $request
      */
-    public function __construct($service, Request $request)
+    public function __construct($service, $lead)
     {
         $this->service = $service;
-        $this->lead = $request->get('lead');
+        $this->lead = $lead;
     }
 
     /**

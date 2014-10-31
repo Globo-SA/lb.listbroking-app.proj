@@ -13,7 +13,6 @@ namespace ListBroking\CoreBundle\Engine\CoreValidator;
 
 use ListBroking\CoreBundle\Engine\CoreValidatorInterface;
 use ListBroking\CoreBundle\Exception\CoreValidationException;
-use Symfony\Component\HttpFoundation\Request;
 
 class BaseValidator implements CoreValidatorInterface {
 
@@ -23,10 +22,10 @@ class BaseValidator implements CoreValidatorInterface {
      * @param $service
      * @param Request $request
      */
-    public function __construct($service, Request $request)
+    public function __construct($service, $lead)
     {
-        $this->service = $service;
-        $this->lead = $request->get('lead');
+        $this->service  = $service;
+        $this->lead     = $lead;
     }
 
     /**

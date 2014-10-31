@@ -15,9 +15,13 @@ use ListBroking\LeadBundle\Exception\LeadValidationException;
 use Symfony\Component\HttpFoundation\Request;
 
 class OwnerValidator extends BaseValidator {
-    public function __construct($service, Request $request)
+    /**
+     * @param $service
+     * @param $lead
+     */
+    public function __construct($service, $lead)
     {
-        parent::__construct($service, $request);
+        parent::__construct($service, $lead);
     }
 
     /**

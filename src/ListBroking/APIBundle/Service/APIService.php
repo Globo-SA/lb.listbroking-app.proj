@@ -54,6 +54,8 @@ class APIService extends BaseService implements APIServiceInterface {
     const API_LIST = 'apitoken_list';
     const API_SCOPE = 'apitoken';
 
+    protected $fields_array;
+
     /**
      * @param LeadService $leadService
      * @param CoreService $coreService
@@ -69,20 +71,21 @@ class APIService extends BaseService implements APIServiceInterface {
         $this->contact_detail_service = $contactDetailsService;
         $this->validation_service = new BaseAPIValidator($this->core_service, $this->lead_service);
         $this->request = $requestStack->getCurrentRequest();
+        $this->lead = $this->request->get('lead');
         $this->validators = array(
             // ESSENTIAL VALIDATIONS
-            new CountryValidator($this->core_service, $this->request),
-            new CategoryValidator($this->core_service, $this->request),
-            new LeadValidator($this->lead_service, $this->request),
-            new OwnerValidator($this->contact_detail_service, $this->request),
-            new ContactValidator($this->lead_service, $this->request),
-            new SourceValidator($this->contact_detail_service, $this->request),
+            new CountryValidator($this->core_service, $this->lead),
+            new CategoryValidator($this->core_service, $this->lead),
+            new LeadValidator($this->lead_service, $this->lead),
+            new OwnerValidator($this->contact_detail_service, $this->lead),
+            new ContactValidator($this->lead_service, $this->lead),
+            new SourceValidator($this->contact_detail_service, $this->lead),
             // NON-ESSENTIAL
-            new CountyValidator($this->contact_detail_service, $this->request),
-            new DistrictValidator($this->contact_detail_service, $this->request),
-            new GenderValidator($this->contact_detail_service, $this->request),
-            new ParishValidator($this->contact_detail_service, $this->request),
-            new CountyValidator($this->contact_detail_service, $this->request)
+            new CountyValidator($this->contact_detail_service, $this->lead),
+            new DistrictValidator($this->contact_detail_service, $this->lead),
+            new GenderValidator($this->contact_detail_service, $this->lead),
+            new ParishValidator($this->contact_detail_service, $this->lead),
+            new CountyValidator($this->contact_detail_service, $this->lead)
         );
         $this->validations = array();
     }
@@ -92,16 +95,12 @@ class APIService extends BaseService implements APIServiceInterface {
      * @throws \ListBroking\APIBundle\Exception\APIException
      */
     public function processRequest(){
-
         // validate request parameters to check if it's empty
         $token = $this->getTokenByName($this->request->get('token_name'), 'true');
         try {
             $this->validation_service->checkEmptyFields($this->request);
             $this->checkRequestToken($token);
-            foreach ($this->validators as $validator){
-                $this->validations = $validator->validate($this->validations);
-            }
-//            ladybug_dump_die($this->validations);
+            $this->validateAll();
             $this->saveLead();
             $response = "Lead successfully saved.";
             return $this->createJsonResponse($response);
@@ -118,6 +117,12 @@ class APIService extends BaseService implements APIServiceInterface {
         return $response;
     }
 
+    private function validateAll(){
+        foreach ($this->validators as $validator){
+            $this->validations = $validator->validate($this->validations);
+        }
+    }
+
     private function checkRequestToken($token){
         if ($token == null || $token->getToken() !=  $this->request->get('token')){
             throw new APIException("Unauthorized access.");
@@ -129,7 +134,7 @@ class APIService extends BaseService implements APIServiceInterface {
             $this->saveContact($this->validations['repeated_lead']);
         } else {
             $lead = $this->request->get('lead');
-            $resting_date = $lead['resting_date'];
+            $resting_date = new \DateTime($lead['resting_date']);
             if (!isset($resting_date) || empty($resting_date)) {
                 throw new APIException("No resting time defined.");
             }
@@ -138,12 +143,14 @@ class APIService extends BaseService implements APIServiceInterface {
             $lead->setIsMobile($this->validations['is_mobile']);
             $lead->setInOpposition(0);      // TODO: check if it's in opposition
             $lead->setPhone($this->validations['phone']);
-//            $lock = new Lock();
-//            $lock->setExpirationDate($resting_date);
-//            $lock->setType(1);
-//            $lock->setLead($lead);
-//            $lead->addLocks($lock);
-            $this->lead_service->addLead($lead, true);
+            $lock = new Lock();
+            $lock->setExpirationDate($resting_date);
+            $lock->setType(1);
+            $lock->setLead($lead);
+            $lock->setIsActive(1);
+            $lock->setStatus(1);
+            $lead->addLocks($lock);
+            $this->lead_service->addLead($lead);
             $this->saveContact($lead);
         }
     }
@@ -172,7 +179,6 @@ class APIService extends BaseService implements APIServiceInterface {
             $contact->setPostalcode2($this->validations['postalcode2']);
         }
 
-        ladybug_dump_die($this->validations);
         return $this->lead_service->addContact($contact);
     }
 
@@ -186,6 +192,65 @@ class APIService extends BaseService implements APIServiceInterface {
                 "code" => $code,
                 "response" => $response
             ), $code);
+    }
+
+    public function setLeadsByCSV($filename, $owner, $source, $sub_category, $country){
+        $php_excel_object = \PHPExcel_IOFactory::load($filename);
+        $active = $php_excel_object->getActiveSheet();
+        try {
+            foreach ($active->getRowIterator() as $row) {
+                foreach ($row->getCellIterator() as $cell) {
+                    if ($row->getRowIndex() == 1) {
+                        $headers[1][$cell->getColumn()] = $cell->getValue();
+                    } else {
+                        if (isset($headers[1][$cell->getColumn()])) {
+                            $lead[$headers[1][$cell->getColumn()]] = $cell->getValue();
+                        }
+                    }
+                }
+                if ($row->getRowIndex() != 1) {
+                    $this->lead = $lead;
+                    $this->setCSVDefaults($owner, $source, $sub_category, $country);
+                    $this->resetValidators();
+                    $this->validateAll();
+                    $this->saveContact($lead);
+                }
+            }
+            $response = "Leads successfully saved.";
+        } catch (CoreValidationException $e) {
+            $response = "Exception found - " . $e->getMessage();
+        } catch (LeadValidationException $e) {
+            $response = "Exception found - " . $e->getMessage();
+        } catch (APIException $e){
+            $response = "Exception found - " . $e->getMessage();
+        }
+        ladybug_dump_die($response);
+    }
+
+    private function setCSVDefaults($owner, $source, $sub_category, $country){
+        $this->lead['source_id']        = $source;
+        $this->lead['sub_category']  = $sub_category;
+        $this->lead['owner_name']         = $owner;
+        $this->lead['country']       = $country;
+        $this->lead['ipaddress'] = '127.0.0.1';
+    }
+
+    private function resetValidators(){
+        $this->validators = array(
+            // ESSENTIAL VALIDATIONS
+            new CountryValidator($this->core_service, $this->lead),
+            new CategoryValidator($this->core_service, $this->lead),
+            new LeadValidator($this->lead_service, $this->lead),
+            new OwnerValidator($this->contact_detail_service, $this->lead),
+            new ContactValidator($this->lead_service, $this->lead),
+            new SourceValidator($this->contact_detail_service, $this->lead),
+            // NON-ESSENTIAL
+            new CountyValidator($this->contact_detail_service, $this->lead),
+            new DistrictValidator($this->contact_detail_service, $this->lead),
+            new GenderValidator($this->contact_detail_service, $this->lead),
+            new ParishValidator($this->contact_detail_service, $this->lead),
+            new CountyValidator($this->contact_detail_service, $this->lead)
+        );
     }
 
     /**

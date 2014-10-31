@@ -57,7 +57,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
 //                ) cont
 //                GROUP by cont.email, cont.source_page_id
 //                LIMIT 100;";
-
+        $last_contact_id = $this->getLastContactId();
         $sql = "SELECT c.id, c.email, c.firstname, c.lastname, c.birthdate, c.gender, c.postalcode1, c.postalcode2, c.city, c.phone,
                         c.ipaddress, c.source_page_id, sp.domain
                 FROM contact_hist c
@@ -75,7 +75,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                 AND ifnull(c.phone, '') != ''
                 AND ifnull(c.ipaddress, '') != ''
                 AND ifnull(c.source_page_id, '') != ''
-                AND c.id < 1000
+                AND c.id > {$last_contact_id}
                 LIMIT 100";
         try{
             $stmt = $this->executeQuery($sql);
@@ -100,14 +100,23 @@ class LCExportContactsCommand extends ContainerAwareCommand {
     }
 
     protected function startMysqliConnection(){
-//        shell_exec("ssh -f ptentugal@lc.batch -L 3307:adclickinstance2-ptentugal-acarneiro.c1xjt8uy0oz0.us-east-1.rds.amazonaws.com:3306 -N sleep 60");
-//        $this->mysql_connection = new \mysqli('127.0.0.1', 'lcdbuser', 'Ay570ln3', 'lcdb', 3307);
-        $this->mysql_connection = new \mysqli('localhost', 'root', '13249976', 'lcdb');
+        $this->mysql_connection = new \mysqli('adclickinstance2-listbroking.c1xjt8uy0oz0.us-east-1.rds.amazonaws.com', 'lcdbuser', 'Ay570ln3', 'lcdb');
         if ($this->mysql_connection->connect_errno) {
             die("Failed to connect to MySQL: (" . $this->mysql_connection->connect_errno . ") " . $this->mysql_connection->connect_error);
         } else {
             return true;
         }
+    }
+
+    protected function getLastContactId(){
+        $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
+        $stmt = $em->getConnection();
+        $sql = "SELECT MIN(contact_id)
+                FROM listbroking_contacts
+                WHERE is_processed=0
+                LIMIT 1";
+        $result = $stmt->execute($sql);
+        return $result->fetch;
     }
 
     protected function saveLeadsToListBroking(){
