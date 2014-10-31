@@ -75,7 +75,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                 AND ifnull(c.phone, '') != ''
                 AND ifnull(c.ipaddress, '') != ''
                 AND ifnull(c.source_page_id, '') != ''
-                AND c.id < 1000
+                AND c.id > 1000
                 LIMIT 100";
         try{
             $stmt = $this->executeQuery($sql);
@@ -100,9 +100,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
     }
 
     protected function startMysqliConnection(){
-//        shell_exec("ssh -f ptentugal@lc.batch -L 3307:adclickinstance2-ptentugal-acarneiro.c1xjt8uy0oz0.us-east-1.rds.amazonaws.com:3306 -N sleep 60");
-//        $this->mysql_connection = new \mysqli('127.0.0.1', 'lcdbuser', 'Ay570ln3', 'lcdb', 3307);
-        $this->mysql_connection = new \mysqli('localhost', 'root', '13249976', 'lcdb');
+        $this->mysql_connection = new \mysqli('adclickinstance2-listbroking.c1xjt8uy0oz0.us-east-1.rds.amazonaws.com', 'lcdbuser', 'Ay570ln3', 'lcdb');
         if ($this->mysql_connection->connect_errno) {
             die("Failed to connect to MySQL: (" . $this->mysql_connection->connect_errno . ") " . $this->mysql_connection->connect_error);
         } else {

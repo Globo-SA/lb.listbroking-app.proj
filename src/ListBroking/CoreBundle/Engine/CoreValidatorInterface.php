@@ -11,7 +11,6 @@
 namespace ListBroking\CoreBundle\Engine;
 
 
-use Symfony\Component\HttpFoundation\Request;
 
 interface CoreValidatorInterface {
 
@@ -19,7 +18,7 @@ interface CoreValidatorInterface {
      * @param $service
      * @param Request $request
      */
-    public function __construct($service, Request $request);
+    public function __construct($service, $lead);
 
     /**
      * @param $value

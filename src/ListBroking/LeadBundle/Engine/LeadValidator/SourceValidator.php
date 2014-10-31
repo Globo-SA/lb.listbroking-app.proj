@@ -13,16 +13,15 @@ namespace ListBroking\LeadBundle\Engine\LeadValidator;
 
 use ListBroking\LeadBundle\Entity\Source;
 use ListBroking\LeadBundle\Exception\LeadValidationException;
-use Symfony\Component\HttpFoundation\Request;
 
 class SourceValidator extends BaseValidator {
     /**
      * @param $service
-     * @param Request $request
+     * @param $lead
      */
-    public function __construct($service, Request $request)
+    public function __construct($service, $lead)
     {
-        parent::__construct($service, $request);
+        parent::__construct($service, $lead);
     }
 
     /**
@@ -62,7 +61,7 @@ class SourceValidator extends BaseValidator {
             if ($validations['source'] == null){
                 throw new LeadValidationException("The lead['source_id'] does not exist in sources list.");
             }
-        } else{
+        } else {
             throw new LeadValidationException("The field lead['source_name/source_id'] must be sent.");
         }
 
@@ -74,7 +73,7 @@ class SourceValidator extends BaseValidator {
     }
 
     /**
-     * @param $source_page_id
+     * @param $external_id
      * @return mixed
      */
     private function checkExternalIdExistance($external_id){

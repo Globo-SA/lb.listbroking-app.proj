@@ -12,7 +12,6 @@ namespace ListBroking\LeadBundle\Engine\LeadValidator;
 
 
 use ListBroking\LeadBundle\Exception\LeadValidationException;
-use Symfony\Component\HttpFoundation\Request;
 
 class LeadValidator extends BaseValidator {
     protected $service;
@@ -20,10 +19,11 @@ class LeadValidator extends BaseValidator {
 
     /**
      * @param $service
+     * @param $lead
      */
-    public function __construct($service, Request $request)
+    public function __construct($service, $lead)
     {
-        parent::__construct($service, $request);
+        parent::__construct($service, $lead);
         $this->mobile_prefixs = array(
             'PT' => '91|92|93|96'
         );
@@ -46,7 +46,7 @@ class LeadValidator extends BaseValidator {
         if ($validations['country']->getIsoCode() == 'PT') {
             $validations['is_mobile']     = $this->checkMobilePhone($phone, $validations['country']->getIsoCode());
         }
-        $validations['repeated_lead'] = $this->checkLeadExistance($phone);
+        $validations['repeated_lead'] = $this->checkLeadExistence($phone);
 //        ladybug_dump_die($validations);
         return $validations;
     }
@@ -77,7 +77,7 @@ class LeadValidator extends BaseValidator {
      * @param $phone
      * @return mixed
      */
-    private function checkLeadExistance($phone){
+    private function checkLeadExistence($phone){
         return $this->service->getLeadByPhone($phone, true);
     }
 }

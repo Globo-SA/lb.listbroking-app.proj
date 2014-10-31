@@ -11,7 +11,6 @@
 namespace ListBroking\LeadBundle\Engine;
 
 
-use Symfony\Component\HttpFoundation\Request;
 
 interface LeadValidatorInterface {
 
@@ -19,7 +18,7 @@ interface LeadValidatorInterface {
      * @param $service
      * @param $request
      */
-    public function __construct($service, Request $request);
+    public function __construct($service, $lead);
 
     /**
      * @param $value

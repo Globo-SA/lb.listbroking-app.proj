@@ -16,11 +16,11 @@ use Symfony\Component\HttpFoundation\Request;
 class ParishValidator extends BaseValidator {
     /**
      * @param $service
-     * @param Request $request
+     * @param $lead
      */
-    public function __construct($service, Request $request)
+    public function __construct($service, $lead)
     {
-        parent::__construct($service, $request);
+        parent::__construct($service, $lead);
     }
 
     /**
