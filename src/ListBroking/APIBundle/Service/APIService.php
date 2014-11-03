@@ -197,7 +197,7 @@ class APIService extends BaseService implements APIServiceInterface {
     public function setLeadsByCSV($filename, $owner, $source, $sub_category, $country){
         $php_excel_object = \PHPExcel_IOFactory::load($filename);
         $active = $php_excel_object->getActiveSheet();
-        try {
+        $response = array();
             foreach ($active->getRowIterator() as $row) {
                 foreach ($row->getCellIterator() as $cell) {
                     if ($row->getRowIndex() == 1) {
@@ -208,23 +208,24 @@ class APIService extends BaseService implements APIServiceInterface {
                         }
                     }
                 }
+                try {
                 if ($row->getRowIndex() != 1) {
                     $this->lead = $lead;
                     $this->setCSVDefaults($owner, $source, $sub_category, $country);
                     $this->resetValidators();
                     $this->validateAll();
-                    $this->saveContact($lead);
+                    $this->saveLead();
+                }
+                    $response[] = "Lead at row ". $row->getRowIndex() . " successfully saved.";
+                } catch (CoreValidationException $e) {
+                    $response[] = "Exception found - " . $e->getMessage();
+                } catch (LeadValidationException $e) {
+                    $response[] = "Exception found - " . $e->getMessage();
+                } catch (APIException $e){
+                    $response[] = "Exception found - " . $e->getMessage();
                 }
             }
-            $response = "Leads successfully saved.";
-        } catch (CoreValidationException $e) {
-            $response = "Exception found - " . $e->getMessage();
-        } catch (LeadValidationException $e) {
-            $response = "Exception found - " . $e->getMessage();
-        } catch (APIException $e){
-            $response = "Exception found - " . $e->getMessage();
-        }
-        ladybug_dump_die($response);
+        return $response;
     }
 
     private function setCSVDefaults($owner, $source, $sub_category, $country){
