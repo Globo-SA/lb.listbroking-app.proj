@@ -12,7 +12,7 @@ class DefaultController extends Controller
 
     public function testUploadAction(){
         $this->api_service  = $this->get('listbroking.api.service');
-        $filename = $this->get('kernel')->getRootDir() . "/../web/uploads/teste.xls";
+        $filename = $this->get('kernel')->getRootDir() . "/../web/uploads/teste1.xls";
         $owner = 'adclick';
         $source = 4;
         $sub_category = 'mystic';

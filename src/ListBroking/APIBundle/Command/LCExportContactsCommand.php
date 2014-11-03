@@ -115,7 +115,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                 FROM listbroking_contacts
                 WHERE is_processed=0
                 LIMIT 1";
-        $result = $stmt->execute($sql);
+        $result = $stmt->executeQuery($sql);
         return $result->fetch;
     }
 
