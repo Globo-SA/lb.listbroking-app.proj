@@ -13,4 +13,12 @@ namespace ListBroking\ExtractionBundle\Repository;
 
 interface ExtractionRepositoryInterface {
 
-} 
+    /**
+     * Associates multiple contacts to an extraction
+     * @param $extraction Extraction
+     * @param $contacts
+     * @param $merge
+     * @return mixed
+     */
+    public function addContacts($extraction, $contacts, $merge);
+}

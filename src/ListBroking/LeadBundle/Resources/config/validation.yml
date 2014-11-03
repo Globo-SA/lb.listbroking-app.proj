@@ -1,0 +1,5 @@
+ListBroking\LeadBundle\Entity\Contact:
+   constraints:
+       - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+           fields:   extractions
+           message:  "Extraction is duplicated."

@@ -70,14 +70,14 @@ ListBroking\ExtractionBundle\Entity\Extraction:
                 referencedColumnName: id
                 onDelete: restrict
     manyToMany:
-        leads:
-            targetEntity: ListBroking\LeadBundle\Entity\Lead
+        contacts:
+            targetEntity: ListBroking\LeadBundle\Entity\Contact
             inversedBy:   extractions
             joinTable:
-                name:         extractions_leads
+                name:         extractions_contacts
                 joinColumns:
                     extraction_id:
                         referencedColumnName: id
                 inverseJoinColumns:
-                    lead_id:
+                    contact_id:
                         referencedColumnName: id

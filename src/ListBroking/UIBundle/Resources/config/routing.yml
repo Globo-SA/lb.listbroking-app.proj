@@ -20,6 +20,16 @@ extraction_filtering:
     options:
         expose: true
 
+extraction_download:
+    path: /extraction/wizard/{extraction_id}/download-3/{extraction_template_id}
+    defaults: { _controller: listbroking.uibundle.extraction.controller:extractionDownloadAction }
+    options:
+        expose: true
+
+lead_deduplication:
+    path: /extraction/wizard/{extraction_id}/deduplication-4
+    defaults: { _controller: listbroking.uibundle.extraction.controller:leadDeduplicationAction }
+
 ajax_count_leads:
     path: /ajax/count/leads
     defaults: { _controller: listbroking.uibundle.ajax.controller:countLeads }
@@ -36,8 +46,15 @@ ajax_form_submit:
     path: /ajax/form/submit/{form_name}
     defaults: { _controller: listbroking.uibundle.ajax.controller:formSubmissionAction }
     options:
-        expose: true
 
+ajax_extraction_exclude_lead:
+    path: /ajax/extraction/{extraction_id}/lead/{lead_id}/exclude
+    defaults: { _controller: listbroking.uibundle.ajax.controller:extractionExcludeLeadAction }
+    options:
+        expose: true
+    requirements:
+          extraction_id: \d+
+          lead_id: \d+
 listbroking.uibundle.tentugal_test:
     path:     /tentugal
     defaults: { _controller: ListBrokingUIBundle:Default:tentugal }

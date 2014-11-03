@@ -10,6 +10,7 @@
 
 namespace ListBroking\LockBundle\Engine;
 
+use Doctrine\ORM\AbstractQuery;
 use ListBroking\LeadBundle\Repository\ORM\ContactRepository;
 use ListBroking\LeadBundle\Repository\ORM\LeadRepository;
 use ListBroking\LockBundle\Engine\ContactFilter\BasicContactFilter;
@@ -131,6 +132,39 @@ class LockEngine
                     );
                 }
             }
+            elseif($type == 'lead'){
+
+                // Split values
+                $ranges = array();
+                if(!is_array($values)){
+                    $values = explode(',', $values);
+                    foreach ($values as $key => $value)
+                    {
+                        // Check if its a range
+                        if(preg_match('/-/i', $value)){
+                            $ranges = explode('-', $value);
+                            unset($values[$key]);
+                        }
+                    }
+                }
+
+                if(count($ranges) > 0){
+                    $lead_filters[1]['filters'][] = array(
+                        'field' => $field,
+                        'opt' => 'between',
+                        'value' => $ranges
+
+                    );
+                }
+
+                if(count($values) > 0){
+                    $lead_filters[1]['filters'][] = array(
+                        'field' => $field,
+                        'opt' => $field == 'id' ? 'not_equal' : 'equal',
+                        'value' => is_array($values) ? array_values($values) : array($values)
+                    );
+                }
+            }
             else{
                 switch ($field){
                     case 'no_locks_lock_filter':
@@ -185,19 +219,21 @@ class LockEngine
     /**
      * Compiles the filters into a runnable QueryBuilder Object
      * @param array $filters
+     * @param $limit
      * @throws InvalidFilterObjectException
      * @internal param $lock_filters
      * @internal param $contact_filters
      * @return \ESO\Doctrine\ORM\QueryBuilder
      */
-    public function compileFilters($filters = array()){
+    public function compileFilters($filters = array(), $limit){
+        $lead_qb = $this->lead_repo->createQueryBuilder();
 
-        $qb = $this->lead_repo->createQueryBuilder();
+        $lead_qb->select('contacts.id');
 
         // Check if there are lock filters
         if(array_key_exists('lock_filters',$filters) && !empty($filters['lock_filters'])){
 
-            $locksOrX = $qb->expr()->orX();
+            $locksOrX = $lead_qb->expr()->orX();
             foreach($filters['lock_filters'] as $type => $lock_filter)
             {
                 // Validate the filters array
@@ -212,19 +248,19 @@ class LockEngine
                 /** @var LockFilterInterface $lock_filter_type */
 
                 $lock_filter_type = $this->lock_filter_types[$type];
-                $lock_filter_type->addFilter($locksOrX, $qb, $lock_filter['filters']);
+                $lock_filter_type->addFilter($locksOrX, $lead_qb, $lock_filter['filters']);
             }
 
             // LEFT OUTER JOIN
-            $qb->leftJoin($this->lead_repo->getAlias() . '.locks', 'locks', 'WITH', $locksOrX);
+            $lead_qb->leftJoin($this->lead_repo->getAlias() . '.locks', 'locks', 'WITH', $locksOrX);
 
-            $qb->andWhere('locks.lead IS NULL');
+            $lead_qb->andWhere('locks.lead IS NULL');
         }
 
         // Check if there are contact filters
         if(array_key_exists('contact_filters',$filters) && !empty($filters['contact_filters'])){
 
-            $contactsAndX = $qb->expr()->andX();
+            $contactsAndX = $lead_qb->expr()->andX();
             foreach($filters['contact_filters'] as $type => $contact_filter){
 
                 // Validate the filters array
@@ -239,20 +275,20 @@ class LockEngine
 
                 /** @var ContactFilterInterface $contact_filter_type */
                 $contact_filter_type = $this->contact_filter_types[$type];
-                $contact_filter_type->addFilter($contactsAndX, $qb, $contact_filter['filters']);
+                $contact_filter_type->addFilter($contactsAndX, $lead_qb, $contact_filter['filters']);
 
             }
-            $qb->join($this->lead_repo->getAlias() . '.contacts', 'contacts', 'WITH', $contactsAndX);
+            $lead_qb->join($this->lead_repo->getAlias() . '.contacts', 'contacts', 'WITH', $contactsAndX);
         }
         else{
-            $qb->join($this->lead_repo->getAlias() . '.contacts', 'contacts');
+            $lead_qb->join($this->lead_repo->getAlias() . '.contacts', 'contact');
 
         }
-        $qb->groupBy($this->lead_repo->getAlias() . '.id');
+        $lead_qb->groupBy($this->lead_repo->getAlias() . '.id');
 
         // Check if there are lead filters
         if(array_key_exists('lead_filters',$filters) && !empty($filters['lead_filters'])){
-            $leadsAndX = $qb->expr()->andX();
+            $leadsAndX = $lead_qb->expr()->andX();
             foreach($filters['lead_filters'] as $type => $lead_filter){
 
                 // Validate the filters array
@@ -267,37 +303,16 @@ class LockEngine
 
                 /** @var leadFilterInterface $lead_filter_type */
                 $lead_filter_type = $this->lead_filter_types[$type];
-                $lead_filter_type->addFilter($leadsAndX, $qb, $lead_filter['filters']);
+                $lead_filter_type->addFilter($leadsAndX, $lead_qb, $lead_filter['filters']);
             }
-            $qb->andWhere($leadsAndX);
+            $lead_qb->andWhere($leadsAndX);
         }
-
-        // Cleanup the SELECT
-        foreach ($this->lead_repo->getColumnNames() as $column){
-            if(!in_array($column, array('created_by','updated_by', 'created_at', 'updated_at'))){
-                $qb->addSelect($this->lead_repo->getAlias() . '.' . $column . ' as ' . $column);
-            }
-        }
-        foreach ($this->contact_repo->getColumnNames() as $column2){
-            if($column2 != 'id'){
-                $qb->addSelect('contacts.' . $column2);
-            }else{
-                $qb->addSelect('contacts.' . $column2 . ' as ' . 'contact_id');
-            }
-        }
-        foreach ($this->contact_repo->getAssociationNames() as $association){
-            if(!in_array($association, array('lead','created_by','updated_by'))){
-                $qb->leftJoin('contacts.' . $association, "{$association}_entity");
-                $qb->addSelect("{$association}_entity.name as {$association}");
-            }
-        }
-        $qb->join('sub_category_entity.category', "category_entity");
-        $qb->addSelect("category_entity.name as category");
 
         // Group by Lead to get only
         // one contact per lead
-        $qb->groupBy('lead.id');
+        $lead_qb->groupBy('lead.id');
+        $lead_qb->setMaxResults($limit);
 
-        return $qb;
+        return $lead_qb;
     }
 }

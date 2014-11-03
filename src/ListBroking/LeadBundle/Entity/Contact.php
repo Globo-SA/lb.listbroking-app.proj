@@ -13,6 +13,8 @@ namespace ListBroking\LeadBundle\Entity;
 
 use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior;
 use Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior;
+use Doctrine\Common\Collections\ArrayCollection;
+use ListBroking\ExtractionBundle\Entity\Extraction;
 
 class Contact {
     use TimestampableEntityBehavior,
@@ -53,6 +55,21 @@ class Contact {
     protected $parish;
 
     protected $country;
+
+    /**
+     * @var Array
+     */
+    protected $extractions;
+
+    function __construct()
+    {
+        $this->extractions = new ArrayCollection();
+    }
+
+    function __toString()
+    {
+        return $this->firstname . ' ' . $this->lastname;
+    }
 
     /**
      * @return mixed
@@ -332,5 +349,19 @@ class Contact {
     public function setCountry($country)
     {
         $this->country = $country;
+    }
+
+    /**
+     * @param Extraction $extraction
+     */
+    public function addExtraction(Extraction $extraction){
+        $this->extractions[] = $extraction;
+    }
+
+    /**
+     * @param Extraction $extraction
+     */
+    public function removeExtraction(Extraction $extraction){
+        $this->extractions->removeElement($extraction);
     }
 }

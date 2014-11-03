@@ -34,6 +34,11 @@ class Campaign
 
     protected $extractions;
 
+    function __toString()
+    {
+        return $this->name;
+    }
+
     /**
      * @return mixed
      */

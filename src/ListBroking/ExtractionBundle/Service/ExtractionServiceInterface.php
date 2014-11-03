@@ -11,6 +11,8 @@
 namespace ListBroking\ExtractionBundle\Service;
 
 
+use ListBroking\ExtractionBundle\Entity\Extraction;
+
 interface ExtractionServiceInterface {
     
     /**
@@ -116,14 +118,22 @@ interface ExtractionServiceInterface {
     public function updateExtractionTemplate($extraction_template);
 
     /**
+     * Associates an array of contacts to an extraction
+     * If merge = false old contacts will be removed
+     * @param $extraction Extraction
+     * @param $contacts
+     * @param bool $merge
+     */
+    public function addExtractionContacts($extraction, $contacts, $merge = false);
+
+    /**
      * Exports Leads using a given type
      * @param $extraction_template
      * @param $leads_array
-     * @param $type
      * @param array $info
      * @return mixed
      */
-    public function exportExtraction($extraction_template, $leads_array, $type, $info = array());
+    public function exportExtraction($extraction_template, $leads_array, $info = array());
 
     /**
      * Used to import a file with Leads

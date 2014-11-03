@@ -13,7 +13,20 @@
             {% endblock %}
             {% block box_body %}
                 <div class="box-group" id="filtering">
-                    <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+                    <div class="panel box box-warning">
+                        <div class="box-header">
+                            <h4 class="box-title">
+                                <a data-toggle="collapse" data-parent="#configuration" href="#filters">
+                                    Configuration
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="configuration" class="panel-collapse collapse {% if extraction.status == 0 %}in{% endif %}">
+                            <div class="box-body">
+                                {% include '@ListBrokingUI/_partials/forms/extraction.html.twig' %}
+                            </div>
+                        </div>
+                    </div>
                     <div class="panel box box-primary">
                         <div class="box-header">
                             <h4 class="box-title">
@@ -22,7 +35,7 @@
                                 </a>
                             </h4>
                         </div>
-                        <div id="filters" class="panel-collapse collapse {% if leads|length <= 0 %}in{% endif %}">
+                        <div id="filters" class="panel-collapse collapse {% if extraction.status == 1 %}in{% endif %}">
                             <div class="box-body">
                                 {% include '@ListBrokingUI/_partials/forms/filters.html.twig' %}
                             </div>
@@ -36,9 +49,18 @@
                                 </a>
                             </h4>
                         </div>
-                        <div id="success" class="panel-collapse collapse {% if leads|length > 0 %}in{% endif %}">
+                        <div id="success" class="panel-collapse collapse {% if extraction.status == 2 %}in{% endif %}">
                             <div class="box-body">
-                                {% include '@ListBrokingUI/Extraction/_configuration/leads_table.html.twig' %}
+                                <div class="row row-margin">
+                                    <div class="col-md-12">
+                                            {% include '@ListBrokingUI/Extraction/_configuration/deduplication.html.twig' %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {% include '@ListBrokingUI/Extraction/_configuration/contacts_table.html.twig' %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

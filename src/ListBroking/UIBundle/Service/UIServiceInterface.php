@@ -11,6 +11,9 @@
 namespace ListBroking\UIBundle\Service;
 
 
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormBuilderInterface;
+
 interface UIServiceInterface
 {
 
@@ -43,9 +46,11 @@ interface UIServiceInterface
      * Generates a new form view
      * @param $type
      * @param bool $view
-     * @return mixed
+     * @param null $data
+     * @param $action
+     * @return FormBuilderInterface|Form
      */
-    function generateForm($type, $view = true);
+    function generateForm($type, $action = null, $data = null, $view = false);
 
     /**
      * Generates a new CSRF token

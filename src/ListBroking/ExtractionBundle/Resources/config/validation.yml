@@ -4,3 +4,8 @@ ListBroking\ExtractionBundle\Entity\Extraction:
            fields:   name
            message:  "Name is duplicated."
 
+ListBroking\ExtractionBundle\Entity\Extraction:
+   constraints:
+       - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+           fields:   contacts
+           message:  "Contact is duplicated."

@@ -153,6 +153,24 @@
             newLi.appendTo($list);
 
         });
+
+        $('.collapse-compound').click(function() {
+
+            var $i = $(this).find('i');
+            console.log($i);
+            if($i.hasClass('fa-caret-right')){
+                $i
+                    .removeClass('fa-caret-right')
+                    .addClass('fa-caret-down')
+                ;
+            }else{
+                $i
+                    .removeClass('fa-caret-down')
+                    .addClass('fa-caret-right')
+                ;
+            }
+            $(this).parent().next().next().slideToggle();
+        });
     });
 }
 )(jQuery, ListBroking)

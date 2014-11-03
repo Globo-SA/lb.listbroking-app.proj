@@ -10,7 +10,11 @@
             {#{% set label = name|humanize %}#}
         {#{%- endif -%}#}
         {% if compound -%}
-            <h4{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}><strong>{{ label|trans({}, translation_domain) }}</strong></h4>
+            <h4{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>
+                <a href="#" class="collapse-compound btn btn-xs btn-default"><i class="fa fa-caret-right"></i></a>
+                &nbsp;
+                <strong>{{ label|trans({}, translation_domain) }}</strong>
+            </h4>
             <hr>
         {% else %}
             <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label|trans({}, translation_domain) }}</label>
@@ -47,6 +51,7 @@
             {% else %}
                 {% if form.vars.block_prefixes.1 not in ['filter', 'collection'] %}
                     {{ form_label(form) }}
+
                 {% endif %}
             {% endif %}
             {{ form_widget(form) }}

@@ -118,6 +118,9 @@ class UIService implements UIServiceInterface
                     }
                 }
                 break;
+            case 'extraction_template':
+                $list = $this->e_service->getExtractionTemplateList();
+                break;
             default:
                 throw new \Exception("Invalid List, {$type}", 400);
                 break;
@@ -266,16 +269,22 @@ class UIService implements UIServiceInterface
      * Generates a new form view
      * @param $type
      * @param bool $view
+     * @param null $data
+     * @param $action
      * @return FormBuilderInterface|Form
      */
-    function generateForm($type, $view = false)
+    function generateForm($type, $action = null, $data = null, $view = false)
     {
-        $form = $this->form_factory->createBuilder($type);
+        $form = $this->form_factory->createBuilder($type, $data);
+        if($action){
+            $form->setAction($action);
+        }
+
         if ($view)
         {
             return $form->getForm()->createView();
         }
-        return $form;
+        return $form->getForm();
     }
 
     /**

@@ -33,6 +33,11 @@ class Category {
         $this->sub_categories = new ArrayCollection();
     }
 
+    function __toString()
+    {
+        return $this->name;
+    }
+
     /**
      * @return mixed
      */

@@ -92,5 +92,6 @@
         });
 
         $("[data-mask]").inputmask();
+
     });
 })(jQuery, ListBroking)

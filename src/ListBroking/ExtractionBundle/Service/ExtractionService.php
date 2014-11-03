@@ -38,7 +38,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     function __construct(
         CacheManagerInterface $cache,
         ValidatorInterface $validator,
-        ExtractionRepository$extraction_repo,
+        ExtractionRepository $extraction_repo,
         ExtractionTemplateRepository $extraction_template_repo,
         Factory $phpexcel
     )
@@ -218,6 +218,20 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     }
 
     /**
+     * Associates an array of contacts to an extraction
+     * If merge = false old contacts will be removed
+     * @param $extraction Extraction
+     * @param $contacts
+     * @param bool $merge
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function addExtractionContacts($extraction, $contacts, $merge = false){
+
+        $this->extraction_repo->addContacts($extraction, $contacts, $merge);
+        return  $this->extraction_repo->findOneById($extraction->getId(),true);
+    }
+
+    /**
      * @return array
      */
     public function getExportTypes()
@@ -228,24 +242,25 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     /**
      * Exports Leads using a given type
      * @param $extraction_template ExtractionTemplate
-     * @param $leads_array
-     * @param $type
+     * @param $contacts
      * @param array $info
      * @throws InvalidExtractionException
+     * @internal param $type
      * @return mixed
      */
-    public function exportExtraction($extraction_template, $leads_array, $type, $info = array())
+    public function exportExtraction($extraction_template, $contacts, $info = array())
     {
-        if(!array_key_exists("extension", $type) || !array_key_exists("label", $type)){
-            throw new InvalidExtractionException('Wrong Extraction type, in' . __CLASS__);
-        }
-
         $template = $extraction_template['template'];
-        if(!array_key_exists("headers", $template)){
-            throw new InvalidExtractionException('Headers missing on the ExtractionTemplate, in' . __CLASS__);
+        if(!array_key_exists("headers", $template) || !array_key_exists("extension", $template)){
+            throw new InvalidExtractionException('Headers or Extension missing on the ExtractionTemplate, in' . __CLASS__);
         }
 
-        $filename = $this->generateFilename($extraction_template['name'], $type['extension']);
+        if(!array_key_exists("filename", $info)){
+
+            $filename = $this->generateFilename($extraction_template['name'], $template['extension']);
+        }else{
+            $filename = $info['filename'];
+        }
 
         $php_excel_obj = $this->phpexcel->createPHPExcelObject();
         $writer = $this->phpexcel->createWriter($php_excel_obj);
@@ -283,13 +298,26 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             $active_sheet->setCellValue("{$header_column}1", $label);
             $header_column++;
         }
+
         $line = 2;
-        foreach ($leads_array as $contact)
+
+        /** @var \ListBroking\DoctrineBundle\Tool\InflectorTool $inflector */
+        $inflector = $field_value = $this->extraction_repo->getInflector();
+        foreach ($contacts as $contact)
         {
             $column = 'A';
             foreach ($headers as $field => $label){
 
-                    $field_value = $contact[$field];
+                if($field == 'phone'){
+                        $field_value = $contact->getlead()->getPhone();
+                    }else{
+
+                        $method = 'get' . $inflector->camelize($field);
+                        $field_value = $contact->$method();
+                        if(is_object($field_value) && !($field_value instanceof \DateTime)){
+                            $field_value = $field_value->__toString();
+                        }
+                    }
                     if($field_value instanceof \DateTime){
                         $field_value = $field_value->format('Y-m-d');
                     }
@@ -303,6 +331,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         }
 
         $writer->save($filename);
+
+        return $filename;
     }
 
     /**
@@ -325,7 +355,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             $column = 'A';
             while($column <= $last_column){
                 if($i == 1){
-                    $headers[] = $active->getCell("{$column}1")->getValue();
+                    $headers[] = strtolower($active->getCell("{$column}1")->getValue());
                 }
                 else{
                     $lead_array[$i-1][$headers[$j]] = $active->getCell("{$column}{$i}")->getValue();
@@ -335,6 +365,27 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             }
         }
         return $lead_array;
+    }
+
+    public function excludeLeads(Extraction $extraction, $leads_array){
+
+        $filters = $extraction->getFilters();
+        if(!array_key_exists('lead:id', $filters) || empty($filters['lead:id'])){
+            $filters['lead:id'] = array();
+        }else{
+            $filters['lead:id'] = explode(',', $filters['lead:id']);
+        }
+
+        foreach ($leads_array as $lead)
+        {
+            if(!in_array($lead['id'], array_values($filters['lead:id']))){
+                array_push($filters['lead:id'], $lead['id']);
+            }
+        }
+        $filters['lead:id'] = implode(',', $filters['lead:id']);
+
+        $extraction->setFilters($filters);
+        $this->updateExtraction($extraction);
     }
 
 
