@@ -143,7 +143,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         foreach ($this->result as $contact){
             var_dump($contact);
             $sql = "SELECT contact_detail_value
-                FROM contact_contact_detail_value
+                FROM contact_contact_detail_type
                 WHERE contact_id = " . $contact['id'];
             $st_ccdts = $this->executeQuery($sql);
             $flag = true;
