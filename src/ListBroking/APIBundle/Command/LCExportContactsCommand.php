@@ -91,14 +91,12 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                 $to += $max_contacts;
             try{
                 $this->result = $this->executeQuery($sql);
-                var_dump($this->result->num_rows);die;
             } catch (MysqliException $e){
                 echo $e->getMessage();
             } catch (APIException $e) {
                 echo "Could not save contacts to LB table. " . $e->getMessage();
             }
         } while (!$this->result->num_rows);
-        var_dump($this->result);
         try{
             $this->saveLeadsToListBroking();
         } catch (MysqliException $e){
@@ -113,7 +111,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         if ($query === FALSE ) {
             throw new MysqliException("Mysql Error: " . $this->mysql_connection->errno . " " . $this->mysql_connection->error);
         } elseif ($query->num_rows == 0){
-            throw new MysqliException("Mysql Error: No results found");
+            return $query;
         }
         return $query;
     }
@@ -143,12 +141,22 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         $stmt = $em->getConnection();
         $stmt->executeQuery("START TRANSACTION;");
         foreach ($this->result as $contact){
-            var_dump($contact);die;
+            var_dump($contact);
             $sql = "SELECT contact_detail_value
                 FROM contact_contact_detail_value
                 WHERE contact_id = " . $contact['id'];
-            $ccdts = $stmt->execute($sql);
+            $st_ccdts = $this->executeQuery($sql);
+            $flag = true;
+            foreach ($st_ccdts as $ccdt){
+                if ($flag){
+                    $ccdts = $ccdt;
+                    $flag = false;
+                    continue;
+                }
+                $ccdts .= ',' . $ccdt;
+            }
             $ccdts = json_encode($ccdts);
+            var_dump($ccdts);die;
             $sql = "INSERT INTO leadcentre_contacts
                         (contact_id, email, gender, firstname, lastname, birthdate, phone, address, country, postalcode1, postalcode2, city, district, county, parish, ipaddress, source_page_id, source_page_domain, category, extra_fields)
                 VALUES (
