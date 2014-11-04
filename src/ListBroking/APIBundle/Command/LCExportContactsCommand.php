@@ -146,16 +146,19 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                 FROM contact_contact_detail_type
                 WHERE contact_id = " . $contact['id'];
             $st_ccdts = $this->executeQuery($sql);
-            $flag = true;
-            foreach ($st_ccdts as $ccdt){
-                if ($flag){
-                    $ccdts = $ccdt;
-                    $flag = false;
-                    continue;
+            $ccdts = null;
+            if ($st_ccdts->num_rows){
+                $flag = true;
+                foreach ($st_ccdts as $ccdt){
+                    if ($flag){
+                        $ccdts = $ccdt;
+                        $flag = false;
+                        continue;
+                    }
+                    $ccdts .= ',' . $ccdt;
                 }
-                $ccdts .= ',' . $ccdt;
+                $ccdts = json_encode($ccdts);
             }
-            $ccdts = json_encode($ccdts);
             var_dump($ccdts);die;
             $sql = "INSERT INTO leadcentre_contacts
                         (contact_id, email, gender, firstname, lastname, birthdate, phone, address, country, postalcode1, postalcode2, city, district, county, parish, ipaddress, source_page_id, source_page_domain, category, extra_fields)
