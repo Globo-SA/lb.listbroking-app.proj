@@ -32,7 +32,11 @@ class LCExportContactsCommand extends ContainerAwareCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output){
         $max_contacts = $input->getOption('max_contacts');
-        $this->startMysqliConnection();
+        $result = $this->startMysqliConnection();
+        var_dump($result);
+        $result_tb = $this->executeQuery("show tables");
+        var_dump($result_tb);
+
 //        $sql = "SELECT cont.id, cont.email, cont.firstname, cont.lastname, cont.birthdate, cont.gender, cont.postalcode1, cont.postalcode2, cont.city, cont.phone,
 //                        cont.ipaddress, cont.source_page_id
 //                FROM
@@ -93,6 +97,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                 echo "Could not save contacts to LB table. " . $e->getMessage();
             }
         } while (!$this->result);
+        var_dump($this->result);
         try{
             $this->result = $stmt->fetch_assoc();
             $this->saveLeadsToListBroking();
