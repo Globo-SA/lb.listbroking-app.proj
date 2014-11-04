@@ -90,17 +90,16 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                 $from += $max_contacts;
                 $to += $max_contacts;
             try{
-                $stmt = $this->executeQuery($sql);
-                $this->result = $stmt->count();
+                $this->result = $this->executeQuery($sql);
+                var_dump($this->result->num_rows);die;
             } catch (MysqliException $e){
                 echo $e->getMessage();
             } catch (APIException $e) {
                 echo "Could not save contacts to LB table. " . $e->getMessage();
             }
-        } while (!$this->result);
+        } while (!$this->result->num_rows);
         var_dump($this->result);
         try{
-            $this->result = $stmt->fetch_assoc();
             $this->saveLeadsToListBroking();
         } catch (MysqliException $e){
             echo $e->getMessage();
@@ -110,8 +109,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
     }
 
     protected function executeQuery($query){
-        $query = $this->mysql_connection->prepare($query);
-        var_dump($query);
+        $query = $this->mysql_connection->query($query);
         if ($query === FALSE ) {
             throw new MysqliException("Mysql Error: " . $this->mysql_connection->errno . " " . $this->mysql_connection->error);
         } elseif ($query->num_rows == 0){
@@ -123,7 +121,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
     protected function startMysqliConnection(){
         $this->mysql_connection = new \mysqli('adclickinstance2-listbroking.c1xjt8uy0oz0.us-east-1.rds.amazonaws.com', 'lcdbuser', 'Ay570ln3', 'lcdb', 3306);
         if ($this->mysql_connection->connect_errno) {
-            throw new Exception("Failed to connect to MySQL: (" . $this->mysql_connection->connect_errno . ") " . $this->mysql_connection->connect_error);
+            throw new MysqliException("Failed to connect to MySQL: (" . $this->mysql_connection->connect_errno . ") " . $this->mysql_connection->connect_error);
         } else {
             return true;
         }
