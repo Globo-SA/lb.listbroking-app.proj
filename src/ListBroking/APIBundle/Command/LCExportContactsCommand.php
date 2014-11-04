@@ -31,6 +31,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output){
+        $max_contacts = $input->getOption('max_contacts');
         $this->startMysqliConnection();
 //        $sql = "SELECT cont.id, cont.email, cont.firstname, cont.lastname, cont.birthdate, cont.gender, cont.postalcode1, cont.postalcode2, cont.city, cont.phone,
 //                        cont.ipaddress, cont.source_page_id
@@ -57,8 +58,14 @@ class LCExportContactsCommand extends ContainerAwareCommand {
 //                ) cont
 //                GROUP by cont.email, cont.source_page_id
 //                LIMIT 100;";
-        $last_contact_id = $this->getLastContactId();
-        $sql = "SELECT c.id, c.email, c.firstname, c.lastname, c.birthdate, c.gender, c.postalcode1, c.postalcode2, c.city, c.phone,
+        $from = $this->getLastContactId();
+        $from = $from['contact_id'];
+        if (is_null($from)){
+            $from = 0;
+        }
+        $to = $from + $max_contacts;
+        do {
+            $sql = "SELECT c.id, c.email, c.firstname, c.lastname, c.birthdate, c.gender, c.postalcode1, c.postalcode2, c.city, c.phone,
                         c.ipaddress, c.source_page_id, sp.domain
                 FROM contact_hist c
                 INNER JOIN contact_integration_status_hist cis ON (cis.contact_id = c.id AND cis.status = 1)
@@ -75,10 +82,18 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                 AND ifnull(c.phone, '') != ''
                 AND ifnull(c.ipaddress, '') != ''
                 AND ifnull(c.source_page_id, '') != ''
-                AND c.id > {$last_contact_id}
-                LIMIT 100";
+                AND c.id between {$from} and {$to}
+                LIMIT {$max_contacts}";
+            try{
+                $stmt = $this->executeQuery($sql);
+                $this->result = $stmt->count();
+            } catch (MysqliException $e){
+                echo $e->getMessage();
+            } catch (APIException $e) {
+                echo "Could not save contacts to LB table. " . $e->getMessage();
+            }
+        } while (!$this->result);
         try{
-            $stmt = $this->executeQuery($sql);
             $this->result = $stmt->fetch_assoc();
             $this->saveLeadsToListBroking();
             var_dump($this->result);die;
@@ -111,12 +126,12 @@ class LCExportContactsCommand extends ContainerAwareCommand {
     protected function getLastContactId(){
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         $stmt = $em->getConnection();
-        $sql = "SELECT MIN(contact_id)
-                FROM listbroking_contacts
+        $sql = "SELECT MIN(contact_id) as contact_id
+                FROM leadcentre_contacts
                 WHERE is_processed=0
                 LIMIT 1";
         $result = $stmt->executeQuery($sql);
-        return $result->fetch;
+        return $result->fetch();
     }
 
     protected function saveLeadsToListBroking(){
