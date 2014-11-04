@@ -61,29 +61,29 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         $from = $this->getLastContactId();
         $from = $from['contact_id'];
         if (is_null($from)){
-            $from = 0;
+            $from = 2000000; //min contact_id that has country (aprox.)
         }
         $to = $from + $max_contacts;
         do {
-            $sql = "SELECT c.id, c.email, c.firstname, c.lastname, c.birthdate, c.gender, c.postalcode1, c.postalcode2, c.city, c.phone,
-                        c.ipaddress, c.source_page_id, sp.domain
+            $sql = "SELECT c.id, c.email, c.firstname, c.lastname, c.birthdate, c.gender, c.postalcode1, c.postalcode2, c.city,
+                            ifnull(c.phone, ccdth.contact_detail_value) as phone,
+                            ifnull(ccdth1.contact_detail_value, ccdth2.contact_detail_value) as country,
+                            c.ipaddress, c.source_page_id, sp.domain
                 FROM contact_hist c
-                INNER JOIN contact_integration_status_hist cis ON (cis.contact_id = c.id AND cis.status = 1)
-                INNER JOIN source_page sp ON (sp.id = c.source_page_id)
+                LEFT JOIN contact_integration_status_hist cis ON (cis.contact_id = c.id AND cis.status = 1)
+                inner JOIN source_page sp ON (sp.id = c.source_page_id)
+                left join contact_contact_detail_type_hist ccdth ON (ccdth.contact_id = c.id and ccdth.contact_detail_type_id = 85)
+                left join contact_contact_detail_type_hist ccdth1 ON (ccdth1.contact_id = c.id and ccdth1.contact_detail_type_id = 35)
+                left join contact_contact_detail_type_hist ccdth2 ON (ccdth2.contact_id = c.id and ccdth2.contact_detail_type_id = 37)
                 WHERE is_valid = 1
                 AND ifnull(c.email, '') != ''
-                AND ifnull(c.firstname, '') != ''
-                AND ifnull(c.lastname, '') != ''
-                AND ifnull(c.birthdate, '') != ''
-                AND ifnull(c.gender, '') != ''
-                AND ifnull(c.postalcode1, '') != ''
-                AND ifnull(c.postalcode2, '') != ''
-                AND ifnull(c.city, '') != ''
                 AND ifnull(c.phone, '') != ''
-                AND ifnull(c.ipaddress, '') != ''
+                AND (ifnull(ccdth1.contact_detail_value, '') != '' OR ifnull(ccdth2.contact_detail_value, '') != '')
                 AND ifnull(c.source_page_id, '') != ''
                 AND c.id between {$from} and {$to}
                 LIMIT {$max_contacts}";
+                $from += $max_contacts;
+                $to += $max_contacts;
             try{
                 $stmt = $this->executeQuery($sql);
                 $this->result = $stmt->count();
@@ -96,7 +96,6 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         try{
             $this->result = $stmt->fetch_assoc();
             $this->saveLeadsToListBroking();
-            var_dump($this->result);die;
         } catch (MysqliException $e){
             echo $e->getMessage();
         } catch (APIException $e) {
