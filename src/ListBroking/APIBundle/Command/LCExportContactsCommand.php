@@ -14,6 +14,7 @@ namespace ListBroking\APIBundle\Command;
 use Doctrine\DBAL\Driver\Mysqli\MysqliException;
 use ListBroking\APIBundle\Exception\APIException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,11 +33,11 @@ class LCExportContactsCommand extends ContainerAwareCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output){
         $max_contacts = $input->getOption('max_contacts');
-        $result = $this->startMysqliConnection();
-        var_dump($result);
-        $result_tb = $this->executeQuery("show tables");
-        var_dump($result_tb);
-
+        try {
+            $this->startMysqliConnection();
+        } catch (MysqliException $e){
+            die($e);
+        }
 //        $sql = "SELECT cont.id, cont.email, cont.firstname, cont.lastname, cont.birthdate, cont.gender, cont.postalcode1, cont.postalcode2, cont.city, cont.phone,
 //                        cont.ipaddress, cont.source_page_id
 //                FROM
@@ -110,18 +111,19 @@ class LCExportContactsCommand extends ContainerAwareCommand {
 
     protected function executeQuery($query){
         $query = $this->mysql_connection->prepare($query);
+        var_dump($query);
         if ($query === FALSE ) {
             throw new MysqliException("Mysql Error: " . $this->mysql_connection->errno . " " . $this->mysql_connection->error);
         } elseif ($query->num_rows == 0){
             throw new MysqliException("Mysql Error: No results found");
         }
-        return $query->execute();
+        return $query;
     }
 
     protected function startMysqliConnection(){
-        $this->mysql_connection = new \mysqli('adclickinstance2-listbroking.c1xjt8uy0oz0.us-east-1.rds.amazonaws.com', 'lcdbuser', 'Ay570ln3', 'lcdb');
+        $this->mysql_connection = new \mysqli('adclickinstance2-listbroking.c1xjt8uy0oz0.us-east-1.rds.amazonaws.com', 'lcdbuser', 'Ay570ln3', 'lcdb', 3306);
         if ($this->mysql_connection->connect_errno) {
-            die("Failed to connect to MySQL: (" . $this->mysql_connection->connect_errno . ") " . $this->mysql_connection->connect_error);
+            throw new Exception("Failed to connect to MySQL: (" . $this->mysql_connection->connect_errno . ") " . $this->mysql_connection->connect_error);
         } else {
             return true;
         }
