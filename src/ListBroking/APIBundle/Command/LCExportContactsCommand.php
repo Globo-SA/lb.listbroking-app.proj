@@ -27,7 +27,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         $this
             ->setName('APIBundle:LCExportContacts')
             ->setDescription('Exports contacts from LC instance to LB database')
-            ->addOption('max_contacts', null, InputOption::VALUE_OPTIONAL, 'If set, will override max_contacts to process by each run.', 1000)
+            ->addOption('max_contacts', null, InputOption::VALUE_OPTIONAL, 'If set, will override max_contacts to process by each run.', 10000)
         ;
     }
 
@@ -36,14 +36,20 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         try {
             $this->startMysqliConnection();
         } catch (MysqliException $e){
+            $output->writeln("<info>LCExportContacts:</info> <comment>Problem: $e->getMessage()</comment>");
             die($e);
         }
-        $from = $this->getLastContactId();
-        $from = $from['contact_id'];
+        try{
+            $from = $this->getLastContactId();
+            $from = $from['contact_id'];
+        } catch (MysqliException $e){
+            $output->writeln("<info>LCExportContacts:</info> <comment>Problem: $e->getMessage()</comment>");
+        }
         if (is_null($from)){
             $from = 2000000; //min contact_id that has country (aprox.)
         }
         $to = $from + $max_contacts;
+        $output->writeln("<info>LCExportContacts:</info> <comment>Getting contacts from $from to $to</comment>");
         do {
             $sql = "SELECT c.id as contact_id, c.email, c.gender, c.firstname, c.lastname, c.birthdate,
                             ifnull(c.phone, ccdth.contact_detail_value) as phone,
@@ -76,17 +82,20 @@ class LCExportContactsCommand extends ContainerAwareCommand {
             try{
                 $this->result = $this->executeQuery($sql);
             } catch (MysqliException $e){
-                echo $e->getMessage();
+                $output->writeln("<info>LCExportContacts:</info> <comment>Could not get contacts. $e->getMessage()</comment>");
             } catch (APIException $e) {
-                echo "Could not save contacts to LB table. " . $e->getMessage();
+                $output->writeln("<info>LCExportContacts:</info> <comment>Could not get contacts. $e->getMessage()</comment>");
             }
         } while (!$this->result->num_rows);
+        $output->writeln("<info>LCExportContacts:</info> <comment>Found $this->result->num_rows results between contact_id's $from to $to</comment>");
         try{
             $this->saveLeadsToListBroking();
         } catch (MysqliException $e){
             echo $e->getMessage();
+            $output->writeln("<info>LCExportContacts:</info> <comment>Problem: $e->getMessage()</comment>");
         } catch (APIException $e) {
             echo "Could not save contacts to LB table. " . $e->getMessage();
+            $output->writeln("<info>LCExportContacts:</info> <comment>Problem: $e->getMessage()</comment>");
         }
     }
 
@@ -112,9 +121,9 @@ class LCExportContactsCommand extends ContainerAwareCommand {
     protected function getLastContactId(){
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         $stmt = $em->getConnection();
-        $sql = "SELECT MIN(contact_id) as contact_id
+        $sql = "SELECT MAX(contact_id) as contact_id
                 FROM leadcentre_contacts
-                WHERE is_processed=0
+                ORDER BY contact_id DESC
                 LIMIT 1";
         $result = $stmt->executeQuery($sql);
         return $result->fetch();
