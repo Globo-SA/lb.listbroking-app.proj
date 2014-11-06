@@ -41,7 +41,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         }
         try{
             $from = $this->getLastContactId();
-            $from = $from['contact_id'];
+            $from = $from['contact_id'] + 1;
         } catch (MysqliException $e){
             $output->writeln("<info>LCExportContacts:</info> <comment>Problem: $e->getMessage()</comment>");
         }
