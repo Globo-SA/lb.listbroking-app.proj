@@ -195,6 +195,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                     $stmt2->bindParam($i, $contact[$key]);
                     $i++;
                 }
+                $stmt2->bindParam($i, $ccdts);
                 $result = $stmt2->execute();
                 $stmt->commit();
             } catch (Exception $e){
