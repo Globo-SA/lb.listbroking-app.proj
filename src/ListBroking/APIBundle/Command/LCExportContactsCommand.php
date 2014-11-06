@@ -45,12 +45,13 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         }
         $to = $from + $max_contacts;
         do {
-            $sql = "SELECT c.id, c.email, c.firstname, c.lastname, c.birthdate, c.gender, c.postalcode1, c.postalcode2, c.city,
+            $sql = "SELECT c.id, c.email,, c.gender, c.firstname, c.lastname, c.birthdate,
                             ifnull(c.phone, ccdth.contact_detail_value) as phone,
-                            ifnull(ccdth1.contact_detail_value, ccdth2.contact_detail_value) as country,
                             ifnull(
                               ccdth3.contact_detail_value, CONCAT(ifnull(ccdth4.contact_detail_value, ''), ' ', ifnull(ccdth5.contact_detail_value, '') ,' ',ifnull(ccdth6.contact_detail_value, ''))
                             ) as address,
+                            ifnull(ccdth1.contact_detail_value, ccdth2.contact_detail_value) as country,
+                            c.postalcode1, c.postalcode2, c.city,
                             c.ipaddress, c.source_page_id, sp.domain, sp.category
                 FROM contact_hist c
                 LEFT JOIN contact_integration_status_hist cis ON (cis.contact_id = c.id AND cis.status = 1)
