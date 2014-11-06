@@ -38,31 +38,6 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         } catch (MysqliException $e){
             die($e);
         }
-//        $sql = "SELECT cont.id, cont.email, cont.firstname, cont.lastname, cont.birthdate, cont.gender, cont.postalcode1, cont.postalcode2, cont.city, cont.phone,
-//                        cont.ipaddress, cont.source_page_id
-//                FROM
-//                (SELECT c.id, c.email, c.firstname, c.lastname, c.birthdate, c.gender, c.postalcode1, c.postalcode2, c.city, c.phone,
-//                        c.ipaddress, c.source_page_id
-//                FROM contact_hist c
-//                INNER JOIN contact_integration_status_hist cis ON (cis.contact_id = c.id AND cis.status = 1)
-//                LEFT JOIN source_page sp ON (sp.id = c.source_page_id)
-//                WHERE is_valid = 1
-//                AND ifnull(c.email, '') != ''
-//                AND ifnull(c.firstname, '') != ''
-//                AND ifnull(c.lastname, '') != ''
-//                AND ifnull(c.birthdate, '') != ''
-//                AND ifnull(c.gender, '') != ''
-//                AND ifnull(c.postalcode1, '') != ''
-//                AND ifnull(c.postalcode2, '') != ''
-//                AND ifnull(c.city, '') != ''
-//                AND ifnull(c.phone, '') != ''
-//                AND ifnull(c.ipaddress, '') != ''
-//                AND ifnull(c.source_page_id, '') != ''
-//                ORDER by c.id desc
-//                LIMIT 100
-//                ) cont
-//                GROUP by cont.email, cont.source_page_id
-//                LIMIT 100;";
         $from = $this->getLastContactId();
         $from = $from['contact_id'];
         if (is_null($from)){
@@ -73,18 +48,26 @@ class LCExportContactsCommand extends ContainerAwareCommand {
             $sql = "SELECT c.id, c.email, c.firstname, c.lastname, c.birthdate, c.gender, c.postalcode1, c.postalcode2, c.city,
                             ifnull(c.phone, ccdth.contact_detail_value) as phone,
                             ifnull(ccdth1.contact_detail_value, ccdth2.contact_detail_value) as country,
-                            c.ipaddress, c.source_page_id, sp.domain
+                            ifnull(
+                              ccdth3.contact_detail_value, CONCAT(ifnull(ccdth4.contact_detail_value, ''), ' ', ifnull(ccdth5.contact_detail_value, '') ,' ',ifnull(ccdth6.contact_detail_value, ''))
+                            ) as address,
+                            c.ipaddress, c.source_page_id, sp.domain, sp.category
                 FROM contact_hist c
                 LEFT JOIN contact_integration_status_hist cis ON (cis.contact_id = c.id AND cis.status = 1)
                 inner JOIN source_page sp ON (sp.id = c.source_page_id)
                 left join contact_contact_detail_type_hist ccdth ON (ccdth.contact_id = c.id and ccdth.contact_detail_type_id = 85)
                 left join contact_contact_detail_type_hist ccdth1 ON (ccdth1.contact_id = c.id and ccdth1.contact_detail_type_id = 35)
                 left join contact_contact_detail_type_hist ccdth2 ON (ccdth2.contact_id = c.id and ccdth2.contact_detail_type_id = 37)
+                left join contact_contact_detail_type_hist ccdth3 ON (ccdth3.contact_id = c.id and ccdth3.contact_detail_type_id = 49)
+                left join contact_contact_detail_type_hist ccdth4 ON (ccdth4.contact_id = c.id and ccdth4.contact_detail_type_id = 50)
+                left join contact_contact_detail_type_hist ccdth5 ON (ccdth5.contact_id = c.id and ccdth5.contact_detail_type_id = 51)
+                left join contact_contact_detail_type_hist ccdth6 ON (ccdth6.contact_id = c.id and ccdth6.contact_detail_type_id = 52)
                 WHERE is_valid = 1
                 AND ifnull(c.email, '') != ''
                 AND ifnull(c.phone, '') != ''
                 AND (ifnull(ccdth1.contact_detail_value, '') != '' OR ifnull(ccdth2.contact_detail_value, '') != '')
                 AND ifnull(c.source_page_id, '') != ''
+                AND c.email NOT LIKE '%%adctst.com%%'
                 AND c.id between {$from} and {$to}
                 LIMIT {$max_contacts}";
                 $from += $max_contacts;
@@ -141,7 +124,6 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         $stmt = $em->getConnection();
         $stmt->executeQuery("START TRANSACTION;");
         foreach ($this->result as $contact){
-            var_dump($contact);
             $sql = "SELECT contact_detail_value
                 FROM contact_contact_detail_type
                 WHERE contact_id = " . $contact['id'];
@@ -159,32 +141,50 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                 }
                 $ccdts = json_encode($ccdts);
             }
-            var_dump($ccdts);die;
+            foreach ($contact as $key => $value){
+                $value = str_replace(' ', '', $value);
+                if (empty($value)){
+                    $contact[$key] = null;
+                }
+            }
             $sql = "INSERT INTO leadcentre_contacts
-                        (contact_id, email, gender, firstname, lastname, birthdate, phone, address, country, postalcode1, postalcode2, city, district, county, parish, ipaddress, source_page_id, source_page_domain, category, extra_fields)
+                        (contact_id,
+                        email,
+                        gender,
+                        firstname,
+                        lastname,
+                        birthdate,
+                        phone,
+                        address,
+                        country,
+                        postalcode1,
+                        postalcode2,
+                        city,
+                        ipaddress,
+                        source_page_id,
+                        source_page_domain,
+                        category,
+                        extra_fields)
                 VALUES (
                     {$contact['id']},
-                    {$contact['email']},
-                    {$contact['gender']},
-                    {$contact['firstname']},
-                    {$contact['lastname']},
-                    {$contact['birthdate']},
-                    {$contact['phone']},
-                    {$contact['address']},
-                    {$contact['country']},
-                    {$contact['postalcode1']},
-                    {$contact['postalcode2']},
-                    {$contact['city']},
-                    {$contact['district']},
-                    {$contact['county']},
-                    {$contact['parish']},
-                    {$contact['ipaddress']},
-                    {$contact['source_page_id']},
-                    {$contact['domain']},
-                    {$contact['category']},
-                    {$ccdts}
-                );";        // TODO: check category (which one is it) and check for all the field names that com on the $contact array
-            $result = $stmt->execute($sql);
+                    " . empty($contact['email']) ? null : $contact['email'] .",
+                    " . empty($contact['gender']) ? null : $contact['gender'] .",
+                    " . empty($contact['firstname']) ? null : $contact['firstname'] .",
+                    " . empty($contact['lastname']) ? null : $contact['lastname'] .",
+                    " . empty($contact['birthdate']) ? null : $contact['birthdate'] .",
+                    " . $contact['phone'] . ",
+                    " . empty($contact['address']) ? null : $contact['address'] .",
+                    " . empty($contact['country']) ? null : $contact['country'] .",
+                    " . empty($contact['postalcode1']) ? null : $contact['postalcode1'] .",
+                    " . empty($contact['postalcode2']) ? null : $contact['postalcode2'] .",
+                    " . empty($contact['city']) ? null : $contact['city'] .",
+                    " . empty($contact['ipaddress']) ? null : $contact['ipaddress'] .",
+                    " . empty($contact['domain']) ? null : $contact['domain'] .",
+                    " . empty($contact['category']) ? null : $contact['category'] .",
+                    " . empty($ccdts) ? null : $ccdts .",
+                    0
+                );";        // TODO: check source page category (which one is it) and check for all the field names that com on the $contact array
+            $result = $stmt->executeQuery($sql);
         }
         $stmt->executeQuery("COMMIT;");
     }
