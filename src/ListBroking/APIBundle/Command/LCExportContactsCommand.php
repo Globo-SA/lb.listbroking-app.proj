@@ -45,7 +45,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         }
         $to = $from + $max_contacts;
         do {
-            $sql = "SELECT c.id as contact_id, c.email,, c.gender, c.firstname, c.lastname, c.birthdate,
+            $sql = "SELECT c.id as contact_id, c.email, c.gender, c.firstname, c.lastname, c.birthdate,
                             ifnull(c.phone, ccdth.contact_detail_value) as phone,
                             ifnull(
                               ccdth3.contact_detail_value, CONCAT(ifnull(ccdth4.contact_detail_value, ''), ' ', ifnull(ccdth5.contact_detail_value, '') ,' ',ifnull(ccdth6.contact_detail_value, ''))
