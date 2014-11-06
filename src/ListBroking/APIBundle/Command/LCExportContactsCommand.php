@@ -36,14 +36,16 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         try {
             $this->startMysqliConnection();
         } catch (MysqliException $e){
-            $output->writeln("<info>LCExportContacts:</info> <comment>Problem: $e->getMessage()</comment>");
+            $message = $e->getMessage();
+            $output->writeln("<info>LCExportContacts:</info> <comment>Problem: $message</comment>");
             die($e);
         }
         try{
             $from = $this->getLastContactId();
             $from = $from['contact_id'] + 1;
         } catch (MysqliException $e){
-            $output->writeln("<info>LCExportContacts:</info> <comment>Problem: $e->getMessage()</comment>");
+            $message = $e->getMessage();
+            $output->writeln("<info>LCExportContacts:</info> <comment>Problem: $message</comment>");
         }
         if (is_null($from)){
             $from = 2000000; //min contact_id that has country (aprox.)
@@ -82,9 +84,11 @@ class LCExportContactsCommand extends ContainerAwareCommand {
             try{
                 $this->result = $this->executeQuery($sql);
             } catch (MysqliException $e){
-                $output->writeln("<info>LCExportContacts:</info> <comment>Could not get contacts. $e->getMessage()</comment>");
+                $message = $e->getMessage();
+                $output->writeln("<info>LCExportContacts:</info> <comment>Could not get contacts. $message</comment>");
             } catch (APIException $e) {
-                $output->writeln("<info>LCExportContacts:</info> <comment>Could not get contacts. $e->getMessage()</comment>");
+                $message = $e->getMessage();
+                $output->writeln("<info>LCExportContacts:</info> <comment>Could not get contacts. $message</comment>");
             }
             $count = $this->result->num_rows;
         } while (!$this->result->num_rows);
@@ -92,11 +96,11 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         try{
             $this->saveLeadsToListBroking();
         } catch (MysqliException $e){
-            echo $e->getMessage();
-            $output->writeln("<info>LCExportContacts:</info> <comment>Problem: $e->getMessage()</comment>");
+            $message = $e->getMessage();
+            $output->writeln("<info>LCExportContacts:</info> <comment>Problem: $message</comment>");
         } catch (APIException $e) {
-            echo "Could not save contacts to LB table. " . $e->getMessage();
-            $output->writeln("<info>LCExportContacts:</info> <comment>Problem: $e->getMessage()</comment>");
+            $message = $e->getMessage();
+            $output->writeln("<info>LCExportContacts:</info> <comment>Problem: $message</comment>");
         }
     }
 
