@@ -62,7 +62,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                 FROM contact_hist c
                 INNER JOIN contact_integration_status_hist cis ON (cis.contact_id = c.id AND cis.status = 1)
                 INNER JOIN source_page sp ON (sp.id = c.source_page_id)
-                LEFT JOIN contact_contact_detail_type_hist ccdth ON (ccdth.contact_id = c.id and ccdth.contact_detail_type_id = 85)
+                LEFT JOIN contact_contact_detail_type_hist ccdth ON (ccdth.contact_id = c.id and ccdth.contact_detail_type_id = 85 1 AND cis.client_id=1)
                 LEFT JOIN contact_contact_detail_type_hist ccdth1 ON (ccdth1.contact_id = c.id and ccdth1.contact_detail_type_id = 35)
                 LEFT JOIN contact_contact_detail_type_hist ccdth2 ON (ccdth2.contact_id = c.id and ccdth2.contact_detail_type_id = 37)
                 LEFT JOIN contact_contact_detail_type_hist ccdth3 ON (ccdth3.contact_id = c.id and ccdth3.contact_detail_type_id = 49)
