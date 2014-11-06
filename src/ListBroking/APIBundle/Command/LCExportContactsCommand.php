@@ -204,8 +204,6 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                 $stmt->rollBack();
                 throw $e;
             }
-            var_dump($result);
-            die();
         }
 
     }
