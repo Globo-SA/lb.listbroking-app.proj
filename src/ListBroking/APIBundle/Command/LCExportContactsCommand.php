@@ -45,7 +45,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         }
         $to = $from + $max_contacts;
         do {
-            $sql = "SELECT c.id, c.email,, c.gender, c.firstname, c.lastname, c.birthdate,
+            $sql = "SELECT c.id as contact_id, c.email,, c.gender, c.firstname, c.lastname, c.birthdate,
                             ifnull(c.phone, ccdth.contact_detail_value) as phone,
                             ifnull(
                               ccdth3.contact_detail_value, CONCAT(ifnull(ccdth4.contact_detail_value, ''), ' ', ifnull(ccdth5.contact_detail_value, '') ,' ',ifnull(ccdth6.contact_detail_value, ''))
@@ -126,7 +126,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         foreach ($this->result as $contact){
             $sql = "SELECT contact_detail_value
                 FROM contact_contact_detail_type
-                WHERE contact_id = " . $contact['id'] ."
+                WHERE contact_id = " . $contact['contact_id'] ."
                 AND contact_detail_type_id not IN (85, 35, 37, 49, 50, 51, 52)"; // EXCLUDE MAIN ccdts ALREADY RETRIEVED TO SAVE SPACE
             $st_ccdts = $this->executeQuery($sql);
             $ccdts = NULL;
@@ -154,7 +154,8 @@ class LCExportContactsCommand extends ContainerAwareCommand {
             try {
                 $sql =
                     "INSERT INTO leadcentre_contacts
-                        (contact_id,
+                        (
+                        contact_id,
                         email,
                         gender,
                         firstname,
