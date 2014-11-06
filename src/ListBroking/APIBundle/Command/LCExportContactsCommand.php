@@ -60,15 +60,15 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                             c.postalcode1, c.postalcode2, c.city,
                             c.ipaddress, c.source_page_id, sp.domain, sp.category
                 FROM contact_hist c
-                LEFT JOIN contact_integration_status_hist cis ON (cis.contact_id = c.id AND cis.status = 1)
-                inner JOIN source_page sp ON (sp.id = c.source_page_id)
-                left join contact_contact_detail_type_hist ccdth ON (ccdth.contact_id = c.id and ccdth.contact_detail_type_id = 85)
-                left join contact_contact_detail_type_hist ccdth1 ON (ccdth1.contact_id = c.id and ccdth1.contact_detail_type_id = 35)
-                left join contact_contact_detail_type_hist ccdth2 ON (ccdth2.contact_id = c.id and ccdth2.contact_detail_type_id = 37)
-                left join contact_contact_detail_type_hist ccdth3 ON (ccdth3.contact_id = c.id and ccdth3.contact_detail_type_id = 49)
-                left join contact_contact_detail_type_hist ccdth4 ON (ccdth4.contact_id = c.id and ccdth4.contact_detail_type_id = 50)
-                left join contact_contact_detail_type_hist ccdth5 ON (ccdth5.contact_id = c.id and ccdth5.contact_detail_type_id = 51)
-                left join contact_contact_detail_type_hist ccdth6 ON (ccdth6.contact_id = c.id and ccdth6.contact_detail_type_id = 52)
+                INNER JOIN contact_integration_status_hist cis ON (cis.contact_id = c.id AND cis.status = 1)
+                INNER JOIN source_page sp ON (sp.id = c.source_page_id)
+                LEFT JOIN contact_contact_detail_type_hist ccdth ON (ccdth.contact_id = c.id and ccdth.contact_detail_type_id = 85)
+                LEFT JOIN contact_contact_detail_type_hist ccdth1 ON (ccdth1.contact_id = c.id and ccdth1.contact_detail_type_id = 35)
+                LEFT JOIN contact_contact_detail_type_hist ccdth2 ON (ccdth2.contact_id = c.id and ccdth2.contact_detail_type_id = 37)
+                LEFT JOIN contact_contact_detail_type_hist ccdth3 ON (ccdth3.contact_id = c.id and ccdth3.contact_detail_type_id = 49)
+                LEFT JOIN contact_contact_detail_type_hist ccdth4 ON (ccdth4.contact_id = c.id and ccdth4.contact_detail_type_id = 50)
+                LEFT JOIN contact_contact_detail_type_hist ccdth5 ON (ccdth5.contact_id = c.id and ccdth5.contact_detail_type_id = 51)
+                LEFT JOIN contact_contact_detail_type_hist ccdth6 ON (ccdth6.contact_id = c.id and ccdth6.contact_detail_type_id = 52)
                 WHERE is_valid = 1
                 AND ifnull(c.email, '') != ''
                 AND ifnull(c.phone, '') != ''
@@ -86,8 +86,9 @@ class LCExportContactsCommand extends ContainerAwareCommand {
             } catch (APIException $e) {
                 $output->writeln("<info>LCExportContacts:</info> <comment>Could not get contacts. $e->getMessage()</comment>");
             }
+            $count = $this->result->num_rows;
         } while (!$this->result->num_rows);
-        $output->writeln("<info>LCExportContacts:</info> <comment>Found $this->result->num_rows results between contact_id's $from to $to</comment>");
+        $output->writeln("<info>LCExportContacts:</info> <comment>Found $count results between contact_id's $from to $to</comment>");
         try{
             $this->saveLeadsToListBroking();
         } catch (MysqliException $e){
