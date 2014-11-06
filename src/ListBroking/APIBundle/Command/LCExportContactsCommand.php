@@ -122,14 +122,13 @@ class LCExportContactsCommand extends ContainerAwareCommand {
     protected function saveLeadsToListBroking(){
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         $stmt = $em->getConnection();
-        $stmt->executeQuery("START TRANSACTION;");
         foreach ($this->result as $contact){
             $sql = "SELECT contact_detail_value
                 FROM contact_contact_detail_type
                 WHERE contact_id = " . $contact['id'] ."
                 AND contact_detail_type_id not IN (85, 35, 37, 49, 50, 51, 52)"; // EXCLUDE MAIN ccdts ALREADY RETRIEVED TO SAVE SPACE
             $st_ccdts = $this->executeQuery($sql);
-            $ccdts = "null";
+            $ccdts = NULL;
             if ($st_ccdts->num_rows){
                 $flag = true;
                 foreach ($st_ccdts as $ccdt){
@@ -147,10 +146,12 @@ class LCExportContactsCommand extends ContainerAwareCommand {
             foreach ($contact as $key => $value){
                 $value = str_replace(' ', '', $value);
                 if (empty($value)){
-                    $contact[$key] = "null";
+                    $contact[$key] = NULL;
                 }
             }
-            $sql = "INSERT INTO leadcentre_contacts
+            $stmt->beginTransaction();
+            try {
+                $sql = "INSERT INTO leadcentre_contacts
                         (contact_id,
                         email,
                         gender,
@@ -169,28 +170,54 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                         category,
                         extra_fields)
                 VALUES (
-                    {$contact['id']},
-                    '{$contact["email"]}',
-                    '{$contact['gender']}',
-                    '{$contact['firstname']}',
-                    '{$contact['lastname']}',
-                    '{$contact['birthdate']}',
-                    '{$contact['phone']}',
-                    '{$contact['address']}',
-                    '{$contact['country']}',
-                    '{$contact['postalcode1']}',
-                    '{$contact['postalcode2']}',
-                    '{$contact['city']}',
-                    '{$contact['ipaddress']}',
-                    {$contact['source_page_id']},
-                    '{$contact['domain']}',
-                    '{$contact['category']}',
-                    '{$ccdts}',
-                    0
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?
                 );";        // TODO: check source page category (which one is it) and check for all the field names that com on the $contact array
-            $result = $stmt->executeQuery($sql);
+                $stmt2 = $stmt->prepare($sql);
+                $stmt2->bindParam(
+                    $contact['id'],
+                    $contact["email"],
+                    $contact['gender'],
+                    $contact['firstname'],
+                    $contact['lastname'],
+                    $contact['birthdate'],
+                    $contact['phone'],
+                    $contact['address'],
+                    $contact['country'],
+                    $contact['postalcode1'],
+                    $contact['postalcode2'],
+                    $contact['city'],
+                    $contact['ipaddress'],
+                    $contact['source_page_id'],
+                    $contact['domain'],
+                    $contact['category'],
+                    $ccdts
+                );
+                $result = $stmt2->execute();
+                $stmt->commit();
+            } catch (Exception $e){
+                $stmt->rollBack();
+                throw $e;
+            }
+            var_dump($result);
+            die();
         }
-        $stmt->executeQuery("COMMIT;");
+
     }
 
     protected function getLeadsExtraFields(){
