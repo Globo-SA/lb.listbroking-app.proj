@@ -151,7 +151,8 @@ class LCExportContactsCommand extends ContainerAwareCommand {
             }
             $stmt->beginTransaction();
             try {
-                $sql = "INSERT INTO leadcentre_contacts
+                $sql =
+                    "INSERT INTO leadcentre_contacts
                         (contact_id,
                         email,
                         gender,
@@ -189,25 +190,11 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                     ?
                 );";        // TODO: check source page category (which one is it) and check for all the field names that com on the $contact array
                 $stmt2 = $stmt->prepare($sql);
-                $stmt2->bindParam(
-                    $contact['id'],
-                    $contact["email"],
-                    $contact['gender'],
-                    $contact['firstname'],
-                    $contact['lastname'],
-                    $contact['birthdate'],
-                    $contact['phone'],
-                    $contact['address'],
-                    $contact['country'],
-                    $contact['postalcode1'],
-                    $contact['postalcode2'],
-                    $contact['city'],
-                    $contact['ipaddress'],
-                    $contact['source_page_id'],
-                    $contact['domain'],
-                    $contact['category'],
-                    $ccdts
-                );
+                $i=1;
+                foreach ($contact as $key => $value){
+                    $stmt2->bindParam($i, $contact[$key]);
+                    $i++;
+                }
                 $result = $stmt2->execute();
                 $stmt->commit();
             } catch (Exception $e){
