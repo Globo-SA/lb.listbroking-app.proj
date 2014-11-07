@@ -54,11 +54,9 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         $output->writeln("<info>LCExportContacts:</info> <comment>Getting contacts from $from to $to</comment>");
         do {
             $sql = "SELECT c.id as contact_id, c.email, c.gender, c.firstname, c.lastname, c.birthdate,
-                            ifnull(c.phone, ccdth.contact_detail_value) as phone,
-                            ifnull(
-                              ccdth3.contact_detail_value, CONCAT(ifnull(ccdth4.contact_detail_value, ''), ' ', ifnull(ccdth5.contact_detail_value, '') ,' ',ifnull(ccdth6.contact_detail_value, ''))
-                            ) as address,
-                            ifnull(ccdth1.contact_detail_value, ccdth2.contact_detail_value) as country,
+                            if(ifnull(c.phone, '') != '', c.phone, ccdth.contact_detail_value) as phone,
+                            if(ifnull(ccdth3.contact_detail_value, '') != '', ccdth3.contact_detail_value, CONCAT(ifnull(ccdth4.contact_detail_value, ''), ' ', ifnull(ccdth5.contact_detail_value, '') ,' ',ifnull(ccdth6.contact_detail_value, ''))) as address,
+                            if(ifnull(ccdth1.contact_detail_value,'') != '', ccdth1.contact_detail_value, ccdth2.contact_detail_value) as country,
                             c.postalcode1, c.postalcode2, c.city,
                             c.ipaddress, c.source_page_id, sp.domain, sp.category
                 FROM contact_hist c
@@ -73,7 +71,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                 LEFT JOIN contact_contact_detail_type_hist ccdth6 ON (ccdth6.contact_id = c.id and ccdth6.contact_detail_type_id = 52)
                 WHERE is_valid = 1
                 AND ifnull(c.email, '') != ''
-                AND ifnull(c.phone, '') != ''
+                AND (ifnull(c.phone, '') != '' OR IFNULL(ccdth.contact_detail_value, '')!='')
                 AND (ifnull(ccdth1.contact_detail_value, '') != '' OR ifnull(ccdth2.contact_detail_value, '') != '')
                 AND ifnull(c.source_page_id, '') != ''
                 AND c.email NOT LIKE '%%adctst.com%%'
