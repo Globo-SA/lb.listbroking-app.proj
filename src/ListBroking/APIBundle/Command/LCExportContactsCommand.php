@@ -71,7 +71,7 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                 LEFT JOIN contact_contact_detail_type_hist ccdth6 ON (ccdth6.contact_id = c.id and ccdth6.contact_detail_type_id = 52)
                 WHERE is_valid = 1
                 AND ifnull(c.email, '') != ''
-                AND (ifnull(c.phone, '') != '' OR IFNULL(ccdth.contact_detail_value, '')!='')
+                AND (ifnull(c.phone, '') != '' OR ifnull(ccdth.contact_detail_value, '')!='')
                 AND (ifnull(ccdth1.contact_detail_value, '') != '' OR ifnull(ccdth2.contact_detail_value, '') != '')
                 AND ifnull(c.source_page_id, '') != ''
                 AND c.email NOT LIKE '%%adctst.com%%'
