@@ -13,7 +13,6 @@ namespace ListBroking\APIBundle\Engine\APIValidator;
 
 use ListBroking\APIBundle\Engine\APIServiceLeadValidatorInterface;
 use ListBroking\APIBundle\Exception\APIException;
-use Symfony\Component\HttpFoundation\Request;
 
 class BaseAPIValidator implements APIServiceLeadValidatorInterface {
     protected $fields_to_validate;
@@ -31,13 +30,12 @@ class BaseAPIValidator implements APIServiceLeadValidatorInterface {
     }
 
     /**
-     * @param Request $request
+     * @param $lead
      * @return mixed|void
      * @throws APIException
      */
-    public function checkEmptyFields(Request $request)
+    public function checkEmptyFields($lead)
     {
-        $lead = $request->get('lead');
         if (!isset($lead) || !is_array($lead)){
             throw new APIException("The leads array cannot be empty and must be an array.");
         }

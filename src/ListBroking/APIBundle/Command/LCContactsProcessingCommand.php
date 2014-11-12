@@ -16,6 +16,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class LCContactsProcessingCommand extends ContainerAwareCommand {
+    protected $api_service;
+
     protected function configure(){
         $this
             ->setName('APIBundle:LCContactsProcessing')
@@ -28,6 +30,7 @@ class LCContactsProcessingCommand extends ContainerAwareCommand {
         $max_contacts = $input->getOption('max_contacts');
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         $stmt = $em->getConnection();
+        $this->api_service = $this->getContainer()->get('listbroking.api.service');
 
         $sql= <<< SQL
             SELECT *
@@ -37,14 +40,39 @@ class LCContactsProcessingCommand extends ContainerAwareCommand {
             LIMIT {$max_contacts};
 SQL;
         $result = $stmt->executeQuery($sql);
-        $contacts = $result->fetch();
-        var_dump($contacts);die;
+        $contacts = $result->fetchAll();
         foreach ($contacts as $contact){
-
+            var_dump($contact);
+            $lead = array(
+                'lead' => array(
+                    'contact_id'     => $contact['contact_od'],
+                    'gender'         => $contact['gender'],
+                    'email'          => $contact['email'],
+                    'phone'          => $contact['phone'],
+                    'firstname'      => $contact['firstname'],
+                    'lastname'       => $contact['lastname'],
+                    'birthdate'      => $contact['birthdate'],
+                    'address'        => $contact['address'],
+                    'country'        => $contact['country'],
+                    'postalcode1'    => $contact['postalcode1'],
+                    'postalcode2'    => $contact['postalcode1'],
+                    'city'           => $contact['city'],
+                    'ipaddress'      => $contact['ipaddress'],
+                    'external_id'    => $contact['source_page_id'],
+                    'source_name'    => $contact['source_page_name'],
+                    'sub_category'   => $contact['sub_category'],
+                    'extra_fields'   => $contact['extra_fields'],
+                    'resting_date'   => $contact['resting_date'],
+                    'owner_name'     => 'adclick'
+                ),
+                'token_name'             => 'adclick',
+                'token'                  => 'ZDhjZmIxZGJiYzI1ODIzMDIyMjFjNTk1MGEwZTFlYjY5ODkwMzgyOTAzM2Y0YjY3M2U1MjFiNzc3NDM1OGU5Yg'
+            );
+            $token['name'] = $lead['token_name'];
+            $token['key'] = $lead['token'];
+            $this->api_service->setLead($lead);
+            $response = $this->api_service->processRequest($token);
+            var_dump($response);die;
         }
-
-        $stmt->beginTransaction();
-        $stmt->commit();
-
     }
 }

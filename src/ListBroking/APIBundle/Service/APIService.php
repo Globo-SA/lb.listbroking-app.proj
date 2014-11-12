@@ -13,7 +13,6 @@ namespace ListBroking\APIBundle\Service;
 
 
 use ListBroking\APIBundle\Engine\APIValidator\BaseAPIValidator;
-use ListBroking\APIBundle\Entity\APIToken;
 use ListBroking\APIBundle\Exception\APIException;
 use ListBroking\APIBundle\Repository\ORM\APITokenRepository;
 use ListBroking\CoreBundle\Engine\CoreValidator\CategoryValidator;
@@ -36,7 +35,6 @@ use ListBroking\LeadBundle\Service\ContactDetailsService;
 use ListBroking\LeadBundle\Service\LeadService;
 use ListBroking\LockBundle\Entity\Lock;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 class APIService extends BaseService implements APIServiceInterface {
 
@@ -44,7 +42,6 @@ class APIService extends BaseService implements APIServiceInterface {
     protected $core_service;
     protected $form_factory;
     protected $contact_detail_service;
-    protected $request;
     protected $validation_service;
     protected $validators;
 
@@ -55,51 +52,33 @@ class APIService extends BaseService implements APIServiceInterface {
     const API_SCOPE = 'apitoken';
 
     protected $fields_array;
+    protected $lead;
 
     /**
      * @param LeadService $leadService
      * @param CoreService $coreService
      * @param ContactDetailsService $contactDetailsService
-     * @param RequestStack $requestStack
      * @param APITokenRepository $tokenRepository
      */
-    public function __construct(LeadService $leadService, CoreService $coreService, ContactDetailsService $contactDetailsService, RequestStack $requestStack, APITokenRepository $tokenRepository)
+    public function __construct(LeadService $leadService, CoreService $coreService, ContactDetailsService $contactDetailsService, APITokenRepository $tokenRepository)
     {
         $this->api_token_repo = $tokenRepository;
         $this->lead_service = $leadService;
         $this->core_service = $coreService;
         $this->contact_detail_service = $contactDetailsService;
         $this->validation_service = new BaseAPIValidator($this->core_service, $this->lead_service);
-        $this->request = $requestStack->getCurrentRequest();
-        $this->lead = $this->request->get('lead');
-        $this->validators = array(
-            // ESSENTIAL VALIDATIONS
-            new CountryValidator($this->core_service, $this->lead),
-            new CategoryValidator($this->core_service, $this->lead),
-            new LeadValidator($this->lead_service, $this->lead),
-            new OwnerValidator($this->contact_detail_service, $this->lead),
-            new ContactValidator($this->lead_service, $this->lead),
-            new SourceValidator($this->contact_detail_service, $this->lead),
-            // NON-ESSENTIAL
-            new CountyValidator($this->contact_detail_service, $this->lead),
-            new DistrictValidator($this->contact_detail_service, $this->lead),
-            new GenderValidator($this->contact_detail_service, $this->lead),
-            new ParishValidator($this->contact_detail_service, $this->lead),
-            new CountyValidator($this->contact_detail_service, $this->lead)
-        );
         $this->validations = array();
     }
 
     /**
+     * @param $token
      * @return JsonResponse
-     * @throws \ListBroking\APIBundle\Exception\APIException
      */
-    public function processRequest(){
-        // validate request parameters to check if it's empty
-        $token = $this->getTokenByName($this->request->get('token_name'), 'true');
+    public function processRequest($token){
+        $token_check = $this->getTokenByName($token['name'], 'true');
         try {
-            $this->validation_service->checkEmptyFields($this->request);
-            $this->checkRequestToken($token);
+            $this->validation_service->checkEmptyFields($this->lead);
+            $this->checkRequestToken($token_check, $token['key']);
             $this->validateAll();
             $this->saveLead();
             $response = "Lead successfully saved.";
@@ -123,8 +102,8 @@ class APIService extends BaseService implements APIServiceInterface {
         }
     }
 
-    private function checkRequestToken($token){
-        if ($token == null || $token->getToken() !=  $this->request->get('token')){
+    private function checkRequestToken($token, $key) {
+        if (empty($token) || $token->getToken() != $key){
             throw new APIException("Unauthorized access.");
         }
     }
@@ -133,7 +112,7 @@ class APIService extends BaseService implements APIServiceInterface {
         if ($this->validations['repeated_lead'] != null){
             $this->saveContact($this->validations['repeated_lead']);
         } else {
-            $lead = $this->request->get('lead');
+            $lead = $this->lead;
             $resting_date = new \DateTime($lead['resting_date']);
             if (!isset($resting_date) || empty($resting_date)) {
                 throw new APIException("No resting time defined.");
@@ -194,6 +173,14 @@ class APIService extends BaseService implements APIServiceInterface {
             ), $code);
     }
 
+    /**
+     * @param $filename
+     * @param $owner
+     * @param $source
+     * @param $sub_category
+     * @param $country
+     * @return array
+     */
     public function setLeadsByCSV($filename, $owner, $source, $sub_category, $country){
         $php_excel_object = \PHPExcel_IOFactory::load($filename);
         $active = $php_excel_object->getActiveSheet();
@@ -228,6 +215,12 @@ class APIService extends BaseService implements APIServiceInterface {
         return $response;
     }
 
+    /**
+     * @param $owner
+     * @param $source
+     * @param $sub_category
+     * @param $country
+     */
     private function setCSVDefaults($owner, $source, $sub_category, $country){
         $this->lead['source_id']        = $source;
         $this->lead['sub_category']  = $sub_category;
@@ -235,8 +228,13 @@ class APIService extends BaseService implements APIServiceInterface {
         $this->lead['country']       = $country;
         $this->lead['ipaddress'] = '127.0.0.1';
     }
-
-    private function resetValidators(){
+    public function setLead($lead){
+        $this->lead = $lead;
+    }
+    /**
+     *  RESET Validators for other purposes
+     */
+    public function setValidators(){
         $this->validators = array(
             // ESSENTIAL VALIDATIONS
             new CountryValidator($this->core_service, $this->lead),

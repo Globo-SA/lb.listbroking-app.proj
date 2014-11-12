@@ -15,22 +15,20 @@ use ListBroking\APIBundle\Repository\ORM\APITokenRepository;
 use ListBroking\CoreBundle\Service\CoreService;
 use ListBroking\LeadBundle\Service\ContactDetailsService;
 use ListBroking\LeadBundle\Service\LeadService;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 interface APIServiceInterface {
     /**
      * @param LeadService $leadService
      * @param CoreService $coreService
      * @param ContactDetailsService $contactDetailsService
-     * @param RequestStack $requestStack
      * @param APITokenRepository $APITokenRepository
      */
-    public function __construct(LeadService $leadService, CoreService $coreService, ContactDetailsService $contactDetailsService, RequestStack $requestStack, APITokenRepository $APITokenRepository);
+    public function __construct(LeadService $leadService, CoreService $coreService, ContactDetailsService $contactDetailsService, APITokenRepository $APITokenRepository);
 
     /**
      * @return mixed
      */
-    public function processRequest();
+    public function processRequest($token);
 
     /**
      * @param $token

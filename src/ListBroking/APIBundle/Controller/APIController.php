@@ -10,6 +10,7 @@
 
 namespace ListBroking\APIBundle\Controller;
 
+use Ladybug\Plugin\Symfony2\Inspector\Object\Symfony\Component\HttpFoundation\Request;
 use ListBroking\APIBundle\Service\APIService;
 
 class APIController
@@ -25,9 +26,14 @@ class APIController
     }
 
     /**
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function setLeadAction(){
-        return $this->api_service->processRequest();
+    public function setLeadAction(Request $request){
+        $token['name'] = $request->get('token_name');
+        $token['key'] = $request->get('token');
+        $lead = $request->get('lead');
+        $this->api_service->setLead($lead);
+        return $this->api_service->processRequest($token);
     }
 }

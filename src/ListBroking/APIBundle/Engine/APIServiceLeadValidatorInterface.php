@@ -11,7 +11,6 @@
 namespace ListBroking\APIBundle\Engine;
 
 
-use Symfony\Component\HttpFoundation\Request;
 
 interface APIServiceLeadValidatorInterface {
     public function __construct();
@@ -20,5 +19,5 @@ interface APIServiceLeadValidatorInterface {
      * @param Request $request
      * @return mixed
      */
-    public function checkEmptyFields(Request $request);
+    public function checkEmptyFields($lead);
 }

@@ -11,7 +11,6 @@
 namespace ListBroking\LeadBundle\Engine\LeadValidator;
 
 
-use Symfony\Component\HttpFoundation\Request;
 
 class DistrictValidator extends BaseValidator {
     /**

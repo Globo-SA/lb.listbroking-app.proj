@@ -12,7 +12,6 @@ namespace ListBroking\LeadBundle\Engine\LeadValidator;
 
 
 use ListBroking\LeadBundle\Exception\LeadValidationException;
-use Symfony\Component\HttpFoundation\Request;
 
 class OwnerValidator extends BaseValidator {
     /**
