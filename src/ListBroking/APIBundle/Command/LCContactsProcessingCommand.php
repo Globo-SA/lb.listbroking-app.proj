@@ -45,7 +45,7 @@ SQL;
             var_dump($contact);
             $lead = array(
                 'lead' => array(
-                    'contact_id'     => $contact['contact_od'],
+                    'contact_id'     => $contact['contact_id'],
                     'gender'         => $contact['gender'],
                     'email'          => $contact['email'],
                     'phone'          => $contact['phone'],
