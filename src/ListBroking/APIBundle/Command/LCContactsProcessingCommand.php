@@ -60,7 +60,7 @@ SQL;
                     'ipaddress'      => $contact['ipaddress'],
                     'external_id'    => $contact['source_page_id'],
                     'source_name'    => $contact['source_page_domain'],
-                    'sub_category'   => $contact['sub_category'],
+                    'sub_category'   => $contact['category'],
                     'extra_fields'   => $contact['extra_fields'],
                     'resting_date'   => $contact['resting_date'],
                     'owner_name'     => 'adclick'
