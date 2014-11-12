@@ -112,7 +112,6 @@ CREATE TABLE `leadcentre_contacts` (
   `category` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `extra_fields` text COLLATE utf8_unicode_ci NOT NULL,
   `is_processed` tinyint(1) NOT NULL DEFAULT '0',
-  `resting_time`
   PRIMARY KEY (`id`),
   KEY `phone` (`phone`),
   KEY `postalcode1` (`postalcode1`),
