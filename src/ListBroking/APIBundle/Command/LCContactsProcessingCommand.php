@@ -59,7 +59,7 @@ SQL;
                     'city'           => $contact['city'],
                     'ipaddress'      => $contact['ipaddress'],
                     'external_id'    => $contact['source_page_id'],
-                    'source_name'    => $contact['source_page_name'],
+                    'source_name'    => $contact['source_page_domain'],
                     'sub_category'   => $contact['sub_category'],
                     'extra_fields'   => $contact['extra_fields'],
                     'resting_date'   => $contact['resting_date'],
