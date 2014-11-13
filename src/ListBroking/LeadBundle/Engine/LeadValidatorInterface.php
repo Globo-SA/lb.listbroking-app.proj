@@ -16,7 +16,7 @@ interface LeadValidatorInterface {
 
     /**
      * @param $service
-     * @param $request
+     * @param $lead
      */
     public function __construct($service, $lead);
 

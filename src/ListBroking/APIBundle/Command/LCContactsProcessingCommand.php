@@ -71,6 +71,7 @@ SQL;
             $token['name'] = $lead['token_name'];
             $token['key'] = $lead['token'];
             $this->api_service->setLead($lead);
+            $this->api_service->setValidators();
             $response = $this->api_service->processRequest($token);
             var_dump($response);die;
         }

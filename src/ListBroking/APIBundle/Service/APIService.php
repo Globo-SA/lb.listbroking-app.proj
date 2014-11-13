@@ -199,7 +199,7 @@ class APIService extends BaseService implements APIServiceInterface {
                 if ($row->getRowIndex() != 1) {
                     $this->lead = $lead;
                     $this->setCSVDefaults($owner, $source, $sub_category, $country);
-                    $this->resetValidators();
+                    $this->setValidators();
                     $this->validateAll();
                     $this->saveLead();
                 }
