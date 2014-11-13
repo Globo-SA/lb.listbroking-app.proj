@@ -41,6 +41,7 @@ class LCContactsProcessingCommand extends ContainerAwareCommand {
 SQL;
         $result = $stmt->executeQuery($sql);
         $contacts = $result->fetchAll();
+        $now_datetime = new \DateTime('now');
         foreach ($contacts as $contact){
             var_dump($contact);
             $lead = array(
@@ -62,7 +63,7 @@ SQL;
                     'source_name'    => $contact['source_page_domain'],
                     'sub_category'   => $contact['category'],
                     'extra_fields'   => $contact['extra_fields'],
-                    'resting_date'   => $contact['resting_date'],
+                    'resting_date'   => $now_datetime->format('Y-m-d H:i:s'),
                     'owner_name'     => 'adclick'
                 ),
                 'token_name'             => 'adclick',

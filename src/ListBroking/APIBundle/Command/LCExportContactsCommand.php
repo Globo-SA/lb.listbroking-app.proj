@@ -102,6 +102,11 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         }
     }
 
+    /**
+     * @param $query
+     * @return mixed
+     * @throws MysqliException
+     */
     protected function executeQuery($query){
         $query = $this->mysql_connection->query($query);
         if ($query === FALSE ) {
@@ -112,6 +117,10 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         return $query;
     }
 
+    /**
+     * @return bool
+     * @throws MysqliException
+     */
     protected function startMysqliConnection(){
         $this->mysql_connection = new \mysqli('adclickinstance2-listbroking.c1xjt8uy0oz0.us-east-1.rds.amazonaws.com', 'lcdbuser', 'Ay570ln3', 'lcdb', 3306);
         if ($this->mysql_connection->connect_errno) {
@@ -121,6 +130,10 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         }
     }
 
+    /**
+     * @return mixed
+     * @throws \Doctrine\DBAL\DBALException
+     */
     protected function getLastContactId(){
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         $stmt = $em->getConnection();
@@ -132,30 +145,16 @@ class LCExportContactsCommand extends ContainerAwareCommand {
         return $result->fetch();
     }
 
+    /**
+     * @throws \Doctrine\DBAL\ConnectionException
+     * @throws \Doctrine\DBAL\DBALException
+     */
     protected function saveLeadsToListBroking(){
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         $stmt = $em->getConnection();
         foreach ($this->result as $contact){
-            $sql = "SELECT contact_detail_value
-                FROM contact_contact_detail_type
-                WHERE contact_id = " . $contact['contact_id'] ."
-                AND contact_detail_type_id not IN (85, 35, 37, 49, 50, 51, 52)"; // EXCLUDE MAIN ccdts ALREADY RETRIEVED TO SAVE SPACE
-            $st_ccdts = $this->executeQuery($sql);
-            $ccdts = NULL;
-            if ($st_ccdts->num_rows){
-                $flag = true;
-                foreach ($st_ccdts as $ccdt){
-                    if ($flag){
-                        $ccdts = $ccdt;
-                        $flag = false;
-                        continue;
-                    }
-                    $ccdts .= ',' . $ccdt;
-                }
-                if (!empty($ccdts)){
-                    $ccdts = json_encode($ccdts);
-                }
-            }
+            $ccdts = $this->buildCCDTSstring($contact['contact_id']);
+            // Made this to set MySQL null values correctly
             foreach ($contact as $key => $value){
                 $value = str_replace(' ', '', $value);
                 if (empty($value)){
@@ -217,10 +216,34 @@ class LCExportContactsCommand extends ContainerAwareCommand {
                 throw $e;
             }
         }
-
     }
 
-    protected function getLeadsExtraFields(){
-
+    /**
+     * @param $contact_id
+     * @return null|string
+     * @throws MysqliException
+     */
+    protected function buildCCDTSstring($contact_id){
+        $sql = "SELECT contact_detail_value
+                FROM contact_contact_detail_type
+                WHERE contact_id = " . $contact_id ."
+                AND contact_detail_type_id not IN (85, 35, 37, 49, 50, 51, 52)"; // EXCLUDE MAIN ccdts ALREADY RETRIEVED TO SAVE SPACE
+        $st_ccdts = $this->executeQuery($sql);
+        $ccdts = NULL;
+        if ($st_ccdts->num_rows){
+            $flag = true;
+            foreach ($st_ccdts as $ccdt){
+                if ($flag){
+                    $ccdts = $ccdt;
+                    $flag = false;
+                    continue;
+                }
+                $ccdts .= ',' . $ccdt;
+            }
+            if (!empty($ccdts)){
+                $ccdts = json_encode($ccdts);
+            }
+        }
+        return $ccdts;
     }
 } 
