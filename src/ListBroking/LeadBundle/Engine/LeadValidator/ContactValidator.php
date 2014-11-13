@@ -39,6 +39,7 @@ class ContactValidator extends BaseValidator {
      */
     public function validate($validations)
     {
+        var_dump($this->lead);die;
         if (isset($this->lead['email']))
         {
             $this->validateEmail($this->lead['email']);

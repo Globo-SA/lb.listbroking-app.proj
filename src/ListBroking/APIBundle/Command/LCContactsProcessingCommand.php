@@ -43,7 +43,6 @@ SQL;
         $contacts = $result->fetchAll();
         $now_datetime = new \DateTime('now');
         foreach ($contacts as $contact){
-            var_dump($contact);
             $lead = array(
                 'lead' => array(
                     'contact_id'     => $contact['contact_id'],
