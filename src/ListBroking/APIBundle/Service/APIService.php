@@ -77,7 +77,6 @@ class APIService extends BaseService implements APIServiceInterface {
     public function processRequest($token){
         $token_check = $this->getTokenByName($token['name'], 'true');
         try {
-            var_dump($this->lead);die;
             $this->validation_service->checkEmptyFields($this->lead);
             $this->checkRequestToken($token_check, $token['key']);
             $this->validateAll();
