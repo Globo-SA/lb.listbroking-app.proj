@@ -64,8 +64,8 @@ SQL;
                 'resting_date'   => $now_datetime->format('Y-m-d H:i:s'),
                 'owner_name'     => 'adclick'
             );
-            $token['name'] = $lead['token_name'];
-            $token['key'] = $lead['token'];
+            $token['name'] = 'adclick';
+            $token['key'] = 'ZDhjZmIxZGJiYzI1ODIzMDIyMjFjNTk1MGEwZTFlYjY5ODkwMzgyOTAzM2Y0YjY3M2U1MjFiNzc3NDM1OGU5Yg';
             $this->api_service->setLead($lead);
             $this->api_service->setValidators();
             $response = $this->api_service->processRequest($token);
