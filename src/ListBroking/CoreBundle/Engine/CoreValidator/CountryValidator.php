@@ -47,13 +47,23 @@ class CountryValidator extends BaseValidator {
 
     public function validate($validations)
     {
-        if (!isset($this->lead['country']) || strlen($this->lead['country'])>2){
+        if (!isset($this->lead['country'])){
             throw new CoreValidationException("Field lead[country] not sent. \r\n");
         }
 
         parent::validateEmpty($this->lead['country'], 'country');
-        $country_code = strtoupper($this->lead['country']);
+        if (strlen($this->lead['country'])>2) {
+            $key = array_search($this->lead['country'], $this->countries);
+            if ($key){
+                $country_code = $this->countries[$key];
+            }
+        } else {
+            $country_code = strtoupper($this->lead['country']);
+        }
         $validations['country'] = $this->service->getCountryByCode($country_code, true);
+        if ($validations['country'] == null){
+            throw new CoreValidationException("Country wasn't found in country table. Add it to the table if it's a valid one");
+        }
         return $validations;
     }
 }
