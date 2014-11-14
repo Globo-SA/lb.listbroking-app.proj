@@ -55,7 +55,9 @@ class CountryValidator extends BaseValidator {
         if (strlen($this->lead['country'])>2) {
             $key = array_search($this->lead['country'], $this->countries);
             if ($key){
-                $country_code = $this->countries[$key];
+                $country_code = $key;
+            } else {
+                throw new CoreValidationException("Country wasn't found in countries list. Add it to the list if it's a valid one");
             }
         } else {
             $country_code = strtoupper($this->lead['country']);
