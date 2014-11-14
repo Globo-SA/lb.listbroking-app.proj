@@ -30,8 +30,7 @@ class APIController
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function setLeadAction(Request $request){
-        $token['name'] = $request->get('token_name');
-        $token['key'] = $request->get('token');
+        $token = $request->get('token');
         $lead = $request->get('lead');
         $this->api_service->setLead($lead);
         return $this->api_service->processRequest($token);

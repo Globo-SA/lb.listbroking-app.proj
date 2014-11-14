@@ -20,7 +20,28 @@ class CountryValidator extends BaseValidator {
         parent::__construct($service, $lead);
         $this->countries = array(           //TODO: FILL THIS WITH ENTRIES FROM DATABASE COUNTRIES TABLE WITH THIS FORMAT
             'PT' => 'Portugal',
-            'FR' => 'France'
+            'FR' => 'France',
+            'IT' => 'Italy',
+            'ES' => 'Spain',
+            'PL' => 'Poland',
+            'BR' => 'Brazil',
+            'MX' => 'Mexico',
+            'AR' => 'Argentina',
+            'CO' => 'Colombia',
+            'VE' => 'Venezuela',
+            'US' => 'USA',
+            'PE' => 'Peru',
+            'UY' => 'Uruguay',
+            'GB' => 'United Kingdom',
+            'CA' => 'Canada',
+            'DE' => 'Germany',
+            'ZA' => 'South Africa',
+            'HN' => 'Honduras',
+            'CL' => 'Chile',
+            'BE' => 'Belgium',
+            'PA' => 'Panama',
+            'B2' => 'Belgium Flanders',
+            'OM' => 'Oman'
         );
     }
 
