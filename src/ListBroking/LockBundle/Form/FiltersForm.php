@@ -14,6 +14,7 @@ namespace ListBroking\LockBundle\Form;
 use ListBroking\ClientBundle\Service\ClientService;
 use ListBroking\CoreBundle\Service\CoreService;
 use ListBroking\LeadBundle\Service\ContactDetailsService;
+use ListBroking\LockBundle\Form\DataTransformer\ArrayToFormTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
@@ -397,6 +398,24 @@ class FiltersForm extends AbstractType
                         )
                     ),
                 ),
+            ),
+            'lead_details' => array(
+                'label' => 'Lead Details',
+                'fields' => array(
+                    array(
+                        'name' => 'lead:id',
+                        'type' => 'textarea',
+                        'options' => array(
+                            'required' => false,
+                            'attr' => array(
+                                'id' => 'filters_lead_details_lead_id',
+                                'placeholder' => 'Write and press enter...',
+                                'class' => 'form-control'
+                            ),
+                            'label' => 'Lead IDs to remove',
+                        )
+                    ),
+                )
             )
         );
     }
@@ -413,7 +432,7 @@ class FiltersForm extends AbstractType
                 'label' => $group['label'],
                 'virtual' => true,
                 'label_attr' => array('class' => 'text-blue'),
-                'attr' => array('class' => 'row')
+                'attr' => array('class' => 'row', 'style' => 'display:none;')
             ));
             foreach ($group['fields'] as $filter)
             {
@@ -447,8 +466,6 @@ class FiltersForm extends AbstractType
 
     private function getChoicesArray($list)
     {
-
-        //$choices = array('' => '-- Select one --');
         $choices = array();
         foreach ($list as $choice)
         {

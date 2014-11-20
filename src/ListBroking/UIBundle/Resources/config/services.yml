@@ -26,5 +26,5 @@ services:
 
     listbroking.uibundle.ajax.controller:
         class: %listbroking.uibundle.ajax.controller.class%
-        arguments: [@listbroking.uibundle.service]
+        arguments: [@listbroking.uibundle.service, @listbroking.extraction.service]
 

@@ -10,6 +10,7 @@
 
 namespace ListBroking\LeadBundle\Service;
 
+use ListBroking\ExtractionBundle\Entity\Extraction;
 use ListBroking\LeadBundle\Repository\ORM\ContactRepository;
 use ListBroking\LeadBundle\Repository\ORM\LeadRepository;
 use Symfony\Component\Form\FormFactory;
@@ -189,5 +190,13 @@ class LeadService implements LeadServiceInterface {
         return $this->lead_repo->countByLock();
     }
 
-
+    /**
+     * Gets all the contacts of a given Extraction with
+     * all the dimensions eagerly loaded
+     * @param Extraction $extraction
+     * @return mixed
+     */
+    public function getExtractionContacts(Extraction $extraction){
+        return $this->contact_repo->getExtractionContacts($extraction);
+    }
 }

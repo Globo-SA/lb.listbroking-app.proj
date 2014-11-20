@@ -18,10 +18,22 @@ use ListBroking\ExtractionBundle\Entity\ExtractionTemplate;
 use ListBroking\ExtractionBundle\Exception\InvalidExtractionException;
 use ListBroking\ExtractionBundle\Repository\ORM\ExtractionRepository;
 use ListBroking\ExtractionBundle\Repository\ORM\ExtractionTemplateRepository;
+use ListBroking\LeadBundle\Service\ContactDetailsService;
+use ListBroking\LeadBundle\Service\LeadService;
+use ListBroking\LockBundle\Service\LockService;
 use Liuggio\ExcelBundle\Factory;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ExtractionService extends BaseService implements ExtractionServiceInterface {
+
+    /**
+     * @var LockService
+     */
+    private $l_service;
+
+    /** @var  LeadService */
+    private $le_service;
 
     private $extraction_repo;
     private $extraction_template_repo;
@@ -36,14 +48,17 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     const EXTRACTION_TEMPLATE_SCOPE = 'extraction_template';
 
     function __construct(
+        LockService $l_service,
+        LeadService $le_service,
         CacheManagerInterface $cache,
         ValidatorInterface $validator,
-        ExtractionRepository$extraction_repo,
+        ExtractionRepository $extraction_repo,
         ExtractionTemplateRepository $extraction_template_repo,
         Factory $phpexcel
     )
     {
         parent::__construct($cache, $validator);
+        $this->le_service = $le_service;
         $this->extraction_repo = $extraction_repo;
         $this->extraction_template_repo = $extraction_template_repo;
         $this->phpexcel = $phpexcel;
@@ -55,6 +70,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             'HTML' => array('type' => 'HTML', 'extension' => 'html', 'label' => 'HTML File (.html)'),
             'CSV' =>  array('type' => 'CSV', 'extension' => 'csv', 'label' => 'Save as a CSV file (.csv)')
         );
+        $this->l_service = $l_service;
     }
 
     /**
@@ -74,8 +90,13 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      * @return mixed
      */
     public function getExtraction($id, $hydrate = false){
-        return $this->get(self::EXTRACTION_LIST, self::EXTRACTION_SCOPE, $this->extraction_repo, $id, $hydrate);
+        $extraction= $this->get(self::EXTRACTION_LIST, self::EXTRACTION_SCOPE, $this->extraction_repo, $id, $hydrate);
+        if (!$extraction)
+        {
+            throw new HttpException(404, "Extraction not found!", null, array(), 404);
+        }
 
+        return $extraction;
     }
 
     /**
@@ -86,64 +107,6 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     public function addExtraction($extraction){
         $this->add(self::EXTRACTION_LIST, self::EXTRACTION_SCOPE, $this->extraction_repo, $extraction);
         return $this;
-    }
-
-    /**
-     * Set the Extraction filters
-     * @param $id
-     * @param $filters
-     * @internal param $lock_filters
-     * @internal param $contact_filters
-     * @return mixed
-     */
-    public function setExtractionFilters($id, $filters)
-    {
-        $extraction = $this->getExtraction($id, true);
-        $extraction->setFilters($filters);
-
-        $this->updateExtraction($extraction);
-    }
-
-    /**
-     * Adds a Lock Filter to an Extraction
-     * @param $id
-     * @param $type
-     * @param $new_filters
-     * @internal param $filters
-     * @internal param $filter
-     * @return mixed
-     */
-    public function addExtractionLockFilters($id, $type, $new_filters)
-    {
-        $this->setFilters($id, 'lock_filters', $type, $new_filters);
-    }
-
-    /**
-     * Adds a Contact Filter to an Extraction
-     * @param $id
-     * @param $type
-     * @param $new_filters
-     * @internal param $filters
-     * @internal param $filter
-     * @return mixed
-     */
-    public function addExtractionContactFilters($id, $type, $new_filters)
-    {
-            $this->setFilters($id, 'contact_filters', $type, $new_filters);
-    }
-
-    private function setFilters($id, $filter_type,  $type, $new_filters){
-
-        /** @var Extraction $extraction */
-        $extraction = $this->getExtraction($id, true);
-        $filters = $extraction->getFilters();
-
-        $filters[$filter_type][$type]['filters'] = array_merge(
-            $filters[$filter_type][$type]['filters'],
-            $new_filters
-        );
-        $extraction->setFilters($filters);
-        $this->updateExtraction($extraction);
     }
 
     /**
@@ -218,6 +181,96 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     }
 
     /**
+     * Used the LockService to compile and run the Extraction
+     * @param Extraction $extraction
+     * @return mixed
+     */
+    public function runExtraction(Extraction $extraction){
+
+        // Start the filtering Engine and query the DB
+        $engine = $this->l_service->startEngine();
+        $qb = $engine->compileFilters($engine->prepareFilters($extraction->getFilters()), $extraction->getQuantity());
+
+        // Add Contacts to the Extraction
+        $contacts = $qb->getQuery()->execute();
+        $extraction = $this->addExtractionContacts($extraction, $contacts);
+
+        // Change the Extraction Status to Confirmation if it's on filtration and has contacts
+        if($extraction->getStatus() == Extraction::STATUS_FILTRATION && count($contacts) > 0){
+            $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
+            $this->updateExtraction($extraction);
+        }
+
+        return $contacts;
+    }
+
+    /**
+     * Gets all the contacts of a given Extraction with
+     * all the dimensions eagerly loaded
+     * @param Extraction $extraction
+     * @return mixed
+     */
+    public function getExtractionContacts(Extraction $extraction){
+        return $this->le_service->getExtractionContacts($extraction);
+    }
+
+    /**
+     * Set the Extraction filters
+     * @param Extraction $extraction
+     * @param $filters
+     * @internal param $id
+     * @internal param $lock_filters
+     * @internal param $contact_filters
+     * @return mixed
+     */
+    public function setExtractionFilters(Extraction $extraction, $filters)
+    {
+        // Update extraction with new filters
+        $extraction->setFilters($filters);
+        $this->updateExtraction($extraction);
+    }
+
+    /**
+     * Associates an array of contacts to an extraction
+     * If merge = false old contacts will be removed
+     * @param $extraction Extraction
+     * @param $contacts
+     * @param bool $merge
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function addExtractionContacts($extraction, $contacts, $merge = false){
+
+        $this->extraction_repo->addContacts($extraction, $contacts, $merge);
+        return  $this->extraction_repo->findOneById($extraction->getId(),true);
+    }
+
+    /**
+     * Adds Leads to the Lead Filter of a given Extraction
+     * @param Extraction $extraction
+     * @param $leads_array
+     */
+    public function excludeLeads(Extraction $extraction, $leads_array){
+
+        $filters = $extraction->getFilters();
+        if(!array_key_exists('lead:id', $filters) || empty($filters['lead:id'])){
+            $filters['lead:id'] = array();
+        }else{
+            $filters['lead:id'] = explode(',', $filters['lead:id']);
+        }
+        foreach ($leads_array as $lead)
+        {
+            if(!in_array($lead['id'], array_values($filters['lead:id']))){
+                array_push($filters['lead:id'], $lead['id']);
+            }
+        }
+        $filters['lead:id'] = implode(',', $filters['lead:id']);
+
+        $extraction->setFilters($filters);
+        $this->updateExtraction($extraction);
+    }
+
+    /**
+     * Gets all the Existing Export Types
      * @return array
      */
     public function getExportTypes()
@@ -228,24 +281,25 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     /**
      * Exports Leads using a given type
      * @param $extraction_template ExtractionTemplate
-     * @param $leads_array
-     * @param $type
+     * @param $contacts
      * @param array $info
      * @throws InvalidExtractionException
+     * @internal param $type
      * @return mixed
      */
-    public function exportExtraction($extraction_template, $leads_array, $type, $info = array())
+    public function exportExtraction(ExtractionTemplate $extraction_template, $contacts, $info = array())
     {
-        if(!array_key_exists("extension", $type) || !array_key_exists("label", $type)){
-            throw new InvalidExtractionException('Wrong Extraction type, in' . __CLASS__);
-        }
-
         $template = $extraction_template['template'];
-        if(!array_key_exists("headers", $template)){
-            throw new InvalidExtractionException('Headers missing on the ExtractionTemplate, in' . __CLASS__);
+        if(!array_key_exists("headers", $template) || !array_key_exists("extension", $template)){
+            throw new InvalidExtractionException('Headers or Extension missing on the ExtractionTemplate, in' . __CLASS__);
         }
 
-        $filename = $this->generateFilename($extraction_template['name'], $type['extension']);
+        if(!array_key_exists("filename", $info)){
+
+            $filename = $this->generateFilename($extraction_template['name'], $template['extension']);
+        }else{
+            $filename = $info['filename'];
+        }
 
         $php_excel_obj = $this->phpexcel->createPHPExcelObject();
         $writer = $this->phpexcel->createWriter($php_excel_obj);
@@ -283,16 +337,30 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             $active_sheet->setCellValue("{$header_column}1", $label);
             $header_column++;
         }
+
         $line = 2;
-        foreach ($leads_array as $contact)
+
+        /** @var \ListBroking\DoctrineBundle\Tool\InflectorTool $inflector */
+        $inflector = $field_value = $this->extraction_repo->getInflector();
+        foreach ($contacts as $contact)
         {
             $column = 'A';
             foreach ($headers as $field => $label){
 
-                    $field_value = $contact[$field];
-                    if($field_value instanceof \DateTime){
-                        $field_value = $field_value->format('Y-m-d');
+                if($field == 'id'){
+                    $field_value = $contact->getlead()->getId();
+                }elseif($field == 'phone'){
+                    $field_value = $contact->getlead()->getPhone();
+                }else{
+                    $method = 'get' . $inflector->camelize($field);
+                    $field_value = $contact->$method();
+                    if(is_object($field_value) && !($field_value instanceof \DateTime)){
+                        $field_value = $field_value->__toString();
                     }
+                }
+                if($field_value instanceof \DateTime){
+                    $field_value = $field_value->format('Y-m-d');
+                }
 
                 if(!empty($field_value)){
                     $active_sheet->setCellValue("{$column}{$line}", $field_value);
@@ -303,6 +371,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         }
 
         $writer->save($filename);
+
+        return $filename;
     }
 
     /**
@@ -325,7 +395,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             $column = 'A';
             while($column <= $last_column){
                 if($i == 1){
-                    $headers[] = $active->getCell("{$column}1")->getValue();
+                    $headers[] = strtolower($active->getCell("{$column}1")->getValue());
                 }
                 else{
                     $lead_array[$i-1][$headers[$j]] = $active->getCell("{$column}{$i}")->getValue();
@@ -336,7 +406,6 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         }
         return $lead_array;
     }
-
 
     /**
      * Generates the filename and generate a filename for it

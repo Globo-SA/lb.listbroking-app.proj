@@ -11,6 +11,7 @@
 namespace ListBroking\UIBundle\Controller;
 
 
+use ListBroking\ExtractionBundle\Service\ExtractionService;
 use ListBroking\UIBundle\Service\UIService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,14 +23,25 @@ class AjaxController {
      */
     private $ui_service;
 
-    function __construct(UIService $ui_service){
+    /**
+     * @var ExtractionService
+     */
+    private $e_service;
+
+    function __construct(UIService $ui_service, ExtractionService $e_service){
         $this->ui_service = $ui_service;
+        $this->e_service = $e_service;
     }
 
+    /**
+     * Counts the number of leads by lock for the dashboard
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function countLeads(Request $request){
 
         try{
-            //$this->validateRequest($request);
+            $this->validateRequest($request);
             $leads_by_lock = $this->ui_service->countByLock();
             return $this->createJsonResponse($leads_by_lock);
         }catch (\Exception $e){
@@ -45,13 +57,12 @@ class AjaxController {
      */
     public function listsAction(Request $request){
         try{
-            //$this->validateRequest($request);
+            $this->validateRequest($request);
 
             $type = $request->get('type', '');
             $parent_type = $request->get('parent_type', '');
             $parent_id = $request->get('parent_id', '');
             $list = $this->ui_service->getEntityList($type, $parent_type, $parent_id);
-
 
             return $this->createJsonResponse($list);
 
@@ -61,6 +72,12 @@ class AjaxController {
         }
     }
 
+    /**
+     * Generic form submission action
+     * @param Request $request
+     * @param $form_name
+     * @return JsonResponse
+     */
     public function formSubmissionAction(Request $request, $form_name){
         try{
             $this->validateRequest($request);
@@ -83,6 +100,32 @@ class AjaxController {
         }catch(\Exception $e){
             return $this->createJsonResponse($e->getMessage(), $e->getCode());
 
+        }
+    }
+
+    /**
+     * Excludes leads of a given Extraction
+     * @param Request $request
+     * @param $extraction_id
+     * @param $lead_id
+     * @return JsonResponse
+     */
+    public function extractionExcludeLeadAction(Request $request, $extraction_id, $lead_id){
+        try{
+            $this->validateRequest($request);
+
+            $extraction = $this->e_service->getExtraction($extraction_id, true);
+            $this->e_service->excludeLeads($extraction, array(array('id' => $lead_id)));
+
+            return $this->createJsonResponse(array(
+                "code" => 200,
+                "response" => "success",
+                "extraction_id" => $extraction_id,
+                "lead_id" => $lead_id
+            ));
+
+        }catch(\Exception $e){
+            return $this->createJsonResponse($e->getMessage(), $e->getCode());
         }
     }
 

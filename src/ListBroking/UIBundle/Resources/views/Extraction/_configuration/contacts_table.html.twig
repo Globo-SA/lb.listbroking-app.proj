@@ -1,6 +1,6 @@
 {% import "@ListBrokingUI/_partials/macros/table_macros.html.twig" as macros %}
 
-<table id="leads_table" class="table table-hover" data-toggle="simple_table">
+<table id="leads_table" class="table table-hover" data-toggle="simple_table" width="100%">
     <thead>
     <tr>
         <th>Phone</th>
@@ -20,25 +20,25 @@
     </tr>
     </thead>
     <tbody>
-    {% for lead in leads %}
+    {% for contact in contacts %}
     <tr>
-        <td>{{ lead.phone }}</td>
-        <td>{{ lead.gender }}</td>
-        <td>{{ lead.birthdate|date('Y-m-d') }}</td>
-        <td>{{ lead.country }}</td>
-        <td>{{ lead.postalcode1 }}</td>
-        <td>{{ lead.postalcode2 }}</td>
-        <td>{{ lead.district }}</td>
-        <td>{{ lead.county }}</td>
-        <td>{{ lead.parish }}</td>
-        <td>{{ lead.owner }}</td>
-        <td>{{ lead.source }}</td>
-        <td>{{ lead.category }}</td>
-        <td>{{ lead.sub_category }}</td>
+        <td>{{ contact['lead']['phone'] }}</td>
+        <td>{{ contact['gender']['name'] }}</td>
+        <td>{{ contact['birthdate']|date('Y-m-d') }}</td>
+        <td>{{ contact['country']['name'] }}</td>
+        <td>{{ contact['postalcode1'] }}</td>
+        <td>{{ contact['postalcode2'] }}</td>
+        <td>{{ contact['district']['name'] }}</td>
+        <td>{{ contact['county']['name'] }}</td>
+        <td>{{ contact['parish']['name'] }}</td>
+        <td>{{ contact['owner']['name'] }}</td>
+        <td>{{ contact['source']['name'] }}</td>
+        <td>{{ contact['sub_category']['category']['name'] }}</td>
+        <td>{{ contact['sub_category']['name'] }}</td>
         <td>
-            <div class="btn-group">
+            <div class="btn-group lead_exclude">
                 <button class="exclude_lead btn btn-flat btn-xs btn-warning"><i class="fa fa-times"></i></button>
-                <button class="btn btn-flat btn-xs btn-danger" style="position:absolute; display: none;">exclude?</button>
+                <button class="confirm_exclude_lead btn btn-flat btn-xs btn-danger" style="display: none;" data-extraction-id="{{ extraction.id }}" data-lead-id="{{ contact['lead']['id'] }}">exclude?</button>
             </div>
         </td>
     </tr>

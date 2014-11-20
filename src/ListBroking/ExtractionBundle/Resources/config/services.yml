@@ -15,19 +15,20 @@ services:
         arguments:
             entityManager: @doctrine.orm.default_entity_manager
             entityName: %listbroking.extractionbundle.extraction.entity.name%
-            alias: camp
+            alias: extr
             entityClass: %listbroking.extractionbundle.extraction.entity.class%
             inflector: @inflector.tool
+            contactRepo: @listbroking.leadbundle.contact.repository
 
     listbroking.extractionbundle.extraction_template.repository:
         class: %listbroking.extractionbundle.extraction_template.repository.class%
         arguments:
             entityManager: @doctrine.orm.default_entity_manager
             entityName: %listbroking.extractionbundle.extraction_template.entity.name%
-            alias: camp
+            alias: extr_tmp
             entityClass: %listbroking.extractionbundle.extraction_template.entity.class%
             inflector: @inflector.tool
 
     listbroking.extraction.service:
         class: %listbroking.extraction.service.class%
-        arguments: [@cache, @validator, @listbroking.extractionbundle.extraction.repository, @listbroking.extractionbundle.extraction_template.repository, @phpexcel]
+        arguments: [@listbroking.lock.service,@listbroking.lead.service, @cache, @validator, @listbroking.extractionbundle.extraction.repository, @listbroking.extractionbundle.extraction_template.repository, @phpexcel]

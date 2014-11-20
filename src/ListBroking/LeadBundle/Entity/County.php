@@ -30,6 +30,11 @@ class County {
         $this->contacts = new ArrayCollection();
     }
 
+    function __toString()
+    {
+        return $this->name;
+    }
+
     /**
      * @return mixed
      */

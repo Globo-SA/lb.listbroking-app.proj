@@ -13,7 +13,8 @@ namespace ListBroking\ExtractionBundle\Entity;
 use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior,
     Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior
     ;
-use ListBroking\LeadBundle\Entity\Lead;
+use Doctrine\Common\Collections\ArrayCollection;
+use ListBroking\LeadBundle\Entity\Contact;
 
 class Extraction {
 
@@ -41,7 +42,17 @@ class Extraction {
 
     protected $campaign;
 
-    protected $leads;
+    protected $contacts;
+
+    function __construct()
+    {
+        $this->contacts = new ArrayCollection();
+    }
+
+    function __toString()
+    {
+        return $this->name;
+    }
 
     /**
      * @return mixed
@@ -161,12 +172,24 @@ class Extraction {
         $this->campaign = $campaign;
     }
 
-    public function addLead(Lead $lead){
-        $lead->addExtraction($this);
-        $this->leads[] = $lead;
+    /**
+     * @return ArrayCollection
+     */
+    public function getContacts()
+    {
+        return $this->contacts;
     }
 
-    public function removeLead(Lead $lead){
-        $this->leads->removeElement($lead);
+    public function addContact(Contact $contact){
+
+        // Only add if its new
+        if(!$this->contacts->contains($contact)){
+            $contact->addExtraction($this);
+            $this->contacts[] = $contact;
+        }
+    }
+
+    public function removeContact(Contact $contact){
+        $this->contacts->removeElement($contact);
     }
 }

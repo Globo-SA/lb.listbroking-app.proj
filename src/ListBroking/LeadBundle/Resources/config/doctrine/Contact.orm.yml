@@ -133,3 +133,7 @@ ListBroking\LeadBundle\Entity\Contact:
                 referencedColumnName: id
                 onDelete:             restrict
                 nullable:             false
+    manyToMany:
+        extractions:
+            targetEntity: ListBroking\ExtractionBundle\Entity\Extraction
+            mappedBy:     contacts

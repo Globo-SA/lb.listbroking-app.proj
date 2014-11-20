@@ -15,8 +15,8 @@ services:
             entityClass: %listbroking.exception_handler.entity.class%
             inflector: @inflector.tool
 
-    listbroking.exceptionhandler.exception_listener:
-        class: %listbroking.exception_handler.exception_listener.class%
-        arguments: [@listbroking.exceptionhandler.repository, @adv_config, @mailer, @twig]
-        tags:
-             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+#    listbroking.exceptionhandler.exception_listener:
+#        class: %listbroking.exception_handler.exception_listener.class%
+#        arguments: [@listbroking.exceptionhandler.repository, @adv_config, @mailer, @twig]
+#        tags:
+#             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }

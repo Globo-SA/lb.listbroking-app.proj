@@ -11,6 +11,9 @@
 namespace ListBroking\DoctrineBundle\Repository;
 
 
+use ListBroking\DoctrineBundle\Exception\EntityClassMissingException;
+use ListBroking\DoctrineBundle\Exception\EntityObjectInstantiationException;
+
 interface BaseEntityRepositoryInterface {
 
     /**
@@ -18,25 +21,29 @@ interface BaseEntityRepositoryInterface {
      *
      * @param $id
      *
+     * @param bool $hydrate
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return \Doctrine\ORM\QueryBuilder
      */
-    public function findOneById($id);
+    public function findOneById($id, $hydrate = false);
 
     /**
      * Finds all entities with associations
      * eagerly fetched by default
      *
      * @param bool $eager
+     * @param bool $hydrate
      * @return array
      */
-    public function findAll($eager = true);
+    public function findAll($eager = true, $hydrate = false);
 
     /**
      * Creates a new object to be used
      *
-     * @param null|array $preset
+     * @param null|object $preset
      *
-     * @throws \ListBroking\DoctrineBundle\Exception\EntityClassMissingException
+     * @throws EntityClassMissingException
+     * @throws EntityObjectInstantiationException
      * @return mixed
      */
     public function createNewEntity($preset = null);
@@ -56,9 +63,21 @@ interface BaseEntityRepositoryInterface {
     public function persist($object);
 
     /**
-     * Alias for EntityMannager#flush
+     * Alias for EntityManager#flush
      */
     public function flush();
+
+    /**
+     * Alias for EntityManager#clear
+     */
+    public function clear();
+
+    /**
+     * Updates one entity
+     * @param $object
+     * @return mixed|object
+     */
+    public function merge($object);
 
     /**
      * Creates a new QueryBuilder instance that is pre-populated for this entity name.
@@ -67,11 +86,34 @@ interface BaseEntityRepositoryInterface {
      */
     public function createQueryBuilder();
 
-    /**
-     * Updates one entity
-     * @param $object
-     * @return mixed
-     */
-    public function merge($object);
 
-} 
+    /**
+     * @return string
+     */
+    public function getEntityName();
+    /**
+     * @return string
+     */
+    public function getEntityManager();
+
+    public function getEntityColumns();
+
+    public function getColumnNames();
+
+    public function getAssociationNames();
+
+    /**
+     * @return string
+     */
+    public function getEntityClass();
+
+    /**
+     * @return \ListBroking\DoctrineBundle\Tool\InflectorTool
+     */
+    public function getInflector();
+
+    /**
+     * @return string
+     */
+    public function getAlias();
+}

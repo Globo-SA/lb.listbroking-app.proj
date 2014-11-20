@@ -63,7 +63,7 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
         $query_builder->setParameter('id', $id);
 
         if($hydrate){
-            $entities =  $query_builder->getQuery()->getOneOrNullResult();
+            $entities =  $query_builder->getQuery()->getOneOrNullResult(AbstractQuery::HYDRATE_OBJECT);
 
         }else{
             $entities =  $query_builder->getQuery()->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY);
@@ -159,11 +159,19 @@ class BaseEntityRepository extends EntityRepository implements BaseEntityReposit
     }
 
     /**
-     * Alias for EntityMannager#flush
+     * Alias for EntityManager#flush
      */
     public function flush()
     {
         $this->entityManager->flush();
+    }
+
+    /**
+     * Alias for EntityManager#clear
+     */
+    public function clear()
+    {
+        $this->entityManager->clear();
     }
 
     /**

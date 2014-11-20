@@ -35,12 +35,15 @@ class Lead {
 
     protected $locks;
 
-    protected $extractions;
-
     function __construct()
     {
         $this->contacts = new ArrayCollection();
         $this->locks = new ArrayCollection();
+    }
+
+    function __toString()
+    {
+        return $this->phone;
     }
 
     /**
@@ -151,19 +154,5 @@ class Lead {
      */
     public function removeLocks(Lock $lock){
         $this->locks->removeElement($lock);
-    }
-
-    /**
-     * @param Extraction $extraction
-     */
-    public function addExtraction(Extraction $extraction){
-        $this->extractions[] = $extraction;
-    }
-
-    /**
-     * @param Extraction $extraction
-     */
-    public function removeExtraction(Extraction $extraction){
-        $this->extractions->removeElement($extraction);
     }
 } 

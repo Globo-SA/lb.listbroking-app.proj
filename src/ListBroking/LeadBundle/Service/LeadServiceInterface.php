@@ -11,6 +11,8 @@
 namespace ListBroking\LeadBundle\Service;
 
 
+use ListBroking\ExtractionBundle\Entity\Extraction;
+
 interface LeadServiceInterface {
     public function getLeadList($only_active = true);
 
@@ -37,4 +39,12 @@ interface LeadServiceInterface {
      * @return array
      */
     public function countByLock();
+
+    /**
+     * Gets all the contacts of a given Extraction with
+     * all the dimensions eagerly loaded
+     * @param Extraction $extraction
+     * @return mixed
+     */
+    public function getExtractionContacts(Extraction $extraction);
 } 

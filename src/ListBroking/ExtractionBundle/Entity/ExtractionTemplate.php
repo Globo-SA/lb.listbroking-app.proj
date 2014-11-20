@@ -27,6 +27,11 @@ class ExtractionTemplate {
 
     protected $template;
 
+    function __toString()
+    {
+        return $this->name;
+    }
+
     /**
      * @return mixed
      */

@@ -30,6 +30,10 @@ class Country {
 
     protected $iso_code;
 
+    function __toString()
+    {
+        return $this->name;
+    }
 
     /**
      * @return mixed

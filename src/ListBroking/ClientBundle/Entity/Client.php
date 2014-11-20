@@ -41,6 +41,11 @@ class Client
         $this->campaigns = new ArrayCollection();
     }
 
+    function __toString()
+    {
+        return $this->name;
+    }
+
     /**
      * @return mixed
      */
