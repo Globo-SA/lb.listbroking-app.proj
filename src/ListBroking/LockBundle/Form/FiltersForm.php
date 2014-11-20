@@ -404,12 +404,11 @@ class FiltersForm extends AbstractType
                 'fields' => array(
                     array(
                         'name' => 'lead:id',
-                        'type' => 'hidden',
+                        'type' => 'textarea',
                         'options' => array(
                             'required' => false,
                             'attr' => array(
                                 'id' => 'filters_lead_details_lead_id',
-                                'data-select-mode' => 'open',
                                 'placeholder' => 'Write and press enter...',
                                 'class' => 'form-control'
                             ),

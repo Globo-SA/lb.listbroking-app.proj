@@ -12,6 +12,8 @@ namespace ListBroking\ExtractionBundle\Service;
 
 
 use ListBroking\ExtractionBundle\Entity\Extraction;
+use ListBroking\ExtractionBundle\Entity\ExtractionTemplate;
+use ListBroking\ExtractionBundle\Exception\InvalidExtractionException;
 
 interface ExtractionServiceInterface {
     
@@ -36,36 +38,6 @@ interface ExtractionServiceInterface {
      * @return mixed
      */
     public function addExtraction($extraction);
-
-    /**
-     * Set the Extraction filters
-     * @param $id
-     * @param $filters
-     * @internal param $lock_filters
-     * @internal param $contact_filters
-     * @return mixed
-     */
-    public function setExtractionFilters($id, $filters);
-
-    /**
-     * Adds a Lock Filter to an Extraction
-     * @param $id
-     * @param $type
-     * @param $new_filters
-     * @internal param $filter
-     * @return mixed
-     */
-    public function addExtractionLockFilters($id, $type, $new_filters);
-
-    /**
-     * Adds a Contact Filter to an Extraction
-     * @param $id
-     * @param $type
-     * @param $new_filters
-     * @internal param $filter
-     * @return mixed
-     */
-    public function addExtractionContactFilters($id, $type, $new_filters);
 
     /**
      * Removes a single extraction
@@ -118,6 +90,32 @@ interface ExtractionServiceInterface {
     public function updateExtractionTemplate($extraction_template);
 
     /**
+     * Used the LockService to compile and run the Extraction
+     * @param Extraction $extraction
+     * @return mixed
+     */
+    public function runExtraction(Extraction $extraction);
+
+    /**
+     * Gets all the contacts of a given Extraction with
+     * all the dimensions eagerly loaded
+     * @param Extraction $extraction
+     * @return mixed
+     */
+    public function getExtractionContacts(Extraction $extraction);
+
+    /**
+     * Set the Extraction filters
+     * @param Extraction $extraction
+     * @param $filters
+     * @internal param $id
+     * @internal param $lock_filters
+     * @internal param $contact_filters
+     * @return mixed
+     */
+    public function setExtractionFilters(Extraction $extraction, $filters);
+
+    /**
      * Associates an array of contacts to an extraction
      * If merge = false old contacts will be removed
      * @param $extraction Extraction
@@ -127,13 +125,28 @@ interface ExtractionServiceInterface {
     public function addExtractionContacts($extraction, $contacts, $merge = false);
 
     /**
-     * Exports Leads using a given type
-     * @param $extraction_template
+     * Adds Leads to the Lead Filter of a given Extraction
+     * @param Extraction $extraction
      * @param $leads_array
+     */
+    public function excludeLeads(Extraction $extraction, $leads_array);
+
+    /**
+     * Gets all the Existing Export Types
+     * @return array
+     */
+    public function getExportTypes();
+
+    /**
+     * Exports Leads using a given type
+     * @param $extraction_template ExtractionTemplate
+     * @param $contacts
      * @param array $info
+     * @throws InvalidExtractionException
+     * @internal param $type
      * @return mixed
      */
-    public function exportExtraction($extraction_template, $leads_array, $info = array());
+    public function exportExtraction(ExtractionTemplate $extraction_template, $contacts, $info = array());
 
     /**
      * Used to import a file with Leads

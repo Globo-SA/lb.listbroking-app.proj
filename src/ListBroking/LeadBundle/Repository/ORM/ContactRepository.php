@@ -11,7 +11,9 @@
 namespace ListBroking\LeadBundle\Repository\ORM;
 
 
+use Doctrine\ORM\Query;
 use ListBroking\DoctrineBundle\Repository\ORM\BaseEntityRepository;
+use ListBroking\ExtractionBundle\Entity\Extraction;
 use ListBroking\LeadBundle\Repository\ContactRepositoryInterface;
 
 class ContactRepository extends BaseEntityRepository implements ContactRepositoryInterface {
@@ -38,5 +40,35 @@ class ContactRepository extends BaseEntityRepository implements ContactRepositor
         }
 
         return $query_builder->getQuery()->getArrayResult();
+    }
+
+
+    /**
+     * Gets all the contacts of a given Extraction with
+     * all the dimensions eagerly loaded
+     * @param Extraction $extraction
+     * @return mixed
+     */
+    public function getExtractionContacts(Extraction $extraction){
+        $qb = $this->createQueryBuilder();
+
+        $qb->join("{$this->getAlias()}.extractions", 'extractions');
+        $qb->where("extractions = :extraction");
+        $qb->setParameter('extraction', $extraction);
+
+        // Add contact Dimensions
+        $contact_ass_map =  $meta = $this->entityManager->getClassMetadata($this->entity_class)->getAssociationNames();
+        foreach ($contact_ass_map as $associations_mapping)
+        {
+            if(!in_array($associations_mapping, array('created_by', 'updated_by', 'extractions'))){
+                $qb->leftJoin($this->alias() . '.' . $associations_mapping, $associations_mapping);
+                $qb->addSelect($associations_mapping);
+            }
+            if($associations_mapping == 'sub_category'){
+                $qb->join('sub_category.category', 'category');
+                $qb->addSelect('category');
+            }
+        }
+        return $qb->getQuery()->execute(null, Query::HYDRATE_ARRAY);
     }
 } 

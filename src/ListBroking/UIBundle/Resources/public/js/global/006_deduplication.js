@@ -6,6 +6,22 @@
     $(function() {
         "use strict";
 
+        $('form[name=advanced_exclude]').submit(function(){
+
+            var $input = $('#advanced_exclude_upload_file');
+            var filename = getExtension($input.val());
+            console.log(filename);
+            if(!filename.match(/(xls|xlsx)/i)){
+                $input.tooltip({
+                    title: 'Must have a .xls or .xlsx extension'
+                }).tooltip('show')
+
+                setTimeout(function(){
+                    $('#advanced_exclude_upload_file').tooltip('destroy')
+                }, 2000);
+            }
+        });
+
         $('#deduplication-download').on('click', function(e){
             e.preventDefault();
 
@@ -20,6 +36,11 @@
             }
 
         });
+
+        function getExtension(filename) {
+            var parts = filename.split('.');
+            return parts[parts.length - 1];
+        }
 
     });
 }

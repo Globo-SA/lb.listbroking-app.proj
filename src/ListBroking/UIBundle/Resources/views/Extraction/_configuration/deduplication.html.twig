@@ -23,14 +23,14 @@
                         <input type="hidden" data-select-mode="ajax" data-select-type="extraction_template" data-placeholder="Select a template..." class="form-control row-margin">
                         <button type="button" id="deduplication-download" data-extraction="{{ extraction.id }}" class="btn btn-flat btn-primary"><i class="icon icon-large ion-loading-c" style="display: none;"></i>&nbsp;Extract Leads List</button>
                     </div>
-                    <footer>CSV file with contact information for deduplication</footer>
+                    <footer>Excel file with contact information for deduplication</footer>
                 </blockquote>
                 </div>
             {{ form_start(forms.adv_exclusion) }}
             <div class="modal-body">
                 <blockquote class="small-label">
                     {{ form_rest(forms.adv_exclusion) }}
-                    <footer>CSV file with duplicated contacts (one column with lead IDs)</footer>
+                    <footer>Excel file with duplicated contacts (one column with lead IDs)</footer>
                 </blockquote>
             </div>
             <div class="modal-footer">

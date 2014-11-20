@@ -11,6 +11,8 @@
 namespace ListBroking\ExtractionBundle\Repository;
 
 
+use ListBroking\ExtractionBundle\Entity\Extraction;
+
 interface ExtractionRepositoryInterface {
 
     /**

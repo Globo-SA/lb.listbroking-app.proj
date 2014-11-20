@@ -30,8 +30,6 @@ use Symfony\Component\Routing\Router;
 
 class ExtractionController
 {
-
-
     /**
      * @var \Twig_Environment
      */
@@ -70,6 +68,10 @@ class ExtractionController
         $this->ui_service = $ui_service;
     }
 
+    /**
+     * First step on Extraction process
+     * @return Response
+     */
     public function indexAction()
     {
 
@@ -83,32 +85,36 @@ class ExtractionController
         ));
     }
 
+    /**
+     * First step on Lead Extraction, Configuration
+     * @return Response
+     */
     public function configurationAction()
     {
-
-        $forms = array(
-            'client' => $this->ui_service->generateForm(new ClientType(), true),
-            'campaign' => $this->ui_service->generateForm(new CampaignType(), true),
-            'extraction' => $this->ui_service->generateForm(new ExtractionType(), true)
-
-        );
-
         return new Response($this->twig->render(
             'ListBrokingUIBundle:Extraction:1-configuration.html.twig',
             array(
-                'forms' => $forms
+                'forms' => array(
+                    'client' => $this->ui_service->generateForm(new ClientType(), true),
+                    'campaign' => $this->ui_service->generateForm(new CampaignType(), true),
+                    'extraction' => $this->ui_service->generateForm(new ExtractionType(), true)
+                )
             )
         ));
     }
 
+    /**
+     * Second step on Lead Extraction, Filtering
+     * @param Request $request
+     * @param $extraction_id
+     * @return Response
+     * @throws \ListBroking\LockBundle\Exception\InvalidFilterObjectException
+     */
     public function filteringAction(Request $request, $extraction_id)
     {
         $extraction = $this->e_service->getExtraction($extraction_id, true);
-        if (!$extraction)
-        {
-            throw new HttpException(404, "Extraction not found!");
-        }
 
+        // Don't reprocess by default
         $reprocess = $request->get('reprocess', false);
 
         // Change the Extraction Status to Filtering if it's on configuration
@@ -118,67 +124,73 @@ class ExtractionController
         }
 
         // Extraction Form
-        $extraction_form = $this->ui_service->generateForm(new ExtractionType(), null, $extraction, true);
+        $extraction_form = $this->ui_service->generateForm(
+            new ExtractionType(),
+            null,
+            $extraction,
+            true
+        );
 
         // Advanced Exclusion Form
-        $adv_exclusion = $this->ui_service->generateForm(new AdvancedExcludeType(), $this->router->generate(
-                'lead_deduplication', array('extraction_id' => $extraction_id))
+        $adv_exclusion = $this->ui_service->generateForm(
+            new AdvancedExcludeType(),
+            $this->router->generate(
+                'lead_deduplication', array('extraction_id' => $extraction_id)
+            ),
+            null,
+            true
         );
 
         // Filters Form
-        $filters_form = $this->ui_service->generateForm('filters', $this->router->generate(
-                'extraction_filtering', array('extraction_id' => $extraction_id)),  $extraction->getFilters()
+        $filters_form = $this->ui_service->generateForm(
+            'filters',
+            $this->router->generate(
+                'extraction_filtering', array('extraction_id' => $extraction_id)),
+            $extraction->getFilters()
         );
 
         // Update filters
         if ($request->getMethod() == 'POST')
         {
-            $filters_form = $filters_form->handleRequest($request);
-
             // Handle the filters form
+            $filters_form = $filters_form->handleRequest($request);
             $filters = $filters_form->getData();
 
-            // Update extraction with new filters
-            $extraction->setFilters($filters);
-            $this->e_service->updateExtraction($extraction);
-
+            // Sets the new Filters and mark the Extraction to reprocess
+            $this->e_service->setExtractionFilters($extraction, $filters);
             $reprocess = true;
         }
 
         // Reprocess leads list
         if($reprocess){
-
-            // Start the filtering Engine and query the DB
-            $engine = $this->l_service->startEngine();
-            $qb = $engine->compileFilters($engine->prepareFilters($extraction->getFilters()), $extraction->getQuantity());
-
-            // Add Contacts to the Extraction
-            $contacts = $qb->getQuery()->execute();
-            $extraction = $this->e_service->addExtractionContacts($extraction, $contacts);
-
-            // Change the Extraction Status to Confirmation if it's on filtration and has contacts
-            if($extraction->getStatus() == Extraction::STATUS_FILTRATION && count($contacts) > 0){
-                $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
-                $this->e_service->updateExtraction($extraction);
-            }
+            $this->e_service->runExtraction($extraction);
         }
 
-        /** @var Form[] $forms */
-        $forms = array(
-            'filters' => $filters_form->createView(),
-            'adv_exclusion' => $adv_exclusion->createView(),
-            'extraction' => $extraction_form
-        );
+        // Get all contacts in one Query (Better then using $extraction->getContacts())
+        $contacts = $this->e_service->getExtractionContacts($extraction);
 
         return new Response($this->twig->render(
             'ListBrokingUIBundle:Extraction:2-filtering.html.twig',
             array(
                 'extraction' => $extraction,
-                'forms' => $forms,
+                'contacts' => $contacts,
+                'forms' =>  array(
+                    'filters' => $filters_form->createView(),
+                    'adv_exclusion' => $adv_exclusion,
+                    'extraction' => $extraction_form,
+                )
             )
         ));
     }
 
+    /**
+     * Third step on Lead Extraction, Lead Extraction
+     * @param Request $request
+     * @param $extraction_id
+     * @param $extraction_template_id
+     * @return Response
+     * @throws \ListBroking\ExtractionBundle\Exception\InvalidExtractionException
+     */
     public function extractionDownloadAction(Request $request, $extraction_id, $extraction_template_id){
 
         /** @var Extraction $extraction */
@@ -205,13 +217,16 @@ class ExtractionController
         return $response;
     }
 
+    /**
+     * Fourth step on Lead Extraction, Deduplication
+     * @param Request $request
+     * @param $extraction_id
+     * @return RedirectResponse
+     */
     public function leadDeduplicationAction(Request $request, $extraction_id){
 
         $extraction = $this->e_service->getExtraction($extraction_id, true);
-        if (!$extraction)
-        {
-            throw new HttpException(404, "Extraction not found!");
-        }
+
         $form = $this->ui_service->generateForm(new AdvancedExcludeType());
         $form->handleRequest($request);
         $data = $form->getData();

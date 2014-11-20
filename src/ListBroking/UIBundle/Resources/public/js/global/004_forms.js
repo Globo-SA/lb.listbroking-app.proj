@@ -7,6 +7,7 @@
     $(function() {
         "use strict";
 
+        // Remove enter as a submit button
         $('form').bind("keyup keypress", function(e) {
             var code = e.keyCode || e.which;
             if (code  == 13) {
@@ -15,6 +16,7 @@
             }
         });
 
+        // Ajax form submissions
         $('form[data-form-type=ajax]').submit(function(e){
             e.preventDefault();
 
@@ -130,32 +132,8 @@
             });
         });
 
-        var $list = $('#email_list');
-        var emailCount = $list.data('initial-count');
-        $('#add-another-email').click(function(){
-
-            var newWidget = $list.data('prototype');
-            newWidget = newWidget.replace(/__name__/g , emailCount);
-            emailCount++;
-
-            // create a new list element and add it to the list
-            var newLi = $('<li></li>').html(newWidget);
-
-            var $removeFormA = $('<a href="#">delete this tag</a>');
-            $removeFormA.on('click', function(e) {
-                // prevent the link from creating a "#" on the URL
-                e.preventDefault();
-
-                // remove the li for the tag form
-                newLi.remove();
-            });
-            newLi.append($removeFormA);
-            newLi.appendTo($list);
-
-        });
-
+        // Filter minimizer
         $('.collapse-compound').click(function() {
-
             var $i = $(this).find('i');
             console.log($i);
             if($i.hasClass('fa-caret-right')){

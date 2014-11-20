@@ -15,7 +15,6 @@ use ListBroking\ExtractionBundle\Service\ExtractionService;
 use ListBroking\UIBundle\Service\UIService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AjaxController {
 
@@ -34,10 +33,15 @@ class AjaxController {
         $this->e_service = $e_service;
     }
 
+    /**
+     * Counts the number of leads by lock for the dashboard
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function countLeads(Request $request){
 
         try{
-            //$this->validateRequest($request);
+            $this->validateRequest($request);
             $leads_by_lock = $this->ui_service->countByLock();
             return $this->createJsonResponse($leads_by_lock);
         }catch (\Exception $e){
@@ -53,13 +57,12 @@ class AjaxController {
      */
     public function listsAction(Request $request){
         try{
-            //$this->validateRequest($request);
+            $this->validateRequest($request);
 
             $type = $request->get('type', '');
             $parent_type = $request->get('parent_type', '');
             $parent_id = $request->get('parent_id', '');
             $list = $this->ui_service->getEntityList($type, $parent_type, $parent_id);
-
 
             return $this->createJsonResponse($list);
 
@@ -69,6 +72,12 @@ class AjaxController {
         }
     }
 
+    /**
+     * Generic form submission action
+     * @param Request $request
+     * @param $form_name
+     * @return JsonResponse
+     */
     public function formSubmissionAction(Request $request, $form_name){
         try{
             $this->validateRequest($request);
@@ -94,35 +103,19 @@ class AjaxController {
         }
     }
 
+    /**
+     * Excludes leads of a given Extraction
+     * @param Request $request
+     * @param $extraction_id
+     * @param $lead_id
+     * @return JsonResponse
+     */
     public function extractionExcludeLeadAction(Request $request, $extraction_id, $lead_id){
         try{
             $this->validateRequest($request);
 
-            // Parse to integers
-            $extraction_id = (int)$extraction_id;
-            $lead_id = (int)$lead_id;
             $extraction = $this->e_service->getExtraction($extraction_id, true);
-            if (!$extraction)
-            {
-                throw new HttpException(404, "Extraction not found!", null, array(), 404);
-            }
-
-            $filters = $extraction->getFilters();
-            if(!array_key_exists('lead:id', $filters) || $filters['lead:id'] == null){
-                $filters['lead:id'] = array();
-            }
-
-            if(in_array($lead_id, array_values($filters['lead:id']))){
-                return $this->createJsonResponse(array(
-                    "code" => 400,
-                    "response" => 'Lead already excluded'
-                ), 400);
-            }
-
-            array_push($filters['lead:id'], $lead_id);
-
-            $extraction->setFilters($filters);
-            $this->e_service->updateExtraction($extraction);
+            $this->e_service->excludeLeads($extraction, array(array('id' => $lead_id)));
 
             return $this->createJsonResponse(array(
                 "code" => 200,
