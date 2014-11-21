@@ -1,3 +1,0 @@
-list_broking_extraction_homepage:
-    path:     /hello/{name}
-    defaults: { _controller: ListBrokingExtractionBundle:Default:index }

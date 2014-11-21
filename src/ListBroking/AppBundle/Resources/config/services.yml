@@ -1,0 +1,34 @@
+services:
+  filter_engine:
+    class: ListBroking\AppBundle\Engine\FilterEngine
+    arguments:
+      entityManager: @doctrine.orm.entity_manager
+
+  app:
+    class: ListBroking\AppBundle\Service\AppService
+    arguments:
+      entityManager: @doctrine.orm.entity_manager
+      doctrineCache: @doctrine_cache.providers.apc_query_cache
+
+  lead:
+    class: ListBroking\AppBundle\Service\LeadService
+    arguments:
+      entityManager: @doctrine.orm.entity_manager
+
+  extraction:
+    class: ListBroking\AppBundle\Service\ExtractionService
+    arguments:
+      entityManager: @doctrine.orm.entity_manager
+      phpExcel: @phpexcel
+      filterEngine: @filter_engine
+
+  listbroking.lockbundle.filters.form:
+    class:  ListBroking\AppBundle\Form\FiltersForm
+    arguments: [@app, @lead ]
+    tags:
+      - { name: form.type, alias: filters }
+
+  listbroking.lockbundle.json.form.type:
+    class: ListBroking\AppBundle\Form\Type\JsonType
+    tags:
+      - { name: form.type, alias: json }

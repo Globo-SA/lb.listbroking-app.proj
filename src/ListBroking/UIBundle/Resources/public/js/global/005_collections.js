@@ -26,7 +26,17 @@
 
            $collectionHolder.find('.del_collection').on('click', function(e) {
                e.preventDefault();
+
+               var $collectionHolder2 = $(this).parent('div').parent('div')
                $(this).parent('div').remove();
+
+               var new_index = 0;
+               if($collectionHolder2.find('div').length > 0){
+
+                   new_index = $collectionHolder2.data('index') - 1;
+               }
+               $collectionHolder2.data('index', new_index);
+
            });
        });
         initDateRangePickers($('form'));
@@ -34,7 +44,7 @@
         function addTagForm($collectionHolder) {
             var prototype = $collectionHolder.data('prototype');
 
-            var index = $collectionHolder.data('index');
+            var index = $collectionHolder.data('index') + 1;
 
             var $newForm = $(prototype.replace(/__name__/g, index));
 
@@ -43,7 +53,7 @@
                 $(this).parent('div').remove();
             });
 
-            $collectionHolder.data('index', index + 1);
+            $collectionHolder.data('index', index );
 
             $collectionHolder.find('.add_collection').after($newForm);
 

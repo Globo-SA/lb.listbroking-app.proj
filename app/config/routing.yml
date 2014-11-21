@@ -1,6 +1,6 @@
-list_broking_api:
-    prefix:   /api
-    resource: "@ListBrokingAPIBundle/Resources/config/routing.yml"
+#list_broking_api:
+#    prefix:   /api
+#    resource: "@ListBrokingAPIBundle/Resources/config/routing.yml"
 
 list_broking_ui:
     resource: "@ListBrokingUIBundle/Resources/config/routing.yml"

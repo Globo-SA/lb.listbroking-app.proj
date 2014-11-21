@@ -1,0 +1,140 @@
+ListBroking\AppBundle\Entity\Contact:
+    type:   entity
+    table:  contact
+    repositoryClass: ListBroking\AppBundle\Repository\ContactRepository
+    id:
+        id:
+            type: bigint
+            id:   true
+            generator:
+                strategy: AUTO
+    fields:
+        email:
+            type:   string
+            column: email
+        firstname:
+            type:   string
+            column: firstname
+        lastname:
+            type:   string
+            column: lastname
+        birthdate:
+            type:   date
+            column: birthdate
+        address:
+            type:   string
+            column: address
+        postalcode1:
+            type:   integer
+            column: postalcode1
+        postalcode2:
+            type:   integer
+            column: postalcode2
+        ipaddress:
+            type:   string
+            column: ipaddress
+# Timestampable
+        created_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: create } }
+
+        updated_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: update } }
+# End of Timestampable
+
+# Blameable
+    manyToOne:
+        created_by:
+            targetEntity: Adclick\UserBundle\Entity\User
+            joinColumn:
+                name: created_by
+                referencedColumnName: id
+                onDelete: restrict
+            gedmo: { blameable: { on: create } }
+
+        updated_by:
+            targetEntity: Adclick\UserBundle\Entity\User
+            joinColumn:
+                name: updated_by
+                referencedColumnName: id
+                onDelete: restrict
+            gedmo: { blameable: { on: update } }
+# End of blameable
+        lead:
+            targetEntity: ListBroking\AppBundle\Entity\Lead
+            inversedBy:   contacts
+            joinColumn:
+                name:                 lead_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
+        source:
+            targetEntity: ListBroking\AppBundle\Entity\Source
+            inversedBy:   contacts
+            joinColumn:
+                name:                 source_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
+        owner:
+            targetEntity: ListBroking\AppBundle\Entity\Owner
+            inversedBy:   contacts
+            joinColumn:
+                name:                 owner_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
+        sub_category:
+            targetEntity: ListBroking\AppBundle\Entity\SubCategory
+            inversedBy:   contacts
+            joinColumn:
+                name:                 sub_category_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
+        gender:
+            targetEntity: ListBroking\AppBundle\Entity\Gender
+            inversedBy:   contacts
+            joinColumn:
+                name:                 gender_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
+        district:
+            targetEntity: ListBroking\AppBundle\Entity\District
+            inversedBy:   contacts
+            joinColumn:
+                name:                 district_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             true
+        county:
+            targetEntity: ListBroking\AppBundle\Entity\County
+            inversedBy:   contacts
+            joinColumn:
+                name:                 county_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             true
+        parish:
+            targetEntity: ListBroking\AppBundle\Entity\Parish
+            inversedBy:   contacts
+            joinColumn:
+                name:                 parish_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             true
+        country:
+            targetEntity: ListBroking\AppBundle\Entity\Country
+            joinColumn:
+                name:                 country_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
+    manyToMany:
+        extractions:
+            targetEntity: ListBroking\AppBundle\Entity\Extraction
+            mappedBy:     contacts

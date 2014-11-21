@@ -10,79 +10,35 @@
 
 namespace ListBroking\UIBundle\Controller;
 
-use ListBroking\ClientBundle\Form\CampaignType;
-use ListBroking\ClientBundle\Form\ClientType;
-use ListBroking\ExtractionBundle\Entity\Extraction;
-use ListBroking\ExtractionBundle\Form\ExtractionType;
-use ListBroking\ExtractionBundle\Service\ExtractionService;
-use ListBroking\LockBundle\Service\LockService;
+
+use ListBroking\AppBundle\Entity\Extraction;
+use ListBroking\AppBundle\Form\CampaignType;
+use ListBroking\AppBundle\Form\ClientType;
+use ListBroking\AppBundle\Form\ExtractionType;
+
 use ListBroking\UIBundle\Form\AdvancedExcludeType;
-use ListBroking\UIBundle\Service\UIService;
-use Symfony\Component\Form\Form;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Routing\Router;
 
-
-class ExtractionController
+class ExtractionController extends Controller
 {
-    /**
-     * @var \Twig_Environment
-     */
-    private $twig;
-
-    /**
-     * @var Router
-     */
-    private $router;
-    /**
-     * @var ExtractionService
-     */
-    private $e_service;
-    /**
-     * @var LockService
-     */
-    private $l_service;
-    /**
-     * @var UIService
-     */
-    private $ui_service;
-
-    function __construct(
-        \Twig_Environment $twig,
-         Router $router,
-         ExtractionService $e_service,
-         LockService $l_service,
-         UIService $ui_service
-    )
-    {
-        $this->twig = $twig;
-        $this->router = $router;
-
-        $this->e_service = $e_service;
-        $this->l_service = $l_service;
-        $this->ui_service = $ui_service;
-    }
-
     /**
      * First step on Extraction process
      * @return Response
      */
     public function indexAction()
     {
+        $extractions = $this->get('app')->getEntities('extraction');
 
-        $extractions = $this->e_service->getExtractionList();
-
-        return new Response($this->twig->render(
-            'ListBrokingUIBundle:Extraction:0-index.html.twig',
+        return $this->render('ListBrokingUIBundle:Extraction:0-index.html.twig',
             array(
                 'extractions' => $extractions
-            )
-        ));
+            ));
     }
 
     /**
@@ -91,16 +47,17 @@ class ExtractionController
      */
     public function configurationAction()
     {
-        return new Response($this->twig->render(
-            'ListBrokingUIBundle:Extraction:1-configuration.html.twig',
+        $ui_service = $this->get('ui');
+
+        return $this->render('ListBrokingUIBundle:Extraction:1-configuration.html.twig',
             array(
                 'forms' => array(
-                    'client' => $this->ui_service->generateForm(new ClientType(), true),
-                    'campaign' => $this->ui_service->generateForm(new CampaignType(), true),
-                    'extraction' => $this->ui_service->generateForm(new ExtractionType(), true)
+                    'client' => $ui_service->generateForm(new ClientType(), null, null, true),
+                    'campaign' => $ui_service->generateForm(new CampaignType(), null, null, true),
+                    'extraction' => $ui_service->generateForm(new ExtractionType(), null, null, true)
                 )
             )
-        ));
+        );
     }
 
     /**
@@ -112,19 +69,23 @@ class ExtractionController
      */
     public function filteringAction(Request $request, $extraction_id)
     {
-        $extraction = $this->e_service->getExtraction($extraction_id, true);
+        /** @var Extraction $extraction */
+        $extraction = $this->get('app')->getEntity('extraction', $extraction_id, true, true);
 
-        // Don't reprocess by default
-        $reprocess = $request->get('reprocess', false);
+        $reprocess = false;
+        $flashes = $this->get('session')->getFlashBag()->get('extraction');
+        if(in_array('reprocess', array_values($flashes))){
+            $reprocess = true;
+        }
 
         // Change the Extraction Status to Filtering if it's on configuration
         if($extraction->getStatus() == Extraction::STATUS_CONFIGURATION){
             $extraction->setStatus(Extraction::STATUS_FILTRATION);
-            $this->e_service->updateExtraction($extraction);
+            $this->get('app')->updateEntity($extraction);
         }
 
         // Extraction Form
-        $extraction_form = $this->ui_service->generateForm(
+        $extraction_form = $this->get('ui')->generateForm(
             new ExtractionType(),
             null,
             $extraction,
@@ -132,9 +93,9 @@ class ExtractionController
         );
 
         // Advanced Exclusion Form
-        $adv_exclusion = $this->ui_service->generateForm(
+        $adv_exclusion = $this->get('ui')->generateForm(
             new AdvancedExcludeType(),
-            $this->router->generate(
+            $this->generateUrl(
                 'lead_deduplication', array('extraction_id' => $extraction_id)
             ),
             null,
@@ -142,9 +103,9 @@ class ExtractionController
         );
 
         // Filters Form
-        $filters_form = $this->ui_service->generateForm(
+        $filters_form = $this->get('ui')->generateForm(
             'filters',
-            $this->router->generate(
+            $this->generateUrl(
                 'extraction_filtering', array('extraction_id' => $extraction_id)),
             $extraction->getFilters()
         );
@@ -156,21 +117,29 @@ class ExtractionController
             $filters_form = $filters_form->handleRequest($request);
             $filters = $filters_form->getData();
 
-            // Sets the new Filters and mark the Extraction to reprocess
-            $this->e_service->setExtractionFilters($extraction, $filters);
-            $reprocess = true;
+            // Serializes filters and compares them with a saved version
+            // to check for changes on filters
+            $serialized_filter = md5(serialize($filters));
+            if(!in_array($serialized_filter, array_values($flashes))){
+
+                // Sets the new Filters and mark the Extraction to reprocess
+                $extraction->setFilters($filters);
+                $this->get('app')->updateEntity($extraction);
+                $reprocess = true;
+            }
+
+            $this->get('session')->getFlashBag()->add('extraction', $serialized_filter);
         }
 
         // Reprocess leads list
         if($reprocess){
-            $this->e_service->runExtraction($extraction);
+            $this->get('extraction')->runExtraction($extraction);
+            $this->get('app')->updateEntity($extraction);
         }
 
         // Get all contacts in one Query (Better then using $extraction->getContacts())
-        $contacts = $this->e_service->getExtractionContacts($extraction);
-
-        return new Response($this->twig->render(
-            'ListBrokingUIBundle:Extraction:2-filtering.html.twig',
+        $contacts = $this->get('extraction')->getExtractionContacts($extraction);
+        return $this->render('ListBrokingUIBundle:Extraction:2-filtering.html.twig',
             array(
                 'extraction' => $extraction,
                 'contacts' => $contacts,
@@ -180,7 +149,7 @@ class ExtractionController
                     'extraction' => $extraction_form,
                 )
             )
-        ));
+        );
     }
 
     /**
@@ -193,9 +162,13 @@ class ExtractionController
      */
     public function extractionDownloadAction(Request $request, $extraction_id, $extraction_template_id){
 
+        $e_service = $this->get('extraction');
+        $a_service = $this->get('app');
+
+        $extraction = $a_service->getEntity('extraction', $extraction_id, true, true);
+
         /** @var Extraction $extraction */
-        $extraction = $this->e_service->getExtraction($extraction_id, true);
-        $filename = $this->e_service->exportExtraction($this->e_service->getExtractionTemplate($extraction_template_id), $extraction->getContacts());
+        $filename = $e_service->exportExtraction($a_service->getEntity('extraction_template', $extraction_template_id), $extraction->getContacts());
 
         // Generate response
         $response = new Response();
@@ -225,22 +198,30 @@ class ExtractionController
      */
     public function leadDeduplicationAction(Request $request, $extraction_id){
 
-        $extraction = $this->e_service->getExtraction($extraction_id, true);
+        $u_service = $this->get('ui');
+        $a_service = $this->get('app');
+        $e_service = $this->get('extraction');
 
-        $form = $this->ui_service->generateForm(new AdvancedExcludeType());
+        $extraction = $a_service->getEntity('extraction', $extraction_id, true, true);
+
+        $form = $u_service->generateForm(new AdvancedExcludeType());
         $form->handleRequest($request);
         $data = $form->getData();
 
         /** @var UploadedFile $file */
         $file = $data['upload_file'];
-        $filename = uniqid() . "_" . $file->getClientOriginalName();
+        $filename = $e_service->generateFilename($file->getClientOriginalName(), null, 'imports/');
         $file->move('imports', $filename);
 
-        $contacts_array = $this->e_service->importExtraction('imports/'. $filename);
-        unlink('imports/' . $filename);
+        $contacts_array = $e_service->importExtraction($filename);
+        unlink($filename);
 
-        $this->e_service->excludeLeads($extraction, $contacts_array);
+        $e_service->excludeLeads($extraction, $contacts_array);
+        $a_service->updateEntity($extraction);
 
-        return new RedirectResponse($this->router->generate('extraction_filtering', array('extraction_id' => $extraction_id, 'reprocess' => true)));
+        // Save a session variable for reprocessing
+        $this->get('session')->getFlashBag()->add('extraction', 'reprocess');
+
+        return $this->redirect($this->generateUrl('extraction_filtering', array('extraction_id' => $extraction_id)));
     }
 }

@@ -1,0 +1,8 @@
+doctrine_cache:
+    providers:
+        metadata_cache:
+            type: apc
+            namespace: metadata_cache_ns
+        apc_query_cache:
+            namespace: query_cache_ns
+            apc: ~

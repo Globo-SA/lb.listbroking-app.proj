@@ -1,0 +1,67 @@
+ListBroking\AppBundle\Entity\Campaign:
+    type: entity
+    table: campaign
+    id:
+        id:
+            type: bigint
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        is_active:
+            type: boolean
+            column: is_active
+            nullable: true
+            options:
+                default: 0
+        name:
+            type: string
+            column: name
+            unique: true
+        description:
+            type: text
+            column: description
+
+# Timestampable
+        created_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: create } }
+
+        updated_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: update } }
+# End of Timestampable
+
+# Blameable
+    manyToOne:
+        created_by:
+            targetEntity: Adclick\UserBundle\Entity\User
+            joinColumn:
+                name: created_by
+                referencedColumnName: id
+                onDelete: restrict
+            gedmo: { blameable: { on: create } }
+
+        updated_by:
+            targetEntity: Adclick\UserBundle\Entity\User
+            joinColumn:
+                name: updated_by
+                referencedColumnName: id
+                onDelete: restrict
+            gedmo: { blameable: { on: update } }
+# End of blameable
+        client:
+            targetEntity: ListBroking\AppBundle\Entity\Client
+            inversedBy: campaigns
+            joinColumn:
+                name: client_id
+                referencedColumnName: id
+                onDelete: restrict
+                nullable: false
+    oneToMany:
+        extractions:
+            targetEntity: ListBroking\AppBundle\Entity\Extraction
+            mappedBy: campaign
+            cascade: [all]

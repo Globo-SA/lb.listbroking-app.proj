@@ -1,0 +1,67 @@
+ListBroking\AppBundle\Entity\Owner:
+    type: entity
+    table: owner
+    id:
+        id:
+            type: bigint
+            id:   true
+            generator:
+                strategy: AUTO
+    fields:
+        is_active:
+            type:         boolean
+            column:       is_active
+            nullable:  true
+            options:
+                default: 0
+        name:
+            type:   string
+            column: name
+            unique: true
+
+
+# Timestampable
+        created_at:
+            type:     datetime
+            nullable: true
+            gedmo:    { timestampable: { on: create } }
+
+        updated_at:
+            type:     datetime
+            nullable: true
+            gedmo:    { timestampable: { on: update } }
+# End of Timestampable
+
+# Blameable
+    manyToOne:
+        created_by:
+            targetEntity: Adclick\UserBundle\Entity\User
+            joinColumn:
+                name:                 created_by
+                referencedColumnName: id
+                onDelete:             restrict
+            gedmo: { blameable: { on: create } }
+
+        updated_by:
+            targetEntity: Adclick\UserBundle\Entity\User
+            joinColumn:
+                name:                 updated_by
+                referencedColumnName: id
+                onDelete:             restrict
+            gedmo: { blameable: { on: update } }
+# End of blameable
+        country:
+            targetEntity: ListBroking\AppBundle\Entity\Country
+            joinColumn:
+                name:                 country_id
+                referencedColumnName: id
+                onDelete:             restrict
+    oneToMany:
+        sources:
+            targetEntity: ListBroking\AppBundle\Entity\Source
+            mappedBy:     owner
+            cascade:      [all]
+        contacts:
+            targetEntity: ListBroking\AppBundle\Entity\Contact
+            mappedBy:     owner
+            cascade:      [all]

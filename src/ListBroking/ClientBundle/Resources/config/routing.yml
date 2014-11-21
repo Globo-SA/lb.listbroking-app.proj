@@ -1,3 +1,0 @@
-list_broking_client_homepage:
-    path:     /hello/{name}
-    defaults: { _controller: ListBrokingClientBundle:Default:index }

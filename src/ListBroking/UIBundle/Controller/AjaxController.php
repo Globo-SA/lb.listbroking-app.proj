@@ -10,39 +10,25 @@
 
 namespace ListBroking\UIBundle\Controller;
 
-
-use ListBroking\ExtractionBundle\Service\ExtractionService;
-use ListBroking\UIBundle\Service\UIService;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class AjaxController {
-
-    /**
-     * @var UIService
-     */
-    private $ui_service;
-
-    /**
-     * @var ExtractionService
-     */
-    private $e_service;
-
-    function __construct(UIService $ui_service, ExtractionService $e_service){
-        $this->ui_service = $ui_service;
-        $this->e_service = $e_service;
-    }
+class AjaxController extends Controller {
 
     /**
      * Counts the number of leads by lock for the dashboard
      * @param Request $request
      * @return JsonResponse
      */
-    public function countLeads(Request $request){
+    public function countLeadsAction(Request $request){
 
         try{
             $this->validateRequest($request);
-            $leads_by_lock = $this->ui_service->countByLock();
+
+            $ui_service = $this->get('ui');
+
+            $leads_by_lock = $ui_service->countByLock();
             return $this->createJsonResponse($leads_by_lock);
         }catch (\Exception $e){
 
@@ -59,10 +45,12 @@ class AjaxController {
         try{
             $this->validateRequest($request);
 
+            $ui_service = $this->get('ui');
+
             $type = $request->get('type', '');
             $parent_type = $request->get('parent_type', '');
             $parent_id = $request->get('parent_id', '');
-            $list = $this->ui_service->getEntityList($type, $parent_type, $parent_id);
+            $list = $ui_service->getEntityList($type, $parent_type, $parent_id);
 
             return $this->createJsonResponse($list);
 
@@ -82,12 +70,12 @@ class AjaxController {
         try{
             $this->validateRequest($request);
 
-            $result = $this->ui_service->submitForm($form_name, $request);
+            $ui_service = $this->get('ui');
 
+            $result = $ui_service->submitForm($form_name, $request);
             if($result['success']){
 
-                return $this->createJsonResponse(
-                    array_merge(
+                return $this->createJsonResponse(array_merge(
                         array("form_name" => $form_name), $result
                     )
                 );
@@ -114,8 +102,10 @@ class AjaxController {
         try{
             $this->validateRequest($request);
 
-            $extraction = $this->e_service->getExtraction($extraction_id, true);
-            $this->e_service->excludeLeads($extraction, array(array('id' => $lead_id)));
+            $e_service = $this->get('extraction');
+
+            $extraction = $e_service->getExtraction($extraction_id, true);
+            $e_service->excludeLeads($extraction, array(array('id' => $lead_id)));
 
             return $this->createJsonResponse(array(
                 "code" => 200,

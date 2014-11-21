@@ -4,65 +4,57 @@ fos_js_routing:
 
 dashboard_index:
     path: /
-    defaults: { _controller: listbroking.uibundle.dashboard.controller:indexAction }
+    defaults: { _controller: ListBrokingUIBundle:Dashboard:index }
 
 extraction_index:
     path: /extraction/wizard
-    defaults: { _controller: listbroking.uibundle.extraction.controller:indexAction }
+    defaults: { _controller: ListBrokingUIBundle:Extraction:index }
 
 extraction_configuration:
     path: /extraction/wizard/configuration-1
-    defaults: { _controller: listbroking.uibundle.extraction.controller:configurationAction }
+    defaults: { _controller: ListBrokingUIBundle:Extraction:configuration }
 
 extraction_filtering:
     path: /extraction/wizard/{extraction_id}/filtering-2
-    defaults: { _controller: listbroking.uibundle.extraction.controller:filteringAction }
+    defaults: { _controller: ListBrokingUIBundle:Extraction:filtering }
     options:
         expose: true
 
 extraction_download:
     path: /extraction/wizard/{extraction_id}/download-3/{extraction_template_id}
-    defaults: { _controller: listbroking.uibundle.extraction.controller:extractionDownloadAction }
+    defaults: { _controller: ListBrokingUIBundle:Extraction:extractionDownload }
     options:
         expose: true
 
 lead_deduplication:
     path: /extraction/wizard/{extraction_id}/deduplication-4
-    defaults: { _controller: listbroking.uibundle.extraction.controller:leadDeduplicationAction }
+    defaults: { _controller: ListBrokingUIBundle:Extraction:leadDeduplication }
 
 ajax_count_leads:
     path: /ajax/count/leads
-    defaults: { _controller: listbroking.uibundle.ajax.controller:countLeads }
+    defaults: { _controller: ListBrokingUIBundle:Ajax:countLeads }
     options:
         expose: true
 
 ajax_lists:
     path: /ajax/lists
-    defaults: { _controller: listbroking.uibundle.ajax.controller:listsAction }
+    defaults: { _controller: ListBrokingUIBundle:Ajax:lists }
     options:
         expose: true
 
 ajax_form_submit:
     path: /ajax/form/submit/{form_name}
-    defaults: { _controller: listbroking.uibundle.ajax.controller:formSubmissionAction }
+    defaults: { _controller: ListBrokingUIBundle:Ajax:formSubmission }
     options:
 
 ajax_extraction_exclude_lead:
     path: /ajax/extraction/{extraction_id}/lead/{lead_id}/exclude
-    defaults: { _controller: listbroking.uibundle.ajax.controller:extractionExcludeLeadAction }
+    defaults: { _controller: ListBrokingUIBundle:Ajax:extractionExcludeLead }
     options:
         expose: true
     requirements:
           extraction_id: \d+
           lead_id: \d+
-listbroking.uibundle.tentugal_test:
-    path:     /tentugal
-    defaults: { _controller: ListBrokingUIBundle:Default:tentugal }
-
-
-listbroking.uibundle.samuel_test:
-    path:     /samuel
-    defaults: { _controller: ListBrokingUIBundle:Default:samuel }
 
 homepage:
     path:     /

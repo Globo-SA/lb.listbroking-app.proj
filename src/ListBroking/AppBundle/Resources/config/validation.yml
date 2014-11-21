@@ -1,0 +1,37 @@
+ListBroking\ClientBundle\Entity\Client:
+   constraints:
+       - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+           fields:   name
+           message:  "Name is duplicated."
+ListBroking\ClientBundle\Entity\Campaign:
+   constraints:
+       - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+           fields:   name
+           message:  "Name is duplicated."
+
+ListBroking\CoreBundle\Entity\Country:
+    constraints:
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+            fields:   name
+            message:  "Name is duplicated."
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+            fields:   iso_code
+            message:  "Iso code is duplicated."
+
+ListBroking\CoreBundle\Entity\Category:
+    constraints:
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+            fields:   name
+            message:  "Name is duplicated."
+
+ListBroking\ExtractionBundle\Entity\Extraction:
+   constraints:
+       - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+           fields:   name
+           message:  "Name is duplicated."
+
+ListBroking\ExtractionBundle\Entity\Extraction:
+   constraints:
+       - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+           fields:   contacts
+           message:  "Contact is duplicated."

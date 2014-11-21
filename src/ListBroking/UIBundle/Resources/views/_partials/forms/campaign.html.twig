@@ -1,11 +1,11 @@
-{% form_theme forms.campaign '@ListBrokingUI/forms/form_theme.html.twig' %}
+{% form_theme forms.campaign '@ListBrokingUI/_partials/forms/themes/form_theme.html.twig' %}
 {{ form_start(forms.campaign, {attr: {'data-form-type' :'ajax'}}) }}
     {{ form_row(forms.campaign.is_active) }}
     {{ form_row(forms.campaign.client) }}
     {{ form_row(forms.campaign.name, {icon: 'bookmark-o'}) }}
     {{ form_row(forms.campaign.description, {icon: 'phone'}) }}
 
-<button type="submit" class="btn btn-primary btn-flat">
-    <i class="fa fa-check"></i>&#32;Save
-</button>
+    <button type="submit" class="btn btn-primary btn-flat">
+        <i class="fa fa-check"></i>&#32;Save
+    </button>
 {{ form_end(forms.campaign) }}

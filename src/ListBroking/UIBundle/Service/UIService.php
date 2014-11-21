@@ -11,12 +11,10 @@
 namespace ListBroking\UIBundle\Service;
 
 
-use ListBroking\ClientBundle\Form\CampaignType;
-use ListBroking\ClientBundle\Form\ClientType;
-use ListBroking\ClientBundle\Service\ClientService;
-use ListBroking\ExtractionBundle\Form\ExtractionType;
-use ListBroking\ExtractionBundle\Service\ExtractionService;
-use ListBroking\LeadBundle\Service\LeadService;
+use Doctrine\ORM\EntityManager;
+use ListBroking\AppBundle\Service\AppService;
+use ListBroking\AppBundle\Service\ExtractionService;
+use ListBroking\AppBundle\Service\LeadService;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactory;
@@ -28,9 +26,10 @@ class UIService implements UIServiceInterface
 {
 
     /**
-     * @var ClientService
+     * @var AppService
      */
-    private $c_service;
+    private $a_service;
+
     /**
      * @var ExtractionService
      */
@@ -40,28 +39,37 @@ class UIService implements UIServiceInterface
      * @var LeadService
      */
     private $l_service;
+
     /**
      * @var FormFactory
      */
     private $form_factory;
+
     /**
      * @var CsrfTokenManager
      */
     private $csrf_token_manager;
 
+    /**
+     * @var EntityManager
+     */
+    private $em;
+
     function __construct(
-        ClientService $c_service,
-        ExtractionService $e_service,
-        LeadService $l_service,
+        AppService $appService,
+        ExtractionService $extractionService,
+        LeadService $leadService,
         FormFactory $form_factory,
-        CsrfTokenManagerInterface $csrf_token_manager
+        CsrfTokenManagerInterface $csrf_token_manager,
+        EntityManager $entityManager
     )
     {
-        $this->c_service = $c_service;
-        $this->e_service = $e_service;
-        $this->l_service = $l_service;
+        $this->a_service = $appService;
+        $this->e_service = $extractionService;
+        $this->l_service = $leadService;
         $this->form_factory = $form_factory;
         $this->csrf_token_manager = $csrf_token_manager;
+        $this->em = $entityManager;
     }
 
     /**
@@ -94,14 +102,14 @@ class UIService implements UIServiceInterface
         switch ($type)
         {
             case 'client':
-                $list = $this->c_service->getClientList();
+                $list = $this->a_service->getEntities('client', false);
                 break;
             case 'campaign':
-                $tmp_list = $this->c_service->getCampaignList();
+                $tmp_list = $this->a_service->getEntities('campaign', false);
                 foreach ($tmp_list as $key => $obj)
                 {
                     if(!empty($parent_id) && $obj['client_id'] == $parent_id){
-                        $client = $this->c_service->getClient($obj['client_id']);
+                        $client = $this->a_service->getEntities('client', false);
                         $obj['name'] = $client['name'] . ' - ' . $obj['name'];
 
                         $list[] = $obj;
@@ -110,7 +118,7 @@ class UIService implements UIServiceInterface
 
                 break;
             case 'extraction':
-                $tmp_list = $this->e_service->getExtractionList();
+                $tmp_list = $this->a_service->getEntities('extraction', false);
                 foreach ($tmp_list as $key => $obj)
                 {
                     if(!empty($parent_id) && $obj['campaign_id'] == $parent_id){
@@ -119,7 +127,7 @@ class UIService implements UIServiceInterface
                 }
                 break;
             case 'extraction_template':
-                $list = $this->e_service->getExtractionTemplateList();
+                $list = $this->a_service->getEntities('extraction_template', false);
                 break;
             default:
                 throw new \Exception("Invalid List, {$type}", 400);

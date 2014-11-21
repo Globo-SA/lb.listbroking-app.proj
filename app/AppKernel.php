@@ -17,6 +17,9 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
 
+            // Doctrine Cache
+            new Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
+
             // Extra Symfony Bundles
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
 
@@ -32,24 +35,22 @@ class AppKernel extends Kernel
 
             // API Bundle
             new JMS\SerializerBundle\JMSSerializerBundle(),
-            new ListBroking\APIBundle\ListBrokingAPIBundle(),
 
             // Core Bundles
             new Adclick\CacheBundle\AdclickCacheBundle(),
             new Adclick\AdvancedConfigurationBundle\AdclickAdvancedConfigurationBundle(),
             new Adclick\DoctrineBehaviorBundle\AdclickDoctrineBehaviorBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
+            new ListBroking\AdvancedConfigurationBundle\ListBrokingAdvancedConfigurationBundle(),
+            new ListBroking\ExceptionHandlerBundle\ListBrokingExceptionHandlerBundle(),
+            new ListBroking\DoctrineBundle\ListBrokingDoctrineBundle(),
 
             // ListBroking Bundles
-            new ListBroking\CoreBundle\ListBrokingCoreBundle(),
+            new ListBroking\AppBundle\ListBrokingAppBundle(),
+            //new ListBroking\APIBundle\ListBrokingAPIBundle(),
+
+            // UI Bundle
             new ListBroking\UIBundle\ListBrokingUIBundle(),
-            new ListBroking\AdvancedConfigurationBundle\ListBrokingAdvancedConfigurationBundle(),
-            new ListBroking\DoctrineBundle\ListBrokingDoctrineBundle(),
-            new ListBroking\ExceptionHandlerBundle\ListBrokingExceptionHandlerBundle(),
-            new ListBroking\ClientBundle\ListBrokingClientBundle(),
-            new ListBroking\ExtractionBundle\ListBrokingExtractionBundle(),
-            new ListBroking\LeadBundle\ListBrokingLeadBundle(),
-            new ListBroking\LockBundle\ListBrokingLockBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

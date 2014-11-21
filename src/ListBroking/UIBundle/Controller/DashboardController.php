@@ -11,27 +11,13 @@
 namespace ListBroking\UIBundle\Controller;
 
 
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class DashboardController {
+class DashboardController extends Controller{
 
-    private $twig;
-    private $router;
+    public function indexAction(){
 
-    function __construct(Router $router, \Twig_Environment $twig)
-    {
-        $this->router = $router;
-        $this->twig = $twig;
-    }
-
-    public function indexAction(Request $request){
-
-        return new Response($this->twig->render(
-            'ListBrokingUIBundle:Dashboard:index.html.twig',
-            array()
-        ));
+        return $this->render('ListBrokingUIBundle:Dashboard:index.html.twig');
     }
 
 } 

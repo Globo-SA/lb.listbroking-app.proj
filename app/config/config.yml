@@ -2,6 +2,8 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
+    - { resource: doctrine_cache.yml }
+
     - { resource: @AdclickDoctrineBehaviorBundle/Resources/config/config.yml }
     - { resource: @AdclickUserBundle/Resources/config/config.yml }
 
