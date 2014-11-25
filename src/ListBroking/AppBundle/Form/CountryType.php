@@ -15,7 +15,6 @@ class CountryType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('is_active')
             ->add('name')
             ->add('iso_code')
             ->add('created_at')

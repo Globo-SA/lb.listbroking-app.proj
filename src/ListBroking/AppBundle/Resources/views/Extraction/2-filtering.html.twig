@@ -1,0 +1,53 @@
+{% extends '@ListBrokingApp/base.html.twig' %}
+
+{% block sonata_page_content_nav %}
+     <nav class="navbar navbar-default" role="navigation">
+         <div class="navbar-header">
+             <span class="navbar-brand"><i class="fa fa-wrench"></i>&nbsp;Extraction&nbsp;<small>wizard</small></span>
+         </div>
+     </nav>
+{% endblock sonata_page_content_nav %}
+
+{% block content %}
+    <div class="row collapsed">
+        <div class="col-xs-12">
+
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li {% if extraction.status == 1 %}class="active"{% endif %}"><a href="#filters" role="tab" data-toggle="tab">Filters</a></li>
+                <li {% if extraction.status == 2 %}class="active"{% endif %}"><a href="#summary" role="tab" data-toggle="tab">Summary</a></li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div class="tab-pane fade {% if extraction.status == 1 %}in active{% endif %}" id="filters">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">The following filters should be seen as a inclusion filters, the only exception are the <b>Lead Details</b> </div>
+                        <div class="panel-body">
+                            {% include '@ListBrokingApp/_partials/forms/filters.html.twig' %}
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane {% if extraction.status == 2 %}in active{% endif %}" id="summary">
+                    <div class="tab-pane {% if extraction.status == 1 %}in active{% endif %}" id="filters">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">This summary is not final, filters can always be updated and Leads can be <b>Desduplicated</b></div>
+                            <div class="panel-body">
+                                <div class="row row-margin">
+                                    <div class="col-md-12">
+                                        {% include '@ListBrokingApp/Extraction/_configuration/deduplication.html.twig' %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {% include '@ListBrokingApp/Extraction/_configuration/contacts_table.html.twig' %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                </div>
+            </div>
+        </div> <!-- /.col-xs-12 -->
+    </div><!-- /.row -->
+{% endblock %}

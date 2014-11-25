@@ -1,0 +1,31 @@
+ajax_count_leads:
+    path: /ajax/count/leads
+    defaults: { _controller: ListBrokingAppBundle:Ajax:countLeads }
+    options:
+        expose: true
+
+ajax_lists:
+    path: /ajax/lists
+    defaults: { _controller: ListBrokingAppBundle:Ajax:lists }
+    options:
+        expose: true
+
+ajax_form_submit:
+    path: /ajax/form/submit/{form_name}
+    defaults: { _controller: ListBrokingAppBundle:Ajax:formSubmission }
+    options:
+
+ajax_extraction_exclude_lead:
+    path: /ajax/extraction/{extraction_id}/lead/{lead_id}/exclude
+    defaults: { _controller: ListBrokingAppBundle:Ajax:extractionExcludeLead }
+    options:
+        expose: true
+    requirements:
+          extraction_id: \d+
+          lead_id: \d+
+
+ajax_extraction_download:
+    path: /ajax/extraction/wizard/{extraction_id}/download/{extraction_template_id}
+    defaults: { _controller: ListBrokingAppBundle:Ajax:extractionDownload }
+    options:
+        expose: true

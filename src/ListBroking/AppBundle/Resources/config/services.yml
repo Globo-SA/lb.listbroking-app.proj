@@ -1,4 +1,18 @@
+imports:
+    - { resource: admin_services.yml }
+
 services:
+  listbroking.appbundle.filters.form:
+    class:  ListBroking\AppBundle\Form\FiltersForm
+    arguments: [@app, @lead]
+    tags:
+      - { name: form.type, alias: filters }
+
+  listbroking.appbundle.json.form.type:
+    class: ListBroking\AppBundle\Form\Type\JsonType
+    tags:
+      - { name: form.type, alias: json }
+
   filter_engine:
     class: ListBroking\AppBundle\Engine\FilterEngine
     arguments:
@@ -19,16 +33,17 @@ services:
     class: ListBroking\AppBundle\Service\ExtractionService
     arguments:
       entityManager: @doctrine.orm.entity_manager
+      requestStack: @request_stack
+      session: @session
+      formFactory: @form.factory
       phpExcel: @phpexcel
       filterEngine: @filter_engine
-
-  listbroking.lockbundle.filters.form:
-    class:  ListBroking\AppBundle\Form\FiltersForm
-    arguments: [@app, @lead ]
-    tags:
-      - { name: form.type, alias: filters }
-
-  listbroking.lockbundle.json.form.type:
-    class: ListBroking\AppBundle\Form\Type\JsonType
-    tags:
-      - { name: form.type, alias: json }
+  ui:
+    class: ListBroking\AppBundle\Service\UIService
+    arguments:
+      - @app
+      - @extraction
+      - @lead
+      - @form.factory
+      - @security.csrf.token_manager
+      - @doctrine.orm.entity_manager

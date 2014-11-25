@@ -37,7 +37,6 @@ class FiltersForm extends AbstractType
         $this->a_service = $appService;
         $this->l_service = $leadService;
 
-
         $default_country = $this->a_service->getCountryByCode('PT', false);
 
         // Choice values arrays

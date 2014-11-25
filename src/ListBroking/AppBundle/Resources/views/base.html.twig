@@ -1,0 +1,66 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% stylesheets
+    'bower/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css'
+    'bower/bootstrap-daterangepicker/daterangepicker-bs3.css'
+    'bundles/listbrokingapp/css/*.css'
+    filter='cssrewrite,?yui_css'
+    output='css/global.min.css'
+    %}
+    <link rel="stylesheet" type="text/css" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block sonata_top_nav_menu %}
+    <div class="navbar-right">
+        <ul class="nav navbar-nav">
+            <li id="loading_widget">
+                <a href="#">
+                    <i class="icon icon-large ion-loading-c"></i>
+                    Loading...
+                </a>
+            </li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-plus-square fa-fw"></i> <i class="fa fa-caret-down"></i>
+                </a>
+                {% include admin_pool.getTemplate('add_block') %}
+            </li>
+            <li class="dropdown user-menu">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    {% include admin_pool.getTemplate('user_block') %}
+                </ul>
+            </li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block sonata_wrapper %}
+    {{ parent() }}
+
+    {# The Sonata devs add t he JS on the head but with don't!! #}
+    {% javascripts
+    'bundles/fosjsrouting/js/router.js'
+    'bower/jqueryui/jquery-ui.min.js'
+    'bower/moment/moment.js'
+    'bower/bootstrap-daterangepicker/daterangepicker.js'
+    'bower/iCheck/icheck.min.js'
+    'bower/DataTables/media/js/jquery.dataTables.min.js'
+    'bower/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js'
+    'bower/jquery.inputmask/dist/inputmask/jquery.inputmask.js'
+    'bower/jquery.inputmask/dist/inputmask/jquery.inputmask.numeric.extensions.js'
+    'bundles/listbrokingapp/js/*.js'
+    output='js/global.min.js'
+    filter='?yui_js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    {# Used to expose routing to the client-side code #}
+    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+{% endblock sonata_wrapper %}

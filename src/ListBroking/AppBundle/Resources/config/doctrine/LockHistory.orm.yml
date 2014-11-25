@@ -6,12 +6,6 @@ ListBroking\AppBundle\Entity\LockHistory:
             type: bigint
             id: true
     fields:
-        is_active:
-            type: boolean
-            column: is_active
-            nullable: true
-            options:
-                default: 0
         status:
             type: smallint
             column: status

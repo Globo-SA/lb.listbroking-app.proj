@@ -11,37 +11,35 @@
 namespace ListBroking\AppBundle\Entity;
 
 
-use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior;
-use Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior;
+use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
+use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 
 class LockHistory  {
 
     use TimestampableEntityBehavior,
         BlameableEntityBehavior;
 
-    private $id;
+    protected $id;
 
-    private $is_active;
+    protected $status;
 
-    private $status;
+    protected $type;
 
-    private $type;
+    protected $lead;
 
-    private $lead;
+    protected $client;
 
-    private $client;
+    protected $campaign;
 
-    private $campaign;
+    protected $category;
 
-    private $category;
-
-    private $sub_category;
+    protected $sub_category;
 
     /**
      * Saves a future timestamp for the lock expiration time
      * @var
      */
-    private $expiration_date;
+    protected $expiration_date;
 
     /**
      * @return mixed
@@ -51,21 +49,6 @@ class LockHistory  {
         return $this->id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getIsActive()
-    {
-        return $this->is_active;
-    }
-
-    /**
-     * @param mixed $is_active
-     */
-    public function setIsActive($is_active)
-    {
-        $this->is_active = $is_active;
-    }
 
     /**
      * @return mixed

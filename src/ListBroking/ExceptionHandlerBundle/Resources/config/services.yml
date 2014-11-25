@@ -1,22 +1,6 @@
-parameters:
-    listbroking.exception_handler.entity.name: ListBrokingExceptionHandlerBundle:ExceptionLog
-    listbroking.exception_handler.entity.class: ListBroking\ExceptionHandlerBundle\Entity\ExceptionLog
-
-    listbroking.exception_handler.repository.class: ListBroking\ExceptionHandlerBundle\Repository\ORM\ExceptionLogRepository
-    listbroking.exception_handler.exception_listener.class: ListBroking\ExceptionHandlerBundle\EventListener\ExceptionListener
-
 services:
-    listbroking.exceptionhandler.repository:
-        class: %listbroking.exception_handler.repository.class%
-        arguments:
-            entityManager: @doctrine.orm.default_entity_manager
-            entityName: %listbroking.exception_handler.entity.name%
-            alias: exh
-            entityClass: %listbroking.exception_handler.entity.class%
-            inflector: @inflector.tool
-
 #    listbroking.exceptionhandler.exception_listener:
-#        class: %listbroking.exception_handler.exception_listener.class%
-#        arguments: [@listbroking.exceptionhandler.repository, @adv_config, @mailer, @twig]
+#        class: ListBroking\ExceptionHandlerBundle\EventListener\ExceptionListener
+#        arguments: [@doctrine.orm.entity_manager, @mailer, @twig]
 #        tags:
 #             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }

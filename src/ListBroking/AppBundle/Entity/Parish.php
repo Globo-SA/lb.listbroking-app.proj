@@ -10,8 +10,8 @@
 
 namespace ListBroking\AppBundle\Entity;
 
-use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior;
-use Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior;
+use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
+use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 use Doctrine\Common\Collections\ArrayCollection;
 
 class Parish {

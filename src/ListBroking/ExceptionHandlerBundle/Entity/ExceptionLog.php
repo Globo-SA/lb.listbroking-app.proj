@@ -11,7 +11,7 @@
 namespace ListBroking\ExceptionHandlerBundle\Entity;
 
 
-use Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior;
+use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 
 class ExceptionLog {
 

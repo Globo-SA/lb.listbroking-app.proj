@@ -15,7 +15,6 @@ class SubCategoryType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('is_active')
             ->add('name')
             ->add('created_at')
             ->add('updated_at')

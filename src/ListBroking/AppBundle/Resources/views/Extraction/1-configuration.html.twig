@@ -1,0 +1,31 @@
+{% extends '@ListBrokingApp/base.html.twig' %}
+{% block main_title %}Extraction{% endblock %}
+{% block sub_title %}wizard{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+        {% embed '@ListBrokingApp/_partials/embeds/generic_box.html.twig' with {collapsed : true} %}
+            {% block box_classes %}box-primary{% endblock %}
+            {% block box_title %}
+                <i class="fa fa-wrench"></i>&nbsp;Entity Configuration
+            {% endblock %}
+            {% block box_tools %}
+            {% endblock %}
+            {% block box_body %}
+                <div class="row row-margin" id="new_form">
+                    <div class="col-md-12">
+                        {% include '@ListBrokingApp/Extraction/_configuration/new_form.html.twig' %}
+                    </div>
+                </div>
+            {% endblock %}
+            {% block box_footer %}{% endblock %}
+        {% endembed %}
+        </div>
+        <!-- /.col-xs-12 -->
+    </div><!-- /.row -->
+    {% embed '@ListBrokingApp/_partials/embeds/generic_box.html.twig' with { modal_id : 'entity_creator'}%}
+        {% block modal_title %}Create a new %%ENTITY%%{% endblock %}
+        {% block modal_body %}{% endblock %}
+        {% block modal_footer %}{% endblock %}
+    {% endembed %}
+{% endblock %}

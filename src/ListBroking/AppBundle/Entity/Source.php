@@ -10,8 +10,8 @@
 
 namespace ListBroking\AppBundle\Entity;
 
-use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior;
-use Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior;
+use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
+use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 use Doctrine\Common\Collections\ArrayCollection;
 
 class Source {
@@ -31,7 +31,7 @@ class Source {
 
     protected $external_id;
 
-    protected $is_active;
+
 
     protected $contacts;
 
@@ -117,21 +117,6 @@ class Source {
         $this->owner = $owner;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getIsActive()
-    {
-        return $this->is_active;
-    }
-
-    /**
-     * @param mixed $is_active
-     */
-    public function setIsActive($is_active)
-    {
-        $this->is_active = $is_active;
-    }
 
     /**
      * @param Contact $contact

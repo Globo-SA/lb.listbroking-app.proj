@@ -18,7 +18,6 @@ class ExtractionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('is_active', 'checkbox', array('data' => true))
             ->add('name', null, array('attr' => array('class' =>'form-control')))
             ->add('campaign', 'hidden', array(
                 'data_class' => 'ListBroking\AppBundle\Entity\Campaign',
@@ -52,7 +51,6 @@ class ExtractionType extends AbstractType
             if ($event->getData())
             {
                 $form
-                    ->remove('is_active')
                     ->remove('name')
                     ->remove('campaign')
                     ->remove('status')

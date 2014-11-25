@@ -11,8 +11,8 @@
 
 namespace ListBroking\AppBundle\Entity;
 
-use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior,
-    Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior
+use ListBroking\AppBundle\Behavior\BlameableEntityBehavior,
+    ListBroking\AppBundle\Behavior\TimestampableEntityBehavior
     ;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -26,7 +26,7 @@ class Client
 
     protected $id;
 
-    protected $is_active;
+
 
     protected $name;
 
@@ -56,21 +56,6 @@ class Client
         return $this->id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getIsActive()
-    {
-        return $this->is_active;
-    }
-
-    /**
-     * @param mixed $is_active
-     */
-    public function setIsActive($is_active)
-    {
-        $this->is_active = $is_active;
-    }
 
     /**
      * @return mixed

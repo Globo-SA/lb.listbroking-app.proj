@@ -1,11 +1,50 @@
+# Used to expose routing to the client-side code
+fos_js_routing:
+    resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
+
+sonata_user_security:
+    resource: "@SonataUserBundle/Resources/config/routing/sonata_security_1.xml"
+
+sonata_user_resetting:
+    resource: "@SonataUserBundle/Resources/config/routing/sonata_resetting_1.xml"
+    prefix: /resetting
+
+sonata_user_profile:
+    resource: "@SonataUserBundle/Resources/config/routing/sonata_profile_1.xml"
+    prefix: /profile
+
+sonata_user_register:
+    resource: "@SonataUserBundle/Resources/config/routing/sonata_registration_1.xml"
+    prefix: /register
+
+sonata_user_change_password:
+    resource: "@SonataUserBundle/Resources/config/routing/sonata_change_password_1.xml"
+    prefix: /profile
+
+sonata_user:
+    resource: '@SonataUserBundle/Resources/config/routing/admin_security.xml'
+    prefix: /admin
+
+admin:
+    resource: '@SonataAdminBundle/Resources/config/routing/sonata_admin.xml'
+    prefix: /admin
+
+_sonata_admin:
+    resource: .
+    type: sonata_admin
+    prefix: /admin
+
+app_bundle:
+    prefix:   /
+    resource: "@ListBrokingAppBundle/Resources/config/routing.yml"
+
 #list_broking_api:
 #    prefix:   /api
 #    resource: "@ListBrokingAPIBundle/Resources/config/routing.yml"
 
-list_broking_ui:
-    resource: "@ListBrokingUIBundle/Resources/config/routing.yml"
-    prefix:   /
-
-adclick_user:
-    resource: "@AdclickUserBundle/Resources/config/routing.yml"
-    prefix:   /
+root:
+  path:   /
+  defaults:
+    _controller: FrameworkBundle:Redirect:urlRedirect
+    path: /admin/dashboard
+    permanent: true

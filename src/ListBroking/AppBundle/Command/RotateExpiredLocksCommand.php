@@ -8,7 +8,7 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\LockBundle\Command;
+namespace ListBroking\AppBundle\Command;
 
 
 use ListBroking\AdvancedConfigurationBundle\Service\ListBrokingAdvancedConfiguration;

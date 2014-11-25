@@ -1,0 +1,7 @@
+{% form_theme forms.extraction '@ListBrokingApp/_partials/forms/themes/form_theme.html.twig' %}
+{{ form_start(forms.extraction, {attr: {'data-form-type' :'ajax'}}) }}
+    {{ form_rest(forms.extraction) }}
+<button type="submit" class="btn btn-primary btn-flat">
+    <i class="fa fa-check"></i>&#32;Save
+</button>
+{{ form_end(forms.extraction) }}

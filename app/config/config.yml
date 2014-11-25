@@ -4,8 +4,8 @@ imports:
     - { resource: services.yml }
     - { resource: doctrine_cache.yml }
 
-    - { resource: @AdclickDoctrineBehaviorBundle/Resources/config/config.yml }
-    - { resource: @AdclickUserBundle/Resources/config/config.yml }
+    #- { resource: @AdclickDoctrineBehaviorBundle/Resources/config/config.yml }
+    #- { resource: @AdclickUserBundle/Resources/config/config.yml }
 
 framework:
     #esi:             ~
@@ -38,7 +38,7 @@ twig:
 assetic:
     debug:          "%kernel.debug%"
     use_controller: false
-    bundles:        [ ListBrokingUIBundle, FOSUserBundle ]
+    bundles:        [ ListBrokingAppBundle, FOSUserBundle ]
     #java: /usr/bin/java
     filters:
         cssrewrite: ~
@@ -57,9 +57,8 @@ doctrine:
         user:     "%database_user%"
         password: "%database_password%"
         charset:  UTF8
-        # if using pdo_sqlite as your database driver, add the path in parameters.yml
-        # e.g. database_path: "%kernel.root_dir%/data/data.db3"
-        # path:     "%database_path%"
+        types:
+          json: Sonata\Doctrine\Types\JsonType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
@@ -76,3 +75,43 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+
+
+stof_doctrine_extensions:
+  default_locale: en_UK
+  orm:
+    default:
+      timestampable: true
+      blameable: true
+
+fos_user:
+    db_driver:      orm # can be orm or odm
+    firewall_name:  main
+    user_class:     Application\Sonata\UserBundle\Entity\User
+    group:
+        group_class:   Application\Sonata\UserBundle\Entity\Group
+        group_manager: sonata.user.orm.group_manager
+    service:
+        user_manager: sonata.user.orm.user_manager
+
+sonata_user:
+    security_acl: true
+    manager_type: orm # can be orm or mongodb
+
+sonata_block:
+    default_contexts: [cms]
+    blocks:
+        sonata.user.block.menu:    # used to display the menu in profile pages
+            contexts:   [admin]
+        sonata.user.block.account: # used to display menu option (login option)
+            contexts:   [admin]
+        sonata.block.service.text: # used to if you plan to use Sonata user routes
+            contexts:   [admin]
+        sonata.admin.block.admin_list:
+            contexts:   [admin]
+sonata_admin:
+    title: ListBroking
+    title_logo: bundles/app/images/backend_logo.png
+    dashboard:
+        blocks:
+            - { position: top, type: sonata.admin.block.admin_list, class: col-md-12 }

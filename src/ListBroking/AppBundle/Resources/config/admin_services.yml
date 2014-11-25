@@ -1,0 +1,89 @@
+services:
+  listbroking.admin.client:
+      class: ListBroking\AppBundle\Admin\ClientAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\Client, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Client, label: Client}
+  listbroking.admin.campaign:
+      class: ListBroking\AppBundle\Admin\CampaignAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\Campaign, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Client, label: Campaign}
+  listbroking.admin.category:
+      class: ListBroking\AppBundle\Admin\CategoryAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\Category, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Category, label: Category}
+  listbroking.admin.sub_category:
+      class: ListBroking\AppBundle\Admin\SubCategoryAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\SubCategory, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Category, label: SubCategory}
+
+  listbroking.admin.lead:
+      class: ListBroking\AppBundle\Admin\LeadAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\Lead, SonataAdminBundle:CRUD ]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Lead, label: Lead}
+  listbroking.admin.contact:
+      class: ListBroking\AppBundle\Admin\ContactAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\Contact, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Lead, label: Contact}
+  listbroking.admin.district:
+      class: ListBroking\AppBundle\Admin\DistrictAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\District, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Lead, label: District}
+  listbroking.admin.county:
+      class: ListBroking\AppBundle\Admin\CountyAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\County, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Lead, label: County}
+  listbroking.admin.parish:
+      class: ListBroking\AppBundle\Admin\ParishAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\Parish, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Lead, label: Parish}
+  listbroking.admin.gender:
+      class: ListBroking\AppBundle\Admin\GenderAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\Gender, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Lead, label: Gender}
+  listbroking.admin.extraction:
+      class: ListBroking\AppBundle\Admin\ExtractionAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\Extraction, ListBrokingAppBundle:ExtractionAdmin]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Extraction, label: Extraction}
+  listbroking.admin.extraction_template:
+      class: ListBroking\AppBundle\Admin\ExtractionTemplateAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\ExtractionTemplate, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Extraction, label: ExtractionTemplate}
+
+  listbroking.admin.lock:
+      class: ListBroking\AppBundle\Admin\LockAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\Lock, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Lock, label: Lock}
+  listbroking.admin.lock_history:
+      class: ListBroking\AppBundle\Admin\LockHistoryAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\LockHistory, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Lock, label: LockHistory}
+
+  listbroking.admin.country:
+      class: ListBroking\AppBundle\Admin\CountryAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\Country, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Main, label: Country}
+  listbroking.admin.owner:
+      class: ListBroking\AppBundle\Admin\OwnerAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\Owner, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Main, label: Owner}
+  listbroking.admin.source:
+      class: ListBroking\AppBundle\Admin\SourceAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\Source, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Main, label: Source}

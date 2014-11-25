@@ -10,8 +10,8 @@
 
 namespace ListBroking\AppBundle\Entity;
 
-use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior;
-use Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior;
+use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
+use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 use Doctrine\Common\Collections\ArrayCollection;
 
 class SubCategory {
@@ -23,7 +23,7 @@ class SubCategory {
 
     protected $id;
 
-    protected $is_active;
+
 
     protected $name;
 
@@ -49,21 +49,6 @@ class SubCategory {
         return $this->id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getIsActive()
-    {
-        return $this->is_active;
-    }
-
-    /**
-     * @param mixed $is_active
-     */
-    public function setIsActive($is_active)
-    {
-        $this->is_active = $is_active;
-    }
 
     /**
      * @return mixed

@@ -1,8 +1,0 @@
-parameters:
-    listbroking.inflector.tool.class: ListBroking\DoctrineBundle\Tool\InflectorTool
-
-services:
-    listbroking.inflector.tool:
-        class: %listbroking.inflector.tool.class%
-
-    inflector.tool: @listbroking.inflector.tool

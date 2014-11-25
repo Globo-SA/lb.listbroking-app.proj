@@ -17,40 +17,33 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
 
-            // Doctrine Cache
+            // Doctrine
             new Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
-
-            // Extra Symfony Bundles
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+            new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
 
-            // User Bundle
-            new FOS\UserBundle\FOSUserBundle(),
-            new Adclick\UserBundle\AdclickUserBundle(),
-
-            // Exposes routing to the client-side
+            // Extra libraries
             new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
-
-            // Extraction Help
+            new JMS\SerializerBundle\JMSSerializerBundle(),
             new Liuggio\ExcelBundle\LiuggioExcelBundle(),
 
-            // API Bundle
-            new JMS\SerializerBundle\JMSSerializerBundle(),
+            //Security
+            new FOS\UserBundle\FOSUserBundle(),
+            new Sonata\UserBundle\SonataUserBundle('FOSUserBundle'),
+            new Application\Sonata\UserBundle\ApplicationSonataUserBundle(),
+            new Sonata\EasyExtendsBundle\SonataEasyExtendsBundle(),
 
-            // Core Bundles
-            new Adclick\CacheBundle\AdclickCacheBundle(),
-            new Adclick\AdvancedConfigurationBundle\AdclickAdvancedConfigurationBundle(),
-            new Adclick\DoctrineBehaviorBundle\AdclickDoctrineBehaviorBundle(),
-            new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
-            new ListBroking\AdvancedConfigurationBundle\ListBrokingAdvancedConfigurationBundle(),
-            new ListBroking\ExceptionHandlerBundle\ListBrokingExceptionHandlerBundle(),
-            new ListBroking\DoctrineBundle\ListBrokingDoctrineBundle(),
+            //Admin
+            new Sonata\CoreBundle\SonataCoreBundle(),
+            new Sonata\BlockBundle\SonataBlockBundle(),
+            new Knp\Bundle\MenuBundle\KnpMenuBundle(),
+            new Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle(),
+            new Sonata\AdminBundle\SonataAdminBundle(),
 
             // ListBroking Bundles
-            new ListBroking\AppBundle\ListBrokingAppBundle(),
+            new ListBroking\ExceptionHandlerBundle\ListBrokingExceptionHandlerBundle(),
             //new ListBroking\APIBundle\ListBrokingAPIBundle(),
-
-            // UI Bundle
-            new ListBroking\UIBundle\ListBrokingUIBundle(),
+            new ListBroking\AppBundle\ListBrokingAppBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

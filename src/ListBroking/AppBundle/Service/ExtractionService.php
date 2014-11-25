@@ -15,8 +15,13 @@ use ListBroking\AppBundle\Engine\FilterEngine;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionTemplate;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
-use ListBroking\DoctrineBundle\Tool\InflectorTool;
+use ListBroking\AppBundle\Tool\InflectorTool;
 use Liuggio\ExcelBundle\Factory;
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 
 class ExtractionService implements ExtractionServiceInterface {
@@ -25,6 +30,21 @@ class ExtractionService implements ExtractionServiceInterface {
      * @var EntityManager
      */
     private $em;
+
+    /**
+     * @var Request
+     */
+    private $request;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var FormFactoryInterface
+     */
+    private $form_factory;
 
     /**
      * @var Factory
@@ -38,9 +58,12 @@ class ExtractionService implements ExtractionServiceInterface {
 
     private $export_types;
 
-    function __construct(EntityManager $entityManager, Factory $phpExcel, FilterEngine $filterEngine)
+    function __construct(EntityManager $entityManager, RequestStack $requestStack, Session $session, FormFactoryInterface $formFactory, Factory $phpExcel, FilterEngine $filterEngine)
     {
         $this->em = $entityManager;
+        $this->request = $requestStack->getCurrentRequest();
+        $this->session = $session;
+        $this->form_factory = $formFactory;
         $this->php_excel = $phpExcel;
         $this->f_engine = $filterEngine;
 
@@ -60,18 +83,60 @@ class ExtractionService implements ExtractionServiceInterface {
      */
     public function runExtraction(Extraction $extraction){
 
-        // Runs the Filter compilation and generates the QueryBuilder
-        $qb = $this->f_engine->compileFilters($extraction);
-
-        // Add Contacts to the Extraction
-        $contacts = $qb->getQuery()->execute();
-
-        $this->em->getRepository('ListBrokingAppBundle:Extraction')->addContacts($extraction, $contacts, false);
-
-        // Change the Extraction Status to Confirmation if it's on filtration and has contacts
-        if($extraction->getStatus() == Extraction::STATUS_FILTRATION && count($contacts) > 0){
-            $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
+        // Don't reprocess by default
+        $reprocess = false;
+        $flashes = $this->session->getFlashBag()->get('extraction');
+        if(in_array('reprocess', array_values($flashes))){
+            $reprocess = true;
         }
+
+        // Change the Extraction Status to Filtering if it's on configuration
+        if($extraction->getStatus() == Extraction::STATUS_CONFIGURATION){
+            $extraction->setStatus(Extraction::STATUS_FILTRATION);
+        }
+
+        // Filters Form
+        $form = $this->form_factory->createBuilder('filters', $extraction->getFilters())->getForm();
+
+        // Update filters
+        if ($this->request->getMethod() == 'POST')
+        {
+            // Handle the filters form
+            $filters_form = $form->handleRequest($this->request);
+            $filters = $filters_form->getData();
+
+            // Serializes filters and compares them with a saved version
+            // to check for changes on filters
+            $serialized_filter = md5(serialize($filters));
+            if(!in_array($serialized_filter, array_values($flashes))){
+
+                // Sets the new Filters and mark the Extraction to reprocess
+                $extraction->setFilters($filters);
+                $reprocess = true;
+            }
+
+            $this->session->getFlashBag()->add('extraction', $serialized_filter);
+        }
+
+        // Reprocess leads list
+        if($reprocess){
+
+            // Runs the Filter compilation and generates the QueryBuilder
+            $qb = $this->f_engine->compileFilters($extraction);
+
+            // Add Contacts to the Extraction
+            $contacts = $qb->getQuery()->execute();
+
+            $this->em->getRepository('ListBrokingAppBundle:Extraction')->addContacts($extraction, $contacts, false);
+
+            // Change the Extraction Status to Confirmation if it's on filtration and has contacts
+            if($extraction->getStatus() == Extraction::STATUS_FILTRATION && count($contacts) > 0){
+                $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
+            }
+
+        }
+
+        $this->em->flush();
     }
 
     /**
@@ -91,20 +156,33 @@ class ExtractionService implements ExtractionServiceInterface {
      */
     public function excludeLeads(Extraction $extraction, $leads_array){
 
+        // Remove from filters
         $filters = $extraction->getFilters();
         if(!array_key_exists('lead:id', $filters) || empty($filters['lead:id'])){
             $filters['lead:id'] = array();
         }else{
             $filters['lead:id'] = explode(',', $filters['lead:id']);
         }
+
         foreach ($leads_array as $lead)
         {
             if(!in_array($lead['id'], array_values($filters['lead:id']))){
                 array_push($filters['lead:id'], $lead['id']);
             }
+
+            //TODO: Make this a bit more efficient
+            $contacts = $this->em->getRepository('ListBrokingAppBundle:Contact')->findBy(array('lead' => $lead['id']));
+            foreach($contacts as $contact){
+
+                // Remove from ExtractionContacts
+                $extraction->getContacts()->removeElement($contact);
+            }
         }
+
         $filters['lead:id'] = implode(',', $filters['lead:id']);
         $extraction->setFilters($filters);
+
+        $this->em->flush();
     }
 
     /**

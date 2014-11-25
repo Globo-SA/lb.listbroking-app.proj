@@ -1,8 +1,0 @@
-Adclick\UserBundle\Entity\Group:
-    type:  entity
-    table: fos_group
-    id:
-        id:
-            type: bigint
-            generator:
-                strategy: AUTO

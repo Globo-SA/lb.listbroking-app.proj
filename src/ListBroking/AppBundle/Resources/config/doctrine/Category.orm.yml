@@ -8,12 +8,6 @@ ListBroking\AppBundle\Entity\Category:
             generator:
                 strategy: AUTO
     fields:
-        is_active:
-            type: boolean
-            column: is_active
-            nullable: true
-            options:
-                default: 0
         name:
             type:   string
             column: name
@@ -34,7 +28,7 @@ ListBroking\AppBundle\Entity\Category:
 # Blameable
     manyToOne:
         created_by:
-            targetEntity: Adclick\UserBundle\Entity\User
+            targetEntity: Application\Sonata\UserBundle\Entity\User
             joinColumn:
                 name: created_by
                 referencedColumnName: id
@@ -42,7 +36,7 @@ ListBroking\AppBundle\Entity\Category:
             gedmo: { blameable: { on: create } }
 
         updated_by:
-            targetEntity: Adclick\UserBundle\Entity\User
+            targetEntity: Application\Sonata\UserBundle\Entity\User
             joinColumn:
                 name: updated_by
                 referencedColumnName: id
