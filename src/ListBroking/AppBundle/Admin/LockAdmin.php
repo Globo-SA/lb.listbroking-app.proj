@@ -10,6 +10,15 @@ use Sonata\AdminBundle\Show\ShowMapper;
 
 class LockAdmin extends Admin
 {
+
+    private $type_values = array(
+        1 => 'NoLocksLockFilter',
+        2 => 'ReservedLockFilter',
+        3 => 'ClientLockFilter',
+        4 => 'CampaignLockFilter',
+        5 => 'CategoryLockFilter',
+        6 => 'SubCategoryLockFilter',
+    );
     /**
      * @param DatagridMapper $datagridMapper
      */
@@ -18,8 +27,6 @@ class LockAdmin extends Admin
         $datagridMapper
             ->add('id')
             ->add('status')
-            ->add('type')
-            ->add('expiration_date')
         ;
     }
 
@@ -31,8 +38,13 @@ class LockAdmin extends Admin
         $listMapper
             ->add('id')
             ->add('status')
-            ->add('type')
+            ->add('type', 'choice', array('choices' => $this->type_values))
             ->add('expiration_date')
+            ->add('client')
+            ->add('campaign')
+            ->add('category')
+            ->add('sub_category')
+            ->add('lead')
             ->add('updated_at')
             ->add('_action', 'actions', array(
                 'actions' => array(
@@ -51,8 +63,13 @@ class LockAdmin extends Admin
     {
         $formMapper
             ->add('status')
-            ->add('type')
+            ->add('type', 'choice', array('choices' => $this->type_values))
             ->add('expiration_date')
+            ->add('client')
+            ->add('campaign')
+            ->add('category')
+            ->add('sub_category')
+            ->add('lead')
         ;
     }
 
@@ -66,6 +83,11 @@ class LockAdmin extends Admin
             ->add('status')
             ->add('type')
             ->add('expiration_date')
+            ->add('client')
+            ->add('campaign')
+            ->add('category')
+            ->add('sub_category')
+            ->add('lead')
             ->add('created_at')
             ->add('updated_at')
         ;

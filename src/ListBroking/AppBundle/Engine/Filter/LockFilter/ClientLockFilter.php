@@ -48,7 +48,7 @@ class ClientLockFilter implements LockFilterInterface {
         {
             // Validate filter array
             if(!array_key_exists('client', $filter) || empty($filter['client'])
-                || !array_key_exists('interval', $filter) || empty($filters['interval'])){
+                || !array_key_exists('interval', $filter) || empty($filter['interval'])){
                 continue;
             }
 

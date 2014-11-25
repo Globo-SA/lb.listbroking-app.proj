@@ -43,7 +43,7 @@ class Lead {
 
     function __toString()
     {
-        return $this->phone;
+        return $this->id;
     }
 
     /**

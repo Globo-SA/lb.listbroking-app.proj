@@ -11,6 +11,7 @@
 namespace ListBroking\AppBundle\Engine;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\QueryBuilder;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Exception\InvalidFilterObjectException;
 
@@ -81,7 +82,7 @@ class FilterEngine
      * @internal param $limit
      * @internal param $lock_filters
      * @internal param $contact_filters
-     * @return \ESO\Doctrine\ORM\QueryBuilder
+     * @return QueryBuilder
      */
     public function compileFilters(Extraction $extraction){
 
@@ -106,7 +107,6 @@ class FilterEngine
 
         // Check if there are Lock filters
         if(array_key_exists('lock_filters',$filters) && !empty($filters['lock_filters'])){
-
             $locksOrX = $lead_qb->expr()->orX();
             foreach($filters['lock_filters'] as $type => $lock_filter)
             {
