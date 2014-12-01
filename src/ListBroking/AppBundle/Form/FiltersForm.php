@@ -423,6 +423,19 @@ class FiltersForm extends AbstractType
                             'label' => 'Lead IDs to remove',
                         )
                     ),
+                    array(
+                        'name' => 'lead:phone',
+                        'type' => 'textarea',
+                        'options' => array(
+                            'required' => false,
+                            'attr' => array(
+                                'id' => 'filters_lead_details_lead_phone',
+                                'placeholder' => 'Write and press enter...',
+                                'class' => 'form-control'
+                            ),
+                            'label' => 'Lead phones to remove',
+                        )
+                    ),
                 )
             )
         );

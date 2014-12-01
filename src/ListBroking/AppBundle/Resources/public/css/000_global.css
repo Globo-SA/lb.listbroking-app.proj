@@ -1,6 +1,11 @@
 .logo img{
     max-width: 100%;
 }
+
+.small_row {
+    margin: -20px 0px;
+}
+
 .collapsed{
     display: none;
 }

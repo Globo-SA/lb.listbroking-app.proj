@@ -15,6 +15,47 @@
             }
         });
 
+        // Exception menu
+        $('.exceptions_menu').click(function(e){
+            e.preventDefault();
+
+            // Clear old entities
+            $('#exceptions_table tbody tr').remove();
+
+            $('#loading_widget').fadeIn();
+            $.ajax({
+                type: "GET",
+                url: App.routing.generate('last_exceptions'),
+                dataType: 'json',
+                success: function(data){
+                    var response = data.response;
+                    var $table = $('#exceptions_table');
+                    var row = $table.data('prototype');
+
+                    $.each(response, function(index, value){
+                        var current_row = row.replace('%%code%%', value['code']);
+                        var current_row = current_row.replace('%%created_at%%', value['created_at'].date.replace('.000000', ''));
+                        var current_row = current_row.replace('%%msg%%', value['msg'].substring(0, 255) + '...');
+                        $table.append(current_row);
+                    });
+
+                    $('.exceptions_menu').parent('li').addClass('open');
+
+                    // Loading Widget, stop when everything is loaded
+                    $('#loading_widget').fadeOut();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    var response = jqXHR.responseJSON.response;
+                    console.log(response);
+
+                    // Loading Widget, stop when everything is loaded
+                    $('#loading_widget').fadeOut();
+                }
+            });
+
+            return false;
+        });
+
         // Select2 widgets
         $("[data-select-mode=local]").each(function(){
             $(this).select2();

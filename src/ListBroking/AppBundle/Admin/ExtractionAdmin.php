@@ -11,6 +11,9 @@ use Sonata\AdminBundle\Show\ShowMapper;
 
 class ExtractionAdmin extends Admin
 {
+    protected $datagridValues = array(
+        '_sort_order' => 'DESC'
+    );
 
     protected function configureRoutes(RouteCollection $collection)
     {

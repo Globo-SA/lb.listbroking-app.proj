@@ -36,8 +36,9 @@ interface ExtractionServiceInterface {
      * Adds Leads to the Lead Filter of a given Extraction
      * @param Extraction $extraction
      * @param $leads_array
+     * @param string $field
      */
-    public function excludeLeads(Extraction $extraction, $leads_array);
+    public function excludeLeads(Extraction $extraction, $leads_array, $field = 'id');
 
     /**
      * Gets all the Existing Export Types

@@ -10,6 +10,9 @@ use Sonata\AdminBundle\Show\ShowMapper;
 
 class LockAdmin extends Admin
 {
+    protected $datagridValues = array(
+        '_sort_order' => 'DESC'
+    );
 
     private $type_values = array(
         1 => 'NoLocksLockFilter',

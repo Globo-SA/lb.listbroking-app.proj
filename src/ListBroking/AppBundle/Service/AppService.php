@@ -110,6 +110,10 @@ class AppService implements AppServiceInterface {
             if($entity){
                 $this->dcache->save($cache_id, $entity);
             }
+            // Return the attached entity
+            if($attach){
+                return $entity;
+            }
         }
 
         // Fetch from cache

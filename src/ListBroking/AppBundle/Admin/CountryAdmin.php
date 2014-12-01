@@ -10,6 +10,10 @@ use Sonata\AdminBundle\Show\ShowMapper;
 
 class CountryAdmin extends Admin
 {
+    protected $datagridValues = array(
+        '_sort_order' => 'DESC'
+    );
+
     /**
      * @param DatagridMapper $datagridMapper
      */

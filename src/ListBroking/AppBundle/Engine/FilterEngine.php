@@ -154,7 +154,7 @@ class FilterEngine
             $lead_qb->join('leads.contacts', 'contacts', 'WITH', $contactsAndX);
         }
         else{
-            $lead_qb->join('leads.contacts', 'contact');
+            $lead_qb->join('leads.contacts', 'contacts');
         }
 
         // Check if there are Lead filters
@@ -283,7 +283,7 @@ class FilterEngine
                 if(count($values) > 0){
                     $lead_filters[1]['filters'][] = array(
                         'field' => $field,
-                        'opt' => $field == 'id' ? 'not_equal' : 'equal',
+                        'opt' => 'not_equal',
                         'value' => is_array($values) ? array_values($values) : array($values)
                     );
                 }

@@ -10,6 +10,7 @@
 
 namespace ListBroking\AppBundle\Controller;
 
+use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -24,7 +25,12 @@ class AjaxController extends Controller {
     public function lastExceptionsAction(){
 
         $last = $this->getDoctrine()->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
-            ->findBy(array(), null, 10);
+            ->createQueryBuilder('e')
+            ->orderBy('e.id','DESC')
+            ->getQuery()
+            ->setMaxResults(5)
+            ->getResult(Query::HYDRATE_ARRAY);
+
 
         return $this->createJsonResponse($last);
     }

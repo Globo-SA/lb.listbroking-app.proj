@@ -12,6 +12,10 @@ use Sonata\AdminBundle\Show\ShowMapper;
 class ExceptionLogAdmin extends Admin
 {
 
+    protected $datagridValues = array(
+        '_sort_order' => 'DESC'
+    );
+    
     protected function configureRoutes(RouteCollection $collection)
     {
         $collection->remove('delete');

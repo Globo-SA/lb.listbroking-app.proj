@@ -12,6 +12,7 @@ namespace ListBroking\AppBundle\Service;
 
 use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Engine\FilterEngine;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionTemplate;
@@ -125,7 +126,7 @@ class ExtractionService implements ExtractionServiceInterface {
         }
 
         // Reprocess leads list
-        if($reprocess){
+//        if($reprocess){
 
             // Runs the Filter compilation and generates the QueryBuilder
             $qb = $this->f_engine->compileFilters($extraction);
@@ -142,7 +143,7 @@ class ExtractionService implements ExtractionServiceInterface {
             // Change the Extraction Status to Confirmation if it's on filtration and has contacts
             if($extraction->getStatus() == Extraction::STATUS_FILTRATION && count($contacts) > 0){
                 $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
-            }
+   //         }
 
         }
 
@@ -173,33 +174,37 @@ class ExtractionService implements ExtractionServiceInterface {
      * Adds Leads to the Lead Filter of a given Extraction
      * @param Extraction $extraction
      * @param $leads_array
+     * @param string $field
      */
-    public function excludeLeads(Extraction $extraction, $leads_array){
+    public function excludeLeads(Extraction $extraction, $leads_array, $field = 'id'){
 
         // Remove from filters
         $filters = $extraction->getFilters();
-        if(!array_key_exists('lead:id', $filters) || empty($filters['lead:id'])){
-            $filters['lead:id'] = array();
+        if(!array_key_exists("lead:{$field}", $filters) || empty($filters["lead:{$field}"])){
+            $filters["lead:{$field}"] = array();
         }else{
-            $filters['lead:id'] = explode(',', $filters['lead:id']);
+            $filters["lead:{$field}"] = explode(',', $filters["lead:{$field}"]);
         }
 
         foreach ($leads_array as $lead)
         {
-            if(!in_array($lead['id'], array_values($filters['lead:id']))){
-                array_push($filters['lead:id'], $lead['id']);
+            if(!in_array($lead, array_values($filters["lead:{$field}"]))){
+                array_push($filters["lead:{$field}"], $lead);
             }
 
             //TODO: Make this a bit more efficient
-            $contacts = $this->em->getRepository('ListBrokingAppBundle:Contact')->findBy(array('lead' => $lead['id']));
+            if($field = 'phone'){
+                $contacts = $this->em->getRepository('ListBrokingAppBundle:Contact')->findByLeadPhone($lead, Query::HYDRATE_ARRAY);
+            }else{
+                $contacts = $this->em->getRepository('ListBrokingAppBundle:Contact')->findBy(array("lead" => $lead));
+            }
             foreach($contacts as $contact){
 
                 // Remove from ExtractionContacts
                 $extraction->getContacts()->removeElement($contact);
             }
         }
-
-        $filters['lead:id'] = implode(',', $filters['lead:id']);
+        $filters["lead:{$field}"] = implode(',', $filters["lead:{$field}"]);
         $extraction->setFilters($filters);
 
         $this->em->flush();
@@ -327,19 +332,23 @@ class ExtractionService implements ExtractionServiceInterface {
 
         $headers = array();
         $lead_array = array();
-        for($i = 1; $i <= $last_row; $i++){
+        for($row = 1; $row <= $last_row; $row++){
 
-            $j = 0;
             $column = 'A';
             while($column <= $last_column){
-                if($i == 1){
-                    $headers[] = strtolower($active->getCell("{$column}1")->getValue());
+                if($row == 1){
+                    $value = strtolower($active->getCell("{$column}1")->getValue());
+                    if(!empty($value)){
+                        $headers[$column] = $value;
+                    }
                 }
                 else{
-                    $lead_array[$i-1][$headers[$j]] = $active->getCell("{$column}{$i}")->getValue();
+                    $value = $active->getCell("{$column}{$row}")->getValue();
+                    if(isset($headers[$column]) && !empty($value)){
+                        $lead_array[] = $active->getCell("{$column}{$row}")->getValue();
+                    }
                 }
                 $column++;
-                $j++;
             }
         }
 

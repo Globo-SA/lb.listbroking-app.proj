@@ -1,0 +1,51 @@
+<div class="navbar-right">
+    <ul class="nav navbar-nav">
+        <li id="loading_widget">
+            <a href="#">
+                <i class="icon icon-large ion-loading-c"></i>
+                Loading...
+            </a>
+        </li>
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fa fa-plus-square fa-fw"></i> <i class="fa fa-caret-down"></i>
+            </a>
+            {% include admin_pool.getTemplate('add_block') %}
+        </li>
+        {% if app.security.token and is_granted('ROLE_SUPER_ADMIN') %}
+        <li class="dropdown">
+            <a class="exceptions_menu dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fa fa-exclamation-triangle fa-fw text-danger"></i> <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu" role="menu" style="width: 1000px;">
+                <li class="small_row row">
+                    <div class="col-md-12">
+                        &nbsp;<h4 class="text-danger"><i class="fa fa-exclamation-triangle fa-fw"></i>&nbsp;Exceptions</h4>
+                        <table id="exceptions_table" class="table table-hover table-condensed" width="100%" data-prototype="<tr><td>%%code%%</td><td>%%msg%%</td><td class='col-md-3'>%%created_at%%</td></tr>">
+                            <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Error</th>
+                                <th>Created</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </li>
+                <li style="margin:10px">
+                    <a href="{{ path('admin_listbroking_exceptionhandler_exceptionlog_list') }}" class="btn btn-default">Show more</a>
+                </li>
+            </ul>
+        </li>
+        {% endif %}
+        <li class="dropdown user-menu">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-user">
+                {% include admin_pool.getTemplate('user_block') %}
+            </ul>
+        </li>
+    </ul>
+</div>

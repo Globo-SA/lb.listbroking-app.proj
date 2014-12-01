@@ -34,8 +34,11 @@
                             <div class="panel-heading">This summary is not final, filters can always be updated and Leads can be <b>Desduplicated</b></div>
                             <div class="panel-body">
                                 <div class="row row-margin">
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         {% include '@ListBrokingApp/Extraction/_configuration/deduplication.html.twig' %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {% include '@ListBrokingApp/Extraction/_configuration/extraction_summary.html.twig' %}
                                     </div>
                                 </div>
                                 <div class="row">
@@ -45,7 +48,6 @@
                                 </div>
                             </div>
                         </div>
-
                 </div>
             </div>
         </div> <!-- /.col-xs-12 -->

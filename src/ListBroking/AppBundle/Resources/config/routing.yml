@@ -1,3 +1,9 @@
+last_exceptions:
+    path: /ajax/exception/last
+    defaults: { _controller: ListBrokingAppBundle:Ajax:lastExceptions }
+    options:
+        expose: true
+
 ajax_lead_count:
     path: /ajax/lead/count
     defaults: { _controller: ListBrokingAppBundle:Ajax:countLeads }

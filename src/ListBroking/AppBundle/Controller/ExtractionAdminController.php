@@ -4,6 +4,7 @@ namespace ListBroking\AppBundle\Controller;
 
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Form\AdvancedExcludeType;
+use ListBroking\AppBundle\Form\AdvancedExternalExcludeType;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -37,6 +38,15 @@ class ExtractionAdminController extends CRUDController
             null,
             true
         );
+        // Advanced External Exclusion Form
+        $adv_external_exclusion = $u_service->generateForm(
+            new AdvancedExternalExcludeType(),
+            $this->generateUrl(
+                'admin_listbroking_app_extraction_lead_deduplication', array('id' => $extraction_id, 'external' => true)
+            ),
+            null,
+            true
+        );
 
         // Filters Form
         $filters_form = $u_service->generateForm(
@@ -53,6 +63,7 @@ class ExtractionAdminController extends CRUDController
                 'forms' =>  array(
                     'filters' => $filters_form->createView(),
                     'adv_exclusion' => $adv_exclusion,
+                    'adv_external_exclusion' => $adv_external_exclusion
                 )
             )
         );
@@ -66,6 +77,7 @@ class ExtractionAdminController extends CRUDController
 
         $request = $this->get('request');
         $extraction_id = $request->get($this->admin->getIdParameter());
+        $is_external = $request->get('external', false);
 
         $u_service = $this->get('ui');
         $a_service = $this->get('app');
@@ -73,9 +85,16 @@ class ExtractionAdminController extends CRUDController
 
         $extraction = $a_service->getEntity('extraction', $extraction_id, true, true);
 
-        $form = $u_service->generateForm(new AdvancedExcludeType());
+        if($is_external){
+            $form = $u_service->generateForm(new AdvancedExternalExcludeType());
+        }else{
+            $form = $u_service->generateForm(new AdvancedExcludeType());
+        }
+
         $form->handleRequest($request);
         $data = $form->getData();
+
+        $field = isset($data['field']) ? $data['field'] : 'id';
 
         /** @var UploadedFile $file */
         $file = $data['upload_file'];
@@ -85,7 +104,7 @@ class ExtractionAdminController extends CRUDController
         $contacts_array = $e_service->importExtraction($filename);
         unlink($filename);
 
-        $e_service->excludeLeads($extraction, $contacts_array);
+        $e_service->excludeLeads($extraction, $contacts_array, $field);
         $a_service->updateEntity($extraction);
 
         // Save a session variable for reprocessing

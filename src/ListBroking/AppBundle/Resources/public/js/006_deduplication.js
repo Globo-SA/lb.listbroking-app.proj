@@ -22,7 +22,7 @@
             }
         });
 
-        $('#deduplication-download').on('click', function(e){
+        $('#internal-deduplication-download, #external-deduplication-download').on('click', function(e){
             e.preventDefault();
 
             var extraction_template = $(this).prev('input').select2('val');

@@ -46,4 +46,14 @@ class ContactRepository extends EntityRepository {
 
         return $qb->getQuery()->execute(null, AbstractQuery::HYDRATE_ARRAY);
     }
+
+
+    public function findByLeadPhone($phone, $hydrate_mode){
+        return $this->createQueryBuilder('e')
+            ->join('e.lead', 'lead')
+            ->andWhere("lead.phone = :phone")
+            ->setParameter('phone', $phone)
+            ->getQuery()
+            ->execute(null, $hydrate_mode);
+    }
 } 
