@@ -76,7 +76,6 @@ swiftmailer:
     password:  "%mailer_password%"
     spool:     { type: memory }
 
-
 stof_doctrine_extensions:
   default_locale: en_UK
   orm:
@@ -97,7 +96,8 @@ fos_user:
 sonata_user:
     security_acl: true
     manager_type: orm # can be orm or mongodb
-
+    impersonating:
+        route: sonata_admin_dashboard
 sonata_block:
     default_contexts: [cms]
     blocks:
@@ -109,9 +109,25 @@ sonata_block:
             contexts:   [admin]
         sonata.admin.block.admin_list:
             contexts:   [admin]
+        app.admin.statistics_block:
+            contexts:   [admin]
 sonata_admin:
-    title: ListBroking
-    title_logo: bundles/app/images/backend_logo.png
+    options:
+      title_mode: single_image
+    title_logo: bundles/listbrokingapp/images/logo.png
+    security:
+        handler: sonata.admin.security.handler.role
+        information:
+            EDIT: EDIT
+            LIST: LIST
+            CREATE: CREATE
+            VIEW: VIEW
+            DELETE: DELETE
+            EXPORT: EXPORT
+            OPERATOR: OPERATOR
+            MASTER: MASTER
+    templates:
+        layout: ListBrokingAppBundle::base.html.twig
     dashboard:
         blocks:
-            - { position: top, type: sonata.admin.block.admin_list, class: col-md-12 }
+            - { position: top, type: app.admin.statistics_block, class: col-md-12 }

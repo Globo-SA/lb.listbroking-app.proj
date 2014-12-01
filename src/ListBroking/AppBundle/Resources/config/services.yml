@@ -33,6 +33,7 @@ services:
     class: ListBroking\AppBundle\Service\ExtractionService
     arguments:
       entityManager: @doctrine.orm.entity_manager
+      doctrineCache: @doctrine_cache.providers.apc_query_cache
       requestStack: @request_stack
       session: @session
       formFactory: @form.factory

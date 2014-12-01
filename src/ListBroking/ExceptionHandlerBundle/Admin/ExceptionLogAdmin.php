@@ -1,6 +1,6 @@
 <?php
 
-namespace ListBroking\AppBundle\Admin;
+namespace ListBroking\ExceptionHandlerBundle\Admin;
 
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
@@ -9,13 +9,14 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
 
-class ExtractionAdmin extends Admin
+class ExceptionLogAdmin extends Admin
 {
 
     protected function configureRoutes(RouteCollection $collection)
     {
-        $collection->add('filtering', $this->getRouterIdParameter() . '/filtering');
-        $collection->add('lead_deduplication', $this->getRouterIdParameter() . '/deduplication');
+        $collection->remove('delete');
+        $collection->remove('create');
+        $collection->remove('edit');
     }
 
     /**
@@ -24,8 +25,7 @@ class ExtractionAdmin extends Admin
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
-            ->add('name')
-            ->add('campaign')
+            ->add('code')
         ;
     }
 
@@ -35,18 +35,12 @@ class ExtractionAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->add('id')
-            ->add('name')
-            ->add('campaign')
-            ->add('status')
-            ->add('quantity')
-            ->add('payout')
+            ->add('code')
+            ->add('msg')
             ->add('updated_at')
             ->add('_action', 'actions', array(
                 'actions' => array(
-                    'filtering' => array(
-                        'template' => 'ListBrokingAppBundle:CRUD:list__action_filtering.html.twig'
-                    ),
+                    'show' => array(),
                     'edit' => array(),
                     'delete' => array(),
                 )
@@ -60,11 +54,12 @@ class ExtractionAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name')
-            ->add('campaign')
-            ->add('status')
-            ->add('quantity')
-            ->add('payout')
+            ->add('id')
+            ->add('code')
+            ->add('msg')
+            ->add('trace')
+            ->add('created_at')
+            ->add('updated_at')
         ;
     }
 
@@ -75,10 +70,9 @@ class ExtractionAdmin extends Admin
     {
         $showMapper
             ->add('id')
-            ->add('name')
-            ->add('status')
-            ->add('quantity')
-            ->add('payout')
+            ->add('code')
+            ->add('msg')
+            ->add('trace')
             ->add('created_at')
             ->add('updated_at')
         ;

@@ -1,4 +1,13 @@
 services:
+  app.admin.statistics_block:
+        class: ListBroking\AppBundle\AdminBlock\StatisticsBlockService
+        tags:
+          - { name: sonata.block }
+        arguments:
+          - "sonata.block.service.statistics"
+          - @templating
+          - @doctrine.orm.default_entity_manager
+
   listbroking.admin.client:
       class: ListBroking\AppBundle\Admin\ClientAdmin
       arguments: [~, ListBroking\AppBundle\Entity\Client, SonataAdminBundle:CRUD]
@@ -54,36 +63,35 @@ services:
       class: ListBroking\AppBundle\Admin\ExtractionAdmin
       arguments: [~, ListBroking\AppBundle\Entity\Extraction, ListBrokingAppBundle:ExtractionAdmin]
       tags:
-          - {name: sonata.admin, manager_type: orm, group: Extraction, label: Extraction}
+          - {name: sonata.admin, manager_type: orm, group: Other, label: Extraction}
   listbroking.admin.extraction_template:
       class: ListBroking\AppBundle\Admin\ExtractionTemplateAdmin
       arguments: [~, ListBroking\AppBundle\Entity\ExtractionTemplate, SonataAdminBundle:CRUD]
       tags:
-          - {name: sonata.admin, manager_type: orm, group: Extraction, label: ExtractionTemplate}
-
+          - {name: sonata.admin, manager_type: orm, group: Other, label: ExtractionTemplate}
   listbroking.admin.lock:
       class: ListBroking\AppBundle\Admin\LockAdmin
       arguments: [~, ListBroking\AppBundle\Entity\Lock, SonataAdminBundle:CRUD]
       tags:
-          - {name: sonata.admin, manager_type: orm, group: Lock, label: Lock}
+          - {name: sonata.admin, manager_type: orm, group: Other, label: Lock}
   listbroking.admin.lock_history:
       class: ListBroking\AppBundle\Admin\LockHistoryAdmin
       arguments: [~, ListBroking\AppBundle\Entity\LockHistory, SonataAdminBundle:CRUD]
       tags:
-          - {name: sonata.admin, manager_type: orm, group: Lock, label: LockHistory}
+          - {name: sonata.admin, manager_type: orm, group: Other, label: LockHistory}
 
   listbroking.admin.country:
       class: ListBroking\AppBundle\Admin\CountryAdmin
       arguments: [~, ListBroking\AppBundle\Entity\Country, SonataAdminBundle:CRUD]
       tags:
-          - {name: sonata.admin, manager_type: orm, group: Main, label: Country}
+          - {name: sonata.admin, manager_type: orm, group: Other, label: Country}
   listbroking.admin.owner:
       class: ListBroking\AppBundle\Admin\OwnerAdmin
       arguments: [~, ListBroking\AppBundle\Entity\Owner, SonataAdminBundle:CRUD]
       tags:
-          - {name: sonata.admin, manager_type: orm, group: Main, label: Owner}
+          - {name: sonata.admin, manager_type: orm, group: Other, label: Owner}
   listbroking.admin.source:
       class: ListBroking\AppBundle\Admin\SourceAdmin
       arguments: [~, ListBroking\AppBundle\Entity\Source, SonataAdminBundle:CRUD]
       tags:
-          - {name: sonata.admin, manager_type: orm, group: Main, label: Source}
+          - {name: sonata.admin, manager_type: orm, group: Other, label: Source}

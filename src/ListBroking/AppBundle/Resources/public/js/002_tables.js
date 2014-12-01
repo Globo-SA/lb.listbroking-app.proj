@@ -32,9 +32,12 @@
 
                     var response = data.response;
 
-                    $('.confirm_exclude_lead[data-extraction-id=' + response.extraction_id + '][data-lead-id=' + response.lead_id + ']').parents('tr').fadeOut('slow',function(){
-                        $(this).remove();
-                    })
+                    var $row =  $('.confirm_exclude_lead[data-extraction-id=' + response.extraction_id + '][data-lead-id=' + response.lead_id + ']').parents('tr');
+                    $row.fadeOut('slow',function(){
+                        var $table = $(this).parents('table');
+                        $table.DataTable().row($(this)).remove().draw();
+                    });
+
                     var val = $('#filters_lead_details_lead\\:id').select2('val');
                     val.push(response.lead_id);
 

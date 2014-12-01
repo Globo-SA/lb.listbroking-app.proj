@@ -46,7 +46,7 @@ class ExtractionAdminController extends CRUDController
             $extraction->getFilters()
         );
 
-        return $this->render('@ListBrokingApp/Extraction/2-filtering.html.twig',
+        return $this->render('@ListBrokingApp/Extraction/filtering.html.twig',
             array(
                 'extraction' => $extraction,
                 'contacts' => $contacts,

@@ -100,7 +100,7 @@ class AppService implements AppServiceInterface {
         }
 
         // Check if there's cache
-        if(!$this->dcache->contains($cache_id)){
+        if(!$this->dcache->contains($cache_id) || $attach){
             $repo = $this->em->getRepository($repo_name);
             $entity = $repo->createQueryBuilder('e')
                 ->where('e = :id')
@@ -114,11 +114,6 @@ class AppService implements AppServiceInterface {
 
         // Fetch from cache
         $entity = $this->dcache->fetch($cache_id);
-
-        // Reattach associations
-        if($attach){
-            $entity = $this->em->merge($entity);
-        }
 
         return $entity;
     }
@@ -192,12 +187,16 @@ class AppService implements AppServiceInterface {
      */
     public function getCountryByCode($code, $hydrate = true)
     {
-        $hydrate_mode = AbstractQuery::HYDRATE_OBJECT;
-        if(!$hydrate){
-            $hydrate_mode = AbstractQuery::HYDRATE_ARRAY;
+       $entities = $this->getEntities('country', $hydrate);
+        foreach ($entities as $entity){
+            if($hydrate && $entity->getIsoCode() == $code){
+                return $entity;
+            }elseif($entity['iso_code'] == $code){
+                return $entity;
+            }
         }
 
-        return $this->em->getRepository('ListBrokingAppBundle:Country')->getCountryByCode($code, $hydrate_mode);
+        return null;
     }
 
     /**

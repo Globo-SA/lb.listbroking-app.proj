@@ -10,6 +10,7 @@
 
 namespace ListBroking\AppBundle\Service;
 
+use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\EntityManager;
 use ListBroking\AppBundle\Engine\FilterEngine;
 use ListBroking\AppBundle\Entity\Extraction;
@@ -17,7 +18,6 @@ use ListBroking\AppBundle\Entity\ExtractionTemplate;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
 use ListBroking\AppBundle\Tool\InflectorTool;
 use Liuggio\ExcelBundle\Factory;
-use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -30,6 +30,11 @@ class ExtractionService implements ExtractionServiceInterface {
      * @var EntityManager
      */
     private $em;
+
+    /**
+     * @var Cache
+     */
+    private $dcache;
 
     /**
      * @var Request
@@ -58,9 +63,10 @@ class ExtractionService implements ExtractionServiceInterface {
 
     private $export_types;
 
-    function __construct(EntityManager $entityManager, RequestStack $requestStack, Session $session, FormFactoryInterface $formFactory, Factory $phpExcel, FilterEngine $filterEngine)
+    function __construct(EntityManager $entityManager, Cache $doctrineCache, RequestStack $requestStack, Session $session, FormFactoryInterface $formFactory, Factory $phpExcel, FilterEngine $filterEngine)
     {
         $this->em = $entityManager;
+        $this->dcache = $doctrineCache;
         $this->request = $requestStack->getCurrentRequest();
         $this->session = $session;
         $this->form_factory = $formFactory;
@@ -129,6 +135,10 @@ class ExtractionService implements ExtractionServiceInterface {
 
             $this->em->getRepository('ListBrokingAppBundle:Extraction')->addContacts($extraction, $contacts, false);
 
+            // Invalidate contact cache
+            $cache_id = $extraction::CACHE_ID . "_{$extraction->getId()}_contacts";
+            $this->dcache->delete($cache_id);
+
             // Change the Extraction Status to Confirmation if it's on filtration and has contacts
             if($extraction->getStatus() == Extraction::STATUS_FILTRATION && count($contacts) > 0){
                 $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
@@ -146,7 +156,17 @@ class ExtractionService implements ExtractionServiceInterface {
      * @return mixed
      */
     public function getExtractionContacts(Extraction $extraction){
-        return $this->em->getRepository('ListBrokingAppBundle:Contact')->getExtractionContacts($extraction);
+
+        $cache_id = $extraction::CACHE_ID . "_{$extraction->getId()}_contacts";
+        if(!$this->dcache->contains($cache_id)){
+            $contacts = $this->em->getRepository('ListBrokingAppBundle:Contact')->getExtractionContacts($extraction);
+            if($contacts){
+                $this->dcache->save($cache_id, $contacts);
+            }
+        }
+
+        // Fetch from cache
+        return $this->dcache->fetch($cache_id);
     }
 
     /**

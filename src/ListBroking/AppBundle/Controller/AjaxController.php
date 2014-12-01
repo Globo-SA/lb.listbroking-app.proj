@@ -20,6 +20,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AjaxController extends Controller {
 
+
+    public function lastExceptionsAction(){
+
+        $last = $this->getDoctrine()->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
+            ->findBy(array(), null, 10);
+
+        return $this->createJsonResponse($last);
+    }
     /**
      * Counts the number of leads by lock for the dashboard
      * @param Request $request

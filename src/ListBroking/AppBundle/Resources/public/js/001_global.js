@@ -3,11 +3,9 @@
  */
 
 (function ($, App) {
-
-    $('.left-side').toggleClass("collapse-left");
-    $(".right-side").toggleClass("strech");
     $(function () {
         "use strict";
+
         // Extra animations
         jQuery.fn.extend({
             slide: function(direction, time) {
@@ -38,7 +36,7 @@
                 minimumResultsForSearch: -1, //TODO: Fix the ajax search
                 allowClear: true,
                 ajax: {
-                    url: App.routing.generate('ajax_lists'),
+                    url: App.routing.generate('ajax_form_lists'),
                     dataType: 'json',
                     data: function (term, page) {
 

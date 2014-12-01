@@ -1,11 +1,11 @@
-ajax_count_leads:
-    path: /ajax/count/leads
+ajax_lead_count:
+    path: /ajax/lead/count
     defaults: { _controller: ListBrokingAppBundle:Ajax:countLeads }
     options:
         expose: true
 
-ajax_lists:
-    path: /ajax/lists
+ajax_form_lists:
+    path: /ajax/form/lists
     defaults: { _controller: ListBrokingAppBundle:Ajax:lists }
     options:
         expose: true
@@ -25,7 +25,7 @@ ajax_extraction_exclude_lead:
           lead_id: \d+
 
 ajax_extraction_download:
-    path: /ajax/extraction/wizard/{extraction_id}/download/{extraction_template_id}
+    path: /ajax/extraction/{extraction_id}/download/{extraction_template_id}
     defaults: { _controller: ListBrokingAppBundle:Ajax:extractionDownload }
     options:
         expose: true
