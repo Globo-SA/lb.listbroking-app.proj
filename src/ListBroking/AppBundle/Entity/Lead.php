@@ -144,7 +144,7 @@ class Lead {
     /**
      * @param Lock $lock
      */
-    public function addLocks(Lock $lock){
+    public function addLock(Lock $lock){
     	$lock->setLead($this);
         $this->locks[] = $lock;
     }
@@ -152,7 +152,8 @@ class Lead {
     /**
      * @param Lock $lock
      */
-    public function removeLocks(Lock $lock){
+    public function removeLock(Lock $lock){
         $this->locks->removeElement($lock);
     }
+
 } 

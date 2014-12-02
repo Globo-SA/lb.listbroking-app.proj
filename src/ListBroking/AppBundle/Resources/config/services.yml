@@ -37,7 +37,6 @@ services:
       requestStack: @request_stack
       session: @session
       formFactory: @form.factory
-      phpExcel: @phpexcel
       filterEngine: @filter_engine
   ui:
     class: ListBroking\AppBundle\Service\UIService

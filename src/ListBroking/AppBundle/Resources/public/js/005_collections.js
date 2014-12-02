@@ -95,4 +95,4 @@
         }
     });
 }
-)(jQuery, ListBroking)
+)(jQuery, ListBroking);

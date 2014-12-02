@@ -128,7 +128,7 @@
             if ($label.length > 0) {
                 $(this).tooltip('destroy');
                 $label.attr('title', $el.data('original-title'));
-                $label.data('placement', $el.data('placement'))
+                $label.data('placement', $el.data('placement'));
                 $label.tooltip()
             }
         });
@@ -136,4 +136,4 @@
         $("[data-mask]").inputmask();
 
     });
-})(jQuery, ListBroking)
+})(jQuery, ListBroking);

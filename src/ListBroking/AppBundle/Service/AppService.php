@@ -21,6 +21,8 @@ use ListBroking\AppBundle\Entity\Country;
 use ListBroking\AppBundle\Entity\County;
 use ListBroking\AppBundle\Entity\District;
 use ListBroking\AppBundle\Entity\Extraction;
+use ListBroking\AppBundle\Entity\ExtractionDeduplication;
+use ListBroking\AppBundle\Entity\ExtractionDeduplicationQueue;
 use ListBroking\AppBundle\Entity\ExtractionTemplate;
 use ListBroking\AppBundle\Entity\Gender;
 use ListBroking\AppBundle\Entity\Owner;
@@ -146,10 +148,10 @@ class AppService implements AppServiceInterface {
         if($entity)
         {
             $cache_id = $entity::CACHE_ID . "_{$entity->getId()}";
-
             // If cache exists, the entity needs to
             // be attached to the EntityManager
             if($this->dcache->contains($cache_id)){
+                //TODO: Something is strange here, $entity is not used?
                 $entity = $this->em->merge($entity);
             }
             $this->em->flush();
@@ -253,6 +255,18 @@ class AppService implements AppServiceInterface {
                     'repo_name' => 'ListBrokingAppBundle:ExtractionTemplate'
                 );
                 break;
+            case 'extraction_deduplication':
+                return array(
+                    'cache_id' => ExtractionDeduplication::CACHE_ID,
+                    'repo_name' => 'ListBrokingAppBundle:ExtractionDeduplication'
+                );
+                break;
+            case 'extraction_deduplication_queue':
+                return array(
+                    'cache_id' => ExtractionDeduplicationQueue::CACHE_ID,
+                    'repo_name' => 'ListBrokingAppBundle:ExtractionDeduplicationQueue'
+                );
+                break;
             case 'gender':
                 return array(
                     'cache_id' => Gender::CACHE_ID,
@@ -291,7 +305,6 @@ class AppService implements AppServiceInterface {
                 break;
             default:
                 throw new InvalidEntityTypeException("The Entity type {$type} is invalid.");
-
                 break;
         }
     }

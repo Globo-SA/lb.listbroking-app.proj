@@ -13,6 +13,7 @@ namespace ListBroking\AppBundle\Controller;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
+use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,35 +22,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AjaxController extends Controller {
 
-
-    public function lastExceptionsAction(){
-
-        $last = $this->getDoctrine()->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
-            ->createQueryBuilder('e')
-            ->orderBy('e.id','DESC')
-            ->getQuery()
-            ->setMaxResults(5)
-            ->getResult(Query::HYDRATE_ARRAY);
-
-
-        return $this->createJsonResponse($last);
-    }
     /**
-     * Counts the number of leads by lock for the dashboard
+     * Gets the last exceptions thrown by the system
      * @param Request $request
      * @return JsonResponse
      */
-    public function countLeadsAction(Request $request){
-
+    public function lastExceptionsAction(Request $request){
         try{
             $this->validateRequest($request);
+            $last = $this->getDoctrine()->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
+                ->findLastExceptions(new \DateTime('- 1 week'), false);
 
-            $ui_service = $this->get('ui');
-
-            $leads_by_lock = $ui_service->countByLock();
-            return $this->createJsonResponse($leads_by_lock);
+            return $this->createJsonResponse($last);
         }catch (\Exception $e){
-
             return $this->createJsonResponse($e->getMessage(), $e->getCode());
         }
     }
@@ -73,7 +58,6 @@ class AjaxController extends Controller {
             return $this->createJsonResponse($list);
 
         }catch (\Exception $e){
-
             return $this->createJsonResponse($e->getMessage(), $e->getCode());
         }
     }
@@ -132,26 +116,27 @@ class AjaxController extends Controller {
                 "extraction_id" => $extraction_id,
                 "lead_id" => $lead_id
             ));
-
         }catch(\Exception $e){
             return $this->createJsonResponse($e->getMessage(), $e->getCode());
         }
     }
 
-
     /**
      * Third step on Lead Extraction, Lead Extraction
-     * @param Request $request
+     * Note: This is not really an Ajax only request
+     * but it's a cool hack to fake an Ajax file download
      * @param $extraction_id
      * @param $extraction_template_id
      * @return Response
      * @throws InvalidExtractionException
      */
-    public function extractionDownloadAction(Request $request, $extraction_id, $extraction_template_id){
+    public function extractionDownloadAction($extraction_id, $extraction_template_id){
 
+        //Services
         $e_service = $this->get('extraction');
         $a_service = $this->get('app');
 
+        // Current Extraction
         $extraction = $a_service->getEntity('extraction', $extraction_id, true, true);
 
         /** @var Extraction $extraction */
@@ -160,21 +145,57 @@ class AjaxController extends Controller {
         // Generate response
         $response = new Response();
 
-        // Set headers
+        // Set headers for file attachment
         $response->headers->set('Cache-Control', 'private');
         $response->headers->set('Content-type', mime_content_type($filename));
         $response->headers->set('Content-Disposition', 'attachment; filename="' . basename($filename) . '";');
         $response->headers->set('Content-length', filesize($filename));
 
+        // Sends a "file was downloaded" cookie
         $cookie = new Cookie('fileDownload', 'true', new \DateTime('+1 minute'));
         $response->headers->setCookie($cookie);
 
         // Send headers before outputting anything
         $response->sendHeaders();
-
         $response->setContent(readfile($filename));
 
         return $response;
+    }
+
+    /**
+     * Used to upload a deduplication file and start persistence
+     * @param Request $request
+     * @param $extraction_id
+     * @return JsonResponse
+     */
+    public function deduplicationAction(Request $request, $extraction_id){
+        try{
+            $this->validateRequest($request);
+
+            // Services
+            $u_service = $this->get('ui');
+            $e_service = $this->get('extraction');
+            $a_service = $this->get('app');
+
+            // Current Extraction
+            $extraction = $a_service->getEntity('extraction', $extraction_id, true, true);
+
+            // Handle the form and adds file to the Queue
+            $form = $u_service->generateForm(new ExtractionDeduplicationType());
+            $form->handleRequest($request);
+            $queue = $e_service->handleFileToQueue($form, $extraction);
+
+            return $this->createJsonResponse(array(
+                "code" => 200,
+                "response" => "deduplication has started",
+                "filename" => $queue->getFilePath(),
+                "field" => $queue->getField(),
+                "queue_id" => $queue->getId()
+            ));
+
+        }catch(\Exception $e){
+            return $this->createJsonResponse($e->getMessage(), $e->getCode());
+        }
     }
 
     /**

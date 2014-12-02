@@ -28,8 +28,6 @@ class Extraction {
 
     protected $id;
 
-
-
     protected $name;
 
     protected $quantity;
@@ -44,9 +42,12 @@ class Extraction {
 
     protected $contacts;
 
+    protected $extraction_deduplications;
+
     function __construct()
     {
         $this->contacts = new ArrayCollection();
+        $this->extraction_deduplications = new ArrayCollection();
     }
 
     function __toString()
@@ -176,5 +177,23 @@ class Extraction {
 
     public function removeContact(Contact $contact){
         $this->contacts->removeElement($contact);
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getExtractionDeduplications()
+    {
+        return $this->extraction_deduplications;
+    }
+
+
+    public function addExtractionDeduplication(ExtractionDeduplication $extractionDeduplication){
+        $extractionDeduplication->setExtraction($this);
+        $this->extraction_deduplications[] = $extractionDeduplication;
+    }
+
+    public function removeExtractionDeduplication(ExtractionDeduplication $extractionDeduplication){
+        $this->extraction_deduplications->removeElement($extractionDeduplication);
     }
 }

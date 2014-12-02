@@ -28,7 +28,7 @@ class ExtractionRepository extends EntityRepository {
         $em = $this->getEntityManager();
 
         $batch = 1;
-        $batchSize = 100;
+        $batchSize = 1000;
         if(!$merge){
             $extraction->getContacts()->clear();
         }

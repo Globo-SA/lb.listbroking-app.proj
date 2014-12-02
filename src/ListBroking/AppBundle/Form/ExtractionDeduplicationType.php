@@ -6,8 +6,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class AdvancedExcludeType extends AbstractType
+class ExtractionDeduplicationType extends AbstractType
 {
+
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -15,10 +16,19 @@ class AdvancedExcludeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('field', 'choice', array(
+                    'label' => 'Deduplicate by',
+                    'choices' => array('id' => 'ID', 'phone_id' => 'Phone'),
+                    'attr' => array(
+                        'class' => 'form-control',
+                        'data-select' => 'local'
+                    )
+                )
+            )
             ->add('upload_file', 'file', array(
-                'attr' => array('class' => 'form-control')
+                'attr' => array('class' => 'form-control fileinput')
             ))
-            ;
+        ;
     }
 
     /**
@@ -35,6 +45,6 @@ class AdvancedExcludeType extends AbstractType
      */
     public function getName()
     {
-        return 'advanced_exclude';
+        return 'extraction_deduplication';
     }
 }

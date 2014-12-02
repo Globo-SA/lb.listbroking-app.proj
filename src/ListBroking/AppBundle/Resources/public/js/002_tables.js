@@ -18,7 +18,7 @@
                 .toggleClass('btn-warning')
                 .toggleClass('btn-default')
                 .next('button').slide('left', 'slow');
-        })
+        });
 
         $('.confirm_exclude_lead').on('click',function(){
             $('#loading_widget').fadeIn();

@@ -1,6 +1,7 @@
 ListBroking\ExceptionHandlerBundle\Entity\ExceptionLog:
     type: entity
     table: exception_log
+    repositoryClass: ListBroking\ExceptionHandlerBundle\Repository\ExceptionLogRepository
     id:
         id:
             type: bigint

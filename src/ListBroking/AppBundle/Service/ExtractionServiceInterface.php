@@ -12,8 +12,11 @@ namespace ListBroking\AppBundle\Service;
 
 
 use ListBroking\AppBundle\Entity\Extraction;
+use ListBroking\AppBundle\Entity\ExtractionDeduplicationQueue;
 use ListBroking\AppBundle\Entity\ExtractionTemplate;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
+use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
+use Symfony\Component\Form\Form;
 
 interface ExtractionServiceInterface {
 
@@ -33,12 +36,22 @@ interface ExtractionServiceInterface {
     public function getExtractionContacts(Extraction $extraction);
 
     /**
+     * Persists Deduplications to the database, this function uses PHPExcel with APC
+     * @param string $filename
+     * @param Extraction $extraction
+     * @param string $field
+     * @param $merge
+     * @return void
+     */
+    public function persistDeduplications($filename, Extraction $extraction, $field, $merge);
+
+    /**
      * Adds Leads to the Lead Filter of a given Extraction
      * @param Extraction $extraction
      * @param $leads_array
      * @param string $field
      */
-    public function excludeLeads(Extraction $extraction, $leads_array, $field = 'id');
+    //public function excludeLeads(Extraction $extraction, $leads_array, $field = 'id');
 
     /**
      * Gets all the Existing Export Types
@@ -46,6 +59,13 @@ interface ExtractionServiceInterface {
      */
     public function getExportTypes();
 
+    /**
+     * Handle the uploaded file and adds it to the queue
+     * @param Form $form
+     * @param Extraction $extraction
+     * @return ExtractionDeduplicationQueue
+     */
+    public function handleFileToQueue(Form $form, Extraction $extraction);
     /**
      * Exports Leads using a given type
      * @param $extraction_template ExtractionTemplate
@@ -55,7 +75,7 @@ interface ExtractionServiceInterface {
      * @internal param $type
      * @return mixed
      */
-    public function exportExtraction(ExtractionTemplate $extraction_template, $contacts, $info = array());
+    //public function exportExtraction(ExtractionTemplate $extraction_template, $contacts, $info = array());
 
     /**
      * Used to import a file with Leads
@@ -64,13 +84,4 @@ interface ExtractionServiceInterface {
      * @return mixed
      */
     public function importExtraction($filename);
-
-    /**
-     * Generates the filename and generate a filename for it
-     * @param $name
-     * @param $extension
-     * @param string $dir
-     * @return string
-     */
-    public function generateFilename($name, $extension = null, $dir = 'exports/');
 } 

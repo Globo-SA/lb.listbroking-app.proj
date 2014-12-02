@@ -69,6 +69,16 @@ services:
       arguments: [~, ListBroking\AppBundle\Entity\ExtractionTemplate, SonataAdminBundle:CRUD]
       tags:
           - {name: sonata.admin, manager_type: orm, group: Other, label: ExtractionTemplate}
+  listbroking.admin.extraction_deduplication:
+      class: ListBroking\AppBundle\Admin\ExtractionDeduplicationAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\ExtractionDeduplication, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Other, label: ExtractionDeduplication}
+  listbroking.admin.extraction_deduplication_queue:
+      class: ListBroking\AppBundle\Admin\ExtractionDeduplicationQueueAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\ExtractionDeduplicationQueue, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Other, label: ExtractionDeduplicationQueue}
   listbroking.admin.lock:
       class: ListBroking\AppBundle\Admin\LockAdmin
       arguments: [~, ListBroking\AppBundle\Entity\Lock, SonataAdminBundle:CRUD]

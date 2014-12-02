@@ -52,7 +52,7 @@
                          .val(null)
                     ;
                     $form.find('[type=checkbox]')
-                         .iCheck('uncheck')
+                         .iCheck('uncheck');
                     $form.find('[type=hidden][data-select-mode]')
                          .select2("val", null)
                     ;
@@ -151,4 +151,4 @@
         });
     });
 }
-)(jQuery, ListBroking)
+)(jQuery, ListBroking);

@@ -50,13 +50,15 @@ assetic:
 # Doctrine Configuration
 doctrine:
     dbal:
-        driver:   "%database_driver%"
-        host:     "%database_host%"
-        port:     "%database_port%"
-        dbname:   "%database_name%"
-        user:     "%database_user%"
-        password: "%database_password%"
-        charset:  UTF8
+        driver:    "%database_driver%"
+        host:      "%database_host%"
+        port:      "%database_port%"
+        dbname:    "%database_name%"
+        user:      "%database_user%"
+        password:  "%database_password%"
+        charset:   UTF8
+        logging:   "%database_logging%"
+        profiling: "%database_profiling%"
         types:
           json: Sonata\Doctrine\Types\JsonType
 

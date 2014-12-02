@@ -3,7 +3,7 @@
 }
 
 .small_row {
-    margin: -20px 0px;
+    margin: -20px 0;
 }
 
 .collapsed{
@@ -28,7 +28,7 @@
 }
 
 .btn-link {
-    -webkit-box-shadow: none;
+    box-shadow: none;
     -moz-box-shadow:    none;
     box-shadow:         none;
 }
@@ -47,7 +47,7 @@
 }
 .popover-content .input-sm{
     height: 22px;
-    padding: 0px;
+    padding: 0;
 }
 
 .col-md-0 {
@@ -55,5 +55,5 @@
 }
 
 blockquote.small-label label{
-    font-size: 14.5px;
+    font-size: 14px;
 }

@@ -5,7 +5,8 @@ parameters:
   database_name:     listbroking
   database_user:     root
   database_password: ~
-
+  database_logging: false
+  database_profiling: false
 
   mailer_transport:  smtp
   mailer_encryption: ssl

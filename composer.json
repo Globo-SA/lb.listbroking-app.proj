@@ -35,7 +35,7 @@
 
         "friendsofsymfony/jsrouting-bundle": "2.0.*@dev",
         "jms/serializer-bundle": "~0.13",
-        "liuggio/ExcelBundle": "2.0.*",
+        "phpoffice/phpexcel": "~1.8",
 
         "sonata-project/easy-extends-bundle": "2.1.*@dev",
         "sonata-project/admin-bundle": "~2.3",

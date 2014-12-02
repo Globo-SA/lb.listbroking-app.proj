@@ -32,4 +32,4 @@
         });
     });
 }
-)(jQuery, ListBroking)
+)(jQuery, ListBroking);

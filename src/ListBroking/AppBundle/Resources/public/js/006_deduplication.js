@@ -6,21 +6,68 @@
     $(function() {
         "use strict";
 
-        $('form[name=advanced_exclude]').submit(function(){
+        //Stop submitting because it will never be used
+        var $extraction_deduplication_form = $("[name=extraction_deduplication]");
+        $extraction_deduplication_form.submit(function(e){
+            e.preventDefault();
+            return false;
+        });
 
-            var $input = $('#advanced_exclude_upload_file');
-            var filename = getExtension($input.val());
-            console.log(filename);
-            if(!filename.match(/(xls|xlsx)/i)){
-                $input.tooltip({
-                    title: 'Must have a .xls or .xlsx extension'
-                }).tooltip('show')
+        //jQuery-Fileupload will take care of submitting
+        $("#extraction_deduplication_upload_button").on('click', function () {
+            var $this = $(this);
+            var data = $this.data();
 
-                setTimeout(function(){
-                    $('#advanced_exclude_upload_file').tooltip('destroy')
-                }, 2000);
+            //Check if there's a file before submitting
+            if (!$.isEmptyObject(data)) {
+                $('#extraction_deduplication_upload_file').attr('required', false);
+                data.submit()
             }
         });
+        $('#extraction_deduplication_upload_file').fileupload({
+            url: ListBroking.routing.generate('ajax_deduplication', {extraction_id:  $extraction_deduplication_form.data('extraction')}),
+            dataType: 'json',
+            autoUpload: false,
+            removeAfterUpload: false,
+        })
+        .on('fileuploadadd', function (e, data) {
+            $.each(data.files, function (index, file) {
+                $('#files').html(file.name);
+            });
+
+            //Reset progress-bar
+            $('.progress').addClass('hidden');
+            $('.progress-bar').css('width','0%');
+
+            $("#extraction_deduplication_upload_button").data(data);
+        })
+        .on('fileuploadprogressall', function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                var $progress = $('.progress');
+                if($progress.hasClass('hidden')){
+                    $progress.removeClass('hidden');
+                }
+                $('.progress-bar').css(
+                    'width',
+                    progress + '%'
+                );
+        })
+        .on('fileuploaddone', function (e, data) {
+                var $trigger = $('#lead_internal_deduplication_trigger');
+                var text = $trigger.html();
+                var alt_text = $trigger.data('alt');
+
+                //Close modal
+                $('#lead_internal_deduplication_modal').modal('hide');
+                $trigger
+                    .attr('disabled', 'disabled')
+                    .html(alt_text)
+                ;
+                $trigger.data(text);
+
+                //TODO: Add spiner to check if its done
+        })
+        ;
 
         $('#internal-deduplication-download, #external-deduplication-download').on('click', function(e){
             e.preventDefault();

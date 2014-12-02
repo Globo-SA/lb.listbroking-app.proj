@@ -25,7 +25,6 @@ class AppKernel extends Kernel
             // Extra libraries
             new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
-            new Liuggio\ExcelBundle\LiuggioExcelBundle(),
 
             //Security
             new FOS\UserBundle\FOSUserBundle(),

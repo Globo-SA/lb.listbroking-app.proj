@@ -54,10 +54,6 @@ class OwnerValidator extends BaseValidator {
         } else {
             throw new LeadValidationException("You must specify a owner (it can be an ID or a NAME).");
         }
-
-        if ($owner == null){
-            throw new LeadValidationException("This owner_id/name does not exist. Please enter a valid id/name for the owner.");
-        }
     }
 
 } 

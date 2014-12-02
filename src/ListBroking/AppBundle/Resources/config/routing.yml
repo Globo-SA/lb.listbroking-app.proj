@@ -35,3 +35,9 @@ ajax_extraction_download:
     defaults: { _controller: ListBrokingAppBundle:Ajax:extractionDownload }
     options:
         expose: true
+
+ajax_deduplication:
+    path: /ajax/extraction/{extraction_id}/deduplication
+    defaults: { _controller: ListBrokingAppBundle:Ajax:deduplication }
+    options:
+        expose: true

@@ -1,19 +1,33 @@
+{% if deduplication_queues is not empty %}
+    {% set text = "<i class='icon icon-large ion-loading-c'></i>Deduplicating..." %}
+    {% set alt_text = "Deduplication by File" %}
+{% else %}
+    {% set text = "Deduplication by File" %}
+    {% set alt_text = "<i class='icon icon-large ion-loading-c'></i>Deduplicating..." %}
+{% endif %}
 <blockquote>
     <p>
-        <button class="btn btn-flat btn-info" data-toggle="modal" data-target="#lead_internal_deduplication">
-            Internal Deduplication
+        <button
+                id="lead_internal_deduplication_trigger"
+                class="btn btn-flat btn-primary"
+                data-toggle="modal"
+                data-target="#lead_internal_deduplication_modal"
+                data-alt="{{ alt_text }}"
+                {% if deduplication_queues is not empty %}disabled="disabled" {% endif %}
+        >
+           {{ text|raw }}
         </button>
-    <small>Used to exclude <strong>internal</strong> leads (known ID's) by CSV file</small>
+    <small>Used to exclude leads by CSV file</small>
     </p>
 </blockquote>
-<div class="modal fade" id="lead_internal_deduplication">
+<div class="modal fade" id="lead_internal_deduplication_modal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                             class="sr-only">Close</span>
                 </button>
-                <h4 class="modal-title">Lead Internal Deduplication</h4>
+                <h4 class="modal-title">Lead Deduplication</h4>
             </div>
             <div class="modal-body">
                 <blockquote class="small-label">
@@ -25,53 +39,72 @@
                     <small>Excel file with contact information for deduplication</small>
                 </blockquote>
                 </div>
-            {{ form_start(forms.adv_exclusion) }}
+            {{ form_start(forms.adv_exclusion, {attr: {'data-extraction': extraction.id}}) }}
             <div class="modal-body">
                 <blockquote class="small-label">
-                    {{ form_rest(forms.adv_exclusion) }}
-                    <small>Excel file with duplicated contacts (one column with <strong>contact IDs</strong>)</small>
+                    {{ form_row(forms.adv_exclusion.field) }}
+                    {{ form_label(forms.adv_exclusion.upload_file) }}
+                    <span class="btn btn-flat btn-primary fileinput-button form-control">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>Select file...</span>
+                        <!-- The file input field used as target for the file upload widget -->
+                        {{ form_widget(forms.adv_exclusion.upload_file) }}
+                    </span>
+                    <small><strong id="files">No file chosen</strong></small>
+                    <small>Excel file with duplicated contacts (one column <strong>only</strong>)</small>
+
+                    <div class="progress hidden">
+                        <div class="progress-bar progress-bar-success"></div>
+                    </div>
                 </blockquote>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button class="btn btn-flat btn-primary">Deduplicate</button>
+                <button id="extraction_deduplication_upload_button" class="btn btn-flat btn-primary">Deduplicate</button>
             </div>
+            {{ form_rest(forms.adv_exclusion) }}
             {{ form_end(forms.adv_exclusion) }}
         </div>
         <!-- /.modal-content -->
     </div> <!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<br>
-<blockquote>
-    <p>
-        <button class="btn btn-flat btn-primary" data-toggle="modal" data-target="#lead_external_deduplication">
-           External Deduplication
-        </button>
-        <small>Used to exclude <strong>external</strong> leads (unknown ID's) by CSV file</small>
-    </p>
-</blockquote>
-<div class="modal fade" id="lead_external_deduplication">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
-                            class="sr-only">Close</span>
-                </button>
-                <h4 class="modal-title">External Lead Deduplication</h4>
-            </div>
-            {{ form_start(forms.adv_external_exclusion) }}
-            <div class="modal-body">
-                <blockquote class="small-label">
-                    {{ form_rest(forms.adv_external_exclusion) }}
-                    <small>Excel file with contacts to deduplicate (one column the with <strong>chosen field</strong>)</small>
-                </blockquote>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button class="btn btn-flat btn-primary">Deduplicate</button>
-            </div>
-            {{ form_end(forms.adv_external_exclusion) }}
-        </div>
-        <!-- /.modal-content -->
-    </div> <!-- /.modal-dialog -->
-</div><!-- /.modal -->
+
+
+
+
+
+{#<br>#}
+{#<blockquote>#}
+    {#<p>#}
+        {#<button class="btn btn-flat btn-primary" data-toggle="modal" data-target="#lead_external_deduplication">#}
+           {#External Deduplication#}
+        {#</button>#}
+        {#<small>Used to exclude <strong>external</strong> leads (unknown ID's) by CSV file</small>#}
+    {#</p>#}
+{#</blockquote>#}
+{#<div class="modal fade" id="lead_external_deduplication">#}
+    {#<div class="modal-dialog">#}
+        {#<div class="modal-content">#}
+            {#<div class="modal-header">#}
+                {#<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span#}
+                            {#class="sr-only">Close</span>#}
+                {#</button>#}
+                {#<h4 class="modal-title">External Lead Deduplication</h4>#}
+            {#</div>#}
+            {#{{ form_start(forms.adv_external_exclusion) }}#}
+            {#<div class="modal-body">#}
+                {#<blockquote class="small-label">#}
+                    {#{{ form_rest(forms.adv_external_exclusion) }}#}
+                    {#<small>Excel file with contacts to deduplicate (one column the with <strong>chosen field</strong>)</small>#}
+                {#</blockquote>#}
+            {#</div>#}
+            {#<div class="modal-footer">#}
+                {#<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>#}
+                {#<button class="btn btn-flat btn-primary submit">Deduplicate</button>#}
+            {#</div>#}
+            {#{{ form_end(forms.adv_external_exclusion) }}#}
+        {#</div>#}
+        {#<!-- /.modal-content -->#}
+    {#</div> <!-- /.modal-dialog -->#}
+{#</div><!-- /.modal -->#}

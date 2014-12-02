@@ -10,14 +10,14 @@
 }
 
 .col-md-12 > .form-group.col-md-3{
-    padding-left: 0px;
+    padding-left: 0;
 }
 form .col-md-12 > .col-md-3{
     padding-right: 2px;
 }
 
 form .col-md-12 {
-    padding-left: 0px;
+    padding-left: 0;
 }
 
 form .col-md-12 > .col-md-3{
@@ -38,7 +38,7 @@ form .col-md-12 > .col-md-3{
 }
 
 blockquote {
-    padding: 0px 20px;
+    padding: 0 20px;
 }
 
 td .lead_exclude{
