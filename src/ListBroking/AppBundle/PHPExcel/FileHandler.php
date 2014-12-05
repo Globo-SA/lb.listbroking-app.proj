@@ -37,6 +37,64 @@ class FileHandler {
     }
 
     /**
+     * Used to export a file
+     * @param $filename
+     * @param $headers
+     * @param $array_data
+     */
+    public function export($filename, $headers, $array_data){
+
+        // File Object
+        $obj = new \PHPExcel();
+        $sheet = $obj->getActiveSheet();
+
+        // Writer Object
+        $writer = \PHPExcel_IOFactory::createWriter($obj, $this->export_types['Excel2007']['type']);
+
+        $header_column = 'A';
+        foreach($headers as $label){
+            $sheet->setCellValue("{$header_column}1", $label);
+            $header_column++;
+        }
+
+        $row = 2; // 1 line is used for headers
+        foreach ($array_data as $data)
+        {
+            $column = 'A';
+            foreach ($headers as $field => $label){
+
+                switch($field){
+                    case 'lead_id':
+                        $field_value = $data['lead']['id'];
+                        break;
+                    case 'phone':
+                        $field_value = $data['lead']['phone'];
+                        break;
+                    case 'contact_id':
+                        $field_value = $data['id'];
+                        break;
+                    default:
+                        $field_value = $data[$field];
+                        if($field_value instanceof \DateTime){
+                            $field_value = $field_value->format('Y-m-d');
+                        }
+                        if(is_array($field_value) && array_key_exists('name', $field_value)){
+                            $field_value = $field_value['name'];
+                        }
+                        break;
+                }
+                $sheet->setCellValue("{$column}{$row}", $field_value);
+                $column++;
+            }
+            $row++;
+        }
+
+        // Save file
+        $writer->save($filename);
+    }
+
+
+    /**
      * Used to import a file
      * @param $filename
      * @internal param $filename

@@ -42,7 +42,7 @@ ListBroking\AppBundle\Entity\Extraction:
         extraction_deduplications:
             targetEntity: ListBroking\AppBundle\Entity\ExtractionDeduplication
             mappedBy:     extraction
-            cascade:      [all]
+            cascade:      [persist]
 # Blameable
     manyToOne:
         created_by:

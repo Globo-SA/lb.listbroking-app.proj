@@ -30,6 +30,8 @@ class AjaxController extends Controller {
     public function lastExceptionsAction(Request $request){
         try{
             $this->validateRequest($request);
+
+            //TODO: Remove Repository from controller
             $last = $this->getDoctrine()->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
                 ->findLastExceptions(new \DateTime('- 1 week'), false);
 
@@ -62,64 +64,64 @@ class AjaxController extends Controller {
         }
     }
 
-    /**
-     * Generic form submission action
-     * @param Request $request
-     * @param $form_name
-     * @return JsonResponse
-     */
-    public function formSubmissionAction(Request $request, $form_name){
-        try{
-            $this->validateRequest($request);
+//    /**
+//     * Generic form submission action
+//     * @param Request $request
+//     * @param $form_name
+//     * @return JsonResponse
+//     */
+//    public function formSubmissionAction(Request $request, $form_name){
+//        try{
+//            $this->validateRequest($request);
+//
+//            $ui_service = $this->get('ui');
+//
+//            $result = $ui_service->submitForm($form_name, $request);
+//            if($result['success']){
+//
+//                return $this->createJsonResponse(array_merge(
+//                        array("form_name" => $form_name), $result
+//                    )
+//                );
+//            }
+//
+//            return $this->createJsonResponse(array_merge(
+//                array("form_name" => $form_name), $result
+//            ), 400);
+//
+//        }catch(\Exception $e){
+//            return $this->createJsonResponse($e->getMessage(), $e->getCode());
+//
+//        }
+//    }
 
-            $ui_service = $this->get('ui');
-
-            $result = $ui_service->submitForm($form_name, $request);
-            if($result['success']){
-
-                return $this->createJsonResponse(array_merge(
-                        array("form_name" => $form_name), $result
-                    )
-                );
-            }
-
-            return $this->createJsonResponse(array_merge(
-                array("form_name" => $form_name), $result
-            ), 400);
-
-        }catch(\Exception $e){
-            return $this->createJsonResponse($e->getMessage(), $e->getCode());
-
-        }
-    }
-
-    /**
-     * Excludes leads of a given Extraction
-     * @param Request $request
-     * @param $extraction_id
-     * @param $lead_id
-     * @return JsonResponse
-     */
-    public function extractionExcludeLeadAction(Request $request, $extraction_id, $lead_id){
-        try{
-            $this->validateRequest($request);
-
-            $a_service = $this->get('app');
-            $e_service = $this->get('extraction');
-
-            $extraction = $a_service->getEntity('extraction', $extraction_id, true, true);
-            $e_service->excludeLeads($extraction, array(array('id' => $lead_id)));
-
-            return $this->createJsonResponse(array(
-                "code" => 200,
-                "response" => "success",
-                "extraction_id" => $extraction_id,
-                "lead_id" => $lead_id
-            ));
-        }catch(\Exception $e){
-            return $this->createJsonResponse($e->getMessage(), $e->getCode());
-        }
-    }
+//    /**
+//     * Excludes leads of a given Extraction
+//     * @param Request $request
+//     * @param $extraction_id
+//     * @param $lead_id
+//     * @return JsonResponse
+//     */
+//    public function extractionExcludeLeadAction(Request $request, $extraction_id, $lead_id){
+//        try{
+//            $this->validateRequest($request);
+//
+//            $a_service = $this->get('app');
+//            $e_service = $this->get('extraction');
+//
+//            $extraction = $a_service->getEntity('extraction', $extraction_id, true, true);
+//            $e_service->excludeLeads($extraction, array(array('id' => $lead_id)));
+//
+//            return $this->createJsonResponse(array(
+//                "code" => 200,
+//                "response" => "success",
+//                "extraction_id" => $extraction_id,
+//                "lead_id" => $lead_id
+//            ));
+//        }catch(\Exception $e){
+//            return $this->createJsonResponse($e->getMessage(), $e->getCode());
+//        }
+//    }
 
     /**
      * Third step on Lead Extraction, Lead Extraction
@@ -132,15 +134,17 @@ class AjaxController extends Controller {
      */
     public function extractionDownloadAction($extraction_id, $extraction_template_id){
 
-        //Services
+        //Service
         $e_service = $this->get('extraction');
-        $a_service = $this->get('app');
 
         // Current Extraction
-        $extraction = $a_service->getEntity('extraction', $extraction_id, true, true);
+        $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
+
+        // Get all contacts in one Query (Better then using $extraction->getContacts())
+        $contacts = $e_service->getExtractionContacts($extraction);
 
         /** @var Extraction $extraction */
-        $filename = $e_service->exportExtraction($a_service->getEntity('extraction_template', $extraction_template_id), $extraction->getContacts());
+        $filename = $e_service->exportExtraction($e_service->getEntity('extraction_template', $extraction_template_id), $contacts);
 
         // Generate response
         $response = new Response();
@@ -172,18 +176,16 @@ class AjaxController extends Controller {
         try{
             $this->validateRequest($request);
 
-            // Services
-            $u_service = $this->get('ui');
+            // Service
             $e_service = $this->get('extraction');
-            $a_service = $this->get('app');
 
             // Current Extraction
-            $extraction = $a_service->getEntity('extraction', $extraction_id, true, true);
+            $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
 
             // Handle the form and adds file to the Queue
-            $form = $u_service->generateForm(new ExtractionDeduplicationType());
+            $form = $e_service->generateForm(new ExtractionDeduplicationType());
             $form->handleRequest($request);
-            $queue = $e_service->handleFileToQueue($form, $extraction);
+            $queue = $e_service->addDeduplicationFileToQueue($form, $extraction);
 
             return $this->createJsonResponse(array(
                 "code" => 200,
@@ -192,7 +194,26 @@ class AjaxController extends Controller {
                 "field" => $queue->getField(),
                 "queue_id" => $queue->getId()
             ));
+        }catch(\Exception $e){
+            return $this->createJsonResponse($e->getMessage(), $e->getCode());
+        }
+    }
 
+    public function deduplicationQueueAction(Request $request, $extraction_id){
+        try{
+            //$this->validateRequest($request);
+            $e_service = $this->get('extraction');
+
+            // Run Extraction
+            $extraction = $e_service->getEntity('extraction', $extraction_id);
+
+            //Check for Queues
+            $deduplication_queues = $e_service->getDeduplicationQueuesByExtraction($extraction);
+
+            return $this->createJsonResponse(array(
+                "code" => 200,
+                "response" => count($deduplication_queues) > 0 ? "running" : 'ended',
+            ));
         }catch(\Exception $e){
             return $this->createJsonResponse($e->getMessage(), $e->getCode());
         }

@@ -4,9 +4,6 @@ imports:
     - { resource: services.yml }
     - { resource: doctrine_cache.yml }
 
-    #- { resource: @AdclickDoctrineBehaviorBundle/Resources/config/config.yml }
-    #- { resource: @AdclickUserBundle/Resources/config/config.yml }
-
 framework:
     #esi:             ~
     translator:      { fallback: "%locale%" }

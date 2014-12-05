@@ -17,6 +17,10 @@ ListBroking\AppBundle\Entity\ExtractionDeduplication:
             type: integer
             column: contact_id
             nullable: true
+        extraction_id:
+            type: integer
+            column: extraction_id
+            nullable: true
         phone:
             type: integer
             column: phone
@@ -25,42 +29,4 @@ ListBroking\AppBundle\Entity\ExtractionDeduplication:
             type: text
             column: email
             nullable: true
-
-# Timestampable
-        created_at:
-            type: datetime
-            nullable: true
-            gedmo: { timestampable: { on: create } }
-
-        updated_at:
-            type: datetime
-            nullable: true
-            gedmo: { timestampable: { on: update } }
-# End of Timestampable
-# Blameable
-    manyToOne:
-        created_by:
-            targetEntity: Application\Sonata\UserBundle\Entity\User
-            joinColumn:
-                name: created_by
-                referencedColumnName: id
-                onDelete: restrict
-            gedmo: { blameable: { on: create } }
-
-        updated_by:
-            targetEntity: Application\Sonata\UserBundle\Entity\User
-            joinColumn:
-                name: updated_by
-                referencedColumnName: id
-                onDelete: restrict
-            gedmo: { blameable: { on: update } }
-# End of blameable
-        extraction:
-            targetEntity:             ListBroking\AppBundle\Entity\Extraction
-            inversedBy:               extraction_deduplications
-            joinColumn:
-                name:                 extraction_id
-                referencedColumnName: id
-                onDelete:             restrict
-            gedmo: { blameable: { on: create } }
     lifecycleCallbacks: {  }

@@ -12,34 +12,30 @@ class ExtractionAdminController extends CRUDController
     public function filteringAction()
     {
         // Services
-        $u_service = $this->get('ui');
-        $a_service = $this->get('app');
         $e_service = $this->get('extraction');
-
         // Current Extraction
         $extraction_id = $this->get('request')->get($this->admin->getIdParameter());
 
         // Run Extraction
-        $extraction = $a_service->getEntity('extraction', $extraction_id, true, true);
+        $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
+
         $e_service->runExtraction($extraction);
 
         // Get all contacts in one Query (Better then using $extraction->getContacts())
         $contacts = $e_service->getExtractionContacts($extraction);
 
         // Forms
-        $adv_exclusion = $u_service->generateForm(new ExtractionDeduplicationType());
-        $adv_external_exclusion = $u_service->generateForm(new ExtractionDeduplicationType());
-        $filters_form = $u_service->generateForm(
+        $adv_exclusion = $e_service->generateForm(new ExtractionDeduplicationType());
+        $adv_external_exclusion = $e_service->generateForm(new ExtractionDeduplicationType());
+        $filters_form = $e_service->generateForm(
             'filters',
             $this->generateUrl(
                 'admin_listbroking_app_extraction_filtering', array('id' => $extraction_id)),
             $extraction->getFilters()
         );
 
-        //TODO: Cache this !
         //Check for Queues
-        $deduplication_queues = $this->get('doctrine')->getManager()->getRepository('ListBrokingAppBundle:ExtractionDeduplicationQueue')
-            ->findOneBy(array('extraction' => $extraction));
+        $deduplication_queues = $e_service->getDeduplicationQueuesByExtraction($extraction);
 
         // Render Response
         return $this->render('@ListBrokingApp/Extraction/filtering.html.twig',

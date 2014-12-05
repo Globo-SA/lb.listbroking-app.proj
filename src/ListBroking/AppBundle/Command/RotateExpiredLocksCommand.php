@@ -33,7 +33,7 @@ class RotateExpiredLocksCommand extends ContainerAwareCommand{
 
     protected function configure(){
         $this
-            ->setName('locks:rotate_expired')
+            ->setName('listbroking:locks:rotate_expired')
             ->setDescription('Removes old Locks from the main lock table')
             ->addOption('days', null,  InputOption::VALUE_OPTIONAL, 'Rotate locks before X days')
         ;

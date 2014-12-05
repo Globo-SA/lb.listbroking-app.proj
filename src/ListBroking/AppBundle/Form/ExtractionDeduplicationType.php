@@ -18,7 +18,7 @@ class ExtractionDeduplicationType extends AbstractType
         $builder
             ->add('field', 'choice', array(
                     'label' => 'Deduplicate by',
-                    'choices' => array('id' => 'ID', 'phone_id' => 'Phone'),
+                    'choices' => array('lead_id' => 'Lead', 'phone' => 'Phone', 'email' => 'Email'),
                     'attr' => array(
                         'class' => 'form-control',
                         'data-select' => 'local'

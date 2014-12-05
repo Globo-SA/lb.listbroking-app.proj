@@ -43,16 +43,6 @@ interface UIServiceInterface
     function submitForm($form_name, $request);
 
     /**
-     * Generates a new form view
-     * @param $type
-     * @param bool $view
-     * @param null $data
-     * @param $action
-     * @return FormBuilderInterface|Form
-     */
-    function generateForm($type, $action = null, $data = null, $view = false);
-
-    /**
      * Generates a new CSRF token
      * @param $intention
      * @return mixed

@@ -20,9 +20,6 @@ class ExtractionDeduplication
 {
     const CACHE_ID = 'extraction_deduplication';
 
-    use TimestampableEntityBehavior,
-        BlameableEntityBehavior;
-
     /**
      * @var integer
      */
@@ -32,7 +29,7 @@ class ExtractionDeduplication
 
     protected $contact_id;
 
-    protected $extraction;
+    protected $extraction_id;
 
     protected $phone;
 
@@ -83,17 +80,17 @@ class ExtractionDeduplication
     /**
      * @return Extraction
      */
-    public function getExtraction()
+    public function getExtractionId()
     {
-        return $this->extraction;
+        return $this->extraction_id;
     }
 
     /**
-     * @param Extraction $extraction
+     * @param $extraction_id
      */
-    public function setExtraction(Extraction $extraction)
+    public function setExtractionId($extraction_id)
     {
-        $this->extraction = $extraction;
+        $this->extraction_id = $extraction_id;
     }
 
     /**

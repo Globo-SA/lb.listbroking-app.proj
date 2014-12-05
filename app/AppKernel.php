@@ -43,6 +43,7 @@ class AppKernel extends Kernel
             new ListBroking\ExceptionHandlerBundle\ListBrokingExceptionHandlerBundle(),
             //new ListBroking\APIBundle\ListBrokingAPIBundle(),
             new ListBroking\AppBundle\ListBrokingAppBundle(),
+            new ListBroking\TaskBundle\ListBrokingTaskBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

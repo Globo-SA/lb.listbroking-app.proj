@@ -7,5 +7,5 @@ var ListBroking = {
     config : {
         culture: 'en'
     },
-    component: {}
+    variables: {}
 };

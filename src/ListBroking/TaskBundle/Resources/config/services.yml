@@ -1,0 +1,4 @@
+services:
+#    list_broking_task.example:
+#        class: ListBroking\TaskBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]

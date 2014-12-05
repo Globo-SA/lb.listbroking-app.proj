@@ -26,7 +26,6 @@ class ExtractionRepository extends EntityRepository {
     public function addContacts(Extraction $extraction, $contacts, $merge)
     {
         $em = $this->getEntityManager();
-
         $batch = 1;
         $batchSize = 1000;
         if(!$merge){
@@ -36,13 +35,10 @@ class ExtractionRepository extends EntityRepository {
             $contact = $em->getPartialReference('ListBrokingAppBundle:Contact', $contact['contact_id']);
             $extraction->addContact($contact);
             if (($batch % $batchSize) === 0) {
-                $em->flush();
 
                 $batch = 1;
             }
             $batch++;
         }
-        $em->flush();
-        $em->clear();
     }
 } 

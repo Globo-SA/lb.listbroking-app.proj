@@ -41,3 +41,9 @@ ajax_deduplication:
     defaults: { _controller: ListBrokingAppBundle:Ajax:deduplication }
     options:
         expose: true
+
+ajax_deduplication_queue:
+    path: /ajax/extraction/{extraction_id}/deduplication/queue
+    defaults: { _controller: ListBrokingAppBundle:Ajax:deduplicationQueue }
+    options:
+        expose: true

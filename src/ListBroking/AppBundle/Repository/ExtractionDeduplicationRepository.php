@@ -27,33 +27,42 @@ class ExtractionDeduplicationRepository extends EntityRepository {
      * @internal param $contacts
      * @return mixed
      */
-    public function addDeduplications(Extraction $extraction, $field, $data_array, $merge = true)
+    public function uploadDeduplicationsByFile($filename, Extraction $extraction, $field, $merge = true)
     {
-        $em = $this->getEntityManager();
+        $conn = $this->getEntityManager()->getConnection();
 
-        $inflector = new Inflector();
-        $method = 'set' . $inflector->classify($field);
+        $file = new \SplFileObject($filename);
+        $file_control = $file->getCsvControl();
 
-        $batch = 1;
-        $batchSize = 1000;
-        if(!$merge){
-            $extraction->getExtractionDeduplications()->clear();
-        }
-        foreach ($data_array as $data){
+        $insert_sql =<<<SQL
+            LOAD DATA LOCAL INFILE :filename
+            INTO TABLE extraction_deduplication
+            FIELDS TERMINATED BY '{$file_control[0]}'
+            ENCLOSED BY '{$file_control[1]}'
+            LINES TERMINATED BY '\\n'
+            IGNORE 1 LINES
+            ({$field})
+            SET extraction_id = :extraction
+SQL;
+        $params = array(
+            'filename' => $filename,
+            'extraction' => $extraction->getId()
+        );
 
-            $deduplication = new ExtractionDeduplication();
-            $deduplication->setExtraction($extraction);
-            $deduplication->$method($data);
-            $em->persist($deduplication);
+        $conn->prepare($insert_sql)
+             ->execute($params);
 
-            if (($batch % $batchSize) === 0) {
-                $em->flush();
-
-                $batch = 1;
-            }
-            $batch++;
-        }
-        $em->flush();
-        $em->clear();
+        $cleanup_sql = <<<SQL
+            DELETE
+            FROM extraction_deduplication
+            WHERE IFNULL(phone, 0) = 0
+            AND IFNULL(phone, 0) = 0
+            AND IFNULL(email, 0) = 0
+            AND IFNULL(lead_id, 0) = 0
+            AND IFNULL(contact_id, 0) = 0
+;
+SQL;
+        $conn->prepare($cleanup_sql)
+             ->execute();
     }
 } 

@@ -1,8 +1,8 @@
 doctrine_cache:
-    providers:
-        metadata_cache:
-            type: apc
-            namespace: metadata_cache_ns
-        apc_query_cache:
-            namespace: query_cache_ns
-            apc: ~
+  providers:
+    memcached_query_cache:
+      memcached:
+        servers:
+          memcached01.ss:
+            host: 127.0.0.1
+            port: 11211

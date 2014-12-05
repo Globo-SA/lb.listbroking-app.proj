@@ -1,0 +1,3 @@
+list_broking_task_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: ListBrokingTaskBundle:Default:index }

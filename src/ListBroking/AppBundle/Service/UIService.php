@@ -273,27 +273,7 @@ class UIService implements UIServiceInterface
         return $errors;
     }
 
-    /**
-     * Generates a new form view
-     * @param $type
-     * @param bool $view
-     * @param null $data
-     * @param $action
-     * @return FormBuilderInterface|Form
-     */
-    function generateForm($type, $action = null, $data = null, $view = false)
-    {
-        $form = $this->form_factory->createBuilder($type, $data);
-        if($action){
-            $form->setAction($action);
-        }
 
-        if ($view)
-        {
-            return $form->getForm()->createView();
-        }
-        return $form->getForm();
-    }
 
     /**
      * Generates a new CSRF token

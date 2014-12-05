@@ -17,20 +17,6 @@ parameters:
   locale:            en
   secret:            ThisTokenIsNotSoSecretChangeIt
 
-  # Session Storage information
-  session_memcached_host:     localhost
-  session_memcached_port:     11211
-  session_memcached_prefix:   sess
-  session_memcached_expire:   3600
-
-  cache_servers:
-    mongo:
-      host: localhost
-      port: 27017
-      user:
-      pass:
-      db: smarkio_cache
-      collection: cache
   java_bin_path: /usr/bin/java
   ruby_bin_path: /usr/bin/ruby
   compass_bin_path: /usr/bin/compass

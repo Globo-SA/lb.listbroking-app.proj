@@ -13,16 +13,19 @@ services:
     tags:
       - { name: form.type, alias: json }
 
-  filter_engine:
-    class: ListBroking\AppBundle\Engine\FilterEngine
-    arguments:
-      entityManager: @doctrine.orm.entity_manager
+  base:
+    class: ListBroking\AppBundle\Service\BaseService\BaseService
+    abstract: true
+    calls:
+      - [setLogger, [@logger]]
+      - [setDoctrine, [@doctrine]]
+      - [setEntityManager, [@doctrine.orm.entity_manager]]
+      - [setCache, [@doctrine_cache.providers.memcached_query_cache]]
+      - [setFormFactory, [@form.factory]]
 
   app:
     class: ListBroking\AppBundle\Service\AppService
-    arguments:
-      entityManager: @doctrine.orm.entity_manager
-      doctrineCache: @doctrine_cache.providers.apc_query_cache
+    parent: base
 
   lead:
     class: ListBroking\AppBundle\Service\LeadService
@@ -31,19 +34,21 @@ services:
 
   extraction:
     class: ListBroking\AppBundle\Service\ExtractionService
+    parent: base
+    arguments: [@request_stack,  @session, @filter_engine]
+
+
+  filter_engine:
+    class: ListBroking\AppBundle\Engine\FilterEngine
     arguments:
       entityManager: @doctrine.orm.entity_manager
-      doctrineCache: @doctrine_cache.providers.apc_query_cache
-      requestStack: @request_stack
-      session: @session
-      formFactory: @form.factory
-      filterEngine: @filter_engine
-  ui:
-    class: ListBroking\AppBundle\Service\UIService
-    arguments:
-      - @app
-      - @extraction
-      - @lead
-      - @form.factory
-      - @security.csrf.token_manager
-      - @doctrine.orm.entity_manager
+
+#  ui:
+#    class: ListBroking\AppBundle\Service\UIService
+#    arguments:
+#      - @app
+#      - @extraction
+#      - @lead
+#      - @form.factory
+#      - @security.csrf.token_manager
+#      - @doctrine.orm.entity_manager
