@@ -6,6 +6,14 @@
     $(function () {
         "use strict";
 
+        // If a tab is disabled dont activate it
+        $('a[data-toggle="tab"]').on('click', function (e) {
+            if($(this).parent('li').hasClass('disabled')){
+                e.preventDefault();
+                return false;
+            }
+        });
+
         // Extra animations
         jQuery.fn.extend({
             slide: function(direction, time) {

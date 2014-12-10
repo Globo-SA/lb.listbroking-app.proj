@@ -48,7 +48,7 @@ class AjaxController extends Controller {
      */
     public function listsAction(Request $request){
         try{
-            $this->validateRequest($request);
+            //$this->validateRequest($request);
 
             $ui_service = $this->get('ui');
 
@@ -58,6 +58,41 @@ class AjaxController extends Controller {
             $list = $ui_service->getEntityList($type, $parent_type, $parent_id);
 
             return $this->createJsonResponse($list);
+
+        }catch (\Exception $e){
+            return $this->createJsonResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function extractionContactsAction(Request $request, $extraction_id){
+        try{
+            $this->validateRequest($request);
+
+            $format = $request->get('format', 'html');
+
+            // Service
+            $e_service = $this->get('extraction');
+
+            // Current Extraction
+            $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
+
+            // Get all contacts in one Query (Better then using $extraction->getContacts())
+            $contacts = $e_service->getExtractionContacts($extraction);
+
+            if($format == 'html'){
+                // Render Response
+                return $this->render('@ListBrokingApp/Extraction/_configuration/contacts_table.html.twig',
+                    array(
+                        'extraction' => $extraction,
+                        'contacts' => $contacts
+                    )
+                );
+            }
+
+            return $this->createJsonResponse(array(
+                "code" => 200,
+                "response" => $contacts,
+            ));
 
         }catch (\Exception $e){
             return $this->createJsonResponse($e->getMessage(), $e->getCode());
@@ -164,6 +199,40 @@ class AjaxController extends Controller {
         $response->setContent(readfile($filename));
 
         return $response;
+    }
+
+    /**
+     * @param Request $request
+     * @param $extraction_id
+     * @param $extraction_template_id
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function extractionDeliverAction(Request $request, $extraction_id, $extraction_template_id){
+        try{
+            $this->validateRequest($request);
+
+            $emails = $request->get('emails', array());
+            $e_service = $this->get('extraction');
+
+            // Check if there are emails to send the extraction
+            if(empty($emails)){
+                return $this->createJsonResponse(array(
+                    "code" => 400,
+                    "response" => "No emails to send to where provided",
+                ));
+            }
+            // Current Extraction
+            $extraction = $e_service->getEntity('extraction', $extraction_id);
+
+            $e_service->deliverExtraction($extraction, $emails);
+
+            return $this->createJsonResponse(array(
+                "code" => 200,
+                "response" => "Emails sent",
+            ));
+        }catch(\Exception $e){
+            return $this->createJsonResponse($e->getMessage(), $e->getCode());
+        }
     }
 
     /**

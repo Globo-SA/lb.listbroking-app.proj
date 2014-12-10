@@ -33,7 +33,6 @@ class ExtractionTemplateAdmin extends Admin
         $listMapper
             ->add('id')
             ->add('name')
-            ->add('template')
             ->add('updated_at')
             ->add('_action', 'actions', array(
                 'actions' => array(
@@ -52,7 +51,7 @@ class ExtractionTemplateAdmin extends Admin
     {
         $formMapper
             ->add('name')
-            ->add('template')
+            ->add('template', 'textarea')
         ;
     }
 

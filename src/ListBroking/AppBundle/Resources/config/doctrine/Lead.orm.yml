@@ -8,6 +8,9 @@ ListBroking\AppBundle\Entity\Lead:
             id:   true
             generator:
                 strategy: AUTO
+    indexes:
+        phone_index:
+          columns: [ phone ]
     fields:
         phone:
             type:     string

@@ -13,6 +13,7 @@ namespace ListBroking\AppBundle\Service;
 
 use Doctrine\ORM\EntityManager;
 use ListBroking\AppBundle\Service\AppService;
+use ListBroking\AppBundle\Service\BaseService\BaseService;
 use ListBroking\AppBundle\Service\ExtractionService;
 use ListBroking\AppBundle\Service\LeadService;
 use Symfony\Component\Form\Form;
@@ -22,66 +23,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
-class UIService implements UIServiceInterface
+class UIService extends BaseService implements UIServiceInterface
 {
-
-    /**
-     * @var AppService
-     */
-    private $a_service;
-
-    /**
-     * @var ExtractionService
-     */
-    private $e_service;
-
-    /**
-     * @var LeadService
-     */
-    private $l_service;
-
-    /**
-     * @var FormFactory
-     */
-    private $form_factory;
-
-    /**
-     * @var CsrfTokenManager
-     */
-    private $csrf_token_manager;
-
-    /**
-     * @var EntityManager
-     */
-    private $em;
-
-    function __construct(
-        AppService $appService,
-        ExtractionService $extractionService,
-        LeadService $leadService,
-        FormFactory $form_factory,
-        CsrfTokenManagerInterface $csrf_token_manager,
-        EntityManager $entityManager
-    )
-    {
-        $this->a_service = $appService;
-        $this->e_service = $extractionService;
-        $this->l_service = $leadService;
-        $this->form_factory = $form_factory;
-        $this->csrf_token_manager = $csrf_token_manager;
-        $this->em = $entityManager;
-    }
-
-    /**
-     * Group leads by lock and count them
-     * @return array
-     */
-    public function countByLock()
-    {
-
-        return $this->l_service->countByLock();
-    }
-
     /**
      * Gets a list of entities using the services
      * provided in various bundles
@@ -102,23 +45,22 @@ class UIService implements UIServiceInterface
         switch ($type)
         {
             case 'client':
-                $list = $this->a_service->getEntities('client', false);
+                $list = $this->getEntities('client', false);
                 break;
             case 'campaign':
-                $tmp_list = $this->a_service->getEntities('campaign', false);
+                $tmp_list = $this->getEntities('campaign', false);
                 foreach ($tmp_list as $key => $obj)
                 {
                     if(!empty($parent_id) && $obj['client_id'] == $parent_id){
-                        $client = $this->a_service->getEntities('client', false);
+                        $client = $this->getEntities('client', false);
                         $obj['name'] = $client['name'] . ' - ' . $obj['name'];
 
                         $list[] = $obj;
                     }
                 }
-
                 break;
             case 'extraction':
-                $tmp_list = $this->a_service->getEntities('extraction', false);
+                $tmp_list = $this->getEntities('extraction', false);
                 foreach ($tmp_list as $key => $obj)
                 {
                     if(!empty($parent_id) && $obj['campaign_id'] == $parent_id){
@@ -127,7 +69,7 @@ class UIService implements UIServiceInterface
                 }
                 break;
             case 'extraction_template':
-                $list = $this->a_service->getEntities('extraction_template', false);
+                $list = $this->getEntities('extraction_template', false);
                 break;
             default:
                 throw new \Exception("Invalid List, {$type}", 400);

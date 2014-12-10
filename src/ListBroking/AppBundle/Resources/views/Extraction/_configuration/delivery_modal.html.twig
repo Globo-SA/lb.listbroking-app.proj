@@ -1,0 +1,62 @@
+<div class="modal fade" id="delivery_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                            class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title"><i class="fa fa-share"></i>&nbsp;Extraction Delivery</h4>
+            </div>
+            <div class="modal-body">
+                <p>For sending the extraction, you can choose to <b>download</b> the file and/or have the system <b>deliver</b>
+                    the files to a set of email addresses.
+                </p>
+                <p><b>Download file:</b></p>
+                <div class="row">
+                    <div class="col-md-12">
+                        <input type="hidden" data-select-mode="ajax" data-select-type="extraction_template" data-placeholder="Select a template..." class="form-control row-margin extraction_template">
+                        <button type="button" id="delivery-download" data-extraction="{{ extraction.id }}" class="btn btn-flat btn-primary"><i class="fa fa-download"></i>&nbsp;DOWNLOAD&nbsp;<i class="icon icon-large ion-loading-c" style="display: none;"></i></button>
+                        or
+                        <a class="btn btn-flat btn-default btn-sm" data-toggle="modal"
+                           data-target="#new_extraction_template_modal"><i class="fa fa-plus-circle"></i>&nbsp;NEW TEMPLATE
+                        </a>
+                    </div>
+                </div>
+                <hr>
+                <p><b>Send by email:</b></p>
+                <div class="row">
+                    <div class="col-md-12">
+                        <input type="hidden" data-select-mode="ajax" data-select-type="extraction_template" data-placeholder="Select a template..." class="form-control row-margin extraction_template">
+                        <input type="hidden" data-select-mode="open" placeholder="Emails to send..." class="form-control row-margin emails">
+                        <button class="btn btn-flat btn-primary" id="delivery-modal-send"><i class="fa fa-share"></i>&nbsp;SEND&nbsp;<i class="icon icon-large ion-loading-c" style="display: none;"></i></button>
+                        or
+                        <a class="btn btn-flat btn-default btn-sm" data-toggle="modal"
+                           data-target="#new_extraction_template_modal"><i class="fa fa-plus-circle"></i>&nbsp;NEW TEMPLATE
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-flat btn-default">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="new_extraction_template_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                            class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title"><i class="fa fa-plus"></i>&nbsp;New Extraction Template</h4>
+            </div>
+            <div class="modal-body">
+                <iframe src="{{ path('admin_listbroking_app_extractiontemplate_create', {iframe : 'true'}) }}" seamless frameBorder="0" width="100%" height="350px"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-flat btn-default">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -21,6 +21,14 @@ ajax_form_submit:
     defaults: { _controller: ListBrokingAppBundle:Ajax:formSubmission }
     options:
 
+ajax_extraction_contacts:
+    path: /ajax/extraction/{extraction_id}/contacts
+    defaults: { _controller: ListBrokingAppBundle:Ajax:extractionContacts }
+    options:
+        expose: true
+    requirements:
+          extraction_id: \d+
+
 ajax_extraction_exclude_lead:
     path: /ajax/extraction/{extraction_id}/lead/{lead_id}/exclude
     defaults: { _controller: ListBrokingAppBundle:Ajax:extractionExcludeLead }
@@ -33,6 +41,12 @@ ajax_extraction_exclude_lead:
 ajax_extraction_download:
     path: /ajax/extraction/{extraction_id}/download/{extraction_template_id}
     defaults: { _controller: ListBrokingAppBundle:Ajax:extractionDownload }
+    options:
+        expose: true
+
+ajax_extraction_deliver:
+    path: /ajax/extraction/{extraction_id}/deliver/{extraction_template_id}
+    defaults: { _controller: ListBrokingAppBundle:Ajax:extractionDeliver }
     options:
         expose: true
 

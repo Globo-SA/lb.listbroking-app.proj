@@ -13,6 +13,10 @@
             bInfo: true
         });
 
+        $('body').attachExclude();
+    });
+
+    $.fn.attachExclude = function(){
         $('.exclude_lead').on('click',function(){
             $(this)
                 .toggleClass('btn-warning')
@@ -54,7 +58,38 @@
                     $('#loading_widget').fadeOut();
                 }
             });
-        })
-    });
+        });
+    };
+
+    $.fn.refreshContacts = function(){
+        // Add the rendered Form
+        $('#extraction_table_container').find('div, input, select').css('background-color', 'rgb(234, 234, 234)');
+        $('#extraction_table_container i.icon-huge').removeClass('hidden')
+        ;
+        $.ajax({
+            type: "GET",
+            url: App.routing.generate('ajax_extraction_contacts', { extraction_id: App.variables.extractionId }),
+            dataType: 'html',
+            success: function(data){
+
+                // Add the rendered Form
+                $('#extraction_table_container').find('div, input, select').css('background-color', 'rgb(234, 234, 234)');
+                $('#extraction_table_container i.icon-huge').addClass('hidden');
+                $('#extraction_table_container span')
+                    .html(data)
+                    .find('table')
+                    .dataTable({
+                        bPaginate: true,
+                        bSort: true,
+                        bInfo: true
+                    });
+
+                $('body').attachExclude();
+
+                // Loading Widget, stop when everything is loaded
+                $('#loading_widget').fadeOut();
+            }
+        });
+    };
 }
 )(jQuery, ListBroking);

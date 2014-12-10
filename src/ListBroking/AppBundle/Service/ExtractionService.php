@@ -23,7 +23,6 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 class ExtractionService extends BaseService implements ExtractionServiceInterface {
 
@@ -33,43 +32,54 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     private $request;
 
     /**
-     * @var Session
-     */
-    private $session;
-
-    /**
      * @var FilterEngine
      */
     private $f_engine;
 
-    function __construct(
-        RequestStack $requestStack,
-        Session $session,
-        FilterEngine $filterEngine)
-    {
+    /**
+     * @var \Swift_Mailer
+     */
+    private $mailer;
+
+    /**
+     * @var \Twig_Environment
+     */
+    private $twig;
+
+    function __construct(RequestStack $requestStack, FilterEngine $filterEngine, \Swift_Mailer $mailer, \Twig_Environment $twig_Environment){
         $this->request = $requestStack->getCurrentRequest();
-        $this->session = $session;
         $this->f_engine = $filterEngine;
+        $this->mailer = $mailer;
+        $this->twig = $twig_Environment;
     }
 
     /**
      * Used the LockService to compile and run the Extraction
      * @param Extraction $extraction
+     * @param $step
+     * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
      * @return void
      */
-    public function runExtraction(Extraction $extraction){
+    public function runExtraction(Extraction $extraction, $step){
 
         // Don't reprocess by default
         $reprocess = false;
 
-        $flashes = $this->session->getFlashBag()->get('extraction');
-        if(in_array('reprocess', array_values($flashes))){
-            $reprocess = true;
+        // if the Extraction is closed save it and return
+        if($extraction->getStatus() == Extraction::STATUS_FINAL){
+            $this->updateEntity('extraction', $extraction);
+            return;
         }
 
-        // Change the Extraction Status to Filtering if it's on configuration
-        if($extraction->getStatus() == Extraction::STATUS_CONFIGURATION){
-            $extraction->setStatus(Extraction::STATUS_FILTRATION);
+        // Handle Extraction Status
+        if($step != null && $step != $extraction->getStatus()){
+            $extraction->setStatus($step);
+        }
+
+        // if the Extraction is closed save it and return
+        if($extraction->getStatus() == Extraction::STATUS_FINAL){
+            $this->updateEntity('extraction', $extraction);
+            return;
         }
 
         // Filters Form
@@ -96,7 +106,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
 
         // Reprocess leads list
         if($reprocess){
-
+            die('reprocess');
             // Runs the Filter compilation and generates the QueryBuilder
             $qb = $this->f_engine->compileFilters($extraction);
 
@@ -109,9 +119,9 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             $cache_id = $extraction::CACHE_ID . "_{$extraction->getId()}_contacts";
             $this->dcache->delete($cache_id);
 
-            // Change the Extraction Status to Confirmation if it's on filtration and has contacts
-            if($extraction->getStatus() == Extraction::STATUS_FILTRATION && count($contacts) > 0){
-                $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
+            // Change the Extraction Status back to filtration if there are no contacts
+            if(count($contacts) < 0){
+                $extraction->setStatus(Extraction::STATUS_FILTRATION);
             }
 
         }
@@ -248,6 +258,44 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         }
 
         return $entities;
+    }
+
+    /**
+     * Removes Deduplicated Leads from an Extraction
+     * using the ExtractionDeduplication Entity
+     * @param Extraction $extraction
+     * @return mixed
+     */
+    public function deduplicateExtraction(Extraction $extraction)
+    {
+        $this->em->getRepository('ListBrokingAppBundle:ExtractionDeduplication')->deduplicateExtraction($extraction);
+
+        //TODO: Check if cache can handle array's this BIG !!!!
+        $cache_id = $extraction::CACHE_ID . "_{$extraction->getId()}_contacts";
+        $this->dcache->delete($cache_id);
+    }
+
+    /**
+     * Delivers the Extraction to a set of Emails
+     * @param Extraction $extraction
+     * @param $emails
+     * @return mixed
+     */
+    public function deliverExtraction(Extraction $extraction, $emails)
+    {
+        $message = $this->mailer->createMessage()
+            ->setSubject("LB Extraction - {$extraction->getName()}")
+            ->setFrom('samuel.castro@adclick.com')
+            ->setTo($emails)
+            ->setBody(
+                $this->twig->render(
+                    '@ListBrokingApp/KitEmail/deliver_extraction.html.twig',
+                    array()
+                )
+            )
+            ->setContentType('text/html')
+        ;
+        $this->mailer->send($message);
     }
 
     /**

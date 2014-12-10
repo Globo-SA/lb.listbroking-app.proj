@@ -7,7 +7,6 @@
         "use strict";
         // Get and save extraction id as a global variable
         var $extraction_deduplication_form = $("[name=extraction_deduplication]");
-        App.variables.extractionId = $extraction_deduplication_form.data('extraction');
 
         // Downloads de extraction for deduplication
         $('#deduplication-download').on('click', function(e){
@@ -42,6 +41,7 @@
                 data.submit()
             }
         });
+
         $('#extraction_deduplication_upload_file').fileupload({
             url: ListBroking.routing.generate('ajax_deduplication', {extraction_id:  $extraction_deduplication_form.data('extraction')}),
             dataType: 'json',
@@ -71,10 +71,10 @@
                 );
         })
         .on('fileuploaddone', function (e, data) {
-                $('#lead_internal_deduplication_trigger').bLoading();
+                $('#lead_deduplication_trigger').bLoading();
 
                 //Close modal
-                $('#lead_internal_deduplication_modal').modal('hide');
+                $('#lead_deduplication_modal').modal('hide');
 
                 // Start checking for deduplication end
                 App.variables.deduplicationQueueId = $('body').checkDeduplication();
@@ -83,7 +83,7 @@
 
         // If the button is disabled there were Queues when
         // the page was rendered
-       if($('#lead_internal_deduplication_trigger').is(':disabled')){
+       if($('#lead_deduplication_trigger').is(':disabled')){
 
            // Start checking for deduplication end
            App.variables.deduplicationQueueId = $('body').checkDeduplication();
@@ -123,8 +123,10 @@
                         // Stop interval
                         clearInterval(App.variables.deduplicationQueueId);
 
+                        $('body').refreshContacts();
+
                         // Stop loading button
-                        $('#lead_internal_deduplication_trigger').bLoading();
+                        $('#lead_deduplication_trigger').bLoading();
                     }
 
                 }

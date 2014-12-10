@@ -1,3 +1,9 @@
+.TODO{
+    background-color: rgb(236, 236, 236);
+    padding: 5px;
+    opacity: 0.4;
+}
+
 .logo img{
     max-width: 100%;
 }
@@ -56,4 +62,13 @@
 
 blockquote.small-label label{
     font-size: 14px;
+}
+
+.icon-huge {
+    position: absolute;
+    top: 40%;
+    left: 43%;
+    font-size: 150px;
+    z-index: 9999;
+    opacity: 0.5;
 }

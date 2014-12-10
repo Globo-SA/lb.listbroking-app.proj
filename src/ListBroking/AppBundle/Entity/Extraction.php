@@ -26,6 +26,13 @@ class Extraction {
     const STATUS_CONFIRMATION = 2;
     const STATUS_FINAL = 3;
 
+    protected $status_names = array(
+        0 => 'Confirmation',
+        1 => 'Filtration',
+        2 => 'Confirmation',
+        3 => 'Finished'
+    );
+
     protected $id;
 
     protected $name;
@@ -132,6 +139,10 @@ class Extraction {
     public function getStatus()
     {
         return $this->status;
+    }
+
+    public function getStatusName(){
+        return $this->status_names[$this->status];
     }
 
     /**

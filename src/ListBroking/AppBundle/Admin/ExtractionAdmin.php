@@ -18,7 +18,6 @@ class ExtractionAdmin extends Admin
     protected function configureRoutes(RouteCollection $collection)
     {
         $collection->add('filtering', $this->getRouterIdParameter() . '/filtering');
-        $collection->add('lead_deduplication', $this->getRouterIdParameter() . '/deduplication');
     }
 
     /**

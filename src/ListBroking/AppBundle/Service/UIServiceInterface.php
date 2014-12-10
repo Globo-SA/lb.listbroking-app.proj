@@ -18,12 +18,6 @@ interface UIServiceInterface
 {
 
     /**
-     * Group leads by lock and count them
-     * @return array
-     */
-    public function countByLock();
-
-    /**
      * Gets a list of entities using the services
      * provided in various bundles
      * @param $type

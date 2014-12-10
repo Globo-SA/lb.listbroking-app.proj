@@ -23,50 +23,73 @@ ListBroking - Contact broking simplified
     {% include '@ListBrokingApp/_partials/sonata_top_nav_menu.html.twig' %}
 {% endblock %}
 
+{# Removes unnecessary layout stuff for iframes #}
+{% block sonata_header %}
+    {% if app.request.query.get("iframe") != 'true' %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+
 {% block sonata_wrapper %}
-    <div class="wrapper row-offcanvas row-offcanvas-left">
-        {% block sonata_left_side %}
-            <aside class="left-side sidebar-offcanvas collapse-left">
-                <section class="sidebar">
-                    {% block sonata_side_nav %}
-                        {{ parent() }}
-                    {% endblock sonata_side_nav %}
-                </section>
+    {# Removes unnecessary layout stuff for iframes #}
+    {% if app.request.query.get("iframe") == 'true'  %}
+        <div style="padding: 0px 1px 0px 17px">
+            {{ block('sonata_admin_content') }}
+        </div>
+    {% else %}
+        <div class="wrapper row-offcanvas row-offcanvas-left">
+            {% block sonata_left_side %}
+                <aside class="left-side sidebar-offcanvas collapse-left">
+                    <section class="sidebar">
+                        {% block sonata_side_nav %}
+                            {{ parent() }}
+                        {% endblock sonata_side_nav %}
+                    </section>
+                </aside>
+            {% endblock sonata_left_side %}
+
+            <aside class="right-side strech">
+                {% block sonata_page_content %}
+                   {{ parent() }}
+                {% endblock sonata_page_content %}
             </aside>
-        {% endblock sonata_left_side %}
 
-        <aside class="right-side strech">
-            {% block sonata_page_content %}
-               {{ parent() }}
-            {% endblock sonata_page_content %}
-        </aside>
+        </div>
 
-    </div>
+        {# The Sonata devs add t he JS on the head but we don't!! #}
+        {% javascripts
+        'bower/jqueryui/jquery-ui.min.js'
+        'bower/moment/moment.js'
+        'bower/bootstrap-daterangepicker/daterangepicker.js'
+        'bower/iCheck/icheck.min.js'
+        'bower/DataTables/media/js/jquery.dataTables.min.js'
+        'bower/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js'
+        'bower/jquery.inputmask/dist/inputmask/jquery.inputmask.js'
+        'bower/jquery.inputmask/dist/inputmask/jquery.inputmask.numeric.extensions.js'
 
-    {# The Sonata devs add t he JS on the head but we don't!! #}
-    {% javascripts
-    'bower/jqueryui/jquery-ui.min.js'
-    'bower/moment/moment.js'
-    'bower/bootstrap-daterangepicker/daterangepicker.js'
-    'bower/iCheck/icheck.min.js'
-    'bower/DataTables/media/js/jquery.dataTables.min.js'
-    'bower/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js'
-    'bower/jquery.inputmask/dist/inputmask/jquery.inputmask.js'
-    'bower/jquery.inputmask/dist/inputmask/jquery.inputmask.numeric.extensions.js'
+        'bower/jquery-file-upload/js/jquery.iframe-transport.js'
+        'bower/jquery-file-upload/js/jquery.fileupload.js'
+        'bower/jquery-file-upload/js/jquery.fileupload-process.js'
+        'bower/jquery-file-upload/js/jquery.fileupload-validate.js'
 
-    'bower/jquery-file-upload/js/jquery.iframe-transport.js'
-    'bower/jquery-file-upload/js/jquery.fileupload.js'
-    'bower/jquery-file-upload/js/jquery.fileupload-process.js'
-    'bower/jquery-file-upload/js/jquery.fileupload-validate.js'
+        'bundles/fosjsrouting/js/router.js'
+        'bundles/listbrokingapp/js/*.js'
+        output='js/global.min.js'
+        filter='?yui_js'
+        %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
 
-    'bundles/fosjsrouting/js/router.js'
-    'bundles/listbrokingapp/js/*.js'
-    output='js/global.min.js'
-    filter='?yui_js'
-    %}
-    <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+        {# Used to expose routing to the client-side code #}
+        <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
 
-    {# Used to expose routing to the client-side code #}
-    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+        {# Gloval variables #}
+        {% if extraction is defined %}
+            <script type="text/javascript">
+                ListBroking.variables.extractionId = '{{ extraction.id }}';
+            </script>
+        {% endif %}
+    {% endif %}
+
 {% endblock sonata_wrapper %}

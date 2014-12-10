@@ -2,6 +2,7 @@
 
 namespace ListBroking\AppBundle\Controller;
 
+use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,13 +14,14 @@ class ExtractionAdminController extends CRUDController
     {
         // Services
         $e_service = $this->get('extraction');
-        // Current Extraction
+
+        // Current Extraction and step
         $extraction_id = $this->get('request')->get($this->admin->getIdParameter());
+        $step = $this->get('request')->get('step');
 
         // Run Extraction
         $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
-
-        $e_service->runExtraction($extraction);
+        $e_service->runExtraction($extraction, $step);
 
         // Get all contacts in one Query (Better then using $extraction->getContacts())
         $contacts = $e_service->getExtractionContacts($extraction);
@@ -30,7 +32,7 @@ class ExtractionAdminController extends CRUDController
         $filters_form = $e_service->generateForm(
             'filters',
             $this->generateUrl(
-                'admin_listbroking_app_extraction_filtering', array('id' => $extraction_id)),
+                'admin_listbroking_app_extraction_filtering', array('id' => $extraction_id, 'step' => Extraction::STATUS_CONFIRMATION)),
             $extraction->getFilters()
         );
 
@@ -47,51 +49,9 @@ class ExtractionAdminController extends CRUDController
                     'filters' => $filters_form->createView(),
                     'adv_exclusion' => $adv_exclusion->createView(),
                     'adv_external_exclusion' => $adv_external_exclusion->createView()
-                )
+                ),
+                'elements' => $this->admin->getShow(),
             )
         );
     }
-
-    //TODO: REMOVE THIS
-//    /**
-//     * Fourth step on Lead Extraction, Deduplication
-//     * @return RedirectResponse
-//     */
-//    public function leadDeduplicationAction(){
-//
-//        $request = $this->get('request');
-//        $extraction_id = $request->get($this->admin->getIdParameter());
-//        $is_external = $request->get('external', false);
-//
-//        $u_service = $this->get('ui');
-//        $a_service = $this->get('app');
-//        $e_service = $this->get('extraction');
-//
-//        $extraction = $a_service->getEntity('extraction', $extraction_id, true, true);
-//
-//        if($is_external){
-//            $form = $u_service->generateForm(new AdvancedExternalExcludeType());
-//        }else{
-//            $form = $u_service->generateForm(new AdvancedExcludeType());
-//        }
-//        $form->handleRequest($request);
-//        $data = $form->getData();
-//        $field = isset($data['field']) ? $data['field'] : 'lead_id';
-//
-//        /** @var UploadedFile $file */
-//        $file = $data['upload_file'];
-//        $filename = $e_service->generateFilename($file->getClientOriginalName(), null, 'imports/');
-//        $file->move('imports', $filename);
-//
-//        $e_service->persistDeduplications($filename, $extraction, $field, true);
-//        unlink($filename);
-//
-//        //$e_service->excludeLeads($extraction, $data_array, $field);
-////        $a_service->updateEntity($extraction);
-//
-//        // Save a session variable for reprocessing
-//        $this->get('session')->getFlashBag()->add('extraction', 'reprocess');
-//
-//        return $this->redirect($this->generateUrl('admin_listbroking_app_extraction_filtering', array('id' => $extraction_id)));
-//    }
 }

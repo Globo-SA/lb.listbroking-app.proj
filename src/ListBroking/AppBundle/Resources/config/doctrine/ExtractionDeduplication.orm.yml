@@ -8,6 +8,9 @@ ListBroking\AppBundle\Entity\ExtractionDeduplication:
             id: true
             generator:
                 strategy: AUTO
+    indexes:
+        phone_index:
+          columns: [ phone ]
     fields:
         lead_id:
             type: integer
@@ -17,16 +20,16 @@ ListBroking\AppBundle\Entity\ExtractionDeduplication:
             type: integer
             column: contact_id
             nullable: true
-        extraction_id:
-            type: integer
-            column: extraction_id
-            nullable: true
         phone:
             type: integer
             column: phone
             nullable: true
-        email:
-            type: text
-            column: email
-            nullable: true
+    manyToOne:
+        extraction:
+            targetEntity:             ListBroking\AppBundle\Entity\Extraction
+            inversedBy:               extraction_deduplications
+            joinColumn:
+                name:                 extraction_id
+                referencedColumnName: id
+                onDelete:             restrict
     lifecycleCallbacks: {  }

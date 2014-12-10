@@ -1,4 +1,3 @@
-{% import "@ListBrokingApp/_partials/macros/table_macros.html.twig" as macros %}
 <div class="table-responsive">
     <table id="leads_table" class="table table-hover" data-toggle="simple_table" width="100%">
         <thead>
@@ -16,7 +15,9 @@
             <th>Source</th>
             <th>Category</th>
             <th>SubCategory</th>
+            {% if extraction.status != 3 %}
             <th>Exclude?</th>
+            {% endif %}
         </tr>
         </thead>
         <tbody>
@@ -35,12 +36,14 @@
             <td>{{ contact['source']['name'] }}</td>
             <td>{{ contact['sub_category']['category']['name'] }}</td>
             <td>{{ contact['sub_category']['name'] }}</td>
+            {% if extraction.status != 3 %}
             <td>
                 <div class="btn-group lead_exclude">
                     <button class="exclude_lead btn btn-flat btn-xs btn-warning"><i class="fa fa-times"></i></button>
                     <button class="confirm_exclude_lead btn btn-flat btn-xs btn-danger" style="display: none;" data-extraction-id="{{ extraction.id }}" data-lead-id="{{ contact['lead']['id'] }}">exclude?</button>
                 </div>
             </td>
+            {% endif %}
         </tr>
         {% endfor %}
         </tbody>
@@ -59,7 +62,9 @@
             <th>Source</th>
             <th>Category</th>
             <th>SubCategory</th>
+            {% if extraction.status != 3 %}
             <th>Exclude?</th>
+            {% endif %}
         </tr>
         </tfoot>
     </table>

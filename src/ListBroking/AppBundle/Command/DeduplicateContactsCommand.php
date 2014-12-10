@@ -29,7 +29,7 @@ class DeduplicateContactsCommand extends ContainerAwareCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output){
 
-        $output->writeln("<info>DeduplicateContactsCommand:</info> <comment>START</comment>");
+        $output->writeln("<info>DeduplicateContactsCommand:</info> <comment>STARTING UPLOADS</comment>");
 
         // Get the ExtractionService and set the OutputInterface
         $e_service = $this->getContainer()->get('extraction');
@@ -40,6 +40,9 @@ class DeduplicateContactsCommand extends ContainerAwareCommand {
         /** @var  ExtractionDeduplicationQueue[] $queues */
         $queues = $e_service->getEntities('extraction_deduplication_queue');
         if(count($queues) > 0){
+            // Extractions to Deduplicate
+            $extractions = array();
+
             $output->writeln('\n');
             $progress = new ProgressBar($output, count($queues));
             $progress->setBarCharacter('<info>=</info>');
@@ -51,14 +54,35 @@ class DeduplicateContactsCommand extends ContainerAwareCommand {
 
                 // Persist deduplications to the DB
                 $filename = $dir . $queue->getFilePath();
-                $e_service->persistDeduplications($filename ,$queue->getExtraction(), $queue->getField(), true);
+                $e_service->uploadDeduplicationsByFile($filename ,$queue->getExtraction(), $queue->getField(), true);
 
                 // Remove file and Queue
                 unlink($filename);
                 $e_service->removeEntity('extraction_deduplication_queue', $queue);
+
+                // Add Extraction to the duplication Queue
+                $extraction = $queue->getExtraction();
+                $extractions[$extraction->getId()] = $extraction;
+
             }
             $progress->setMessage("Processing DONE");
             $progress->finish();
+
+            $output->writeln("<info>DeduplicateContactsCommand:</info> <comment>STARTING DEDUPLICATIONS</comment>");
+            $output->writeln('\n');
+            $progress = new ProgressBar($output, count($queues));
+            $progress->setBarCharacter('<info>=</info>');
+            $progress->setFormat("%current%/%max% [<comment>%bar%</comment>] %percent%%\n<fg=white;bg=blue> %message% </>");
+            foreach ($extractions as $id =>$extraction)
+            {
+                $progress->setMessage("Deduplicating Extraction ID: {$id}");
+                $progress->advance();
+
+                $e_service->deduplicateExtraction($extraction);
+            }
+            $progress->setMessage("Processing DONE");
+            $progress->finish();
+
         }else{
             $output->writeln("<info>DeduplicateContactsCommand:</info> <error>Nothing to process</error>");
         }

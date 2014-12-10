@@ -23,9 +23,10 @@ interface ExtractionServiceInterface {
     /**
      * Used the LockService to compile and run the Extraction
      * @param Extraction $extraction
+     * @param $step
      * @return void
      */
-    public function runExtraction(Extraction $extraction);
+    public function runExtraction(Extraction $extraction, $step);
 
     /**
      * Gets all the contacts of a given Extraction with
@@ -81,6 +82,21 @@ interface ExtractionServiceInterface {
      */
     public function getDeduplicationQueuesByExtraction(Extraction $extraction, $hydrate = true);
 
+    /**
+     * Removes Deduplicated Leads from an Extraction
+     * using the ExtractionDeduplication Entity
+     * @param Extraction $extraction
+     * @return mixed
+     */
+    public function deduplicateExtraction(Extraction $extraction);
+
+    /**
+     * Delivers the Extraction to a set of Emails
+     * @param Extraction $extraction
+     * @param $emails
+     * @return mixed
+     */
+    public function deliverExtraction(Extraction $extraction, $emails);
     /**
      * Adds Leads to the Lead Filter of a given Extraction
      * @param Extraction $extraction

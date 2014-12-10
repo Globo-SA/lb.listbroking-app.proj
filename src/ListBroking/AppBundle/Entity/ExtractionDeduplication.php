@@ -29,11 +29,9 @@ class ExtractionDeduplication
 
     protected $contact_id;
 
-    protected $extraction_id;
+    protected $extraction;
 
     protected $phone;
-
-    protected $email;
 
     /**
      * Get id
@@ -80,33 +78,17 @@ class ExtractionDeduplication
     /**
      * @return Extraction
      */
-    public function getExtractionId()
+    public function getExtraction()
     {
-        return $this->extraction_id;
+        return $this->extraction;
     }
 
     /**
-     * @param $extraction_id
+     * @param Extraction $extraction
      */
-    public function setExtractionId($extraction_id)
+    public function setExtraction(Extraction $extraction)
     {
-        $this->extraction_id = $extraction_id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param mixed $email
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
+        $this->extraction = $extraction;
     }
 
     /**

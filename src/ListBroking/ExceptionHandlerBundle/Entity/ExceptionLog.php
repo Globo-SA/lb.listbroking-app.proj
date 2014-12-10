@@ -17,6 +17,8 @@ class ExceptionLog {
 
     use TimestampableEntityBehavior;
 
+    const CACHE_ID = 'exception_log';
+
     protected $id;
 
     protected $code;
