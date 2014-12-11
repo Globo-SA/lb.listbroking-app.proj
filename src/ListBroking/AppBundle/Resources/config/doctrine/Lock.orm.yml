@@ -9,9 +9,6 @@ ListBroking\AppBundle\Entity\Lock:
             generator:
                 strategy: AUTO
     fields:
-        status:
-            type: smallint
-            column: status
         type:
             type: smallint
             column: type

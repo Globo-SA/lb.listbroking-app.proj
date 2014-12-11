@@ -19,9 +19,19 @@ class Lock {
     use TimestampableEntityBehavior,
         BlameableEntityBehavior;
 
-    protected $id;
+    const TYPE_NO_LOCKS     = 1;
 
-    protected $status;
+    const TYPE_RESERVED     = 2;
+
+    const TYPE_CLIENT       = 3;
+
+    const TYPE_CAMPAIGN     = 4;
+
+    const TYPE_CATEGORY     = 5;
+
+    const TYPE_SUB_CATEGORY = 6;
+
+    protected $id;
 
     protected $type;
 
@@ -49,22 +59,6 @@ class Lock {
         return $this->id;
     }
 
-
-    /**
-     * @return mixed
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
-     * @param mixed $status
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
-    }
 
     /**
      * @return mixed

@@ -13,8 +13,10 @@ namespace ListBroking\AppBundle\Repository;
 
 use Doctrine\Common\Inflector\Inflector;
 use Doctrine\ORM\EntityRepository;
+use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionDeduplication;
+use ListBroking\AppBundle\Entity\Lock;
 
 class ExtractionDeduplicationRepository extends EntityRepository {
 
@@ -102,5 +104,52 @@ SQL;
 
         $conn->prepare($dedup_sql)
             ->execute($params);
+    }
+
+    public function generateLocks(Extraction $extraction, $lock_types){
+
+        $em = $this->getEntityManager();
+        foreach ($lock_types as $lock_type)
+        {
+            $batch = 1;
+            $batchSize = 1000;
+            /** @var Contact $contact */
+            foreach ($extraction->getContacts() as $contact)
+            {
+                $lock = new Lock();
+                $lock->setType($lock_type);
+
+                switch($lock_type){
+                    case Lock::TYPE_CLIENT:
+                        $lock->setClient($extraction->getCampaign()->getClient());
+                        break;
+                    case Lock::TYPE_CAMPAIGN:
+                        $lock->setCampaign($extraction->getCampaign());
+                        break;
+                    case Lock::TYPE_CATEGORY:
+                        $lock->setCategory($contact->getSubCategory()->getCategory());
+                        break;
+                    case Lock::TYPE_SUB_CATEGORY:
+                        $lock->setSubCategory($contact->getSubCategory());
+                        break;
+                    default:
+                        break;
+                }
+
+                $lock->setLead($contact->getLead());
+                $lock->setExpirationDate(new \DateTime('+3 months'));
+                $em->persist($lock);
+
+                if (($batch % $batchSize) === 0) {
+
+                    $batch = 1;
+                    $em->flush();
+                }
+                $batch++;
+            }
+            $em->flush();
+        }
+        $em->clear();
+
     }
 } 

@@ -44,6 +44,12 @@ ajax_extraction_download:
     options:
         expose: true
 
+ajax_extraction_locks:
+    path: /ajax/extraction/{extraction_id}/locks
+    defaults: { _controller: ListBrokingAppBundle:Ajax:extractionLocks }
+    options:
+        expose: true
+
 ajax_extraction_deliver:
     path: /ajax/extraction/{extraction_id}/deliver/{extraction_template_id}
     defaults: { _controller: ListBrokingAppBundle:Ajax:extractionDeliver }

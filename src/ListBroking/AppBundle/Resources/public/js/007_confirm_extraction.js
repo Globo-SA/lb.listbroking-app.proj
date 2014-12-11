@@ -7,8 +7,8 @@
         "use strict";
 
         // Confirm that the Extraction is final before submit
-        $("#confirm_extraction_chk").on('ifChanged', function(){
-            $("#confirm_extraction_btn").toggleClass('disabled');
+        $("#confirm-extraction-chk").on('ifChanged', function(){
+            $("#confirm-extraction-btn").toggleClass('disabled');
         });
 
         // Downloads de extraction for delivery
@@ -45,6 +45,44 @@
             }
 
         });
+
+        // Check if there is at least 1 lock_type selected for
+        // enabling the finalize button
+        $('[name=lock_chk]').on('change', function(){
+            if($('[name=lock_chk]:checked').length > 0){
+                $("#finalize-extraction-btn").removeClass('disabled');
+            }else{
+                $("#finalize-extraction-btn").addClass('disabled');
+            }
+        });
+
+        // Generate the locks and redirect to the last step
+        $('#finalize-extraction-btn').click(function(){
+
+            $(this).find('i.ion-loading-c').fadeIn();
+
+            // Map all selected lock types
+            var lock_types = $('[name=lock_chk]:checked').map(function(){
+                return parseInt($(this).val());
+            }).get();
+
+
+            // Send locks to the server
+            $.ajax({
+                type: "POST",
+                url: App.routing.generate('ajax_extraction_locks', { extraction_id: App.variables.extractionId } ),
+                dataType: 'json',
+                data: {lock_types: lock_types},
+                success: function(data){
+
+                    var $btn =  $('#finalize-extraction-btn');
+                    $btn.find('i.ion-loading-c').fadeOut();
+
+                    window.location =  $btn.data('url');
+                }
+            });
+        });
+
 
     });
 }

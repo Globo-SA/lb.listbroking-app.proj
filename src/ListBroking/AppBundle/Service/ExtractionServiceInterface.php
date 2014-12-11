@@ -23,10 +23,9 @@ interface ExtractionServiceInterface {
     /**
      * Used the LockService to compile and run the Extraction
      * @param Extraction $extraction
-     * @param $step
      * @return void
      */
-    public function runExtraction(Extraction $extraction, $step);
+    public function runExtraction(Extraction $extraction);
 
     /**
      * Gets all the contacts of a given Extraction with
@@ -58,21 +57,21 @@ interface ExtractionServiceInterface {
 
     /**
      * Handle the uploaded file and adds it to the queue
-     * @param Form $form
      * @param Extraction $extraction
+     * @param Form $form
      * @return ExtractionDeduplicationQueue
      */
-    public function addDeduplicationFileToQueue(Form $form, Extraction $extraction);
+    public function addDeduplicationFileToQueue(Extraction $extraction, Form $form);
 
     /**
      * Persists Deduplications to the database, this function uses PHPExcel with APC
-     * @param string $filename
      * @param Extraction $extraction
+     * @param string $filename
      * @param string $field
      * @param $merge
      * @return void
      */
-    public function uploadDeduplicationsByFile($filename, Extraction $extraction, $field, $merge);
+    public function uploadDeduplicationsByFile(Extraction $extraction, $filename, $field, $merge);
 
     /**
      * Get Deduplication Queue by Extraction
@@ -89,6 +88,14 @@ interface ExtractionServiceInterface {
      * @return mixed
      */
     public function deduplicateExtraction(Extraction $extraction);
+
+    /**
+     * Generate locks for the contacts of a given Extraction
+     * @param Extraction $extraction
+     * @param $lock_types
+     * @return mixed
+     */
+    public function generateLocks(Extraction $extraction, $lock_types);
 
     /**
      * Delivers the Extraction to a set of Emails

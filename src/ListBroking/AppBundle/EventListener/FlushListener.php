@@ -66,7 +66,6 @@ class FlushListener {
     {
         $const_name = get_class($entity) . "::CACHE_ID";
         if(defined($const_name)){
-            die;
             $cache_id = $entity::CACHE_ID;
             $cache_id_array = $cache_id . '_array';
 

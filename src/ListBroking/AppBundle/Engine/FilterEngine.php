@@ -13,6 +13,7 @@ namespace ListBroking\AppBundle\Engine;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
 use ListBroking\AppBundle\Entity\Extraction;
+use ListBroking\AppBundle\Entity\Lock;
 use ListBroking\AppBundle\Exception\InvalidFilterObjectException;
 
 // Interfaces
@@ -59,12 +60,12 @@ class FilterEngine
         $this->em = $entityManager;
 
         $this->lock_filter_types = array(
-            'no_locks_lock_filter' => new NoLocksLockFilter(1),
-            'reserved_lock_filter' => new ReservedLockFilter(2),
-            'client_lock_filter' => new ClientLockFilter(3),
-            'campaign_lock_filter' => new CampaignLockFilter(4, 3),
-            'category_lock_filter' => new CategoryLockFilter(5),
-            'sub_category_lock_filter' => new SubCategoryLockFilter(6, 5)
+            'no_locks_lock_filter' => new NoLocksLockFilter(Lock::TYPE_NO_LOCKS),
+            'reserved_lock_filter' => new ReservedLockFilter(Lock::TYPE_RESERVED),
+            'client_lock_filter' => new ClientLockFilter(Lock::TYPE_CLIENT),
+            'campaign_lock_filter' => new CampaignLockFilter(Lock::TYPE_CAMPAIGN, Lock::TYPE_CLIENT),
+            'category_lock_filter' => new CategoryLockFilter(Lock::TYPE_CATEGORY),
+            'sub_category_lock_filter' => new SubCategoryLockFilter(Lock::TYPE_SUB_CATEGORY, Lock::TYPE_CATEGORY)
         );
         $this->contact_filter_types = array(
             1 => new BasicContactFilter()

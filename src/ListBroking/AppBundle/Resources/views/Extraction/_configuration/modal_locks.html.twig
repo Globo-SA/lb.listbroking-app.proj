@@ -1,0 +1,62 @@
+<div class="modal fade" id="create_locks_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                            class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title"><i class="fa fa-plus"></i>&nbsp;Lock creation</h4>
+            </div>
+            <div class="modal-body">
+                <p>Lock all extracted lead by:</p>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="btn-group btn-group-justified">
+                            <div class="btn-group btn-group-lg">
+                                <label class="btn btn-default">
+                                    <i class="fa fa-user"></i>
+                                    <input type="checkbox" name="lock_chk"
+                                           value="{{ constant('ListBroking\\AppBundle\\Entity\\Lock::TYPE_CLIENT') }}">
+                                    <p>CLIENT</p>
+                                </label>
+                            </div>
+                            <div class="btn-group btn-group-lg">
+                                <label class="btn btn-default">
+                                    <i class="fa fa-users"></i>
+                                    <input type="checkbox" name="lock_chk"
+                                           value="{{ constant('ListBroking\\AppBundle\\Entity\\Lock::TYPE_CAMPAIGN') }}">
+                                    <p>CAMPAIGN</p>
+                                </label>
+                            </div>
+                            <div class="btn-group btn-group-lg">
+                                <label class="btn btn-default">
+                                    <i class="fa fa-folder"></i>
+                                    <input type="checkbox" name="lock_chk"
+                                           value="{{ constant('ListBroking\\AppBundle\\Entity\\Lock::TYPE_CATEGORY') }}">
+                                    <p>CATEGORY</p>
+                                </label>
+                            </div>
+                            <div class="btn-group btn-group-lg">
+                                <label class="btn btn-default">
+                                    <i class="fa fa-file"></i>
+                                    <input type="checkbox" name="lock_chk"
+                                           value="{{ constant('ListBroking\\AppBundle\\Entity\\Lock::TYPE_SUB_CATEGORY') }}">
+                                    <p>SUBCATEGORY</p>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <blockquote>
+                        <small>All extracted lead will be automatically locked for <b>3 months</b></small>
+                    </blockquote>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="finalize-extraction-btn" class="btn btn-primary disabled" data-url="{{ path('admin_listbroking_app_extraction_filtering', {id: extraction.id}) }}">
+                    <i class="fa fa-list"></i>&nbsp;Finalize&nbsp;<i class="icon icon-large ion-loading-c" style="display: none;"></i>
+                </button>
+                <button data-dismiss="modal" class="btn btn-flat btn-default">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</div>

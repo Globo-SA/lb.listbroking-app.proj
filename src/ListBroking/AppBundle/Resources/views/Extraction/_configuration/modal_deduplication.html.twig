@@ -1,25 +1,3 @@
-{% if deduplication_queues is not empty %}
-    {% set text = "<i class='icon icon-large ion-loading-c'></i>Deduplicating..." %}
-    {% set alt_text = "Deduplication by File" %}
-{% else %}
-    {% set text = "Deduplication by File" %}
-    {% set alt_text = "<i class='icon icon-large ion-loading-c'></i>Deduplicating..." %}
-{% endif %}
-<blockquote>
-    <p>
-        <button
-                id="lead_deduplication_trigger"
-                class="btn btn-flat btn-primary"
-                data-toggle="modal"
-                data-target="#lead_deduplication_modal"
-                data-alt="{{ alt_text }}"
-                {% if deduplication_queues is not empty %}disabled="disabled" {% endif %}
-        >
-           {{ text|raw }}
-        </button>
-    <small>Used to exclude leads by CSV file</small>
-    </p>
-</blockquote>
 <div class="modal fade" id="lead_deduplication_modal">
     <div class="modal-dialog">
         <div class="modal-content">

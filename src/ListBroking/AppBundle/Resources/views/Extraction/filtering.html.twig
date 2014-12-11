@@ -30,13 +30,13 @@
         {% endif %}
         <ul class="nav nav-tabs" role="tablist">
             <li {{ filter_tab|raw }}>
-                <a href="#filters" role="tab" data-toggle="tab">Filters</a>
+                <a href="#filters" role="tab" data-toggle="tab">1 - Filters&nbsp;&nbsp;&nbsp;<i class="fa fa-arrow-circle-right"></i></a>
             </li>
             <li {{ summary_tab|raw }}>
-                <a href="#summary" role="tab" data-toggle="tab">Summary</a>
+                <a href="#summary" role="tab" data-toggle="tab">2 - Summary&nbsp;&nbsp;&nbsp;<i class="fa fa-arrow-circle-right"></i></a>
             </li>
             <li {{ confirmation_tab|raw }}>
-                <a href="#confirmation" role="tab" data-toggle="tab">Confirmation</a>
+                <a href="#confirmation" role="tab" data-toggle="tab">3 - Confirmation</a>
             </li>
         </ul>
 
@@ -59,7 +59,29 @@
                         <div class="panel-body">
                             <div class="row row-margin">
                                 <div class="col-md-6">
-                                    {% include '@ListBrokingApp/Extraction/_configuration/deduplication.html.twig' %}
+                                    {% if deduplication_queues is not empty %}
+                                        {% set text = "<i class='icon icon-large ion-loading-c'></i>Deduplicating..." %}
+                                        {% set alt_text = "Deduplication by File" %}
+                                    {% else %}
+                                        {% set text = "Deduplication by File" %}
+                                        {% set alt_text = "<i class='icon icon-large ion-loading-c'></i>Deduplicating..." %}
+                                    {% endif %}
+                                    <blockquote>
+                                        <p>
+                                            <button
+                                                    id="lead_deduplication_trigger"
+                                                    class="btn btn-flat btn-primary"
+                                                    data-toggle="modal"
+                                                    data-target="#lead_deduplication_modal"
+                                                    data-alt="{{ alt_text }}"
+                                                    {% if deduplication_queues is not empty %}disabled="disabled" {% endif %}
+                                                    >
+                                                {{ text|raw }}
+                                            </button>
+                                            <small>Used to exclude leads by CSV file</small>
+                                        </p>
+                                    </blockquote>
+                                    {% include '@ListBrokingApp/Extraction/_configuration/modal_deduplication.html.twig' %}
                                 </div>
                                 <div class="col-md-6">
                                     {% include '@ListBrokingApp/Extraction/_configuration/extraction_summary.html.twig' %}
@@ -68,25 +90,24 @@
                             <div class="row">
                                 <div id="extraction_table_container" class="col-md-12">
                                     <i class="icon icon-huge ion-loading-c hidden"></i>
-                                            <span>
-                                                {% include '@ListBrokingApp/Extraction/_configuration/contacts_table.html.twig' %}
-                                            </span>
+                                    <span>
+                                        {% include '@ListBrokingApp/Extraction/_configuration/contacts_table.html.twig' %}
+                                    </span>
                                 </div>
                             </div>
                             <hr>
                             <blockquote class="small-label">
                                 <p>
-                                    {% set step = constant('STATUS_FINAL', extraction) %}
-                                    {% set url = path('admin_listbroking_app_extraction_filtering', {'id':extraction.id,'step':step}) %}
-                                    <a href="{{ url }}" class="btn btn-primary disabled" id="confirm_extraction_btn"
-                                       role="button">
+                                    <button class="btn btn-primary disabled"  data-toggle="modal" id="confirm-extraction-btn"
+                                       data-target="#create_locks_modal" role="button">
                                         <i class="fa fa-list"></i>&nbsp;Extract
-                                    </a>
-                                    <input type="checkbox" id="confirm_extraction_chk" class="pull-right"><label>&nbsp;Confirm
+                                    </button>
+                                    <input type="checkbox" id="confirm-extraction-chk" class="pull-right"><label>&nbsp;Confirm
                                         as final extraction.</label>
                                     <small>After this step the extraction will be closed and marked as final.</small>
                                 </p>
                             </blockquote>
+                            {% include '@ListBrokingApp/Extraction/_configuration/modal_locks.html.twig' %}
                         </div>
                     </div>
                 </div>
@@ -124,7 +145,7 @@
                                     </button>
                                 </p>
                             </blockquote>
-                            {% include '@ListBrokingApp/Extraction/_configuration/delivery_modal.html.twig' %}
+                            {% include '@ListBrokingApp/Extraction/_configuration/modal_delivery.html.twig' %}
                         </div>
                     </div>
                 </div>

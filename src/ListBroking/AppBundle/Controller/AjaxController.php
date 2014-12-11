@@ -202,6 +202,44 @@ class AjaxController extends Controller {
     }
 
     /**
+     * Generates the requested locks on a given extraction
+     * @param Request $request
+     * @param $extraction_id
+     * @return JsonResponse
+     */
+    public function extractionLocksAction(Request $request, $extraction_id){
+        try
+        {
+            $this->validateRequest($request);
+
+            $lock_types = $request->get('lock_types', array());
+            $e_service = $this->get('extraction');
+
+            // Check if there are lock_types
+            if(empty($lock_types)){
+                return $this->createJsonResponse(array(
+                    "code" => 400,
+                    "response" => "No lock_type to generate locks",
+                ));
+            }
+
+            // Current Extraction
+            $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
+
+            // Generate locks
+            $e_service->generateLocks($extraction, $lock_types);
+
+            return $this->createJsonResponse(array(
+                "code" => 200,
+                "response" => "Locks generated",
+            ));
+
+        }catch(\Exception $e){
+            return $this->createJsonResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
      * @param Request $request
      * @param $extraction_id
      * @param $extraction_template_id
@@ -221,6 +259,7 @@ class AjaxController extends Controller {
                     "response" => "No emails to send to where provided",
                 ));
             }
+
             // Current Extraction
             $extraction = $e_service->getEntity('extraction', $extraction_id);
 

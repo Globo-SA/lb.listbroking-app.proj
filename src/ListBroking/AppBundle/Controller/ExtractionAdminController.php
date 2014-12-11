@@ -17,11 +17,10 @@ class ExtractionAdminController extends CRUDController
 
         // Current Extraction and step
         $extraction_id = $this->get('request')->get($this->admin->getIdParameter());
-        $step = $this->get('request')->get('step');
 
         // Run Extraction
         $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
-        $e_service->runExtraction($extraction, $step);
+        $e_service->runExtraction($extraction);
 
         // Get all contacts in one Query (Better then using $extraction->getContacts())
         $contacts = $e_service->getExtractionContacts($extraction);
@@ -32,7 +31,7 @@ class ExtractionAdminController extends CRUDController
         $filters_form = $e_service->generateForm(
             'filters',
             $this->generateUrl(
-                'admin_listbroking_app_extraction_filtering', array('id' => $extraction_id, 'step' => Extraction::STATUS_CONFIRMATION)),
+                'admin_listbroking_app_extraction_filtering', array('id' => $extraction_id)),
             $extraction->getFilters()
         );
 

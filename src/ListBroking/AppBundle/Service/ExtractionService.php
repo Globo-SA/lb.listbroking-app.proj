@@ -56,25 +56,13 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     /**
      * Used the LockService to compile and run the Extraction
      * @param Extraction $extraction
-     * @param $step
      * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
      * @return void
      */
-    public function runExtraction(Extraction $extraction, $step){
+    public function runExtraction(Extraction $extraction){
 
         // Don't reprocess by default
         $reprocess = false;
-
-        // if the Extraction is closed save it and return
-        if($extraction->getStatus() == Extraction::STATUS_FINAL){
-            $this->updateEntity('extraction', $extraction);
-            return;
-        }
-
-        // Handle Extraction Status
-        if($step != null && $step != $extraction->getStatus()){
-            $extraction->setStatus($step);
-        }
 
         // if the Extraction is closed save it and return
         if($extraction->getStatus() == Extraction::STATUS_FINAL){
@@ -106,7 +94,6 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
 
         // Reprocess leads list
         if($reprocess){
-            die('reprocess');
             // Runs the Filter compilation and generates the QueryBuilder
             $qb = $this->f_engine->compileFilters($extraction);
 
@@ -122,6 +109,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             // Change the Extraction Status back to filtration if there are no contacts
             if(count($contacts) < 0){
                 $extraction->setStatus(Extraction::STATUS_FILTRATION);
+            }else{
+                $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
             }
 
         }
@@ -197,11 +186,11 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
 
     /**
      * Handle the uploaded file and adds it to the queue
-     * @param Form $form
      * @param Extraction $extraction
+     * @param Form $form
      * @return ExtractionDeduplicationQueue
      */
-    public function addDeduplicationFileToQueue(Form $form, Extraction $extraction){
+    public function addDeduplicationFileToQueue(Extraction $extraction, Form $form){
 
         // Handle Form
         $data = $form->getData();
@@ -224,13 +213,13 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
 
     /**
      * Persists Deduplications to the database, this function uses PHPExcel with APC
-     * @param string $filename
      * @param Extraction $extraction
+     * @param string $filename
      * @param string $field
      * @param $merge
      * @return void
      */
-    public function uploadDeduplicationsByFile($filename, Extraction $extraction, $field, $merge){
+    public function uploadDeduplicationsByFile(Extraction $extraction, $filename, $field, $merge){
 
         $this->em->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
             ->uploadDeduplicationsByFile($filename, $extraction, $field, $merge);
@@ -273,6 +262,21 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         //TODO: Check if cache can handle array's this BIG !!!!
         $cache_id = $extraction::CACHE_ID . "_{$extraction->getId()}_contacts";
         $this->dcache->delete($cache_id);
+    }
+
+    /**
+     * Generate locks for the contacts of a given Extraction
+     * @param Extraction $extraction
+     * @param $lock_types
+     * @return mixed
+     */
+    public function generateLocks(Extraction $extraction, $lock_types){
+        $this->em->getRepository('ListBrokingAppBundle:ExtractionDeduplication')->generateLocks($extraction, $lock_types);
+
+
+        // Close extraction
+        $extraction->setStatus(Extraction::STATUS_FINAL);
+        $this->updateEntity('extraction', $extraction);
     }
 
     /**
