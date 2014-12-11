@@ -43,10 +43,11 @@ class AppKernel extends Kernel
             new ListBroking\ExceptionHandlerBundle\ListBrokingExceptionHandlerBundle(),
             //new ListBroking\APIBundle\ListBrokingAPIBundle(),
             new ListBroking\AppBundle\ListBrokingAppBundle(),
-            new ListBroking\TaskBundle\ListBrokingTaskBundle(),
+            new ListBroking\TaskControllerBundle\ListBrokingTaskControllerBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
+            $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();

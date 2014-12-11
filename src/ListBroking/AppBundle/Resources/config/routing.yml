@@ -67,3 +67,12 @@ ajax_deduplication_queue:
     defaults: { _controller: ListBrokingAppBundle:Ajax:deduplicationQueue }
     options:
         expose: true
+
+api_create_lead:
+    path:     /v1/lead/create
+    defaults: { _controller: ListBrokingAppBundle:API:createStagingLead }
+#    methods:  [POST]
+
+list_broking_upload_test:
+    path:     /leads/upload
+    defaults: { _controller: ListBrokingAPIBundle:Default:testUpload }

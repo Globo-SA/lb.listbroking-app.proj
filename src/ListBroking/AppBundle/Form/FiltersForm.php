@@ -10,9 +10,7 @@
 
 namespace ListBroking\AppBundle\Form;
 
-use ListBroking\AppBundle\Service\AppService;
-use ListBroking\AppBundle\Service\LeadService;
-
+use ListBroking\AppBundle\Service\Helper\AppService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
@@ -26,16 +24,9 @@ class FiltersForm extends AbstractType
      */
     private $a_service;
 
-    /**
-     * @var LeadService
-     */
-    private $l_service;
-
-
-    function __construct(AppService $appService, LeadService $leadService)
+    function __construct(AppService $appService)
     {
-        $this->a_service = $appService;
-        $this->l_service = $leadService;
+        $this->ui_service = $appService;
 
         $default_country = $this->a_service->getCountryByCode('PT', false);
 

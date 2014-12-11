@@ -26,7 +26,7 @@ class Extraction {
     const STATUS_CONFIRMATION = 2;
     const STATUS_FINAL = 3;
 
-    protected $status_names = array(
+    public static $status_names = array(
         0 => 'Confirmation',
         1 => 'Filtration',
         2 => 'Confirmation',
@@ -142,7 +142,7 @@ class Extraction {
     }
 
     public function getStatusName(){
-        return $this->status_names[$this->status];
+        return Extraction::$status_names[$this->status];
     }
 
     /**

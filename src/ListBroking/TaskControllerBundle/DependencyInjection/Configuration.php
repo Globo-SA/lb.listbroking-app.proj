@@ -1,6 +1,6 @@
 <?php
 
-namespace ListBroking\TaskBundle\DependencyInjection;
+namespace ListBroking\TaskControllerBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -18,7 +18,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('list_broking_task');
+        $rootNode = $treeBuilder->root('list_broking_task_controller');
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for

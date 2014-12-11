@@ -8,7 +8,7 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\AppBundle\Service;
+namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 
 use ListBroking\AppBundle\Entity\Extraction;

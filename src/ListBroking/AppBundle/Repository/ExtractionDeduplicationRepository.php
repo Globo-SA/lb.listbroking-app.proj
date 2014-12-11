@@ -106,7 +106,7 @@ SQL;
             ->execute($params);
     }
 
-    public function generateLocks(Extraction $extraction, $lock_types){
+    public function generateLocks(Extraction $extraction, $lock_types, $lock_time){
 
         $em = $this->getEntityManager();
         foreach ($lock_types as $lock_type)
@@ -137,7 +137,7 @@ SQL;
                 }
 
                 $lock->setLead($contact->getLead());
-                $lock->setExpirationDate(new \DateTime('+3 months'));
+                $lock->setExpirationDate(new \DateTime($lock_time));
                 $em->persist($lock);
 
                 if (($batch % $batchSize) === 0) {

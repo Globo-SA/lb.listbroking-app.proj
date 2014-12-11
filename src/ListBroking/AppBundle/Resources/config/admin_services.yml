@@ -105,3 +105,8 @@ services:
       arguments: [~, ListBroking\AppBundle\Entity\Source, SonataAdminBundle:CRUD]
       tags:
           - {name: sonata.admin, manager_type: orm, group: Other, label: Source}
+  listbroking.admin.configuration:
+      class: ListBroking\AppBundle\Admin\ConfigurationAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\Configuration, SonataAdminBundle:CRUD]
+      tags:
+          - {name: sonata.admin, manager_type: orm, group: Other, label: Configuration}

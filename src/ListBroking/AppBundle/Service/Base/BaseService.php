@@ -8,7 +8,7 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\AppBundle\Service\BaseService;
+namespace ListBroking\AppBundle\Service\Base;
 
 use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\EntityManager;
@@ -17,6 +17,7 @@ use Doctrine\ORM\UnitOfWork;
 use ListBroking\AppBundle\Entity\Campaign;
 use ListBroking\AppBundle\Entity\Category;
 use ListBroking\AppBundle\Entity\Client;
+use ListBroking\AppBundle\Entity\Configuration;
 use ListBroking\AppBundle\Entity\Country;
 use ListBroking\AppBundle\Entity\County;
 use ListBroking\AppBundle\Entity\District;
@@ -57,7 +58,7 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * @var Cache
      */
-    protected  $dcache;
+    protected $dcache;
 
     /**
      * @var FormFactory
@@ -283,6 +284,23 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
+     * Gets a configuration
+     * @param $name
+     * @return mixed
+     */
+    public function getConfig($name)
+    {
+        $entities = $this->getEntities('configuration');
+        foreach ($entities as $entity){
+            if($entity->getName() == $name){
+                return $entity;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Generates a new form view
      * @param $type
      * @param bool $view
@@ -397,6 +415,10 @@ abstract class BaseService implements BaseServiceInterface
             case 'source':
                 $entity_info['cache_id'] = $hydrate ? Source::CACHE_ID : Source::CACHE_ID . '_array';
                 $entity_info['repo_name'] = 'ListBrokingAppBundle:Source';
+                break;
+            case 'configuration':
+                $entity_info['cache_id'] = $hydrate ? Configuration::CACHE_ID : Configuration::CACHE_ID . '_array';
+                $entity_info['repo_name'] = 'ListBrokingAppBundle:Configuration';
                 break;
             default:
                 throw new InvalidEntityTypeException("The Entity type {$type} is invalid.");

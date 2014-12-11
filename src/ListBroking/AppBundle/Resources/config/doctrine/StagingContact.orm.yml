@@ -1,0 +1,116 @@
+ListBroking\AppBundle\Entity\StagingContact:
+    type:   entity
+    table:  staging_contact
+    repositoryClass: ListBroking\AppBundle\Repository\StagingContactRepository
+    id:
+        id:
+            type: bigint
+            id:   true
+            generator:
+                strategy: AUTO
+    fields:
+        valid:
+            type:   smallint
+            column: valid
+        processed:
+            type:   smallint
+            column: processed
+        phone:
+            type:   string
+            column: phone
+            nullable: true
+        is_mobile:
+            type:   smallint
+            column: is_mobile
+            nullable: true
+        in_opposition:
+            type:   smallint
+            column: in_opposition
+            nullable: true
+        email:
+            type:   string
+            column: email
+            nullable: true
+        firstname:
+            type:   string
+            column: firstname
+            nullable: true
+        lastname:
+            type:   string
+            column: lastname
+            nullable: true
+        birthdate:
+            type:   string
+            column: birthdate
+            nullable: true
+        address:
+            type:   string
+            column: address
+            nullable: true
+        postalcode1:
+            type:   integer
+            column: postalcode1
+            nullable: true
+        postalcode2:
+            type:   integer
+            column: postalcode2
+            nullable: true
+        ipaddress:
+            type:   string
+            column: ipaddress
+            nullable: true
+        gender:
+            type:   string
+            column: gender
+            nullable: true
+        district:
+            type:   string
+            column: district
+            nullable: true
+        county:
+            type:   string
+            column: county
+            nullable: true
+        parish:
+            type:   string
+            column: parish
+            nullable: true
+        country:
+            type:   string
+            column: country
+            nullable: true
+        owner:
+            type:   string
+            column: owner
+            nullable: true
+        source_name:
+            type:   string
+            column: source_name
+            nullable: true
+        source_external_id:
+            type:   string
+            column: source_external_id
+            nullable: true
+        source_country:
+            type:   string
+            column: source_country
+            nullable: true
+        sub_category:
+            type:   string
+            column: sub_category
+            nullable: true
+        post_request:
+            type:   json_array
+            column: post_request
+            nullable: true
+# Timestampable
+        created_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: create } }
+
+        updated_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: update } }
+# End of Timestampable

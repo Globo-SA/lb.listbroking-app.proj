@@ -8,7 +8,7 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\AppBundle\Service\BaseService;
+namespace ListBroking\AppBundle\Service\Base;
 
 
 use Doctrine\Common\Cache\Cache;
@@ -118,6 +118,13 @@ interface BaseServiceInterface {
      * @return mixed
      */
     public function removeEntity($type, $entity);
+
+    /**
+     * Gets a configuration
+     * @param $name
+     * @return mixed
+     */
+    public function getConfig($name);
 
     /**
      * Generates a new form view

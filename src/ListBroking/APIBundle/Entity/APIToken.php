@@ -12,9 +12,6 @@
 namespace ListBroking\APIBundle\Entity;
 
 
-use Adclick\DoctrineBehaviorBundle\Behavior\BlameableEntityBehavior;
-use Adclick\DoctrineBehaviorBundle\Behavior\TimestampableEntityBehavior;
-
 class APIToken {
     use TimestampableEntityBehavior,
         BlameableEntityBehavior;

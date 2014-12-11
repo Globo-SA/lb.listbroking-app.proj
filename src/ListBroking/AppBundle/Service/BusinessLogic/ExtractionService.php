@@ -8,17 +8,16 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\AppBundle\Service;
+namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Engine\FilterEngine;
 use ListBroking\AppBundle\Entity\Extraction;
-use ListBroking\AppBundle\Entity\ExtractionDeduplication;
 use ListBroking\AppBundle\Entity\ExtractionDeduplicationQueue;
 use ListBroking\AppBundle\Entity\ExtractionTemplate;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
 use ListBroking\AppBundle\PHPExcel\FileHandler;
-use ListBroking\AppBundle\Service\BaseService\BaseService;
+use ListBroking\AppBundle\Service\Base\BaseService;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -271,7 +270,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      * @return mixed
      */
     public function generateLocks(Extraction $extraction, $lock_types){
-        $this->em->getRepository('ListBrokingAppBundle:ExtractionDeduplication')->generateLocks($extraction, $lock_types);
+        $this->em->getRepository('ListBrokingAppBundle:ExtractionDeduplication')->generateLocks($extraction, $lock_types, $this->getConfig('lock.time')->getValue());
 
 
         // Close extraction

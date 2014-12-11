@@ -2,33 +2,31 @@
 
 namespace ListBroking\AppBundle\Admin;
 
-use ListBroking\AppBundle\Entity\Extraction;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
 
-class ExtractionAdmin extends Admin
+class ConfigurationAdmin extends Admin
 {
     protected $datagridValues = array(
         '_sort_order' => 'DESC'
     );
 
-    protected function configureRoutes(RouteCollection $collection)
-    {
-        $collection->add('filtering', $this->getRouterIdParameter() . '/filtering');
-    }
-
+    private $type_values = array(
+        'json' => 'Json',
+        'int' => 'Integer',
+        'string' => 'String',
+    );
     /**
      * @param DatagridMapper $datagridMapper
      */
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
-            ->add('name')
-            ->add('campaign')
+            ->add('id')
+            ->add('type', null, array(), 'choice', array('choices' => $this->type_values))
         ;
     }
 
@@ -39,16 +37,12 @@ class ExtractionAdmin extends Admin
     {
         $listMapper
             ->add('name')
-            ->add('campaign')
-            ->add('status', 'choice', array('choices' => Extraction::$status_names))
-            ->add('quantity')
-            ->add('payout')
+            ->add('type', 'choice', array('choices' => $this->type_values))
+            ->add('value')
             ->add('updated_at')
             ->add('_action', 'actions', array(
                 'actions' => array(
-                    'filtering' => array(
-                        'template' => 'ListBrokingAppBundle:CRUD:list__action_filtering.html.twig'
-                    ),
+                    'show' => array(),
                     'edit' => array(),
                     'delete' => array(),
                 )
@@ -63,10 +57,8 @@ class ExtractionAdmin extends Admin
     {
         $formMapper
             ->add('name')
-            ->add('campaign')
-            ->add('status')
-            ->add('quantity')
-            ->add('payout')
+            ->add('type', 'choice', array('choices' => $this->type_values))
+            ->add('value')
         ;
     }
 
@@ -78,11 +70,12 @@ class ExtractionAdmin extends Admin
         $showMapper
             ->add('id')
             ->add('name')
-            ->add('status')
-            ->add('quantity')
-            ->add('payout')
+            ->add('type', 'choice', array('choices' => $this->type_values))
+            ->add('value')
             ->add('created_at')
             ->add('updated_at')
+            ->add('created_by')
+            ->add('updated_by')
         ;
     }
 }

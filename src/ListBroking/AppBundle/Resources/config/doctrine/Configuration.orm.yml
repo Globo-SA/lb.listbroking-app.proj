@@ -1,0 +1,49 @@
+ListBroking\AppBundle\Entity\Configuration:
+    type: entity
+    table: null
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: '45'
+        type:
+            type: string
+            length: '15'
+        value:
+            type: string
+            length: 255
+# Timestampable
+        created_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: create } }
+
+        updated_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: update } }
+# End of Timestampable
+# Blameable
+    manyToOne:
+        created_by:
+            targetEntity: Application\Sonata\UserBundle\Entity\User
+            joinColumn:
+                name:                 created_by
+                referencedColumnName: id
+                onDelete:             restrict
+            gedmo: { blameable: { on: create } }
+
+        updated_by:
+            targetEntity: Application\Sonata\UserBundle\Entity\User
+            joinColumn:
+                name:                 updated_by
+                referencedColumnName: id
+                onDelete:             restrict
+            gedmo: { blameable: { on: update } }
+# End of blameable
+    lifecycleCallbacks: {  }

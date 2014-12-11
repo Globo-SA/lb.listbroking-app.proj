@@ -41,6 +41,7 @@ class ExtractionAdminController extends CRUDController
         // Render Response
         return $this->render('@ListBrokingApp/Extraction/filtering.html.twig',
             array(
+                'lock_time' => $e_service->getConfig('lock.time')->getValue(),
                 'extraction' => $extraction,
                 'contacts' => $contacts,
                 'deduplication_queues' => $deduplication_queues,

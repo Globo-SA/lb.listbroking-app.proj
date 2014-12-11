@@ -76,8 +76,6 @@
                 success: function(data){
 
                     var $btn =  $('#finalize-extraction-btn');
-                    $btn.find('i.ion-loading-c').fadeOut();
-
                     window.location =  $btn.data('url');
                 }
             });

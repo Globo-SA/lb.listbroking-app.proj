@@ -8,13 +8,12 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\AppBundle\Service;
+namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 
 use Doctrine\ORM\EntityManager;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\Lead;
-use ListBroking\LockBundle\Engine\LockEngine;
 
 /**
  * This service can not use a cache system, as locks are too volatile.

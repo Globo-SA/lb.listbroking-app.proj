@@ -11,9 +11,6 @@
 namespace ListBroking\AppBundle\Engine\Validator\LeadValidator;
 
 
-use ListBroking\LeadBundle\Entity\Source;
-use ListBroking\LeadBundle\Exception\LeadValidationException;
-
 class SourceValidator extends BaseValidator {
     /**
      * @param $service

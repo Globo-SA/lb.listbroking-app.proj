@@ -16,7 +16,6 @@ interface CoreValidatorInterface {
 
     /**
      * @param $service
-     * @param Request $request
      */
     public function __construct($service, $lead);
 

@@ -12,12 +12,11 @@ namespace ListBroking\AppBundle\Command;
 
 
 use ListBroking\AppBundle\Entity\ExtractionDeduplicationQueue;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Helper\ProgressBar;
+use ListBroking\TaskControllerBundle\Command\BaseCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DeduplicateContactsCommand extends ContainerAwareCommand {
+class DeduplicateContactsCommand extends BaseCommand {
 
 
     protected function configure(){
@@ -29,7 +28,9 @@ class DeduplicateContactsCommand extends ContainerAwareCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output){
 
-        $output->writeln("<info>DeduplicateContactsCommand:</info> <comment>STARTING UPLOADS</comment>");
+        parent::execute($input, $output);
+
+        $this->write("STARTING UPLOADS");
 
         // Get the ExtractionService and set the OutputInterface
         $e_service = $this->getContainer()->get('extraction');
@@ -40,17 +41,13 @@ class DeduplicateContactsCommand extends ContainerAwareCommand {
         /** @var  ExtractionDeduplicationQueue[] $queues */
         $queues = $e_service->getEntities('extraction_deduplication_queue');
         if(count($queues) > 0){
+
             // Extractions to Deduplicate
             $extractions = array();
-
-            $output->writeln('\n');
-            $progress = new ProgressBar($output, count($queues));
-            $progress->setBarCharacter('<info>=</info>');
-            $progress->setFormat("%current%/%max% [<comment>%bar%</comment>] %percent%%\n<fg=white;bg=blue> %message% </>");
+            $this->createProgress('STARTING QUEUE PROCESSING', count($queues));
             foreach ($queues as $queue)
             {
-                $progress->setMessage("Processing Queue ID: {$queue->getId()}");
-                $progress->advance();
+                $this->advanceProgress("Processing Queue ID: {$queue->getId()}");
 
                 // Persist deduplications to the DB
                 $filename = $dir . $queue->getFilePath();
@@ -65,28 +62,19 @@ class DeduplicateContactsCommand extends ContainerAwareCommand {
                 $extractions[$extraction->getId()] = $extraction;
 
             }
-            $progress->setMessage("Processing DONE");
-            $progress->finish();
+            $this->finishProgress();
 
-            $output->writeln("<info>DeduplicateContactsCommand:</info> <comment>STARTING DEDUPLICATIONS</comment>");
-            $output->writeln('\n');
-            $progress = new ProgressBar($output, count($queues));
-            $progress->setBarCharacter('<info>=</info>');
-            $progress->setFormat("%current%/%max% [<comment>%bar%</comment>] %percent%%\n<fg=white;bg=blue> %message% </>");
+            $this->createProgress('STARTING DEDUPLICATIONS', count($extractions));
             foreach ($extractions as $id =>$extraction)
             {
-                $progress->setMessage("Deduplicating Extraction ID: {$id}");
-                $progress->advance();
-
+                $this->advanceProgress("Deduplicating Extraction ID: {$id}");
                 $e_service->deduplicateExtraction($extraction);
             }
-            $progress->setMessage("Processing DONE");
-            $progress->finish();
-
+            $this->finishProgress();
         }else{
-            $output->writeln("<info>DeduplicateContactsCommand:</info> <error>Nothing to process</error>");
+            $this->write('Nothing to process');
         }
 
-        $output->writeln("<info>DeduplicateContactsCommand:</info> <comment>END</comment>");
+        $this->write('END');
     }
 }

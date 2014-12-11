@@ -10,7 +10,7 @@ services:
 
   listbroking.appbundle.filters.form:
     class:  ListBroking\AppBundle\Form\FiltersForm
-    arguments: [@app, @lead]
+    arguments: [@app]
     tags:
       - { name: form.type, alias: filters }
 
@@ -20,7 +20,7 @@ services:
       - { name: form.type, alias: json }
 
   base:
-    class: ListBroking\AppBundle\Service\BaseService\BaseService
+    class: ListBroking\AppBundle\Service\Base\BaseService
     abstract: true
     calls:
       - [setLogger, [@logger]]
@@ -35,19 +35,19 @@ services:
       entityManager: @doctrine.orm.entity_manager
 
   app:
-    class: ListBroking\AppBundle\Service\AppService
+    class: ListBroking\AppBundle\Service\Helper\AppService
     parent: base
 
   lead:
-    class: ListBroking\AppBundle\Service\LeadService
+    class: ListBroking\AppBundle\Service\BusinessLogic\LeadService
     arguments:
       entityManager: @doctrine.orm.entity_manager
 
   extraction:
-    class: ListBroking\AppBundle\Service\ExtractionService
+    class: ListBroking\AppBundle\Service\BusinessLogic\ExtractionService
     parent: base
     arguments: [@request_stack, @filter_engine, @mailer, @twig ]
 
-  ui:
-    class: ListBroking\AppBundle\Service\UIService
+  staging:
+    class: ListBroking\AppBundle\Service\BusinessLogic\StagingService
     parent: base
