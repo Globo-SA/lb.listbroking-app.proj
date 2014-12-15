@@ -23,8 +23,8 @@ class CountryRepository extends EntityRepository{
     public function getCountryByCode($code, $hydrate_mode)
     {
         return $this->createQueryBuilder('e')
-            ->andWhere('e.iso_code = :iso_code')
-            ->setParameter('iso_code', $code)
+            ->andWhere('e.name = :name')
+            ->setParameter('name', $code)
             ->getQuery()
             ->getOneOrNullResult($hydrate_mode);
     }

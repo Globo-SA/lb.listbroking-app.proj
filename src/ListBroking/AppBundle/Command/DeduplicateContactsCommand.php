@@ -12,12 +12,19 @@ namespace ListBroking\AppBundle\Command;
 
 
 use ListBroking\AppBundle\Entity\ExtractionDeduplicationQueue;
-use ListBroking\TaskControllerBundle\Command\BaseCommand;
+use ListBroking\TaskControllerBundle\Service\TaskService;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DeduplicateContactsCommand extends BaseCommand {
+class DeduplicateContactsCommand extends ContainerAwareCommand {
 
+    const MAX_RUNNING = 1;
+
+    /**
+     * @var TaskService
+     */
+    private $service;
 
     protected function configure(){
         $this
@@ -27,54 +34,59 @@ class DeduplicateContactsCommand extends BaseCommand {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output){
+        $this->service = $this->getContainer()->get('task');
+        try{
+            if($this->service->start($this, $input, $output, DeduplicateContactsCommand::MAX_RUNNING)){
 
-        parent::execute($input, $output);
+                // Get the ExtractionService and set the OutputInterface
+                $e_service = $this->getContainer()->get('extraction');
+                $e_service->setOutputInterface($output);
 
-        $this->write("STARTING UPLOADS");
+                $dir = $this->getContainer()->get('kernel')->getRootDir() . '/../web/';
 
-        // Get the ExtractionService and set the OutputInterface
-        $e_service = $this->getContainer()->get('extraction');
-        $e_service->setOutputInterface($output);
+                /** @var  ExtractionDeduplicationQueue[] $queues */
+                $queues = $e_service->getEntities('extraction_deduplication_queue');
+                if(count($queues) > 0){
 
-        $dir = $this->getContainer()->get('kernel')->getRootDir() . '/../web/';
+                    // Extractions to Deduplicate
+                    $extractions = array();
+                    $this->service->createProgressBar('STARTING QUEUE PROCESSING', count($queues));
+                    foreach ($queues as $queue)
+                    {
+                        $this->service->advanceProgressBar("Processing Queue ID: {$queue->getId()}");
 
-        /** @var  ExtractionDeduplicationQueue[] $queues */
-        $queues = $e_service->getEntities('extraction_deduplication_queue');
-        if(count($queues) > 0){
+                        // Persist deduplications to the DB
+                        $filename = $dir . $queue->getFilePath();
+                        $e_service->uploadDeduplicationsByFile($filename ,$queue->getExtraction(), $queue->getField(), true);
 
-            // Extractions to Deduplicate
-            $extractions = array();
-            $this->createProgress('STARTING QUEUE PROCESSING', count($queues));
-            foreach ($queues as $queue)
-            {
-                $this->advanceProgress("Processing Queue ID: {$queue->getId()}");
+                        // Remove file and Queue
+                        unlink($filename);
+                        $e_service->removeEntity('extraction_deduplication_queue', $queue);
 
-                // Persist deduplications to the DB
-                $filename = $dir . $queue->getFilePath();
-                $e_service->uploadDeduplicationsByFile($filename ,$queue->getExtraction(), $queue->getField(), true);
+                        // Add Extraction to the duplication Queue
+                        $extraction = $queue->getExtraction();
+                        $extractions[$extraction->getId()] = $extraction;
 
-                // Remove file and Queue
-                unlink($filename);
-                $e_service->removeEntity('extraction_deduplication_queue', $queue);
+                    }
+                    $this->service->finishProgressBar();
 
-                // Add Extraction to the duplication Queue
-                $extraction = $queue->getExtraction();
-                $extractions[$extraction->getId()] = $extraction;
+                    $this->service->createProgressBar('STARTING DEDUPLICATIONS', count($extractions));
+                    foreach ($extractions as $id =>$extraction)
+                    {
+                        $this->service->advanceProgressBar("Deduplicating Extraction ID: {$id}");
+                        $e_service->deduplicateExtraction($extraction);
+                    }
+                    $this->service->finishProgressBar();
+                }else{
+                    $this->service->write('Nothing to process');
+                }
 
+                $this->service->finish();
+            }else{
+                $this->service->write('Task is Already Running');
             }
-            $this->finishProgress();
-
-            $this->createProgress('STARTING DEDUPLICATIONS', count($extractions));
-            foreach ($extractions as $id =>$extraction)
-            {
-                $this->advanceProgress("Deduplicating Extraction ID: {$id}");
-                $e_service->deduplicateExtraction($extraction);
-            }
-            $this->finishProgress();
-        }else{
-            $this->write('Nothing to process');
+        }catch (\Exception $e){
+            $this->service->throwError($e);
         }
-
-        $this->write('END');
     }
 }

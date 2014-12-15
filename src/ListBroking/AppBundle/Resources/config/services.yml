@@ -29,11 +29,6 @@ services:
       - [setCache, [@doctrine_cache.providers.memcached_query_cache]]
       - [setFormFactory, [@form.factory]]
 
-  filter_engine:
-    class: ListBroking\AppBundle\Engine\FilterEngine
-    arguments:
-      entityManager: @doctrine.orm.entity_manager
-
   app:
     class: ListBroking\AppBundle\Service\Helper\AppService
     parent: base
@@ -50,4 +45,14 @@ services:
 
   staging:
     class: ListBroking\AppBundle\Service\BusinessLogic\StagingService
+    parent: base
+    arguments: [@validator_engine]
+
+  filter_engine:
+    class: ListBroking\AppBundle\Engine\FilterEngine
+    arguments:
+      entityManager: @doctrine.orm.entity_manager
+
+  validator_engine:
+    class: ListBroking\AppBundle\Engine\ValidatorEngine
     parent: base

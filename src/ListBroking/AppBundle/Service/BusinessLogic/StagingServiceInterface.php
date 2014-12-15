@@ -27,4 +27,22 @@ interface StagingServiceInterface {
      * @return mixed
      */
     public function importStagingContacts($filename);
+
+
+    /**
+     * Validates StagingContacts using exceptions and
+     * opposition lists
+     * @param $limit
+     * @return mixed
+     */
+    public function validateStagingContacts($limit = 50);
+
+
+    /**
+     * Enriches StagingContacts using internal and external
+     * processes, if only runs on valid contacts
+     * @param $limit
+     * @return mixed
+     */
+    public function enrichStatingContacts($limit = 50);
 } 

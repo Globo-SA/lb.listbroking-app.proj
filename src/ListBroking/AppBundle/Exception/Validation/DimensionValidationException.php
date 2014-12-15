@@ -8,8 +8,8 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\AppBundle\Exception;
+namespace ListBroking\AppBundle\Exception\Validation;
 
-class CoreValidationException extends \Exception {
+class DimensionValidationException extends \Exception {
 
 } 

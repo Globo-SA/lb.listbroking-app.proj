@@ -32,6 +32,9 @@
         "jms/serializer-bundle": "~0.13",
         "phpoffice/phpexcel": "~1.8",
 
+        "commerceguys/addressing": "dev-master",
+        "giggsey/libphonenumber-for-php": "~7.0",
+
         "sonata-project/easy-extends-bundle": "~2.1",
         "sonata-project/admin-bundle": "~2.3",
         "sonata-project/doctrine-orm-admin-bundle": "~2.3",

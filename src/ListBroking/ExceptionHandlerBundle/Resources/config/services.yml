@@ -9,4 +9,4 @@ services:
     class: ListBroking\ExceptionHandlerBundle\Admin\ExceptionLogAdmin
     arguments: [~, ListBroking\ExceptionHandlerBundle\Entity\ExceptionLog, SonataAdminBundle:CRUD]
     tags:
-      - {name: sonata.admin, manager_type: orm, group: Main, label: ExceptionLog}
+      - {name: sonata.admin, manager_type: orm, group: System, label: ExceptionLog}

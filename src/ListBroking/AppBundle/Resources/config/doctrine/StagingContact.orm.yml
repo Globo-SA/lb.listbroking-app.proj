@@ -103,6 +103,10 @@ ListBroking\AppBundle\Entity\StagingContact:
             type:   json_array
             column: post_request
             nullable: true
+        validations:
+            type:   json_array
+            column: validations
+            nullable: true
 # Timestampable
         created_at:
             type: datetime

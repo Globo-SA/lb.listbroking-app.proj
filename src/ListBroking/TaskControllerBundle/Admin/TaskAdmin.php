@@ -1,18 +1,27 @@
 <?php
 
-namespace ListBroking\AppBundle\Admin;
+namespace ListBroking\TaskControllerBundle\Admin;
 
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
 
-class CountryAdmin extends Admin
+class TaskAdmin extends Admin
 {
+
     protected $datagridValues = array(
         '_sort_order' => 'DESC'
     );
+    
+    protected function configureRoutes(RouteCollection $collection)
+    {
+        $collection->remove('delete');
+        $collection->remove('create');
+        $collection->remove('edit');
+    }
 
     /**
      * @param DatagridMapper $datagridMapper
@@ -20,8 +29,7 @@ class CountryAdmin extends Admin
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
-            ->add('id')
-            ->add('name')
+            ->add('status')
         ;
     }
 
@@ -31,8 +39,10 @@ class CountryAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->add('id')
             ->add('name')
+            ->add('status')
+            ->add('pid')
+            ->add('msg')
             ->add('updated_at')
             ->add('_action', 'actions', array(
                 'actions' => array(
@@ -51,6 +61,9 @@ class CountryAdmin extends Admin
     {
         $formMapper
             ->add('name')
+            ->add('status')
+            ->add('pid')
+            ->add('msg')
         ;
     }
 
@@ -62,6 +75,9 @@ class CountryAdmin extends Admin
         $showMapper
             ->add('id')
             ->add('name')
+            ->add('status')
+            ->add('pid')
+            ->add('msg')
             ->add('created_at')
             ->add('updated_at')
         ;

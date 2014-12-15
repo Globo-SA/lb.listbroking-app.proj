@@ -68,7 +68,6 @@ class LoadTestData implements FixtureInterface {
         foreach($countries_names as $iso_id){
             $country = new Country();
             $country->setIsActive(1);
-            $country->setIsoCode($iso_id);
             $country->setName($iso_id);
 
             $manager->persist($country);

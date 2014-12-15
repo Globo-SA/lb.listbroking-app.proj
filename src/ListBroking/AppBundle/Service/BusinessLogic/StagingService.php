@@ -12,11 +12,22 @@ namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 
 use Doctrine\Common\Util\Inflector;
+use ListBroking\AppBundle\Engine\ValidatorEngine;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\PHPExcel\FileHandler;
 use ListBroking\AppBundle\Service\Base\BaseService;
 
 class StagingService extends BaseService implements StagingServiceInterface {
+
+    /**
+     * @var ValidatorEngine
+     */
+    protected  $v_engine;
+
+    function __construct(ValidatorEngine $v_engine)
+    {
+        $this->v_engine = $v_engine;
+    }
 
     /**
      * Adds a new staging contact inferring
@@ -72,4 +83,32 @@ class StagingService extends BaseService implements StagingServiceInterface {
             }
         }
     }
+
+    /**
+     * Validates StagingContacts using exceptions and
+     * opposition lists
+     * @param $limit
+     * @return mixed
+     */
+    public function validateStagingContacts($limit = 50)
+    {
+        $contacts = $this->em->getRepository('ListBrokingAppBundle:StagingContact')->findBy(array(
+            'valid' => 0
+        ), null, $limit);
+
+        $this->v_engine->run($contacts);
+    }
+
+    /**
+     * Enriches StagingContacts using internal and external
+     * processes, if only runs on valid contacts
+     * @param $limit
+     * @return mixed
+     */
+    public function enrichStatingContacts($limit = 50)
+    {
+        // TODO: Implement enrichStatingContacts() method.
+    }
+
+
 }

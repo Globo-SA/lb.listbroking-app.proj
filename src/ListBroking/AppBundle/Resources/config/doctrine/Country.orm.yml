@@ -13,11 +13,6 @@ ListBroking\AppBundle\Entity\Country:
             type:   string
             column: name
             unique: true
-        iso_code:
-            type:   string
-            column: iso_code
-            length: 2
-            unique: true
 
 # Timestampable
         created_at:

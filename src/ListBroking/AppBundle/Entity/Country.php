@@ -23,11 +23,7 @@ class Country {
 
     protected $id;
 
-
-
     protected $name;
-
-    protected $iso_code;
 
     function __toString()
     {
@@ -56,22 +52,5 @@ class Country {
     public function setName($name)
     {
         $this->name = $name;
-    }
-
-
-    /**
-     * @return mixed
-     */
-    public function getIsoCode()
-    {
-        return $this->iso_code;
-    }
-
-    /**
-     * @param mixed $iso_code
-     */
-    public function setIsoCode($iso_code)
-    {
-        $this->iso_code = $iso_code;
     }
 }

@@ -64,6 +64,8 @@ class StagingContact {
 
     protected $country;
 
+    protected $validations;
+
 
     /**
      * Owner Information
@@ -480,4 +482,21 @@ class StagingContact {
     {
         $this->sub_category = $sub_category;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getValidations()
+    {
+        return $this->validations;
+    }
+
+    /**
+     * @param mixed $validations
+     */
+    public function setValidations($validations)
+    {
+        $this->validations = $validations;
+    }
+
 }

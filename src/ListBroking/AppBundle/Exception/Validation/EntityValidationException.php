@@ -8,9 +8,9 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\AppBundle\Exception;
+namespace ListBroking\AppBundle\Exception\Validation;
 
 
-class LeadValidationException extends \Exception {
+class EntityValidationException extends \Exception {
 
 } 

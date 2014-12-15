@@ -25,11 +25,11 @@ class AppService extends BaseService implements AppServiceInterface {
        $entities = $this->getEntities('country', $hydrate);
         foreach ($entities as $entity){
             if($hydrate){
-                if($entity->getIsoCode() == $code){
+                if($entity->getName() == $code){
                     return $entity;
                 }
             } else{
-                if($entity['iso_code'] == $code){
+                if($entity['name'] == $code){
                     return $entity;
                 }
             }
