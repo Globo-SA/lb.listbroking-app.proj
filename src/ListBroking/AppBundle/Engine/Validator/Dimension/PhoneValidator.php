@@ -14,8 +14,6 @@ namespace ListBroking\AppBundle\Engine\Validator\Dimension;
 
 
 use Doctrine\ORM\EntityManager;
-use libphonenumber\geocoding\PhoneNumberOfflineGeocoder;
-use libphonenumber\PhoneNumberToCarrierMapper;
 use libphonenumber\PhoneNumberType;
 use libphonenumber\PhoneNumberUtil;
 use ListBroking\AppBundle\Engine\Validator\ValidatorInterface;
@@ -25,6 +23,11 @@ use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 class PhoneValidator implements ValidatorInterface {
 
     protected $em;
+
+    protected $rules = array(
+       array('regex' => '/(0{4,9}|1{4,9}|2{4,9}|3{4,9}|4{4,9}|5{4,9}|6{4,9}|7{4,9}|8{4,9}|9{4,9})/i', 'msg' => '4 or more equal numbers'),
+       array('regex' => '/(0123|1234|2345|3456|4567|5678|6789|7890|0987|9876|8765|7654|6543|5432|4321|3210)/i', 'msg' => '4 sequential number'),
+    );
 
     /**
      * @param EntityManager $em
@@ -50,6 +53,13 @@ class PhoneValidator implements ValidatorInterface {
         }
         if(empty($country)){
             throw new DimensionValidationException('Empty country field');
+        }
+
+        foreach ($this->rules as $rule)
+        {
+            if(preg_match($rule['regex'], $field)){
+                throw new DimensionValidationException("Phone number doesn't match regex rule: {$rule['msg']}");
+            }
         }
 
         $phone_util = PhoneNumberUtil::getInstance();

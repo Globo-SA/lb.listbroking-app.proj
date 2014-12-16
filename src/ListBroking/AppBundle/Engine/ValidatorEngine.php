@@ -69,7 +69,6 @@ class ValidatorEngine extends BaseService
             // Fact validations
             new PhoneValidator($this->em),
 //            // ESSENTIAL VALIDATIONS
-//            new LeadValidator($this->lead_service, $this->lead),
 //            new ContactValidator($this->lead_service, $this->lead),
 //            new SourceValidator($this->contact_detail_service, $this->lead),
 //            // NON-ESSENTIAL
