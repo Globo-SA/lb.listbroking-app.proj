@@ -25,6 +25,7 @@ class AppKernel extends Kernel
             // Extra libraries
             new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
+            new Misd\GuzzleBundle\MisdGuzzleBundle(),
 
             //Security
             new FOS\UserBundle\FOSUserBundle(),

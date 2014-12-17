@@ -11,21 +11,32 @@
 namespace ListBroking\AppBundle\Engine;
 
 
+use Guzzle\Service\Client;
 use ListBroking\AppBundle\Engine\Validator\Dimension\CategoryValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\CountryValidator;
+use ListBroking\AppBundle\Engine\Validator\Dimension\GenderValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\OwnerValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\PhoneValidator;
+use ListBroking\AppBundle\Engine\Validator\Dimension\PostalCodeValidator;
+use ListBroking\AppBundle\Engine\Validator\Dimension\RepeatedValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\SourceValidator;
-use ListBroking\AppBundle\Engine\Validator\DimensionValidatorInterface;
+use ListBroking\AppBundle\Engine\Validator\ValidatorInterface;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Service\Base\BaseService;
 
 class ValidatorEngine extends BaseService
 {
+    protected $guzzle;
+
     /**
-     * @var DimensionValidatorInterface[]
+     * @var ValidatorInterface[]
      */
     protected $validators;
+
+    function __construct(Client $guzzle)
+    {
+        $this->guzzle = $guzzle;
+    }
 
     /**
      * Runs Validators to an array of
@@ -37,7 +48,6 @@ class ValidatorEngine extends BaseService
         $this->setValidators();
         foreach ($contacts as $contact)
         {
-
             $validations = $contact->getValidations();
             foreach ($this->validators as $validator)
             {
@@ -59,6 +69,7 @@ class ValidatorEngine extends BaseService
 
     private function setValidators()
     {
+        //TODO: Add cache to Dimension Validations
         $this->validators = array(
             // Dimension validations
             new CountryValidator($this->em),
@@ -68,15 +79,10 @@ class ValidatorEngine extends BaseService
 
             // Fact validations
             new PhoneValidator($this->em),
-//            // ESSENTIAL VALIDATIONS
-//            new ContactValidator($this->lead_service, $this->lead),
-//            new SourceValidator($this->contact_detail_service, $this->lead),
-//            // NON-ESSENTIAL
-//            new CountyValidator($this->contact_detail_service, $this->lead),
-//            new DistrictValidator($this->contact_detail_service, $this->lead),
-//            new GenderValidator($this->contact_detail_service, $this->lead),
-//            new ParishValidator($this->contact_detail_service, $this->lead),
-//            new CountyValidator($this->contact_detail_service, $this->lead)
+            new RepeatedValidator($this->em),
+            new GenderValidator($this->em),
+
+            new PostalCodeValidator($this->em, $this->guzzle),
         );
     }
 

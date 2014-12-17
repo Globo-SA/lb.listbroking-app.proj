@@ -22,6 +22,9 @@ use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 
 class SourceValidator implements ValidatorInterface {
 
+    /**
+     * @var EntityManager
+     */
     protected $em;
 
     /**

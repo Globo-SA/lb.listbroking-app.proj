@@ -31,6 +31,7 @@
         "friendsofsymfony/jsrouting-bundle": "2.0.*@dev",
         "jms/serializer-bundle": "~0.13",
         "phpoffice/phpexcel": "~1.8",
+        "misd/guzzle-bundle": "~1.0",
 
         "commerceguys/addressing": "dev-master",
         "giggsey/libphonenumber-for-php": "~7.0",

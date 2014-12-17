@@ -19,6 +19,9 @@ use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 
 class RepeatedValidator implements ValidatorInterface {
 
+    /**
+     * @var EntityManager
+     */
     protected $em;
 
     /**
@@ -38,39 +41,51 @@ class RepeatedValidator implements ValidatorInterface {
      */
     public function validate(StagingContact $contact, &$validations)
     {
-        $phone = $contact->getPhone();
-        $email = $contact->getEmail();
+        $staging_phone = $contact->getPhone();
+        $staging_email = $contact->getEmail();
+        $staging_owner = $contact->getOwner();
 
         $lead = $this->em->getRepository('ListBrokingAppBundle:Lead')->findOneBy(array(
-            'phone' => $phone
+            'phone' => $staging_phone
         ));
+
+        /**
+         * A Lead is only FULLY REPEATED if:
+         *  . phone number exists
+         *  . and email address exists associated with the phone
+         *  . and email and phone combination already exist for the given owner
+         */
 
         // Lead_X exists
         if($lead){
-            $validations[$this->getName()]['warnings'][] = 'Lead already exists';
+            $info = 'Lead Repeated by: Phone';
 
-            $contact = $this->em->getRepository('ListBrokingAppBundle:Contact')->findOneBy(array(
+            $lead_contact = $this->em->getRepository('ListBrokingAppBundle:Contact')->findOneBy(array(
                 'lead' => $lead,
-                'email' => $email
+                'email' => $staging_email
             ));
 
             // Contact_Y associated with Lead_X exists
-            if($contact){
-                $validations[$this->getName()]['warnings'][] = 'Contact associated with Lead already exists';
+            if($lead_contact){
+                $info .= ' and Phone-Contact';
 
                 $owner_contact = $this->em->getRepository('ListBrokingAppBundle:Contact')->createQueryBuilder('c')
-                    ->join('c.owner', 'owner')
-                    ->andWhere('c', $contact)
-                    ->andWhere('owner.name', $contact->getOwner())
+                    ->join('c.owner', 'o')
+                    ->where('c = :lead_contact')
+                    ->andWhere('o.name = :staging_contact_owner')
+                    ->setParameter('lead_contact', $lead_contact)
+                    ->setParameter('staging_contact_owner', $staging_owner)
+                    ->getQuery()
+                    ->getOneOrNullResult()
                 ;
 
                 // Owner_Z has Contact_Y associated with Lead_X
                 // LEAD IS FULLY REPEATED
                 if($owner_contact){
                     throw new DimensionValidationException('Lead is fully repeated');
-
                 }
             }
+            $validations[$this->getName()]['info'][] = $info;
         }
     }
 
@@ -80,7 +95,7 @@ class RepeatedValidator implements ValidatorInterface {
      */
     public function getName()
     {
-        // TODO: Implement getName() method.
+        return 'repeated_validator';
     }
 
 

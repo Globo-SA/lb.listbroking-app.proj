@@ -19,6 +19,10 @@ services:
     tags:
       - { name: form.type, alias: json }
 
+  guzzle.client:
+      class: %guzzle.client.class%
+      tags:
+          - { name: "guzzle.client" }
   base:
     class: ListBroking\AppBundle\Service\Base\BaseService
     abstract: true
@@ -56,3 +60,4 @@ services:
   validator_engine:
     class: ListBroking\AppBundle\Engine\ValidatorEngine
     parent: base
+    arguments: [@guzzle.client]

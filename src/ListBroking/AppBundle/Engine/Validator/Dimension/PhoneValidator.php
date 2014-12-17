@@ -22,6 +22,9 @@ use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 
 class PhoneValidator implements ValidatorInterface {
 
+    /**
+     * @var EntityManager
+     */
     protected $em;
 
     protected $rules = array(
@@ -103,6 +106,6 @@ class PhoneValidator implements ValidatorInterface {
      * @return string
      */
     public function getName(){
-        return 'country_validator';
+        return 'phone_validator';
     }
 }

@@ -21,6 +21,9 @@ use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 
 class CountryValidator implements ValidatorInterface {
 
+    /**
+     * @var EntityManager
+     */
     protected $em;
 
     /**

@@ -35,7 +35,7 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand{
         $this->service = $this->getContainer()->get('task');
 //        try{
 //            if($this->service->start($this, $input, $output, DeduplicateContactsCommand::MAX_RUNNING)){
-                $this->getContainer()->get('staging')->validateStagingContacts(1);
+                $this->getContainer()->get('staging')->validateStagingContacts(500);
 //            }else{
 //                $this->service->write('Task is Already Running');
 //            }

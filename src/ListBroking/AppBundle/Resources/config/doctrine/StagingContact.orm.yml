@@ -48,11 +48,11 @@ ListBroking\AppBundle\Entity\StagingContact:
             column: address
             nullable: true
         postalcode1:
-            type:   integer
+            type:   string
             column: postalcode1
             nullable: true
         postalcode2:
-            type:   integer
+            type:   string
             column: postalcode2
             nullable: true
         ipaddress:

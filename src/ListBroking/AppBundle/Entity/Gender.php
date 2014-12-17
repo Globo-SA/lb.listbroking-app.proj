@@ -18,6 +18,10 @@ class Gender {
 
     const CACHE_ID = 'gender';
 
+    const MALE = 'm';
+
+    const FEMALE = 'f';
+
     use TimestampableEntityBehavior,
         BlameableEntityBehavior;
 
