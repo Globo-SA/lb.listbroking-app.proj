@@ -10,8 +10,8 @@
 
 namespace ListBroking\AppBundle\Command;
 
-
-use ListBroking\AppBundle\Entity\ExtractionDeduplicationQueue;
+use ListBroking\AppBundle\Service\Helper\AppService;
+use ListBroking\TaskControllerBundle\Entity\Queue;
 use ListBroking\TaskControllerBundle\Service\TaskService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,42 +34,37 @@ class DeduplicateContactsCommand extends ContainerAwareCommand {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output){
+
         $this->service = $this->getContainer()->get('task');
         try{
-            if($this->service->start($this, $input, $output, DeduplicateContactsCommand::MAX_RUNNING)){
+            if($this->service->start($this, $input, $output, self::MAX_RUNNING)){
 
-                // Get the ExtractionService and set the OutputInterface
                 $e_service = $this->getContainer()->get('extraction');
-                $e_service->setOutputInterface($output);
-
                 $dir = $this->getContainer()->get('kernel')->getRootDir() . '/../web/';
 
-                /** @var  ExtractionDeduplicationQueue[] $queues */
-                $queues = $e_service->getEntities('extraction_deduplication_queue');
+                /** @var  Queue[] $queues */
+                $queues = $this->service->findQueuesByType(AppService::DEDUPLICATION_QUEUE_TYPE);
                 if(count($queues) > 0){
 
-                    // Extractions to Deduplicate
                     $extractions = array();
+
+                    // Iterate deduplication queues
                     $this->service->createProgressBar('STARTING QUEUE PROCESSING', count($queues));
                     foreach ($queues as $queue)
                     {
                         $this->service->advanceProgressBar("Processing Queue ID: {$queue->getId()}");
 
                         // Persist deduplications to the DB
-                        $filename = $dir . $queue->getFilePath();
-                        $e_service->uploadDeduplicationsByFile($filename ,$queue->getExtraction(), $queue->getField(), true);
+                        $filename = $dir . $queue->getValue2();
+                        $extraction = $e_service->getEntity('extraction', $queue->getValue1());
+                        $e_service->uploadDeduplicationsByFile($extraction, $filename, $queue->getValue3(), true);
 
-                        // Remove file and Queue
-                        unlink($filename);
-                        $e_service->removeEntity('extraction_deduplication_queue', $queue);
-
-                        // Add Extraction to the duplication Queue
-                        $extraction = $queue->getExtraction();
+                        // Add Extraction to the duplication process
                         $extractions[$extraction->getId()] = $extraction;
-
                     }
                     $this->service->finishProgressBar();
 
+                    // Deduplicate contacts for the necessary extractions
                     $this->service->createProgressBar('STARTING DEDUPLICATIONS', count($extractions));
                     foreach ($extractions as $id =>$extraction)
                     {
@@ -77,6 +72,20 @@ class DeduplicateContactsCommand extends ContainerAwareCommand {
                         $e_service->deduplicateExtraction($extraction);
                     }
                     $this->service->finishProgressBar();
+
+                    // Clears everything if all went OK
+                    $this->service->createProgressBar('REMOVING PROCESSED QUEUES', count($extractions));
+                    foreach ($queues as $queue)
+                    {
+                        $this->service->advanceProgressBar("Removing Queue ID: {$queue->getId()}");
+
+                        // Remove file and Queue
+                        $e_service->removeEntity('queue', $queue);
+                        $filename = $dir . $queue->getValue2();
+                        unlink($filename);
+                    }
+                    $this->service->finishProgressBar();
+
                 }else{
                     $this->service->write('Nothing to process');
                 }

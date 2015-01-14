@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Task
 {
+    const CACHE_ID = 'task';
 
     const STATUS_SUCCESS  = 'success';
 

@@ -68,6 +68,11 @@ ajax_deduplication_queue:
     options:
         expose: true
 
+ajax_opposition_list_import:
+    path: /ajax/oppositionlist/import
+    defaults: { _controller: ListBrokingAppBundle:Ajax:OppositionListImport }
+    options:
+        expose: true
 api_create_lead:
     path:     /v1/lead/create
     defaults: { _controller: ListBrokingAppBundle:API:createStagingLead }

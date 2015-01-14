@@ -90,13 +90,18 @@ SQL;
     public function deduplicateExtraction(Extraction $extraction){
         $conn = $this->getEntityManager()->getConnection();
 
+        //TODO: Make the JOIN a bit more performant
         $dedup_sql = <<<SQL
             DELETE extractions_contacts
             FROM extractions_contacts
             JOIN contact ON contact.id = extractions_contacts.contact_id
             JOIN lead ON contact.lead_id = lead.id
-            JOIN extraction_deduplication ON extraction_deduplication.phone = lead.phone
-            WHERE extractions_contacts.extraction_id = :extraction
+            JOIN extraction_deduplication ON (
+              extraction_deduplication.phone = lead.phone
+              OR extraction_deduplication.lead_id = lead.id
+              OR extraction_deduplication.contact_id = extractions_contacts.contact_id
+              )
+            WHERE extractions_contacts.extraction_id
 SQL;
         $params = array(
             'extraction' => $extraction->getId(),

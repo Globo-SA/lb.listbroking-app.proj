@@ -4,6 +4,9 @@ namespace ListBroking\AppBundle\Controller;
 
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
+use ListBroking\AppBundle\Service\BusinessLogic\ExtractionService;
+use ListBroking\AppBundle\Service\Helper\AppService;
+use ListBroking\TaskControllerBundle\Entity\Queue;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -14,6 +17,7 @@ class ExtractionAdminController extends CRUDController
     {
         // Services
         $e_service = $this->get('extraction');
+        $t_service = $this->get('task');
 
         // Current Extraction and step
         $extraction_id = $this->get('request')->get($this->admin->getIdParameter());
@@ -36,7 +40,15 @@ class ExtractionAdminController extends CRUDController
         );
 
         //Check for Queues
-        $deduplication_queues = $e_service->getDeduplicationQueuesByExtraction($extraction);
+        $running_queue = false;
+        /** @var Queue[] $queues */
+        $queues = $t_service->findQueuesByType(AppService::DEDUPLICATION_QUEUE_TYPE);
+        foreach($queues as $queue){
+            if($queue->getValue1() == $extraction->getId()){
+                $running_queue = true;
+                break;
+            }
+        }
 
         // Render Response
         return $this->render('@ListBrokingApp/Extraction/filtering.html.twig',
@@ -44,7 +56,7 @@ class ExtractionAdminController extends CRUDController
                 'lock_time' => $e_service->getConfig('lock.time')->getValue(),
                 'extraction' => $extraction,
                 'contacts' => $contacts,
-                'deduplication_queues' => $deduplication_queues,
+                'has_queues' => $running_queue,
                 'forms' =>  array(
                     'filters' => $filters_form->createView(),
                     'adv_exclusion' => $adv_exclusion->createView(),

@@ -11,21 +11,33 @@
 namespace ListBroking\AppBundle\Engine;
 
 
+use Doctrine\ORM\EntityManager;
 use Guzzle\Service\Client;
-use ListBroking\AppBundle\Engine\Validator\Dimension\CategoryValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\CountryValidator;
-use ListBroking\AppBundle\Engine\Validator\Dimension\GenderValidator;
+use ListBroking\AppBundle\Engine\Validator\Dimension\CategoryValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\OwnerValidator;
-use ListBroking\AppBundle\Engine\Validator\Dimension\PhoneValidator;
-use ListBroking\AppBundle\Engine\Validator\Dimension\PostalCodeValidator;
-use ListBroking\AppBundle\Engine\Validator\Dimension\RepeatedValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\SourceValidator;
+use ListBroking\AppBundle\Engine\Validator\Dimension\GenderValidator;
+
+use ListBroking\AppBundle\Engine\Validator\Fact\EmailValidator;
+use ListBroking\AppBundle\Engine\Validator\Fact\PhoneValidator;
+use ListBroking\AppBundle\Engine\Validator\Fact\RepeatedValidator;
+use ListBroking\AppBundle\Engine\Validator\Fact\OppositionListValidator;
+use ListBroking\AppBundle\Engine\Validator\Fact\PostalCodeValidator;
+
 use ListBroking\AppBundle\Engine\Validator\ValidatorInterface;
 use ListBroking\AppBundle\Entity\StagingContact;
-use ListBroking\AppBundle\Service\Base\BaseService;
 
-class ValidatorEngine extends BaseService
+class ValidatorEngine
 {
+    /**
+     * @var EntityManager
+     */
+    protected $em;
+
+    /**
+     * @var Client
+     */
     protected $guzzle;
 
     /**
@@ -33,58 +45,47 @@ class ValidatorEngine extends BaseService
      */
     protected $validators;
 
-    function __construct(Client $guzzle)
+    function __construct(EntityManager $em, Client $guzzle)
     {
+        $this->em = $em;
         $this->guzzle = $guzzle;
-    }
 
-    /**
-     * Runs Validators to an array of
-     * StagingContacts
-     * @param $contacts StagingContact[]
-     */
-    public function run($contacts)
-    {
-        $this->setValidators();
-        foreach ($contacts as $contact)
-        {
-            $validations = $contact->getValidations();
-            foreach ($this->validators as $validator)
-            {
-                try
-                {
-                    $validator->validate($contact, $validations);
-                } catch (\Exception $e)
-                {
-                    $validations[$validator->getName()]['errors'][] = $e->getMessage();
-                }
-            }
-            $contact->setValidations($validations);
-
-            // Flush all changes
-            $this->em->flush();
-        }
-
-    }
-
-    private function setValidators()
-    {
-        //TODO: Add cache to Dimension Validations
+        //TODO: For now all validations are iterated even if the contact is invalided by one
         $this->validators = array(
             // Dimension validations
             new CountryValidator($this->em),
             new CategoryValidator($this->em),
             new OwnerValidator($this->em),
             new SourceValidator($this->em),
+            new GenderValidator($this->em), // Dimension with fixed values
 
             // Fact validations
+            new EmailValidator($this->em),
             new PhoneValidator($this->em),
             new RepeatedValidator($this->em),
-            new GenderValidator($this->em),
-
+            new OppositionListValidator($this->em),
             new PostalCodeValidator($this->em, $this->guzzle),
         );
     }
 
-
+    /**
+     * Runs Validators to an array of
+     * StagingContacts
+     * @param $contact StagingContact
+     */
+    public function run($contact)
+    {
+        $validations = $contact->getValidations();
+        foreach ($this->validators as $validator)
+        {
+            try
+            {
+                $validator->validate($contact, $validations);
+            } catch (\Exception $e)
+            {
+                $validations['errors'][$validator->getName()][] = $e->getMessage();
+            }
+        }
+        $contact->setValidations($validations);
+    }
 }

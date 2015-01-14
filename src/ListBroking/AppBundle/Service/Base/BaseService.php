@@ -11,6 +11,7 @@
 namespace ListBroking\AppBundle\Service\Base;
 
 use Doctrine\Common\Cache\Cache;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
@@ -23,7 +24,6 @@ use ListBroking\AppBundle\Entity\County;
 use ListBroking\AppBundle\Entity\District;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionDeduplication;
-use ListBroking\AppBundle\Entity\ExtractionDeduplicationQueue;
 use ListBroking\AppBundle\Entity\ExtractionTemplate;
 use ListBroking\AppBundle\Entity\Gender;
 use ListBroking\AppBundle\Entity\Owner;
@@ -31,23 +31,42 @@ use ListBroking\AppBundle\Entity\Parish;
 use ListBroking\AppBundle\Entity\Source;
 use ListBroking\AppBundle\Entity\SubCategory;
 use ListBroking\AppBundle\Exception\InvalidEntityTypeException;
-use Monolog\Logger;
-use Symfony\Component\Console\Output\OutputInterface;
+use ListBroking\TaskControllerBundle\Entity\Queue;
+use ListBroking\TaskControllerBundle\Entity\Task;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactory;
 
 abstract class BaseService implements BaseServiceInterface
 {
-    /**
-     * @var Logger
-     */
-    protected $logger;
-    /**
-     * @var OutputInterface
-     */
-    protected $output;
 
+    /**
+     * Queue types
+     */
+    const DEDUPLICATION_QUEUE_TYPE = 'deduplication_queue';
+    const OPPOSITION_LIST_QUEUE_TYPE = 'opposition_queue';
+
+    /**
+     * Queue mapping (just for information purpose)
+     */
+    public $queue_mapping = array(
+      self::DEDUPLICATION_QUEUE_TYPE => array(
+          'value1' => 'extraction_id',
+          'value2' => 'filename',
+          'value3' => 'deduplication_field',
+          'value4' => ''
+      ),
+        self::OPPOSITION_LIST_QUEUE_TYPE => array(
+            'value1' => 'type',
+            'value2' => 'filename',
+            'value3' => 'clear_old',
+            'value4' => ''
+        )
+    );
+
+    /**
+     * @var Connection
+     */
     protected $doctrine;
 
     /**
@@ -64,49 +83,6 @@ abstract class BaseService implements BaseServiceInterface
      * @var FormFactory
      */
     protected $form_factory;
-
-    /**
-     * @param Logger $logger
-     * @return mixed
-     */
-    public function setLogger(Logger $logger){
-        $this->logger = $logger;
-    }
-
-    /**
-     * Used to add an OutputInterface for commands
-     * @param $outputInterface $interface
-     * @return mixed
-     */
-    public function setOutputInterface(OutputInterface $outputInterface)
-    {
-        $this->output = $outputInterface;
-    }
-
-    /**
-     * Used to get the OutputInterface for commands
-     * @return mixed
-     */
-    public function getOutputInterface()
-    {
-        $this->output;
-    }
-
-    /**
-     * Log system
-     * @param $msg
-     * @return mixed
-     */
-    public function log($msg)
-    {
-        // Outputs to the console
-        if($this->output){
-            $this->output->writeln($msg);
-        }
-
-        //logger
-        $this->logger->info($msg);
-    }
 
     public function setDoctrine($doctrine){
         $this->doctrine = $doctrine;
@@ -284,6 +260,31 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
+     * Clears list cache
+     * @param $entity
+     * @param null $extra
+     */
+    public function clearCache($entity, $extra = null)
+    {
+        $cache_id = $entity::CACHE_ID;
+        $cache_id_array = $cache_id . '_array';
+
+        $this->dcache->delete($cache_id);
+        $this->dcache->delete($cache_id_array);
+
+        if($extra){
+            $this->dcache->delete($extra);
+        }
+    }
+
+    /**
+     * Flushes all database changes
+     */
+    public function flushAll(){
+        $this->em->flush();
+    }
+
+    /**
      * Gets a configuration
      * @param $name
      * @return mixed
@@ -320,24 +321,6 @@ abstract class BaseService implements BaseServiceInterface
             return $form->getForm()->createView();
         }
         return $form->getForm();
-    }
-
-    /**
-     * Clears list cache
-     * @param $entity
-     * @param null $extra
-     */
-    private function clearCache($entity, $extra = null)
-    {
-        $cache_id = $entity::CACHE_ID;
-        $cache_id_array = $cache_id . '_array';
-
-        $this->dcache->delete($cache_id);
-        $this->dcache->delete($cache_id_array);
-
-        if($extra){
-            $this->dcache->delete($extra);
-        }
     }
 
     /**
@@ -388,10 +371,6 @@ abstract class BaseService implements BaseServiceInterface
                 $entity_info['cache_id'] = $hydrate ? ExtractionDeduplication::CACHE_ID : ExtractionDeduplication::CACHE_ID . '_array';
                 $entity_info['repo_name'] = 'ListBrokingAppBundle:ExtractionDeduplication';
                 break;
-            case 'extraction_deduplication_queue':
-                $entity_info['cache_id'] = $hydrate ? ExtractionDeduplicationQueue::CACHE_ID : ExtractionDeduplicationQueue::CACHE_ID . '_array';
-                $entity_info['repo_name'] = 'ListBrokingAppBundle:ExtractionDeduplicationQueue';
-                break;
             case 'gender':
                 $entity_info['cache_id'] = $hydrate ? Gender::CACHE_ID : Gender::CACHE_ID . '_array';
                 $entity_info['repo_name'] = 'ListBrokingAppBundle:Gender';
@@ -420,6 +399,14 @@ abstract class BaseService implements BaseServiceInterface
                 $entity_info['cache_id'] = $hydrate ? Configuration::CACHE_ID : Configuration::CACHE_ID . '_array';
                 $entity_info['repo_name'] = 'ListBrokingAppBundle:Configuration';
                 break;
+            case 'task':
+                $entity_info['cache_id'] = $hydrate ? Task::CACHE_ID : Task::CACHE_ID . '_array';
+                $entity_info['repo_name'] = 'ListBrokingTaskControllerBundle:Task';
+                break;
+            case 'queue':
+                $entity_info['cache_id'] = $hydrate ? Queue::CACHE_ID : Queue::CACHE_ID . '_array';
+                $entity_info['repo_name'] = 'ListBrokingTaskControllerBundle:Queue';
+                break;
             default:
                 throw new InvalidEntityTypeException("The Entity type {$type} is invalid.");
                 break;
@@ -431,5 +418,23 @@ abstract class BaseService implements BaseServiceInterface
         }
 
         return $entity_info;
+    }
+
+    /**
+     * Generates the filename and generate a filename for it
+     * @param $name
+     * @param $extension
+     * @param string $dir
+     * @return string
+     */
+    protected function generateFilename($name, $extension = null, $dir = 'exports/'){
+
+        if($extension){
+            $filename = $dir . uniqid() . "-{$name}-" . date('Y-m-d') . '.' . $extension;
+        }else{
+            $filename = $dir . uniqid() . "-{$name}";
+        }
+
+        return strtolower(preg_replace('/\s/i', '-', $filename));
     }
 } 

@@ -40,4 +40,18 @@ SQL;
 
         return $stmt->fetch();
     }
+
+    public function syncContactsWithOppositionLists(){
+
+        // Set in_opposition for every matched phone
+        $sql = <<<SQL
+            UPDATE lead l
+            JOIN opposition_list ol on l.phone = ol.phone
+            SET l.in_opposition = 1
+SQL;
+
+        /** @var Statement $stmt */
+        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
+        $stmt->execute(null, AbstractQuery::HYDRATE_ARRAY);
+    }
 } 

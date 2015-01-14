@@ -19,15 +19,30 @@ services:
     tags:
       - { name: form.type, alias: json }
 
+  listbroking.appbundle.opposition_list_import.form.type:
+    class: ListBroking\AppBundle\Form\OppositionListImportType
+    arguments: [@app]
+    tags:
+      - { name: form.type, alias: opposition_list_import }
+
   guzzle.client:
       class: %guzzle.client.class%
       tags:
           - { name: "guzzle.client" }
+
+  filter_engine:
+    class: ListBroking\AppBundle\Engine\FilterEngine
+    arguments:
+      entityManager: @doctrine.orm.entity_manager
+
+  validator_engine:
+    class: ListBroking\AppBundle\Engine\ValidatorEngine
+    arguments: [@doctrine.orm.entity_manager, @guzzle.client]
+
   base:
     class: ListBroking\AppBundle\Service\Base\BaseService
     abstract: true
     calls:
-      - [setLogger, [@logger]]
       - [setDoctrine, [@doctrine]]
       - [setEntityManager, [@doctrine.orm.entity_manager]]
       - [setCache, [@doctrine_cache.providers.memcached_query_cache]]
@@ -51,13 +66,3 @@ services:
     class: ListBroking\AppBundle\Service\BusinessLogic\StagingService
     parent: base
     arguments: [@validator_engine]
-
-  filter_engine:
-    class: ListBroking\AppBundle\Engine\FilterEngine
-    arguments:
-      entityManager: @doctrine.orm.entity_manager
-
-  validator_engine:
-    class: ListBroking\AppBundle\Engine\ValidatorEngine
-    parent: base
-    arguments: [@guzzle.client]

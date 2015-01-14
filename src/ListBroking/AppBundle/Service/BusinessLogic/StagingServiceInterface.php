@@ -11,6 +11,9 @@
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 
+use ListBroking\TaskControllerBundle\Entity\Queue;
+use Symfony\Component\Form\Form;
+
 interface StagingServiceInterface {
 
     /**
@@ -28,15 +31,21 @@ interface StagingServiceInterface {
      */
     public function importStagingContacts($filename);
 
-
     /**
-     * Validates StagingContacts using exceptions and
-     * opposition lists
-     * @param $limit
+     * Gets contacts that need validation
+     * @param int $limit
      * @return mixed
      */
-    public function validateStagingContacts($limit = 50);
+    public function findContactsToValidate($limit = 50);
 
+    /**
+     * Validates a StagingContact using exceptions and
+     * opposition lists
+     * @param $contact
+     * @internal param $contacts
+     * @return mixed
+     */
+    public function validateStagingContact($contact);
 
     /**
      * Enriches StagingContacts using internal and external
@@ -45,4 +54,12 @@ interface StagingServiceInterface {
      * @return mixed
      */
     public function enrichStatingContacts($limit = 50);
+
+    /**
+     * Handle the uploaded file and adds it to the queue
+     * @param Form $form
+     * @throws \Exception
+     * @return Queue
+     */
+    public function addOppositionListFileToQueue(Form $form);
 } 

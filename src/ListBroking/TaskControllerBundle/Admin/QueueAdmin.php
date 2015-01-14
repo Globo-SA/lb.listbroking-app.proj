@@ -2,35 +2,26 @@
 
 namespace ListBroking\TaskControllerBundle\Admin;
 
-use ListBroking\TaskControllerBundle\Entity\Task;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
 
-class TaskAdmin extends Admin
+class QueueAdmin extends Admin
 {
-
-    protected $datagridValues = array(
-        '_sort_order' => 'DESC'
-    );
-    
-    protected function configureRoutes(RouteCollection $collection)
-    {
-        $collection->remove('delete');
-        $collection->remove('create');
-        $collection->remove('edit');
-    }
-
     /**
      * @param DatagridMapper $datagridMapper
      */
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
-            ->add('status')
+            ->add('id')
+            ->add('type')
+            ->add('value1')
+            ->add('value2')
+            ->add('value3')
+            ->add('value4')
         ;
     }
 
@@ -40,10 +31,12 @@ class TaskAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->add('name')
-            ->add('status', null, array('editable' => true))
-            ->add('pid')
-            ->add('updated_at')
+            ->add('id')
+            ->add('type')
+            ->add('value1')
+            ->add('value2')
+            ->add('value3')
+            ->add('value4')
             ->add('_action', 'actions', array(
                 'actions' => array(
                     'show' => array(),
@@ -60,12 +53,12 @@ class TaskAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name')
-            ->add('status', 'choice', array('editable' => true, 'choices' => array(
-                Task::STATUS_SUCCESS => Task::STATUS_SUCCESS,
-                Task::STATUS_ERROR => Task::STATUS_ERROR,
-                Task::STATUS_RUNNING => Task::STATUS_RUNNING)))            ->add('pid')
-            ->add('msg')
+            ->add('id')
+            ->add('type')
+            ->add('value1')
+            ->add('value2')
+            ->add('value3')
+            ->add('value4')
         ;
     }
 
@@ -76,12 +69,11 @@ class TaskAdmin extends Admin
     {
         $showMapper
             ->add('id')
-            ->add('name')
-            ->add('status')
-            ->add('pid')
-            ->add('msg')
-            ->add('created_at')
-            ->add('updated_at')
+            ->add('type')
+            ->add('value1')
+            ->add('value2')
+            ->add('value3')
+            ->add('value4')
         ;
     }
 }

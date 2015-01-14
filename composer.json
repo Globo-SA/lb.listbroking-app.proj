@@ -28,6 +28,7 @@
         "doctrine/doctrine-fixtures-bundle": "~2.2",
         "stof/doctrine-extensions-bundle": "1.2.*@dev",
 
+        "tedivm/fetch": "0.5.*",
         "friendsofsymfony/jsrouting-bundle": "2.0.*@dev",
         "jms/serializer-bundle": "~0.13",
         "phpoffice/phpexcel": "~1.8",

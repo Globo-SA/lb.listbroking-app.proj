@@ -1,0 +1,21 @@
+ListBroking\AppBundle\Entity\OppositionList:
+    type: entity
+    table: opposition_list
+    repositoryClass: ListBroking\AppBundle\Repository\OppositionListRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    indexes:
+        phone_index:
+          columns: [ phone ]
+    fields:
+        type:
+            type: string
+            length: '45'
+        phone:
+            type: string
+            length: 255
+    lifecycleCallbacks: {  }

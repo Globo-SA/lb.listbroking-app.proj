@@ -59,7 +59,7 @@
                         <div class="panel-body">
                             <div class="row row-margin">
                                 <div class="col-md-6">
-                                    {% if deduplication_queues is not empty %}
+                                    {% if has_queues %}
                                         {% set text = "<i class='icon icon-large ion-loading-c'></i>Deduplicating..." %}
                                         {% set alt_text = "Deduplication by File" %}
                                     {% else %}
@@ -74,7 +74,7 @@
                                                     data-toggle="modal"
                                                     data-target="#lead_deduplication_modal"
                                                     data-alt="{{ alt_text }}"
-                                                    {% if deduplication_queues is not empty %}disabled="disabled" {% endif %}
+                                                    {% if has_queues is not empty %}disabled="disabled" {% endif %}
                                                     >
                                                 {{ text|raw }}
                                             </button>

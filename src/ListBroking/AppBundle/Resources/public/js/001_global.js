@@ -143,5 +143,44 @@
 
         $("[data-mask]").inputmask();
 
+
+        // Toggles elements text and disable state
+        $.fn.toggleLoading = function(){
+            var $trigger = $(this);
+            var text = $trigger.html();
+            var alt_text = $trigger.data('alt');
+
+            $trigger.html(alt_text)
+            $trigger.data('alt', text);
+
+            if($trigger.is(':disabled')){
+                $trigger.removeAttr('disabled');
+            }else{
+                $trigger.attr('disabled', 'disabled');
+            }
+
+            return $(this);
+        };
+
+        // Check for queues
+        $.fn.checkQueues = function(type, key, value, callback){
+            return setInterval(function(){
+                $.ajax({
+                    type: "GET",
+                    url: App.routing.generate('ajax_taskcontroller_queue_check'),
+                    dataType: 'json',
+                    data: {type: type, key: key, value: value},
+                    success: function(data){
+
+                        var response = data.response;
+                        if(response.response == 'ended'){
+                            callback();
+                        }
+
+                    }
+                });
+            }, 5000);
+        }
+
     });
 })(jQuery, ListBroking);

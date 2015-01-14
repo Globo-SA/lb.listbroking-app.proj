@@ -2,6 +2,7 @@
 
 namespace ListBroking\AppBundle\Admin;
 
+use ListBroking\AppBundle\Entity\Configuration;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -14,11 +15,6 @@ class ConfigurationAdmin extends Admin
         '_sort_order' => 'DESC'
     );
 
-    private $type_values = array(
-        'json' => 'Json',
-        'int' => 'Integer',
-        'string' => 'String',
-    );
     /**
      * @param DatagridMapper $datagridMapper
      */
@@ -26,7 +22,7 @@ class ConfigurationAdmin extends Admin
     {
         $datagridMapper
             ->add('id')
-            ->add('type', null, array(), 'choice', array('choices' => $this->type_values))
+            ->add('type', null, array(), 'choice', array('choices' => Configuration::$type_values))
         ;
     }
 
@@ -37,7 +33,7 @@ class ConfigurationAdmin extends Admin
     {
         $listMapper
             ->add('name')
-            ->add('type', 'choice', array('choices' => $this->type_values))
+            ->add('type', 'choice', array('choices' => Configuration::$type_values))
             ->add('value')
             ->add('updated_at')
             ->add('_action', 'actions', array(
@@ -57,7 +53,7 @@ class ConfigurationAdmin extends Admin
     {
         $formMapper
             ->add('name')
-            ->add('type', 'choice', array('choices' => $this->type_values))
+            ->add('type', 'choice', array('choices' => Configuration::$type_values))
             ->add('value')
         ;
     }
@@ -70,7 +66,7 @@ class ConfigurationAdmin extends Admin
         $showMapper
             ->add('id')
             ->add('name')
-            ->add('type', 'choice', array('choices' => $this->type_values))
+            ->add('type', 'choice', array('choices' => Configuration::$type_values))
             ->add('value')
             ->add('created_at')
             ->add('updated_at')

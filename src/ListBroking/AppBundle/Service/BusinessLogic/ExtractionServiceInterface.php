@@ -12,10 +12,9 @@ namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 
 use ListBroking\AppBundle\Entity\Extraction;
-use ListBroking\AppBundle\Entity\ExtractionDeduplicationQueue;
 use ListBroking\AppBundle\Entity\ExtractionTemplate;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
-use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
+use ListBroking\TaskControllerBundle\Entity\Queue;
 use Symfony\Component\Form\Form;
 
 interface ExtractionServiceInterface {
@@ -59,7 +58,7 @@ interface ExtractionServiceInterface {
      * Handle the uploaded file and adds it to the queue
      * @param Extraction $extraction
      * @param Form $form
-     * @return ExtractionDeduplicationQueue
+     * @return Queue
      */
     public function addDeduplicationFileToQueue(Extraction $extraction, Form $form);
 
@@ -72,14 +71,6 @@ interface ExtractionServiceInterface {
      * @return void
      */
     public function uploadDeduplicationsByFile(Extraction $extraction, $filename, $field, $merge);
-
-    /**
-     * Get Deduplication Queue by Extraction
-     * @param Extraction $extraction
-     * @param bool $hydrate
-     * @return mixed
-     */
-    public function getDeduplicationQueuesByExtraction(Extraction $extraction, $hydrate = true);
 
     /**
      * Removes Deduplicated Leads from an Extraction

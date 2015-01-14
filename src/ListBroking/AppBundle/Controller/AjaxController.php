@@ -12,8 +12,13 @@ namespace ListBroking\AppBundle\Controller;
 
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
+use ListBroking\AppBundle\Entity\OppositionList;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
 use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
+use ListBroking\AppBundle\Form\OppositionListImportType;
+use ListBroking\AppBundle\Service\BusinessLogic\ExtractionService;
+use ListBroking\AppBundle\Service\Helper\AppService;
+use ListBroking\TaskControllerBundle\Entity\Queue;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -48,9 +53,9 @@ class AjaxController extends Controller {
      */
     public function listsAction(Request $request){
         try{
-            //$this->validateRequest($request);
+            $this->validateRequest($request);
 
-            $ui_service = $this->get('ui');
+            $ui_service = $this->get('app');
 
             $type = $request->get('type', '');
             $parent_type = $request->get('parent_type', '');
@@ -74,7 +79,7 @@ class AjaxController extends Controller {
             $e_service = $this->get('extraction');
 
             // Current Extraction
-            $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
+            $extraction = $e_service->getEntity('extraction', $extraction_id, true);
 
             // Get all contacts in one Query (Better then using $extraction->getContacts())
             $contacts = $e_service->getExtractionContacts($extraction);
@@ -256,7 +261,7 @@ class AjaxController extends Controller {
             if(empty($emails)){
                 return $this->createJsonResponse(array(
                     "code" => 400,
-                    "response" => "No emails to send to where provided",
+                    "response" => "No emails to send to provided",
                 ));
             }
 
@@ -293,13 +298,15 @@ class AjaxController extends Controller {
             // Handle the form and adds file to the Queue
             $form = $e_service->generateForm(new ExtractionDeduplicationType());
             $form->handleRequest($request);
-            $queue = $e_service->addDeduplicationFileToQueue($form, $extraction);
+
+            /** @var Queue $queue */
+            $queue = $e_service->addDeduplicationFileToQueue($extraction, $form);
 
             return $this->createJsonResponse(array(
                 "code" => 200,
                 "response" => "deduplication has started",
-                "filename" => $queue->getFilePath(),
-                "field" => $queue->getField(),
+                "filename" => $queue->getValue2(),
+                "field" => $queue->getValue3(),
                 "queue_id" => $queue->getId()
             ));
         }catch(\Exception $e){
@@ -309,18 +316,50 @@ class AjaxController extends Controller {
 
     public function deduplicationQueueAction(Request $request, $extraction_id){
         try{
-            //$this->validateRequest($request);
+            $this->validateRequest($request);
             $e_service = $this->get('extraction');
 
             // Run Extraction
             $extraction = $e_service->getEntity('extraction', $extraction_id);
 
             //Check for Queues
-            $deduplication_queues = $e_service->getDeduplicationQueuesByExtraction($extraction);
+            /** @var Queue[] $queues */
+            $queues = $e_service->getQueues(AppService::DEDUPLICATION_QUEUE_TYPE);
+            foreach($queues as $queue){
+                if($queue->getValue1() == $extraction->getId()){
+                    return $this->createJsonResponse(array(
+                        "code" => 200,
+                        "response" => "running",
+                    ));
+                }
+            }
 
             return $this->createJsonResponse(array(
                 "code" => 200,
-                "response" => count($deduplication_queues) > 0 ? "running" : 'ended',
+                "response" => 'ended',
+            ));
+        }catch(\Exception $e){
+            return $this->createJsonResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function OppositionListImportAction(Request $request){
+        try{
+            $this->validateRequest($request);
+
+            $s_service = $this->get('staging');
+
+            $form = $s_service->generateForm('opposition_list_import');
+            $form->handleRequest($request);
+
+            $queue = $s_service->addOppositionListFileToQueue($form);
+            return $this->createJsonResponse(array(
+                "code" => 200,
+                "response" => "List added to the queue",
+                "type" => $queue->getValue1(),
+                "filename" => $queue->getValue2(),
+                "clear_old" => $queue->getValue3(),
+                "queue_id" => $queue->getId()
             ));
         }catch(\Exception $e){
             return $this->createJsonResponse($e->getMessage(), $e->getCode());
@@ -334,6 +373,12 @@ class AjaxController extends Controller {
      * @return JsonResponse
      */
     private function createJsonResponse($response, $code = 200){
+
+        // Handle exceptions that don't have a valid http code
+        if(!is_int($code) || $code == '0'){
+            $code = 500;
+        }
+
         return new JsonResponse(array(
             "code" => $code,
             "response" => $response

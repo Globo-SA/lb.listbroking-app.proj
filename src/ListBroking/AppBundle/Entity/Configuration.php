@@ -13,6 +13,12 @@ class Configuration
 {
     const CACHE_ID = 'configuration';
 
+    public static $type_values = array(
+        'json' => 'Json',
+        'int' => 'Integer',
+        'string' => 'String',
+    );
+
     use TimestampableEntityBehavior,
         BlameableEntityBehavior;
 

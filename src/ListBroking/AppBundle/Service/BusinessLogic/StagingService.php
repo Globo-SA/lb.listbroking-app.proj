@@ -16,6 +16,10 @@ use ListBroking\AppBundle\Engine\ValidatorEngine;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\PHPExcel\FileHandler;
 use ListBroking\AppBundle\Service\Base\BaseService;
+use ListBroking\AppBundle\Service\Helper\AppService;
+use ListBroking\TaskControllerBundle\Entity\Queue;
+use Symfony\Component\Form\Form;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class StagingService extends BaseService implements StagingServiceInterface {
 
@@ -85,18 +89,27 @@ class StagingService extends BaseService implements StagingServiceInterface {
     }
 
     /**
-     * Validates StagingContacts using exceptions and
-     * opposition lists
-     * @param $limit
+     * Gets contacts that need validation
+     * @param int $limit
      * @return mixed
      */
-    public function validateStagingContacts($limit = 50)
+    public function findContactsToValidate($limit = 50)
     {
-        $contacts = $this->em->getRepository('ListBrokingAppBundle:StagingContact')->findBy(array(
+        return $contacts = $this->em->getRepository('ListBrokingAppBundle:StagingContact')->findBy(array(
             'valid' => 0
         ), null, $limit);
+    }
 
-        $this->v_engine->run($contacts);
+    /**
+     * Validates a StagingContact using exceptions and
+     * opposition lists
+     * @param $contact
+     * @internal param $contacts
+     * @return mixed
+     */
+    public function validateStagingContact($contact)
+    {
+        $this->v_engine->run($contact);
     }
 
     /**
@@ -110,5 +123,48 @@ class StagingService extends BaseService implements StagingServiceInterface {
         // TODO: Implement enrichStatingContacts() method.
     }
 
+    /**
+     * Handle the uploaded file and adds it to the queue
+     * @param Form $form
+     * @throws \Exception
+     * @return Queue
+     */
+    public function addOppositionListFileToQueue(Form $form){
 
+        // Handle Form
+        $data = $form->getData();
+
+        if(empty($data['type']) && in_array($data['type'], array_keys(AppService::$opposition_list_types))){
+            throw new \Exception('Invalid or empty type');
+        }
+        if(empty($data['upload_file'])){
+            throw new \Exception('Invalid or empty filename');
+        }
+
+        /** @var UploadedFile $file */
+        $file = $data['upload_file'];
+        $filename = $this->generateFilename($file->getClientOriginalName(), null, 'imports/');
+        $file->move('imports', $filename);
+
+        //TODO: The way the queue fields are mapped shouldn't be this confusing
+        $queue = new Queue();
+        $queue->setType(AppService::OPPOSITION_LIST_QUEUE_TYPE);
+        $queue->setValue1($data['type']);
+        $queue->setValue2($filename);
+        $queue->setValue3($data['clear_old']);
+
+        $this->addEntity('queue', $queue);
+
+        return $queue;
+    }
+
+    public function importOppostionList($type, $filename, $clear_old){
+
+        $config = json_decode($this->getConfig('opposition_list.config')->getValue(),true);
+        $this->em->getRepository('ListBrokingAppBundle:OppositionList')->importOppositionListFile($type, $config[$type], $filename, $clear_old);
+    }
+
+    public function syncContactsWithOppositionLists(){
+        $this->em->getRepository('ListBrokingAppBundle:Lead')->syncContactsWithOppositionLists();
+    }
 }

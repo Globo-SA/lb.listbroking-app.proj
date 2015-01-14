@@ -18,8 +18,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ExtractionDeduplication
 {
-    const CACHE_ID = 'extraction_deduplication';
-
     /**
      * @var integer
      */

@@ -13,11 +13,13 @@ namespace ListBroking\AppBundle\Service\BusinessLogic;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Engine\FilterEngine;
 use ListBroking\AppBundle\Entity\Extraction;
-use ListBroking\AppBundle\Entity\ExtractionDeduplicationQueue;
+use ListBroking\AppBundle\Entity\ExtractionDeduplication;
 use ListBroking\AppBundle\Entity\ExtractionTemplate;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
 use ListBroking\AppBundle\PHPExcel\FileHandler;
 use ListBroking\AppBundle\Service\Base\BaseService;
+use ListBroking\AppBundle\Service\Helper\AppService;
+use ListBroking\TaskControllerBundle\Entity\Queue;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -101,10 +103,6 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
 
             $this->em->getRepository('ListBrokingAppBundle:Extraction')->addContacts($extraction, $contacts, false);
 
-            // Invalidate extraction contacts cache
-            $cache_id = $extraction::CACHE_ID . "_{$extraction->getId()}_contacts";
-            $this->dcache->delete($cache_id);
-
             // Change the Extraction Status back to filtration if there are no contacts
             if(count($contacts) < 0){
                 $extraction->setStatus(Extraction::STATUS_FILTRATION);
@@ -124,17 +122,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     public function getExtractionContacts(Extraction $extraction){
 
-        //TODO: Check if cache can handle array's this BIG !!!!
-        $cache_id = $extraction::CACHE_ID . "_{$extraction->getId()}_contacts";
-        if(!$this->dcache->contains($cache_id)){
-            $contacts = $this->em->getRepository('ListBrokingAppBundle:Contact')->getExtractionContacts($extraction);
-            if($contacts){
-                $this->dcache->save($cache_id, $contacts);
-            }
-        }
-
-        // Fetch from cache
-        return $this->dcache->fetch($cache_id);
+        return $this->em->getRepository('ListBrokingAppBundle:Contact')->getExtractionContacts($extraction);
     }
 
     /**
@@ -187,7 +175,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      * Handle the uploaded file and adds it to the queue
      * @param Extraction $extraction
      * @param Form $form
-     * @return ExtractionDeduplicationQueue
+     * @return Queue
      */
     public function addDeduplicationFileToQueue(Extraction $extraction, Form $form){
 
@@ -199,13 +187,13 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $filename = $this->generateFilename($file->getClientOriginalName(), null, 'imports/');
         $file->move('imports', $filename);
 
-        // Create Queue Entry
-        $queue = new ExtractionDeduplicationQueue();
-        $queue->setExtraction($extraction);
-        $queue->setFilePath($filename);
-        $queue->setField($field);
+        $queue = new Queue();
+        $queue->setType(AppService::DEDUPLICATION_QUEUE_TYPE);
+        $queue->setValue1($extraction->getId());
+        $queue->setValue2($filename);
+        $queue->setValue3($field);
 
-        $this->addEntity('extraction_deduplication_queue', $queue);
+        $this->addEntity('queue', $queue);
 
         return $queue;
     }
@@ -225,30 +213,6 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     }
 
     /**
-     * Get Deduplication Queue by Extraction
-     * @param Extraction $extraction
-     * @param bool $hydrate
-     * @return mixed
-     */
-    public function getDeduplicationQueuesByExtraction(Extraction $extraction, $hydrate = true)
-    {
-        $entities = $this->getEntities('extraction_deduplication_queue', $hydrate);
-        foreach ($entities as $key => $entity){
-            if($hydrate){
-                if($entity->getExtraction()->getId() != $extraction->getId()){
-                 unset($entities[$key]);
-                }
-            }else{
-                if($entity['extraction']['id'] != $extraction->getId()){
-                    unset($entities[$key]);
-                }
-            }
-        }
-
-        return $entities;
-    }
-
-    /**
      * Removes Deduplicated Leads from an Extraction
      * using the ExtractionDeduplication Entity
      * @param Extraction $extraction
@@ -257,10 +221,6 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     public function deduplicateExtraction(Extraction $extraction)
     {
         $this->em->getRepository('ListBrokingAppBundle:ExtractionDeduplication')->deduplicateExtraction($extraction);
-
-        //TODO: Check if cache can handle array's this BIG !!!!
-        $cache_id = $extraction::CACHE_ID . "_{$extraction->getId()}_contacts";
-        $this->dcache->delete($cache_id);
     }
 
     /**
@@ -288,7 +248,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     {
         $message = $this->mailer->createMessage()
             ->setSubject("LB Extraction - {$extraction->getName()}")
-            ->setFrom('samuel.castro@adclick.com')
+            ->setFrom($this->getConfig('system.email'))
             ->setTo($emails)
             ->setBody(
                 $this->twig->render(
@@ -300,64 +260,4 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         ;
         $this->mailer->send($message);
     }
-
-    /**
-     * Generates the filename and generate a filename for it
-     * @param $name
-     * @param $extension
-     * @param string $dir
-     * @return string
-     */
-    private function generateFilename($name, $extension = null, $dir = 'exports/'){
-
-        if($extension){
-            $filename = $dir . uniqid() . "-{$name}-" . date('Y-m-d') . '.' . $extension;
-        }else{
-            $filename = $dir . uniqid() . "-{$name}";
-        }
-
-        return strtolower(preg_replace('/\s/i', '-', $filename));
-    }
-
-    //TODO: Remove this
-//    /**
-//     * Adds Leads to the Lead Filter of a given Extraction
-//     * @param Extraction $extraction
-//     * @param $data_array
-//     * @param string $field
-//     * @deprecated Will be removed this version !!!!!
-//     */
-//    public function excludeLeads(Extraction $extraction, $data_array, $field = 'lead_id'){
-//
-//        // Remove from filters
-//        $filters = $extraction->getFilters();
-//        if(!array_key_exists("lead:{$field}", $filters) || empty($filters["lead:{$field}"])){
-//            $filters["lead:{$field}"] = array();
-//        }else{
-//            $filters["lead:{$field}"] = explode(',', $filters["lead:{$field}"]);
-//        }
-//
-//        foreach ($data_array as $lead)
-//        {
-//            if(!in_array($lead, array_values($filters["lead:{$field}"]))){
-//                array_push($filters["lead:{$field}"], $lead);
-//            }
-//
-//            //TODO: Make this a bit more efficient
-//            if($field = 'phone'){
-//                $contacts = $this->em->getRepository('ListBrokingAppBundle:Contact')->findByLeadPhone($lead, Query::HYDRATE_ARRAY);
-//            }else{
-//                $contacts = $this->em->getRepository('ListBrokingAppBundle:Contact')->findBy(array("lead" => $lead));
-//            }
-//            foreach($contacts as $contact){
-//
-//                // Remove from ExtractionContacts
-//                $extraction->getContacts()->removeElement($contact);
-//            }
-//        }
-//        $filters["lead:{$field}"] = implode(',', $filters["lead:{$field}"]);
-//        $extraction->setFilters($filters);
-//
-//        $this->em->flush();
-//    }
 }

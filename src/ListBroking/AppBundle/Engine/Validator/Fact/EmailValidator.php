@@ -1,25 +1,26 @@
 <?php
 /**
- *
+ * 
  * @author     Samuel Castro <samuel.castro@adclick.pt>
- * @author     Pedro Tentugal <pedro.tentugal@adclick.pt>
- *
- * @copyright  2014 Adclick
+ * @copyright  2015 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
  *
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\AppBundle\Engine\Validator\Dimension;
+namespace ListBroking\AppBundle\Engine\Validator\Fact;
 
 
 use Doctrine\ORM\EntityManager;
 use ListBroking\AppBundle\Engine\Validator\ValidatorInterface;
-use ListBroking\AppBundle\Entity\Owner;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 
-class OwnerValidator implements ValidatorInterface {
+class EmailValidator implements ValidatorInterface {
+
+    protected $rules = array(
+        array('regex' => '/(adctst|adclick)/i', 'msg' => 'Test contact'),
+    );
 
     /**
      * @var EntityManager
@@ -30,7 +31,8 @@ class OwnerValidator implements ValidatorInterface {
      * @param EntityManager $em
      * @internal param EntityManager $service
      */
-    function __construct(EntityManager $em){
+    function __construct(EntityManager $em)
+    {
         $this->em = $em;
     }
 
@@ -43,23 +45,19 @@ class OwnerValidator implements ValidatorInterface {
      */
     public function validate(StagingContact $contact, &$validations)
     {
-        $field = strtoupper($contact->getOwner());
+        $field = strtoupper($contact->getEmail());
+
+        // If the email doesn't exist generate a fake one
         if(empty($field)){
-            throw new DimensionValidationException('Empty owner field');
+            $contact->setEmail($contact->getPhone() . '_' . $contact->getOwner() . "@listbroking.adctools.com");
+            $validations['infos'][$this->getName()][] = 'Fake email generated: ' .  $contact->getEmail();
         }
 
-        $owner =  $this->em->getRepository('ListBrokingAppBundle:Owner')->findOneBy(array(
-                'name' => $field
-            ));
-
-        // If doesn't exist create it
-        if(!$owner){
-            $owner = new Owner();
-            $owner->setName($field);
-
-            $this->em->persist($owner);
-
-            $validations['infos'][$this->getName()][] = 'New Owner created: ' .  $owner->getName();
+        foreach ($this->rules as $rule)
+        {
+            if(preg_match($rule['regex'], $field)){
+                throw new DimensionValidationException("Email address matched a invalid regex rule: {$rule['msg']}");
+            }
         }
     }
 
@@ -67,7 +65,10 @@ class OwnerValidator implements ValidatorInterface {
      * Gets the name of the validator
      * @return string
      */
-    public function getName(){
-        return 'owner_validator';
+    public function getName()
+    {
+        return 'email_validator';
     }
-}
+
+
+} 

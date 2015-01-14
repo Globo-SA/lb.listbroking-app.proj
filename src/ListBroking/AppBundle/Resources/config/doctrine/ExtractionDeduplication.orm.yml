@@ -9,6 +9,10 @@ ListBroking\AppBundle\Entity\ExtractionDeduplication:
             generator:
                 strategy: AUTO
     indexes:
+        lead_index:
+          columns: [ lead_id ]
+        contact_index:
+          columns: [ contact_id ]
         phone_index:
           columns: [ phone ]
     fields:

@@ -14,39 +14,11 @@ namespace ListBroking\AppBundle\Service\Base;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\EntityManager;
 use ListBroking\AppBundle\Exception\InvalidEntityTypeException;
-use Monolog\Logger;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactory;
 
 interface BaseServiceInterface {
-
-    /**
-     * @param Logger $logger
-     * @return mixed
-     */
-    public function setLogger(Logger $logger);
-
-    /**
-     * Used to add an OutputInterface for commands
-     * @param $outputInterface $interface
-     * @return mixed
-     */
-    public function setOutputInterface(OutputInterface $outputInterface);
-
-    /**
-     * Used to get the OutputInterface for commands
-     * @return mixed
-     */
-    public function getOutputInterface();
-
-    /**
-     * Log system
-     * @param $msg
-     * @return mixed
-     */
-    public function log($msg);
 
     /**
      * @param EntityManager $entityManager
@@ -118,6 +90,18 @@ interface BaseServiceInterface {
      * @return mixed
      */
     public function removeEntity($type, $entity);
+
+    /**
+     * Clears list cache
+     * @param $entity
+     * @param null $extra
+     */
+    public function clearCache($entity, $extra = null);
+
+    /**
+     * Flushes all database changes
+     */
+    public function flushAll();
 
     /**
      * Gets a configuration

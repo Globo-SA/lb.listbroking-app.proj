@@ -1,6 +1,6 @@
 ListBroking\AppBundle\Entity\Configuration:
     type: entity
-    table: null
+    table: configuration
     id:
         id:
             type: integer
@@ -15,8 +15,7 @@ ListBroking\AppBundle\Entity\Configuration:
             type: string
             length: '15'
         value:
-            type: string
-            length: 255
+            type: text
 # Timestampable
         created_at:
             type: datetime

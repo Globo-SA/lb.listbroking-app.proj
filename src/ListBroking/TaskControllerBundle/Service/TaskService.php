@@ -61,6 +61,18 @@ class TaskService implements TaskServiceInterface
     }
 
     /**
+     * Finds queues by type
+     * @param $type
+     * @return mixed
+     */
+    public function findQueuesByType($type){
+
+        return $this->em->getRepository('ListBrokingTaskControllerBundle:Queue')->findBy(array(
+            'type' => $type
+        ));
+    }
+
+    /**
      * Stats a new task if possible
      * @param Command $command
      * @param InputInterface $input
@@ -175,8 +187,10 @@ class TaskService implements TaskServiceInterface
      * @return mixed
      */
     public function finishProgressBar(){
-        $this->progress->setMessage("DONE");
+        $this->progress->setMessage("FINISHED");
+        $this->progress->clear();
         $this->progress->finish();
+        $this->output->writeln("");
     }
 
     /**

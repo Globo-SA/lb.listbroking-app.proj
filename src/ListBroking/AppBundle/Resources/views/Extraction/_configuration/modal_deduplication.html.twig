@@ -29,7 +29,8 @@
                         {{ form_widget(forms.adv_exclusion.upload_file) }}
                     </span>
                     <small><strong id="files">No file chosen</strong></small>
-                    <small>Excel file with duplicated contacts (one column <strong>only</strong>)</small>
+                    <small>CSV file with duplicated contacts (one column <strong>only</strong>)</small>
+                    <small id="fileuploaderror" class="text-danger" style="display: none;"></small>
 
                     <div class="progress hidden">
                         <div class="progress-bar progress-bar-success"></div>

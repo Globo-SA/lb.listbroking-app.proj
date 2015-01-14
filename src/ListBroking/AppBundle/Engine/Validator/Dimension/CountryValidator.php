@@ -62,7 +62,7 @@ class CountryValidator implements ValidatorInterface {
 
             $this->em->persist($country);
 
-            $validations[$this->getName()]['warnings'][] = 'New Country created: ' .  $country->getName();
+            $validations['warnings'][$this->getName()][] = 'New Country created: ' .  $country->getName();
         }
     }
 

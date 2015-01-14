@@ -26,7 +26,7 @@ class FiltersForm extends AbstractType
 
     function __construct(AppService $appService)
     {
-        $this->ui_service = $appService;
+        $this->a_service = $appService;
 
         $default_country = $this->a_service->getCountryByCode('PT', false);
 

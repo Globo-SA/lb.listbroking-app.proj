@@ -8,7 +8,7 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\AppBundle\Engine\Validator\Dimension;
+namespace ListBroking\AppBundle\Engine\Validator\Fact;
 
 
 
@@ -85,7 +85,7 @@ class RepeatedValidator implements ValidatorInterface {
                     throw new DimensionValidationException('Lead is fully repeated');
                 }
             }
-            $validations[$this->getName()]['info'][] = $info;
+            $validations['infos'][$this->getName()][] = $info;
         }
     }
 

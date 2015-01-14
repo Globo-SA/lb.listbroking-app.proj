@@ -1,0 +1,34 @@
+ListBroking\TaskControllerBundle\Entity\Queue:
+    type: entity
+    table: queue
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        type:
+            type: string
+            length: 25
+        value1:
+            type: string
+            length: 255
+            column: value_1
+            nullable: true
+        value2:
+            type: string
+            length: 255
+            column: value_2
+            nullable: true
+        value3:
+            type: string
+            length: 255
+            column: value_3
+            nullable: true
+        value4:
+            type: string
+            length: 255
+            column: value_4
+            nullable: true
+    lifecycleCallbacks: {  }

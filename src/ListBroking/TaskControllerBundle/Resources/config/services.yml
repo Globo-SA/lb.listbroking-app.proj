@@ -2,8 +2,15 @@ services:
   task:
     class: ListBroking\TaskControllerBundle\Service\TaskService
     arguments: [@doctrine.orm.entity_manager]
+
   listbroking.taskcontroller.admin.task:
     class: ListBroking\TaskControllerBundle\Admin\TaskAdmin
     arguments: [~, ListBroking\TaskControllerBundle\Entity\Task, SonataAdminBundle:CRUD]
     tags:
-      - {name: sonata.admin, manager_type: orm, group: System, label: Task}
+      - {name: sonata.admin, manager_type: orm, group: Task Controller, label: Task}
+
+  listbroking.admin.queue:
+    class: ListBroking\TaskControllerBundle\Admin\QueueAdmin
+    arguments: [~, ListBroking\TaskControllerBundle\Entity\Queue, SonataAdminBundle:CRUD]
+    tags:
+      - {name: sonata.admin, manager_type: orm, group: Task Controller, label: Queue}

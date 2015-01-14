@@ -1,0 +1,5 @@
+ajax_taskcontroller_queue_check:
+    path: /ajax/taskcontroller/queue/check
+    defaults: { _controller: ListBrokingTaskControllerBundle:Default:findQueuesByType }
+    options:
+        expose: true

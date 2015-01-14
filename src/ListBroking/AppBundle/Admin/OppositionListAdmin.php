@@ -8,17 +8,21 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 
-class ExtractionDeduplicationQueueAdmin extends Admin
+class OppositionListAdmin extends Admin
 {
+    protected $datagridValues = array(
+        '_sort_order' => 'DESC'
+    );
+
     /**
      * @param DatagridMapper $datagridMapper
      */
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
-            ->add('extraction')
-            ->add('filePath')
-            ->add('field')
+            ->add('id')
+            ->add('type')
+            ->add('phone')
         ;
     }
 
@@ -29,9 +33,8 @@ class ExtractionDeduplicationQueueAdmin extends Admin
     {
         $listMapper
             ->add('id')
-            ->add('extraction')
-            ->add('filePath')
-            ->add('field')
+            ->add('type')
+            ->add('phone')
             ->add('_action', 'actions', array(
                 'actions' => array(
                     'show' => array(),
@@ -48,9 +51,9 @@ class ExtractionDeduplicationQueueAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('extraction')
-            ->add('filePath')
-            ->add('field')
+            ->add('id')
+            ->add('type')
+            ->add('phone')
         ;
     }
 
@@ -61,9 +64,8 @@ class ExtractionDeduplicationQueueAdmin extends Admin
     {
         $showMapper
             ->add('id')
-            ->add('extraction')
-            ->add('filePath')
-            ->add('field')
+            ->add('type')
+            ->add('phone')
         ;
     }
 }

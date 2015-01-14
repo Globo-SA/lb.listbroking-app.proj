@@ -71,13 +71,21 @@
                 );
         })
         .on('fileuploaddone', function (e, data) {
-                $('#lead_deduplication_trigger').bLoading();
+                $('#lead_deduplication_trigger').toggleLoading();
 
                 //Close modal
                 $('#lead_deduplication_modal').modal('hide');
 
                 // Start checking for deduplication end
-                App.variables.deduplicationQueueId = $('body').checkDeduplication();
+                App.variables.deduplicationQueueId = $('body').checkQueues('deduplication_queue', 'value1', App.variables.extractionId, function(){
+                    // Stop interval
+                    clearInterval(App.variables.deduplicationQueueId);
+
+                    $('body').refreshContacts();
+
+                    // Stop loading button
+                    $('#lead_deduplication_trigger').toggleLoading();
+                });
         })
         ;
 
@@ -86,52 +94,16 @@
        if($('#lead_deduplication_trigger').is(':disabled')){
 
            // Start checking for deduplication end
-           App.variables.deduplicationQueueId = $('body').checkDeduplication();
+           App.variables.deduplicationQueueId = $('body').checkQueues('deduplication_queue', 'value1', App.variables.extractionId, function(){
+               // Stop interval
+               clearInterval(App.variables.deduplicationQueueId);
+
+               $('body').refreshContacts();
+
+               // Stop loading button
+               $('#lead_deduplication_trigger').toggleLoading();
+           });
        }
     });
-
-    // Toggles elements text and disable state
-    $.fn.bLoading = function(){
-        var $trigger = $(this);
-        var text = $trigger.html();
-        var alt_text = $trigger.data('alt');
-
-        $trigger.html(alt_text)
-        $trigger.data('alt', text);
-
-        if($trigger.is(':disabled')){
-            $trigger.removeAttr('disabled');
-        }else{
-            $trigger.attr('disabled', 'disabled');
-        }
-
-        return $(this);
-    };
-
-    // Check if deduplications have ended
-    $.fn.checkDeduplication = function(){
-        return setInterval(function(){
-            $.ajax({
-                type: "GET",
-                url: App.routing.generate('ajax_deduplication_queue', { extraction_id: App.variables.extractionId} ),
-                dataType: 'json',
-                success: function(data){
-
-                    var response = data.response;
-                    if(response.response == 'ended'){
-
-                        // Stop interval
-                        clearInterval(App.variables.deduplicationQueueId);
-
-                        $('body').refreshContacts();
-
-                        // Stop loading button
-                        $('#lead_deduplication_trigger').bLoading();
-                    }
-
-                }
-            });
-        }, 5000);
-    }
 }
 )(jQuery, ListBroking);

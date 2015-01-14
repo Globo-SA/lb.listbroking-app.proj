@@ -18,6 +18,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 interface TaskServiceInterface {
 
     /**
+     * Finds queues by type
+     * @param $type
+     * @return mixed
+     */
+    public function findQueuesByType($type);
+
+    /**
      * Stats a new task if possible
      * @param Command $command
      * @param InputInterface $input

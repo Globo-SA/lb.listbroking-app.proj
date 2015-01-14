@@ -8,7 +8,7 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\AppBundle\Engine\Validator\Dimension;
+namespace ListBroking\AppBundle\Engine\Validator\Fact;
 
 
 use Doctrine\ORM\EntityManager;

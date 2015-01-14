@@ -1,0 +1,49 @@
+{% extends 'SonataAdminBundle:CRUD:base_list.html.twig' %}
+
+{% block list_table %}
+    {{ parent() }}
+    {% include '@ListBrokingApp/OppositionList/import_modal.html.twig' %}
+{% endblock list_table %}
+
+{% block sonata_page_content_nav %}
+    {% if _tab_menu is not empty or _actions is not empty %}
+        <nav class="navbar navbar-default" role="navigation">
+            {% block tab_menu_navbar_header %}
+                {% if _navbar_title is not empty %}
+                    <div class="navbar-header">
+                        <span class="navbar-brand">{{ _navbar_title|raw }}</span>
+                    </div>
+                {% endif %}
+            {% endblock %}
+            <div class="container-fluid">
+                <div class="navbar-left">
+                    {% if _tab_menu is not empty %}
+                        {{ _tab_menu|raw }}
+                    {% endif %}
+                </div>
+
+                {% if has_queues %}
+                    {% set text = "<i class='icon icon-large ion-loading-c'></i>&nbsp;Importing lists..." %}
+                    {% set alt_text = "Import List" %}
+                {% else %}
+                    {% set text = "Import List" %}
+                    {% set alt_text = "<i class='icon icon-large ion-loading-c'></i>&nbsp;Importing lists..." %}
+                {% endif %}
+                {% if _actions|replace({ '<li>': '', '</li>': '' })|trim is not empty %}
+                    <button id="opposition_list_import_trigger" type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#opposition_list_import_modal" data-alt="{{ alt_text }}"
+                            {% if has_queues %}disabled="disabled"{% endif %}
+                            >
+                        {{ text|raw }}</button>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown sonata-actions">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ 'link_actions'|trans({}, 'SonataAdminBundle') }} <b class="caret"></b></a>
+                            <ul class="dropdown-menu" role="menu">
+                                {{ _actions|raw }}
+                            </ul>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div>
+        </nav>
+    {% endif %}
+{% endblock sonata_page_content_nav %}

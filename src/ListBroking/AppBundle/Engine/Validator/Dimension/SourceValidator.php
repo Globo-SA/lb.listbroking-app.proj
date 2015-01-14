@@ -72,7 +72,7 @@ class SourceValidator implements ValidatorInterface {
 
                 $this->em->persist($country);
 
-                $validations[$this->getName()]['warnings'][] = 'New Country created: ' .  $country->getName();
+                $validations['warnings'][$this->getName()][] = 'New Country created: ' .  $country->getName();
             }
 
             // Create new Source
@@ -83,7 +83,7 @@ class SourceValidator implements ValidatorInterface {
 
             $this->em->persist($source);
 
-            $validations[$this->getName()]['warnings'][] = 'New Source created: ' .  $country->getName();
+            $validations['warnings'][$this->getName()][] = 'New Source created: ' .  $country->getName();
         }
     }
 

@@ -10,7 +10,7 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\AppBundle\Engine\Validator\Dimension;
+namespace ListBroking\AppBundle\Engine\Validator\Fact;
 
 
 use Doctrine\ORM\EntityManager;
@@ -97,7 +97,7 @@ class PhoneValidator implements ValidatorInterface {
             }
 
         }catch (\Exception $e){
-            $validations[$this->getName()]['warnings'][] = $e->getMessage();
+            $validations['warnings'][$this->getName()][] = $e->getMessage();
         }
     }
 
