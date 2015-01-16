@@ -26,18 +26,24 @@ class PhoneValidator implements ValidatorInterface {
      * @var EntityManager
      */
     protected $em;
+    /**
+     * @var bool
+     */
+    protected $is_required;
 
     protected $rules = array(
-       array('regex' => '/(0{4,9}|1{4,9}|2{4,9}|3{4,9}|4{4,9}|5{4,9}|6{4,9}|7{4,9}|8{4,9}|9{4,9})/i', 'msg' => '4 or more equal numbers'),
-       array('regex' => '/(0123|1234|2345|3456|4567|5678|6789|7890|0987|9876|8765|7654|6543|5432|4321|3210)/i', 'msg' => '4 sequential number'),
+        array('regex' => '/(0{5,9}|1{5,9}|2{5,9}|3{5,9}|4{5,9}|5{5,9}|6{5,9}|7{5,9}|8{5,9}|9{5,9})/i', 'msg' => '5 or more equal numbers'),
+        array('regex' => '/(0123|1234|2345|3456|4567|5678|6789|7890|0987|9876|8765|7654|6543|5432|4321|3210)/i', 'msg' => '4 sequential number'),
     );
 
     /**
      * @param EntityManager $em
+     * @param bool $is_required
      * @internal param EntityManager $service
      */
-    function __construct(EntityManager $em){
+    function __construct(EntityManager $em, $is_required){
         $this->em = $em;
+        $this->is_required = $is_required;
     }
 
     /**
@@ -52,6 +58,9 @@ class PhoneValidator implements ValidatorInterface {
         $field = strtoupper($contact->getPhone());
         $country = strtoupper($contact->getCountry());
         if(empty($field)){
+            if(!$this->is_required){
+                return;
+            }
             throw new DimensionValidationException('Empty phone field');
         }
         if(empty($country)){
@@ -97,7 +106,7 @@ class PhoneValidator implements ValidatorInterface {
             }
 
         }catch (\Exception $e){
-            $validations['warnings'][$this->getName()][] = $e->getMessage();
+            throw new DimensionValidationException("Phone number doesn't match with {$country}'s' validation rules");
         }
     }
 

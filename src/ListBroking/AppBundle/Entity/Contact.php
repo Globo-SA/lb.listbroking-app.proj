@@ -55,6 +55,10 @@ class Contact {
 
     protected $country;
 
+    protected $post_request;
+
+    protected $validations;
+
     /**
      * @var Array
      */
@@ -362,5 +366,37 @@ class Contact {
      */
     public function removeExtraction(Extraction $extraction){
         $this->extractions->removeElement($extraction);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPostRequest()
+    {
+        return $this->post_request;
+    }
+
+    /**
+     * @param mixed $post_request
+     */
+    public function setPostRequest($post_request)
+    {
+        $this->post_request = $post_request;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValidations()
+    {
+        return $this->validations;
+    }
+
+    /**
+     * @param mixed $validations
+     */
+    public function setValidations($validations)
+    {
+        $this->validations = $validations;
     }
 }

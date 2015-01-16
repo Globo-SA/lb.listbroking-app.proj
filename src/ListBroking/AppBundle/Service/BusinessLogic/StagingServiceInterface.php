@@ -11,6 +11,7 @@
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 
+use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\TaskControllerBundle\Entity\Queue;
 use Symfony\Component\Form\Form;
 
@@ -48,12 +49,17 @@ interface StagingServiceInterface {
     public function validateStagingContact($contact);
 
     /**
-     * Enriches StagingContacts using internal and external
-     * processes, if only runs on valid contacts
-     * @param $limit
-     * @return mixed
+     * Loads validated contacts from the staging area
+     * to the Lead and Contact tables
      */
-    public function enrichStatingContacts($limit = 50);
+    public function moveInvalidContactsToDQP();
+
+    /**
+     * Loads validated contacts from the staging area
+     * to the Lead and Contact tables
+     * @param StagingContact $contact
+     */
+    public function loadValidatedContact(StagingContact $contact);
 
     /**
      * Handle the uploaded file and adds it to the queue

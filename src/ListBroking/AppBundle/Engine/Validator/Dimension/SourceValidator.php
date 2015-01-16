@@ -28,11 +28,18 @@ class SourceValidator implements ValidatorInterface {
     protected $em;
 
     /**
+     * @var bool
+     */
+    protected $is_required;
+
+    /**
      * @param EntityManager $em
+     * @param bool $is_required
      * @internal param EntityManager $service
      */
-    function __construct(EntityManager $em){
+    function __construct(EntityManager $em, $is_required){
         $this->em = $em;
+        $this->is_required = $is_required;
     }
 
     /**
@@ -46,6 +53,9 @@ class SourceValidator implements ValidatorInterface {
     {
         $field = strtoupper($contact->getSourceName());
         if(empty($field)){
+            if(!$this->is_required){
+                return;
+            }
             throw new DimensionValidationException('Empty Source field');
         }
 
@@ -65,6 +75,14 @@ class SourceValidator implements ValidatorInterface {
                     'name' => $source_country
             ));
 
+            $owner = $this->em->getRepository('ListBrokingAppBundle:Owner')->findOneBy(array(
+                'name' => $contact->getOwner()
+                )
+            );
+            if(empty($owner)){
+                throw new DimensionValidationException('Empty owner field');
+            }
+
             // Create new Source Country
             if(!$country){
                 $country = new Country();
@@ -72,7 +90,7 @@ class SourceValidator implements ValidatorInterface {
 
                 $this->em->persist($country);
 
-                $validations['warnings'][$this->getName()][] = 'New Country created: ' .  $country->getName();
+                $validations['infos'][$this->getName()][] = 'New Country created: ' .  $country->getName();
             }
 
             // Create new Source
@@ -80,10 +98,11 @@ class SourceValidator implements ValidatorInterface {
             $source->setName($field);
             $source->setCountry($country);
             $source->setExternalId($contact->getSourceExternalId());
+            $source->setOwner($owner);
 
             $this->em->persist($source);
 
-            $validations['warnings'][$this->getName()][] = 'New Source created: ' .  $country->getName();
+            $validations['infos'][$this->getName()][] = 'New Source created: ' .  $source->getName();
         }
     }
 

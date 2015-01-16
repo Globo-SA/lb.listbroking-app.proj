@@ -27,11 +27,18 @@ class CountryValidator implements ValidatorInterface {
     protected $em;
 
     /**
+     * @var bool
+     */
+    protected $is_required;
+
+    /**
      * @param EntityManager $em
+     * @param bool $is_required
      * @internal param EntityManager $service
      */
-    function __construct(EntityManager $em){
+    function __construct(EntityManager $em, $is_required){
         $this->em = $em;
+        $this->is_required = $is_required;
     }
 
     /**
@@ -45,6 +52,9 @@ class CountryValidator implements ValidatorInterface {
     {
         $field = strtoupper($contact->getCountry());
         if(empty($field)){
+            if(!$this->is_required){
+                return;
+            }
             throw new DimensionValidationException('Empty country field');
         }
         if(strlen($field) != 2){
@@ -62,7 +72,7 @@ class CountryValidator implements ValidatorInterface {
 
             $this->em->persist($country);
 
-            $validations['warnings'][$this->getName()][] = 'New Country created: ' .  $country->getName();
+            $validations['infos'][$this->getName()][] = 'New Country created: ' .  $country->getName();
         }
     }
 

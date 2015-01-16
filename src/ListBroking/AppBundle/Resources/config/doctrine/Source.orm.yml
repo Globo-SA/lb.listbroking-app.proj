@@ -15,7 +15,6 @@ ListBroking\AppBundle\Entity\Source:
         external_id:
             type:   integer
             column: external_id
-            unique: true
 
 # Timestampable
         created_at:

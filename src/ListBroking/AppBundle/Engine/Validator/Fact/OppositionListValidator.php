@@ -18,15 +18,24 @@ use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 
 class OppositionListValidator implements ValidatorInterface {
 
+    /**
+     * @var EntityManager
+     */
     private $em;
 
     /**
+     * @var bool
+     */
+    protected $is_required;
+
+    /**
      * @param EntityManager $em
+     * @param bool $is_required
      * @internal param EntityManager $service
      */
-    function __construct(EntityManager $em)
-    {
+    function __construct(EntityManager $em, $is_required){
         $this->em = $em;
+        $this->is_required = $is_required; // Doesn't use it
     }
 
     /**
@@ -38,7 +47,16 @@ class OppositionListValidator implements ValidatorInterface {
      */
     public function validate(StagingContact $contact, &$validations)
     {
-        // TODO: Implement validate() method.
+        $in_opposition = $this->em->getRepository('ListBrokingAppBundle:OppositionList')->findOneBy(array(
+            'phone' => $contact->getPhone()
+        ));
+        if($in_opposition)
+        {
+            $contact->setInOpposition(true);
+            $contact->setValid(false);
+
+            throw new DimensionValidationException('Lead is the opposition list: ' . $in_opposition->getType());
+        }
     }
 
     /**

@@ -1,7 +1,6 @@
-ListBroking\AppBundle\Entity\StagingContact:
+ListBroking\AppBundle\Entity\StagingContactDQP:
     type:   entity
-    table:  staging_contact
-    repositoryClass: ListBroking\AppBundle\Repository\StagingContactRepository
+    table:  staging_contact_dqp
     id:
         id:
             type: bigint
@@ -12,11 +11,9 @@ ListBroking\AppBundle\Entity\StagingContact:
         valid:
             type:   boolean
             column: valid
-            nullable: true
         processed:
             type:   boolean
             column: processed
-            nullable: true
         phone:
             type:   string
             column: phone
@@ -28,7 +25,6 @@ ListBroking\AppBundle\Entity\StagingContact:
         in_opposition:
             type:   boolean
             column: in_opposition
-            nullable: true
         lead_id:
             type:   bigint
             column: lead_id
@@ -36,6 +32,7 @@ ListBroking\AppBundle\Entity\StagingContact:
         contact_id:
             type:   bigint
             column: contact_id
+            nullable: true
             nullable: true
         email:
             type:   string

@@ -77,6 +77,12 @@ interface TaskServiceInterface {
     public function advanceProgressBar($msg);
 
     /**
+     * Changes the ProgressBar message
+     * @param $msg
+     */
+    public function setProgressBarMessage($msg);
+
+    /**
      * Finishes the ProgressBar
      * @return mixed
      */

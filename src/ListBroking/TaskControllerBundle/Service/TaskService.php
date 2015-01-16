@@ -183,6 +183,14 @@ class TaskService implements TaskServiceInterface
     }
 
     /**
+     * Changes the ProgressBar message
+     * @param $msg
+     */
+    public function setProgressBarMessage($msg){
+        $this->progress->setMessage($msg);
+    }
+
+    /**
      * Finishes the ProgressBar
      * @return mixed
      */

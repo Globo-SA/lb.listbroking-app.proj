@@ -1,0 +1,16 @@
+<td class="sonata-ba-list-field sonata-ba-list-field-{{ field_description.type }}" objectId="{{ admin.id(object) }}">
+    {%- block field %}
+        {#{{ value|json_encode }}#}
+
+        {% for key, validation in value%}
+            <p>{{ key|upper }}</p>
+            <ul>
+                {% for error in validation %}
+                    <li>{{ error|json_encode }}</li>
+                {% endfor %}
+
+            </ul>
+            <br>
+        {% endfor %}
+    {% endblock -%}
+</td>

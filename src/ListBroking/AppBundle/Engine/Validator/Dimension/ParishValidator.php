@@ -1,26 +1,25 @@
 <?php
 /**
- * 
+ *
  * @author     Samuel Castro <samuel.castro@adclick.pt>
- * @copyright  2015 Adclick
+ * @author     Pedro Tentugal <pedro.tentugal@adclick.pt>
+ *
+ * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
  *
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\AppBundle\Engine\Validator\Fact;
+namespace ListBroking\AppBundle\Engine\Validator\Dimension;
 
 
 use Doctrine\ORM\EntityManager;
 use ListBroking\AppBundle\Engine\Validator\ValidatorInterface;
+use ListBroking\AppBundle\Entity\Parish;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 
-class EmailValidator implements ValidatorInterface {
-
-    protected $rules = array(
-        array('regex' => '/(adctst|adclick)/i', 'msg' => 'Test contact'),
-    );
+class ParishValidator implements ValidatorInterface {
 
     /**
      * @var EntityManager
@@ -39,7 +38,7 @@ class EmailValidator implements ValidatorInterface {
      */
     function __construct(EntityManager $em, $is_required){
         $this->em = $em;
-        $this->is_required = $is_required; // Doesn't use it
+        $this->is_required = $is_required;
     }
 
     /**
@@ -51,21 +50,26 @@ class EmailValidator implements ValidatorInterface {
      */
     public function validate(StagingContact $contact, &$validations)
     {
-        $field = strtoupper($contact->getEmail());
-
-        // If the email doesn't exist generate a fake one
+        $field = strtoupper($contact->getParish());
         if(empty($field)){
-            $contact->setEmail($contact->getPhone() . '_' . $contact->getOwner() . "@listbroking.adctools.com");
-            $validations['infos'][$this->getName()][] = 'Fake email generated: ' .  $contact->getEmail();
-
-            return;
+            if(!$this->is_required){
+                return;
+            }
+            throw new DimensionValidationException('Empty parish field');
         }
 
-        foreach ($this->rules as $rule)
-        {
-            if(preg_match($rule['regex'], $field)){
-                throw new DimensionValidationException("Email address matched a invalid regex rule: {$rule['msg']}");
-            }
+        $parish =  $this->em->getRepository('ListBrokingAppBundle:Parish')->findOneBy(array(
+                'name' => $field
+            ));
+
+        // If doesn't exist create it
+        if(!$parish){
+            $parish = new Parish();
+            $parish->setName($field);
+
+            $this->em->persist($parish);
+
+            $validations['infos'][$this->getName()][] = 'New Parish created: ' .  $parish->getName();
         }
     }
 
@@ -73,10 +77,7 @@ class EmailValidator implements ValidatorInterface {
      * Gets the name of the validator
      * @return string
      */
-    public function getName()
-    {
-        return 'email_validator';
+    public function getName(){
+        return 'parish_validator';
     }
-
-
-} 
+}

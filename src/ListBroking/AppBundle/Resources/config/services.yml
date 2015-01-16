@@ -37,7 +37,7 @@ services:
 
   validator_engine:
     class: ListBroking\AppBundle\Engine\ValidatorEngine
-    arguments: [@doctrine.orm.entity_manager, @guzzle.client]
+    arguments: [@doctrine, @guzzle.client]
 
   base:
     class: ListBroking\AppBundle\Service\Base\BaseService

@@ -27,11 +27,18 @@ class OwnerValidator implements ValidatorInterface {
     protected $em;
 
     /**
+     * @var bool
+     */
+    protected $is_required;
+
+    /**
      * @param EntityManager $em
+     * @param bool $is_required
      * @internal param EntityManager $service
      */
-    function __construct(EntityManager $em){
+    function __construct(EntityManager $em, $is_required){
         $this->em = $em;
+        $this->is_required = $is_required;
     }
 
     /**
@@ -45,6 +52,9 @@ class OwnerValidator implements ValidatorInterface {
     {
         $field = strtoupper($contact->getOwner());
         if(empty($field)){
+            if(!$this->is_required){
+                return;
+            }
             throw new DimensionValidationException('Empty owner field');
         }
 

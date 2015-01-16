@@ -22,7 +22,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ImportOppostionListCommand extends ContainerAwareCommand{
 
-    const MAX_RUNNING = 9999;
+    const MAX_RUNNING = 1;
 
     /**
      * @var TaskService

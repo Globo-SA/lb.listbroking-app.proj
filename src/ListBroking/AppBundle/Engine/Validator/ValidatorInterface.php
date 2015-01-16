@@ -19,9 +19,10 @@ interface ValidatorInterface {
 
     /**
      * @param EntityManager $em
+     * @param bool $is_required
      * @internal param EntityManager $service
      */
-    function __construct(EntityManager $em);
+    function __construct(EntityManager $em, $is_required);
 
     /**
      * Validates the contact against a set of rules

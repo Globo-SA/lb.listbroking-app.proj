@@ -25,11 +25,18 @@ class RepeatedValidator implements ValidatorInterface {
     protected $em;
 
     /**
+     * @var bool
+     */
+    protected $is_required;
+
+    /**
      * @param EntityManager $em
+     * @param bool $is_required
      * @internal param EntityManager $service
      */
-    function __construct(EntityManager $em){
+    function __construct(EntityManager $em, $is_required){
         $this->em = $em;
+        $this->is_required = $is_required; // Doesn't use it
     }
 
     /**
@@ -43,10 +50,15 @@ class RepeatedValidator implements ValidatorInterface {
     {
         $staging_phone = $contact->getPhone();
         $staging_email = $contact->getEmail();
-        $staging_owner = $contact->getOwner();
+        $staging_owner = strtoupper($contact->getOwner());
 
+        $country = $this->em->getRepository('ListBrokingAppBundle:Country')->findOneBy(array(
+                'name' => $contact->getCountry()
+            )
+        );
         $lead = $this->em->getRepository('ListBrokingAppBundle:Lead')->findOneBy(array(
-            'phone' => $staging_phone
+            'phone' => $staging_phone,
+            'country' => $country
         ));
 
         /**
@@ -59,31 +71,25 @@ class RepeatedValidator implements ValidatorInterface {
         // Lead_X exists
         if($lead){
             $info = 'Lead Repeated by: Phone';
+            $contact->setLeadId($lead->getId());
 
-            $lead_contact = $this->em->getRepository('ListBrokingAppBundle:Contact')->findOneBy(array(
-                'lead' => $lead,
-                'email' => $staging_email
-            ));
+            $owner_contact = $this->em->getRepository('ListBrokingAppBundle:Contact')->createQueryBuilder('c')
+                ->join('c.owner', 'o')
+                ->where('c.lead = :lead')
+                ->andWhere('c.email = :staging_email')
+                ->andWhere('o.name = :staging_contact_owner')
+                ->setParameter('lead', $lead)
+                ->setParameter('staging_email', $staging_email)
+                ->setParameter('staging_contact_owner', $staging_owner)
+                ->getQuery()
+                ->getOneOrNullResult()
+            ;
 
-            // Contact_Y associated with Lead_X exists
-            if($lead_contact){
-                $info .= ' and Phone-Contact';
-
-                $owner_contact = $this->em->getRepository('ListBrokingAppBundle:Contact')->createQueryBuilder('c')
-                    ->join('c.owner', 'o')
-                    ->where('c = :lead_contact')
-                    ->andWhere('o.name = :staging_contact_owner')
-                    ->setParameter('lead_contact', $lead_contact)
-                    ->setParameter('staging_contact_owner', $staging_owner)
-                    ->getQuery()
-                    ->getOneOrNullResult()
-                ;
-
-                // Owner_Z has Contact_Y associated with Lead_X
-                // LEAD IS FULLY REPEATED
-                if($owner_contact){
-                    throw new DimensionValidationException('Lead is fully repeated');
-                }
+            // Owner_Z has Contact_Y associated with Lead_X
+            // LEAD IS FULLY REPEATED
+            if($owner_contact){
+                $contact->setContactId($owner_contact->getId());
+                throw new DimensionValidationException('Lead is fully repeated');
             }
             $validations['infos'][$this->getName()][] = $info;
         }

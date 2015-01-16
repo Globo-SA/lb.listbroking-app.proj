@@ -155,5 +155,4 @@ class Lead {
     public function removeLock(Lock $lock){
         $this->locks->removeElement($lock);
     }
-
-} 
+}

@@ -19,22 +19,29 @@ use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 
 class GenderValidator implements ValidatorInterface {
 
-    /**
-     * @var EntityManager
-     */
-    protected $em;
-
     protected $rules = array(
         Gender::MALE => '/^(M|H|MR|MALE|MAN|HOMEM|SR|SENHOR)$/i',
         Gender::FEMALE => '/^(F|MRS|MISS|FEMALE|WOMAN|MULHER|SRA|SENHORA)$/i'
     );
 
     /**
+     * @var EntityManager
+     */
+    protected $em;
+
+    /**
+     * @var bool
+     */
+    protected $is_required;
+
+    /**
      * @param EntityManager $em
+     * @param bool $is_required
      * @internal param EntityManager $service
      */
-    function __construct(EntityManager $em){
+    function __construct(EntityManager $em, $is_required){
         $this->em = $em;
+        $this->is_required = $is_required;
     }
 
     /**
@@ -48,6 +55,9 @@ class GenderValidator implements ValidatorInterface {
     {
         $field = strtoupper($contact->getGender());
         if(empty($field)){
+            if(!$this->is_required){
+                return;
+            }
             throw new DimensionValidationException('Empty gender field');
         }
 
@@ -56,6 +66,7 @@ class GenderValidator implements ValidatorInterface {
         foreach ($this->rules as $gender => $pattern){
             if(preg_match($pattern, $field)){
                 $contact->setGender($gender);
+                $field = $gender;
                 $gender_matched = true;
                 break;
             }
@@ -63,6 +74,20 @@ class GenderValidator implements ValidatorInterface {
 
         if(!$gender_matched){
             throw new DimensionValidationException('Invalid gender field: ' . $field);
+        }
+
+        $gender =  $this->em->getRepository('ListBrokingAppBundle:Gender')->findOneBy(array(
+            'name' => $field
+        ));
+
+        // If doesn't exist create it
+        if(!$gender){
+            $gender = new Gender();
+            $gender->setName($field);
+
+            $this->em->persist($gender);
+
+            $validations['infos'][$this->getName()][] = 'New Gender created: ' .  $gender->getName();
         }
     }
 

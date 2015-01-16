@@ -119,3 +119,8 @@ services:
       arguments: [~, ListBroking\AppBundle\Entity\StagingContact, SonataAdminBundle:CRUD]
       tags:
         - {name: sonata.admin, manager_type: orm, group: System, label: StagingContact}
+  listbroking.admin.staging_contact_dqp:
+      class: ListBroking\AppBundle\Admin\StagingContactDQPAdmin
+      arguments: [~, ListBroking\AppBundle\Entity\StagingContactDQP, SonataAdminBundle:CRUD]
+      tags:
+        - {name: sonata.admin, manager_type: orm, group: System, label: StagingContactDQP}

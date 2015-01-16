@@ -19,26 +19,34 @@ use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 
 class PostalCodeValidator implements ValidatorInterface {
 
+    const POSTALCODE_API_URL = 'http://postalcode.adctools.com';
+
     /**
      * @var EntityManager
      */
     protected $em;
 
     /**
+     * @var
+     */
+    protected $is_required;
+
+    /**
      * @var Client
      */
     protected $guzzle;
 
-    const POSTALCODE_API_URL = 'http://postalcode.adctools.com';
-
     /**
      * @param EntityManager $em
+     * @param bool $is_required
      * @param Client $guzzle
      * @throws \Exception
+     * @internal param $is_requred
      * @internal param EntityManager $service
      */
-    function __construct(EntityManager $em, Client $guzzle = null){
+    function __construct(EntityManager $em, $is_required, Client $guzzle = null){
         $this->em = $em;
+        $this->is_required = $is_required;
         $this->guzzle = $guzzle;
 
         if(!$this->guzzle){
@@ -69,6 +77,9 @@ class PostalCodeValidator implements ValidatorInterface {
         // Enrich contact PostalCode = District + County + Parish
         $postalcode_info = $this->getPostalCodeDetails($country, $field1, $field2);
         if(empty($field1) && empty($field2)){
+            if(!$this->is_required){
+                return;
+            }
             throw new DimensionValidationException('Empty postalcode1 and postalcode2 fields');
         }
 

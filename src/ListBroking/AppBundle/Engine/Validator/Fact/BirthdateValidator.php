@@ -16,11 +16,10 @@ use ListBroking\AppBundle\Engine\Validator\ValidatorInterface;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 
-class EmailValidator implements ValidatorInterface {
+class BirthdateValidator implements ValidatorInterface {
 
-    protected $rules = array(
-        array('regex' => '/(adctst|adclick)/i', 'msg' => 'Test contact'),
-    );
+    const MIN_AGE = 18;
+    const MAX_AGE = 90;
 
     /**
      * @var EntityManager
@@ -39,7 +38,7 @@ class EmailValidator implements ValidatorInterface {
      */
     function __construct(EntityManager $em, $is_required){
         $this->em = $em;
-        $this->is_required = $is_required; // Doesn't use it
+        $this->is_required = $is_required;
     }
 
     /**
@@ -51,21 +50,22 @@ class EmailValidator implements ValidatorInterface {
      */
     public function validate(StagingContact $contact, &$validations)
     {
-        $field = strtoupper($contact->getEmail());
-
-        // If the email doesn't exist generate a fake one
-        if(empty($field)){
-            $contact->setEmail($contact->getPhone() . '_' . $contact->getOwner() . "@listbroking.adctools.com");
-            $validations['infos'][$this->getName()][] = 'Fake email generated: ' .  $contact->getEmail();
-
-            return;
-        }
-
-        foreach ($this->rules as $rule)
-        {
-            if(preg_match($rule['regex'], $field)){
-                throw new DimensionValidationException("Email address matched a invalid regex rule: {$rule['msg']}");
+        $birthdate = $contact->getBirthdate();
+        if(empty($birthdate)){
+            if(!$this->is_required){
+                return;
             }
+            throw new DimensionValidationException('Empty birthdate field');
+        }
+        $now = new \DateTime();
+        $birthdate = new \DateTime($birthdate);
+
+        $age = $now->diff($birthdate)->y;
+        if($age <= self::MIN_AGE){
+            throw new DimensionValidationException('Birthdate it less than: ' . self::MIN_AGE . " (current: {$age})");
+        }
+        if($age > self::MAX_AGE){
+            throw new DimensionValidationException('Birthdate it greater than: ' . self::MAX_AGE . " (current: {$age})");
         }
     }
 
@@ -75,7 +75,7 @@ class EmailValidator implements ValidatorInterface {
      */
     public function getName()
     {
-        return 'email_validator';
+        // TODO: Implement getName() method.
     }
 
 

@@ -113,14 +113,20 @@ class StagingService extends BaseService implements StagingServiceInterface {
     }
 
     /**
-     * Enriches StagingContacts using internal and external
-     * processes, if only runs on valid contacts
-     * @param $limit
-     * @return mixed
+     * Loads validated contacts from the staging area
+     * to the Lead and Contact tables
      */
-    public function enrichStatingContacts($limit = 50)
-    {
-        // TODO: Implement enrichStatingContacts() method.
+    public function moveInvalidContactsToDQP(){
+        $this->em->getRepository('ListBrokingAppBundle:StagingContact')->moveInvalidContactsToDQP();
+    }
+
+    /**
+     * Loads validated contacts from the staging area
+     * to the Lead and Contact tables
+     * @param StagingContact $contact
+     */
+    public function loadValidatedContact(StagingContact $contact){
+        $this->em->getRepository('ListBrokingAppBundle:StagingContact')->loadValidatedContact($contact);
     }
 
     /**
@@ -134,7 +140,7 @@ class StagingService extends BaseService implements StagingServiceInterface {
         // Handle Form
         $data = $form->getData();
 
-        if(empty($data['type']) && in_array($data['type'], array_keys(AppService::$opposition_list_types))){
+        if(empty($data['type'])){
             throw new \Exception('Invalid or empty type');
         }
         if(empty($data['upload_file'])){

@@ -28,11 +28,18 @@ class CategoryValidator implements ValidatorInterface {
     protected $em;
 
     /**
+     * @var bool
+     */
+    protected $is_required;
+
+    /**
      * @param EntityManager $em
+     * @param bool $is_required
      * @internal param EntityManager $service
      */
-    function __construct(EntityManager $em){
+    function __construct(EntityManager $em, $is_required){
         $this->em = $em;
+        $this->is_required = $is_required;
     }
 
     /**
@@ -46,6 +53,9 @@ class CategoryValidator implements ValidatorInterface {
     {
         $field = strtolower($contact->getSubCategory());
         if(empty($field)){
+            if(!$this->is_required){
+                return;
+            }
             throw new DimensionValidationException('Empty sub_category field');
         }
 
@@ -65,7 +75,7 @@ class CategoryValidator implements ValidatorInterface {
                 $global_category->setName('global');
                 $this->em->persist($global_category);
 
-                $validations['warnings'][$this->getName()][] = 'New Category created: ' .  $sub_category->getName();
+                $validations['infos'][$this->getName()][] = 'New Category created: ' .  $global_category->getName();
             }
 
             $sub_category = new SubCategory();
@@ -74,7 +84,7 @@ class CategoryValidator implements ValidatorInterface {
 
             $this->em->persist($sub_category);
 
-            $validations['warnings'][$this->getName()][] = 'New SubCategory created: ' .  $sub_category->getName();
+            $validations['infos'][$this->getName()][] = 'New SubCategory created: ' .  $sub_category->getName();
         }
     }
 

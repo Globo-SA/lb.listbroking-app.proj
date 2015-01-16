@@ -16,10 +16,10 @@ use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
  * This Entity must not be used in any report or
  * prod extraction, this is just a staging table
  * of ETL processes
- * Class StagingContact
+ * Class StagingContactDQP
  * @package ListBroking\AppBundle\Entity
  */
-class StagingContact {
+class StagingContactDQP {
 
     use TimestampableEntityBehavior;
 

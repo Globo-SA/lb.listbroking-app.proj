@@ -12,27 +12,43 @@ ListBroking\AppBundle\Entity\Contact:
         email:
             type:   string
             column: email
+            nullable: true
         firstname:
             type:   string
             column: firstname
+            nullable: true
         lastname:
             type:   string
             column: lastname
+            nullable: true
         birthdate:
             type:   date
             column: birthdate
+            nullable: true
         address:
             type:   string
             column: address
+            nullable: true
         postalcode1:
             type:   integer
             column: postalcode1
+            nullable: true
         postalcode2:
             type:   integer
             column: postalcode2
+            nullable: true
         ipaddress:
             type:   string
             column: ipaddress
+            nullable: true
+        post_request:
+            type:   json_array
+            column: post_request
+            nullable: true
+        validations:
+            type:   json_array
+            column: validations
+            nullable: true
 # Timestampable
         created_at:
             type: datetime
