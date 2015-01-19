@@ -42,7 +42,6 @@ class AppKernel extends Kernel
 
             // ListBroking Bundles
             new ListBroking\ExceptionHandlerBundle\ListBrokingExceptionHandlerBundle(),
-            //new ListBroking\APIBundle\ListBrokingAPIBundle(),
             new ListBroking\AppBundle\ListBrokingAppBundle(),
             new ListBroking\TaskControllerBundle\ListBrokingTaskControllerBundle(),
         );

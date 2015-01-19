@@ -10,12 +10,13 @@
 
 namespace ListBroking\AppBundle\Form;
 
+use ListBroking\AppBundle\Form\Type\RangeType;
 use ListBroking\AppBundle\Service\Helper\AppService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class FiltersForm extends AbstractType
+class FiltersType extends AbstractType
 {
     private $filters;
 

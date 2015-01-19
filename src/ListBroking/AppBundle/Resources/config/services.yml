@@ -9,7 +9,7 @@ services:
         - { name: doctrine.event_listener, event: onFlush }
 
   listbroking.appbundle.filters.form:
-    class:  ListBroking\AppBundle\Form\FiltersForm
+    class:  ListBroking\AppBundle\Form\FiltersType
     arguments: [@app]
     tags:
       - { name: form.type, alias: filters }

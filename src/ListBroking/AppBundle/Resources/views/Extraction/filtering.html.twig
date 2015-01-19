@@ -19,13 +19,13 @@
         {% set filter_tab = '' %}
         {% set summary_tab = '' %}
         {% set confirmation_tab = 'class="disabled"' %}
-        {% if extraction.status == 1 and extraction.status != 3 %}
+        {% if extraction.status == 1  %}
             {% set filter_tab = 'class="active"' %}
-        {% elseif extraction.status == 2 and extraction.status != 3 %}
+        {% elseif extraction.status == 2 %}
             {% set summary_tab = 'class="active"' %}
         {% elseif extraction.status == 3 %}
-            {% set summary_tab = 'class="disabled"' %}
             {% set filter_tab  = 'class="disabled"' %}
+            {% set summary_tab = 'class="disabled"' %}
             {% set confirmation_tab  = 'class="active"' %}
         {% endif %}
         <ul class="nav nav-tabs" role="tablist">

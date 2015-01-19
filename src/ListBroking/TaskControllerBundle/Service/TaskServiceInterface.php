@@ -11,6 +11,7 @@
 namespace ListBroking\TaskControllerBundle\Service;
 
 
+use ListBroking\TaskControllerBundle\Entity\Queue;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,6 +24,19 @@ interface TaskServiceInterface {
      * @return mixed
      */
     public function findQueuesByType($type);
+
+    /**
+     * Created a new entry on the queue
+     * @param $type
+     * @param null $value1
+     * @param null $value2
+     * @param null $value3
+     * @param null $value4
+     * @throws \Exception
+     * @internal param Form $form
+     * @return Queue
+     */
+    public function addToQueue($type, $value1 = null, $value2 = null, $value3 = null, $value4 = null);
 
     /**
      * Stats a new task if possible

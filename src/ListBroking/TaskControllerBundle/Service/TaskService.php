@@ -12,6 +12,7 @@ namespace ListBroking\TaskControllerBundle\Service;
 
 
 use Doctrine\ORM\EntityManager;
+use ListBroking\TaskControllerBundle\Entity\Queue;
 use ListBroking\TaskControllerBundle\Entity\Task;
 use ListBroking\TaskControllerBundle\Exception\TaskControllerException;
 use Symfony\Component\Console\Command\Command;
@@ -70,6 +71,35 @@ class TaskService implements TaskServiceInterface
         return $this->em->getRepository('ListBrokingTaskControllerBundle:Queue')->findBy(array(
             'type' => $type
         ));
+    }
+
+    /**
+     * Created a new entry on the queue
+     * @param $type
+     * @param null $value1
+     * @param null $value2
+     * @param null $value3
+     * @param null $value4
+     * @throws \Exception
+     * @internal param Form $form
+     * @return Queue
+     */
+    public function addToQueue($type, $value1 = null, $value2 = null, $value3 = null, $value4 = null){
+
+        if(empty($type)){
+            throw new \Exception('Invalid or empty type');
+        }
+
+        $queue = new Queue();
+        $queue->setType($value1);
+        $queue->setValue1($value2);
+        $queue->setValue2($value3);
+        $queue->setValue3($value4);
+
+        $this->em->persist($queue);
+        $this->em->flush();
+
+        return $queue;
     }
 
     /**

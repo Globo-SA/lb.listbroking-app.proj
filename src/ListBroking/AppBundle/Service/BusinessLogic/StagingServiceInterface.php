@@ -68,4 +68,31 @@ interface StagingServiceInterface {
      * @return Queue
      */
     public function addOppositionListFileToQueue(Form $form);
+
+    /**
+     * Handle the uploaded StagingContacts file and adds it to the queue
+     * @param Form $form
+     * @throws \Exception
+     * @return Queue
+     */
+    public function addStagingContactsFileToQueue(Form $form);
+
+    /**
+     * Imports an Opposition list by file
+     * @param $type
+     * @param $filename
+     * @param $clear_old
+     */
+    public function importOppostionList($type, $filename, $clear_old);
+
+    /**
+     * Syncs the Opposition table with the Leads
+     */
+    public function syncContactsWithOppositionLists();
+
+    /**
+     * Used to generate a template file for importing staging contacts
+     * @return string
+     */
+    public function getStagingContactImportTemplate();
 } 

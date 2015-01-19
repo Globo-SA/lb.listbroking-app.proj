@@ -1,0 +1,41 @@
+<div class="modal fade" id="staging_contact_import_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                            class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title"><i class="fa fa-upload"></i>&nbsp;Import database</h4>
+            </div>
+            {{ form_start(import_form) }}
+            <div class="modal-body">
+                <blockquote class="small-label">
+                    <label>Database template:&nbsp;</label>
+                    <a href="{{ path('ajax_staging_contact_import_template') }}" class="btn btn-primary">Download</a>
+                    <small>Please make sure to use this template before importing the database</small>
+                    <br>
+                    <span class="btn btn-flat btn-primary fileinput-button form-control">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>Select file...</span>
+                        <!-- The file input field used as target for the file upload widget -->
+                        {{ form_widget(import_form.upload_file) }}
+                    </span>
+                    <small><strong id="files">No file chosen</strong></small>
+                    <small id="fileuploaderror" class="text-danger" style="display: none;"></small>
+
+                    <div class="progress hidden">
+                        <div class="progress-bar progress-bar-success"></div>
+                    </div>
+                </blockquote>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="staging_contact_import_submit" class="btn btn-flat btn-primary">Import</button>
+            </div>
+            {{ form_rest(import_form) }}
+            {{ form_end(import_form) }}
+        </div>
+        <!-- /.modal-content -->
+    </div> <!-- /.modal-dialog -->
+</div><!-- /.modal -->

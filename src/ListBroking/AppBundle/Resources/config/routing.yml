@@ -73,6 +73,18 @@ ajax_opposition_list_import:
     defaults: { _controller: ListBrokingAppBundle:Ajax:OppositionListImport }
     options:
         expose: true
+
+ajax_staging_contact_import_template:
+    path: /ajax/stagingcontact/import/template
+    defaults: { _controller: ListBrokingAppBundle:Ajax:StagingContactImportTemplate }
+    options:
+        expose: true
+
+ajax_staging_contact_import:
+    path: /ajax/stagingcontact/import
+    defaults: { _controller: ListBrokingAppBundle:Ajax:StagingContactImport }
+    options:
+        expose: true
 api_create_lead:
     path:     /v1/lead/create
     defaults: { _controller: ListBrokingAppBundle:API:createStagingLead }

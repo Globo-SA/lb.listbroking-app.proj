@@ -2,11 +2,13 @@
 
 namespace ListBroking\AppBundle\Form;
 
+use ListBroking\AppBundle\Entity\OppositionList;
+use ListBroking\AppBundle\Service\Helper\AppService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class SourceType extends AbstractType
+class StagingContactImportType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -15,23 +17,18 @@ class SourceType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name')
-            ->add('created_at')
-            ->add('updated_at')
-            ->add('created_by')
-            ->add('updated_by')
-            ->add('owner')
-            ->add('country')
+            ->add('upload_file', 'file', array(
+                'attr' => array('class' => 'form-control fileinput')
+            ))
         ;
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ListBroking\AppBundle\Entity\Source'
         ));
     }
 
@@ -40,6 +37,6 @@ class SourceType extends AbstractType
      */
     public function getName()
     {
-        return 'source_form';
+        return 'staging_contact_import';
     }
 }

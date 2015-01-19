@@ -8,29 +8,33 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\LockBundle\Form;
+namespace ListBroking\AppBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class ContactType extends AbstractType
+class RangeType extends AbstractType
 {
 
     private $uniqid;
-
     /**
      * @var
      */
-    private $field;
+    private $name;
+    /**
+     * @var
+     */
+    private $label;
 
-    function __construct($field)
+    function __construct($name, $label)
     {
         // An UniqueID is appended to the
         // name to avoid form collisions
         $this->uniqid = uniqid();
 
-        $this->field = $field;
+        $this->name = $name;
+        $this->label = $label;
     }
 
     /**
@@ -40,18 +44,17 @@ class ContactType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add($this->field['name'], $this->field['type'], $this->field['options'])
-            ->add('opt', 'choice', array(
-                'label' => 'Operation',
-                'choices' => array('equal' => 'Equal', 'not_equal' => 'Not Equal'),
+            ->add($this->name, 'text', array(
+                'label' => $this->label,
+                'required' => false,
                 'attr' => array(
-                    'class' => 'form-control',
-                    'data-select-mode' => 'local',
+                    'data-toggle' => 'daterangepicker',
                     'placeholder' => 'Select one...',
+                    'class' => 'form-control'
                     )
                 )
             )
-            ;
+        ;
     }
 
     /**

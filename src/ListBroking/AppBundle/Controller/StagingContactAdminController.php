@@ -10,14 +10,14 @@
 
 namespace ListBroking\AppBundle\Controller;
 
-use ListBroking\AppBundle\Form\OppositionListImportType;
+use ListBroking\AppBundle\Form\StagingContactImportType;
 use ListBroking\AppBundle\Service\Helper\AppService;
 use ListBroking\TaskControllerBundle\Entity\Queue;
 use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
-class OppositionListController extends Controller
+class StagingContactAdminController extends Controller
 {
 
     /**
@@ -38,8 +38,8 @@ class OppositionListController extends Controller
 
         //Check for Queues
         /** @var Queue[] $queues */
-        $queues = $t_service->findQueuesByType(AppService::OPPOSITION_LIST_QUEUE_TYPE);
-        $import_form = $a_service->generateForm('opposition_list_import', null,  null, true);
+        $queues = $t_service->findQueuesByType(AppService::CONTACT_IMPORT_QUEUE_TYPE);
+        $import_form = $a_service->generateForm(new StagingContactImportType(), null,  null, true);
 
         $datagrid = $this->admin->getDatagrid();
         $formView = $datagrid->getForm()->createView();

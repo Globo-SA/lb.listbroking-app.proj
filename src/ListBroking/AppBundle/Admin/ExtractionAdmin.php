@@ -63,8 +63,7 @@ class ExtractionAdmin extends Admin
     {
         $formMapper
             ->add('name')
-            ->add('campaign')
-            ->add('status')
+            ->add('campaign', 'sonata_type_model_list', array())
             ->add('quantity')
             ->add('payout')
         ;

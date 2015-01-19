@@ -118,5 +118,5 @@ interface BaseServiceInterface {
      * @param $action
      * @return FormBuilderInterface|Form
      */
-    function generateForm($type, $action = null, $data = null, $view = false);
+    public function generateForm($type, $action = null, $data = null, $view = false);
 } 

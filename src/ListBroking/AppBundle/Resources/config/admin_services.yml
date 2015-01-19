@@ -109,16 +109,18 @@ services:
 
   listbroking.admin.opposition_list:
       class: ListBroking\AppBundle\Admin\OppositionListAdmin
-      arguments: [~, ListBroking\AppBundle\Entity\OppositionList, ListBrokingAppBundle:OppositionList]
+      arguments: [~, ListBroking\AppBundle\Entity\OppositionList, ListBrokingAppBundle:OppositionListAdmin]
       tags:
           - {name: sonata.admin, manager_type: orm, group: System, label: OppositionList}
       calls:
         - [ setTemplate, [list, ListBrokingAppBundle:OppositionList:list.html.twig]]
   listbroking.admin.staging_contact:
       class: ListBroking\AppBundle\Admin\StagingContactAdmin
-      arguments: [~, ListBroking\AppBundle\Entity\StagingContact, SonataAdminBundle:CRUD]
+      arguments: [~, ListBroking\AppBundle\Entity\StagingContact, ListBrokingAppBundle:StagingContactAdmin]
       tags:
         - {name: sonata.admin, manager_type: orm, group: System, label: StagingContact}
+      calls:
+        - [ setTemplate, [list, ListBrokingAppBundle:StagingContact:list.html.twig]]
   listbroking.admin.staging_contact_dqp:
       class: ListBroking\AppBundle\Admin\StagingContactDQPAdmin
       arguments: [~, ListBroking\AppBundle\Entity\StagingContactDQP, SonataAdminBundle:CRUD]

@@ -42,7 +42,6 @@ class StagingService extends BaseService implements StagingServiceInterface {
     public function addStagingContact($data_array)
     {
         $contact = new StagingContact();
-
         foreach ($data_array as $field => $value)
         {
             $method = 'set' . Inflector::camelize($field);
@@ -152,7 +151,6 @@ class StagingService extends BaseService implements StagingServiceInterface {
         $filename = $this->generateFilename($file->getClientOriginalName(), null, 'imports/');
         $file->move('imports', $filename);
 
-        //TODO: The way the queue fields are mapped shouldn't be this confusing
         $queue = new Queue();
         $queue->setType(AppService::OPPOSITION_LIST_QUEUE_TYPE);
         $queue->setValue1($data['type']);
@@ -164,13 +162,84 @@ class StagingService extends BaseService implements StagingServiceInterface {
         return $queue;
     }
 
+    /**
+     * Handle the uploaded StagingContacts file and adds it to the queue
+     * @param Form $form
+     * @throws \Exception
+     * @return Queue
+     */
+    public function addStagingContactsFileToQueue(Form $form){
+
+        // Handle Form
+        $data = $form->getData();
+
+        if(empty($data['upload_file'])){
+            throw new \Exception('Invalid or empty filename');
+        }
+
+        /** @var UploadedFile $file */
+        $file = $data['upload_file'];
+        $filename = $this->generateFilename($file->getClientOriginalName(), null, 'imports/');
+        $file->move('imports', $filename);
+
+        $queue = new Queue();
+        $queue->setType(AppService::CONTACT_IMPORT_QUEUE_TYPE);
+        $queue->setValue1($filename);
+
+        $this->addEntity('queue', $queue);
+
+        return $queue;
+    }
+
+    /**
+     * Imports an Opposition list by file
+     * @param $type
+     * @param $filename
+     * @param $clear_old
+     */
     public function importOppostionList($type, $filename, $clear_old){
 
         $config = json_decode($this->getConfig('opposition_list.config')->getValue(),true);
         $this->em->getRepository('ListBrokingAppBundle:OppositionList')->importOppositionListFile($type, $config[$type], $filename, $clear_old);
     }
 
+    /**
+     * Syncs the Opposition table with the Leads
+     */
     public function syncContactsWithOppositionLists(){
         $this->em->getRepository('ListBrokingAppBundle:Lead')->syncContactsWithOppositionLists();
+    }
+
+    /**
+     * Used to generate a template file for importing staging contacts
+     * @return string
+     */
+    public function getStagingContactImportTemplate(){
+        $filehandler = new FileHandler();
+
+        $filename = $this->generateFilename('staging_contact_import_template');
+        $filehandler->export($filename, array(
+            'phone',
+            'email',
+            'firstname',
+            'lastname',
+            'birthdate',
+            'address',
+            'postalcode1',
+            'postalcode2',
+            'ipaddress',
+            'gender',
+            'district',
+            'county',
+            'parish',
+            'country',
+            'owner',
+            'source_name',
+            'source_external_id',
+            'source_country',
+            'sub_category'
+        ), array());
+
+        return $filename;
     }
 }

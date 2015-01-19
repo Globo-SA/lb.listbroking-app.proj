@@ -21,13 +21,11 @@ class Extraction {
     use TimestampableEntityBehavior,
         BlameableEntityBehavior;
 
-    const STATUS_CONFIGURATION = 0;
     const STATUS_FILTRATION = 1;
     const STATUS_CONFIRMATION = 2;
     const STATUS_FINAL = 3;
 
     public static $status_names = array(
-        0 => 'Confirmation',
         1 => 'Filtration',
         2 => 'Confirmation',
         3 => 'Finished'
@@ -43,7 +41,7 @@ class Extraction {
 
     protected $payout;
 
-    protected $status;
+    protected $status = self::STATUS_FILTRATION;
 
     protected $campaign;
 

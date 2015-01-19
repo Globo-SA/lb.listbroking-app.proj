@@ -52,7 +52,7 @@ class CampaignAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('client')
+            ->add('client', 'sonata_type_model_list', array())
             ->add('name')
             ->add('description')
         ;

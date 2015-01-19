@@ -29,6 +29,8 @@ class Lead {
 
     protected $in_opposition;
 
+    protected $date;
+
     protected $country;
 
     protected $contacts;

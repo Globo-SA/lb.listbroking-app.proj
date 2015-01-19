@@ -119,7 +119,7 @@ SQL;
         $contact->setCountry($country);
         $em->persist($contact);
 
-//        $em->remove($s_contact);
+        $em->remove($s_contact);
 
         $em->flush();
     }

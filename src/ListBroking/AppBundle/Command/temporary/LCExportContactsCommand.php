@@ -8,7 +8,7 @@
  * [LISTBROKING_DISCLAIMER]
  */
 
-namespace ListBroking\APIBundle\Command;
+namespace ListBroking\AppBundle\Command\Temporary;
 
 
 use Doctrine\DBAL\Driver\Mysqli\MysqliException;

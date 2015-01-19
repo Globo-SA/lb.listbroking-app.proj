@@ -45,22 +45,29 @@ abstract class BaseService implements BaseServiceInterface
      */
     const DEDUPLICATION_QUEUE_TYPE = 'deduplication_queue';
     const OPPOSITION_LIST_QUEUE_TYPE = 'opposition_queue';
+    const CONTACT_IMPORT_QUEUE_TYPE = 'staging_contact_import_queue';
 
     /**
      * Queue mapping (just for information purpose)
      */
     public $queue_mapping = array(
-      self::DEDUPLICATION_QUEUE_TYPE => array(
+        self::DEDUPLICATION_QUEUE_TYPE => array(
           'value1' => 'extraction_id',
           'value2' => 'filename',
           'value3' => 'deduplication_field',
           'value4' => ''
-      ),
+        ),
         self::OPPOSITION_LIST_QUEUE_TYPE => array(
             'value1' => 'type',
             'value2' => 'filename',
             'value3' => 'clear_old',
             'value4' => ''
+        ),
+        self::CONTACT_IMPORT_QUEUE_TYPE => array(
+            'value1' => 'owner',
+            'value2' => 'source',
+            'value3' => 'country',
+            'value4' => 'filename'
         )
     );
 
@@ -309,7 +316,7 @@ abstract class BaseService implements BaseServiceInterface
      * @param $action
      * @return FormBuilderInterface|Form
      */
-    function generateForm($type, $action = null, $data = null, $view = false)
+    public function generateForm($type, $action = null, $data = null, $view = false)
     {
         $form = $this->form_factory->createBuilder($type, $data);
         if($action){
@@ -437,4 +444,4 @@ abstract class BaseService implements BaseServiceInterface
 
         return strtolower(preg_replace('/\s/i', '-', $filename));
     }
-} 
+}

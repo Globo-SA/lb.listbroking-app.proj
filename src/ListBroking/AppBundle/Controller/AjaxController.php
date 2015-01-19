@@ -16,11 +16,13 @@ use ListBroking\AppBundle\Entity\OppositionList;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
 use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
 use ListBroking\AppBundle\Form\OppositionListImportType;
+use ListBroking\AppBundle\Form\StagingContactImportType;
 use ListBroking\AppBundle\Service\BusinessLogic\ExtractionService;
 use ListBroking\AppBundle\Service\Helper\AppService;
 use ListBroking\TaskControllerBundle\Entity\Queue;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -103,65 +105,6 @@ class AjaxController extends Controller {
             return $this->createJsonResponse($e->getMessage(), $e->getCode());
         }
     }
-
-//    /**
-//     * Generic form submission action
-//     * @param Request $request
-//     * @param $form_name
-//     * @return JsonResponse
-//     */
-//    public function formSubmissionAction(Request $request, $form_name){
-//        try{
-//            $this->validateRequest($request);
-//
-//            $ui_service = $this->get('ui');
-//
-//            $result = $ui_service->submitForm($form_name, $request);
-//            if($result['success']){
-//
-//                return $this->createJsonResponse(array_merge(
-//                        array("form_name" => $form_name), $result
-//                    )
-//                );
-//            }
-//
-//            return $this->createJsonResponse(array_merge(
-//                array("form_name" => $form_name), $result
-//            ), 400);
-//
-//        }catch(\Exception $e){
-//            return $this->createJsonResponse($e->getMessage(), $e->getCode());
-//
-//        }
-//    }
-
-//    /**
-//     * Excludes leads of a given Extraction
-//     * @param Request $request
-//     * @param $extraction_id
-//     * @param $lead_id
-//     * @return JsonResponse
-//     */
-//    public function extractionExcludeLeadAction(Request $request, $extraction_id, $lead_id){
-//        try{
-//            $this->validateRequest($request);
-//
-//            $a_service = $this->get('app');
-//            $e_service = $this->get('extraction');
-//
-//            $extraction = $a_service->getEntity('extraction', $extraction_id, true, true);
-//            $e_service->excludeLeads($extraction, array(array('id' => $lead_id)));
-//
-//            return $this->createJsonResponse(array(
-//                "code" => 200,
-//                "response" => "success",
-//                "extraction_id" => $extraction_id,
-//                "lead_id" => $lead_id
-//            ));
-//        }catch(\Exception $e){
-//            return $this->createJsonResponse($e->getMessage(), $e->getCode());
-//        }
-//    }
 
     /**
      * Third step on Lead Extraction, Lead Extraction
@@ -353,6 +296,59 @@ class AjaxController extends Controller {
             $form->handleRequest($request);
 
             $queue = $s_service->addOppositionListFileToQueue($form);
+            return $this->createJsonResponse(array(
+                "code" => 200,
+                "response" => "List added to the queue",
+                "type" => $queue->getValue1(),
+                "filename" => $queue->getValue2(),
+                "clear_old" => $queue->getValue3(),
+                "queue_id" => $queue->getId()
+            ));
+        }catch(\Exception $e){
+            return $this->createJsonResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * Action to download the
+     * Note: This is not really an Ajax only request
+     * but it's a cool hack to fake an Ajax file download
+     * @return Response
+     * @throws InvalidExtractionException
+     */
+    public function StagingContactImportTemplateAction(){
+
+        //Service
+        $s_service = $this->get('staging');
+
+        $filename = $s_service->getStagingContactImportTemplate();
+
+        // Generate response
+        $response = new Response();
+
+        // Set headers for file attachment
+        $response->headers->set('Cache-Control', 'private');
+        $response->headers->set('Content-type', mime_content_type($filename));
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . basename($filename) . '";');
+        $response->headers->set('Content-length', filesize($filename));
+
+        // Send headers before outputting anything
+        $response->sendHeaders();
+        $response->setContent(readfile($filename));
+
+        return $response;
+    }
+
+    public function StagingContactImportAction(Request $request){
+        try{
+            $this->validateRequest($request);
+
+            $s_service = $this->get('staging');
+
+            $form = $s_service->generateForm(new StagingContactImportType());
+            $form->handleRequest($request);
+
+            $queue = $s_service->addStagingContactsFileToQueue($form);
             return $this->createJsonResponse(array(
                 "code" => 200,
                 "response" => "List added to the queue",

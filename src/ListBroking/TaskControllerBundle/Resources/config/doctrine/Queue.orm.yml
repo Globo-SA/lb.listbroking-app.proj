@@ -10,7 +10,7 @@ ListBroking\TaskControllerBundle\Entity\Queue:
     fields:
         type:
             type: string
-            length: 25
+            length: 45
         value1:
             type: string
             length: 255
