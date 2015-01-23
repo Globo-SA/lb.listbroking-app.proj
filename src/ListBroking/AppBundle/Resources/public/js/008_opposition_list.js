@@ -83,6 +83,8 @@
 
                 // Stop loading button
                 $('#opposition_list_import_trigger').toggleLoading();
+
+                location.reload();
             });
         })
         ;
@@ -98,6 +100,8 @@
 
                 // Stop loading button
                 $('#opposition_list_import_trigger').toggleLoading();
+
+                location.reload();
             });
         }
     });
