@@ -20,3 +20,6 @@ parameters:
   java_bin_path: /usr/bin/java
   ruby_bin_path: /usr/bin/ruby
   compass_bin_path: /usr/bin/compass
+
+  memcached_host: localhost
+  memcached_port: 11211
