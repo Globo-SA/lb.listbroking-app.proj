@@ -61,6 +61,8 @@ class ImportOppostionListCommand extends ContainerAwareCommand{
                         $this->service->advanceProgressBar("Importing file: {$filename}");
                         $s_service->importOppostionList($type, $filename, $clear_old);
 
+                        // Remove file and Queue
+                        $s_service->removeEntity('queue', $queue);
                         unlink($filename);
                     }
                     $this->service->finishProgressBar();

@@ -41,6 +41,10 @@ ListBroking\AppBundle\Entity\Contact:
             type:   string
             column: ipaddress
             nullable: true
+        date:
+            type: date
+            column: date
+            nullable: false
         post_request:
             type:   json_array
             column: post_request

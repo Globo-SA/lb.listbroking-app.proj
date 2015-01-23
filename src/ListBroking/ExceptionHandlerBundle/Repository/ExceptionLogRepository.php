@@ -10,26 +10,26 @@
 
 namespace ListBroking\ExceptionHandlerBundle\Repository;
 
-
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 
 class ExceptionLogRepository extends EntityRepository {
 
+    const LIFETIME = 3600;
 
-    public function findLastExceptions($days, $hydrate = true){
-
-        $hydration = Query::HYDRATE_OBJECT;
-        if(!$hydrate){
-            $hydration = Query::HYDRATE_ARRAY;
-        }
+    /**
+     * Gets the last exceptions by a min date
+     * @param $limit
+     * @return mixed
+     */
+    public function findLastExceptions($limit){
 
         return $this->createQueryBuilder('e')
-            ->andWhere('e.created_at >= :this_week')
-            ->setParameter('this_week',$days)
             ->orderBy('e.id','DESC')
+            ->setMaxResults($limit)
             ->getQuery()
-            ->setMaxResults(5)
-            ->getResult($hydration);
+            ->getResult(AbstractQuery::HYDRATE_ARRAY);
     }
-} 
+
+}

@@ -331,6 +331,17 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
+     * Get thrown Exceptions
+     * @param $limit
+     * @return mixed
+     */
+    public function getExceptions($limit){
+
+        return $this->em->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
+            ->findLastExceptions($limit);
+    }
+
+    /**
      * Gets a Entity type cache and repo info
      * @param $type
      * @param $hydrate

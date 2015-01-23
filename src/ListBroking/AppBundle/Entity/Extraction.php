@@ -175,6 +175,14 @@ class Extraction {
         return $this->contacts;
     }
 
+    /**
+     * @param ArrayCollection $contacts
+     */
+    public function setContacts(ArrayCollection $contacts)
+    {
+        $this->contacts = $contacts;
+    }
+
     public function addContact(Contact $contact){
 
         // Only add if its new
@@ -194,6 +202,13 @@ class Extraction {
     public function getExtractionDeduplications()
     {
         return $this->extraction_deduplications;
+    }
+
+    /**
+     * @param ArrayCollection $extraction_deduplications
+     */
+    public function setExtractionDeduplications(ArrayCollection $extraction_deduplications){
+        $this->extraction_deduplications = $extraction_deduplications;
     }
 
 

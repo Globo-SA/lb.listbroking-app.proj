@@ -12,17 +12,13 @@ namespace ListBroking\AppBundle\Controller;
 
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
-use ListBroking\AppBundle\Entity\OppositionList;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
 use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
-use ListBroking\AppBundle\Form\OppositionListImportType;
 use ListBroking\AppBundle\Form\StagingContactImportType;
-use ListBroking\AppBundle\Service\BusinessLogic\ExtractionService;
 use ListBroking\AppBundle\Service\Helper\AppService;
 use ListBroking\TaskControllerBundle\Entity\Queue;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Cookie;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,10 +33,8 @@ class AjaxController extends Controller {
     public function lastExceptionsAction(Request $request){
         try{
             $this->validateRequest($request);
-
-            //TODO: Remove Repository from controller
-            $last = $this->getDoctrine()->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
-                ->findLastExceptions(new \DateTime('- 1 week'), false);
+            $service = $this->get('app');
+            $last = $service->getExceptions(5);
 
             return $this->createJsonResponse($last);
         }catch (\Exception $e){

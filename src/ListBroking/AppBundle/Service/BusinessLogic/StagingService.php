@@ -237,7 +237,8 @@ class StagingService extends BaseService implements StagingServiceInterface {
             'source_name',
             'source_external_id',
             'source_country',
-            'sub_category'
+            'sub_category',
+            'date'
         ), array());
 
         return $filename;

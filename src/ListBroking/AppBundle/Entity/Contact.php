@@ -55,6 +55,8 @@ class Contact {
 
     protected $country;
 
+    protected $date;
+
     protected $post_request;
 
     protected $validations;
@@ -352,6 +354,22 @@ class Contact {
     public function setCountry($country)
     {
         $this->country = $country;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
+     * @param mixed $date
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
     }
 
     /**

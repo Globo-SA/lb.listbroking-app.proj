@@ -13,8 +13,8 @@ namespace ListBroking\AppBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Lead;
+use ListBroking\AppBundle\Entity\Lock;
 use ListBroking\AppBundle\Entity\StagingContact;
-use ListBroking\AppBundle\PHPExcel\FileHandler;
 
 class StagingContactRepository extends EntityRepository
 {
@@ -85,7 +85,7 @@ SQL;
             'id' => $s_contact->getLeadId()
         ));
 
-        // Facts Tables
+        // If the lead doesn't exist create a new one
         if (!$lead)
         {
             $lead = new Lead();
@@ -97,8 +97,23 @@ SQL;
         $lead->setCountry($country);
         $em->persist($lead);
 
-        $contact = new Contact();
+        $contact = $em->getRepository('ListBrokingAppBundle:Contact')->findOneBy(array(
+            'id' => $s_contact->getContactId()
+        ));
+
+
+        // If the contact doesn't exist create a new one
+        if (!$contact)
+        {
+            $contact = new Contact();
+        }
+
         $contact->setEmail($s_contact->getEmail());
+
+        if($s_contact->getFirstname()){
+
+        }
+
         $contact->setFirstname($s_contact->getFirstname());
         $contact->setLastname($s_contact->getLastname());
         $contact->setBirthdate(new \DateTime($s_contact->getBirthdate()));
@@ -106,7 +121,7 @@ SQL;
         $contact->setPostalcode1($s_contact->getPostalcode1());
         $contact->setPostalcode2($s_contact->getPostalcode2());
         $contact->setIpaddress($s_contact->getIpaddress());
-        $contact->setValidations($s_contact->getValidations());
+        $contact->setDate($s_contact->getDate());
 
         $contact->setLead($lead);
         $contact->setSource($source);
@@ -117,9 +132,22 @@ SQL;
         $contact->setCounty($county);
         $contact->setParish($parish);
         $contact->setCountry($country);
+
+        $contact->setValidations($s_contact->getValidations());
+        $contact->setPostRequest($s_contact->getPostRequest());
+
+        $now = new \DateTime();
+        $initial_lock_expiration_date = $s_contact->getInitialLockExpirationDate();
+        if($initial_lock_expiration_date > $now){
+            $lock = new Lock();
+            $lock->setType(Lock::TYPE_NO_LOCKS);
+            $lock->setExpirationDate($initial_lock_expiration_date);
+            $lead->addLock($lock);
+        }
+
         $em->persist($contact);
 
-        $em->remove($s_contact);
+//        $em->remove($s_contact);
 
         $em->flush();
     }

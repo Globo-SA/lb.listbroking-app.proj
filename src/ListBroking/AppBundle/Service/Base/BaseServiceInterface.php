@@ -119,4 +119,11 @@ interface BaseServiceInterface {
      * @return FormBuilderInterface|Form
      */
     public function generateForm($type, $action = null, $data = null, $view = false);
+
+    /**
+     * Get thrown Exceptions
+     * @param $limit
+     * @return mixed
+     */
+    public function getExceptions($limit);
 } 

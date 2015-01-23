@@ -68,12 +68,7 @@ class StagingContactDQP {
 
     protected $country;
 
-    protected $validations;
 
-
-    /**
-     * Owner Information
-     */
     protected $owner;
 
     protected $source_name;
@@ -82,22 +77,16 @@ class StagingContactDQP {
 
     protected $source_country;
 
-
-    /**
-     * Category Information
-     */
     protected $sub_category;
 
+    protected $date;
 
-    /**
-     * All information saved as json_array
-     */
+    protected $initial_lock_expiration_date;
+
     protected $post_request;
 
+    protected $validations;
 
-    /**
-     * @return mixed
-     */
     public function getId()
     {
         return $this->id;
@@ -517,6 +506,38 @@ class StagingContactDQP {
     public function setSubCategory($sub_category)
     {
         $this->sub_category = $sub_category;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
+     * @param mixed $date
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getInitialLockExpirationDate()
+    {
+        return $this->initial_lock_expiration_date;
+    }
+
+    /**
+     * @param mixed $initial_lock_expiration_date
+     */
+    public function setInitialLockExpirationDate($initial_lock_expiration_date)
+    {
+        $this->initial_lock_expiration_date = $initial_lock_expiration_date;
     }
 
     /**

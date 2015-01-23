@@ -16,7 +16,6 @@ use ListBroking\AppBundle\Entity\Extraction;
 
 class ExtractionRepository extends EntityRepository {
 
-    //TODO: Check if this is working well
     /**
      * Associates multiple contacts to an extraction
      * @param $extraction Extraction

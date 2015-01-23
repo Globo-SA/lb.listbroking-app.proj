@@ -18,6 +18,9 @@ class ExtractionAdmin extends Admin
 
     protected function configureRoutes(RouteCollection $collection)
     {
+        $collection->remove('delete');
+
+        $collection->add('clone', $this->getRouterIdParameter().'/clone');
         $collection->add('filtering', $this->getRouterIdParameter() . '/filtering');
     }
 
@@ -47,10 +50,15 @@ class ExtractionAdmin extends Admin
             ->add('_action', 'actions', array(
                 'actions' => array(
                     'filtering' => array(
-                        'template' => 'ListBrokingAppBundle:CRUD:list__action_filtering.html.twig'
+                        'template' => 'ListBrokingAppBundle:Extraction:CRUD/list__action_filtering.html.twig'
                     ),
-                    'edit' => array(),
-                    'delete' => array(),
+                    'edit' => array(
+                        'template' => 'ListBrokingAppBundle:Extraction:CRUD/list__action_edit.html.twig'
+                    ),
+                    'clone' => array(
+                        'template' => 'ListBrokingAppBundle:Extraction:CRUD/list__action_clone.html.twig'
+                    ),
+                    'delete' => array()
                 )
             ))
         ;

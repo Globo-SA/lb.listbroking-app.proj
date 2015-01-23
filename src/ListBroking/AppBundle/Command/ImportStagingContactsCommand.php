@@ -58,6 +58,8 @@ class ImportStagingContactsCommand extends ContainerAwareCommand{
                         $this->service->advanceProgressBar("Importing file: {$filename}");
                         $s_service->importStagingContacts($filename);
 
+                        // Remove file and Queue
+                        $s_service->removeEntity('queue', $queue);
                         unlink($filename);
                     }
                     $this->service->finishProgressBar();
@@ -65,7 +67,6 @@ class ImportStagingContactsCommand extends ContainerAwareCommand{
                 }else{
                     $this->service->write('Nothing to process');
                 }
-
 
                 $s_service->syncContactsWithOppositionLists();
                 $this->service->finish();

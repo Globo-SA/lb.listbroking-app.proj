@@ -75,7 +75,7 @@ class BirthdateValidator implements ValidatorInterface {
      */
     public function getName()
     {
-        // TODO: Implement getName() method.
+        return 'birthdate_validator';
     }
 
 

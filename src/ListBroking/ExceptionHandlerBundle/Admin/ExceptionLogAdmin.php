@@ -18,7 +18,6 @@ class ExceptionLogAdmin extends Admin
     
     protected function configureRoutes(RouteCollection $collection)
     {
-        $collection->remove('delete');
         $collection->remove('create');
         $collection->remove('edit');
     }

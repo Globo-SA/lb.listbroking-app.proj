@@ -106,6 +106,14 @@ ListBroking\AppBundle\Entity\StagingContactDQP:
             type:   string
             column: sub_category
             nullable: true
+        date:
+            type: date
+            column: date
+            nullable: false
+        initial_lock_expiration_date:
+            type: date
+            column: initial_lock_expiration_date
+            nullable: false
         post_request:
             type:   json_array
             column: post_request

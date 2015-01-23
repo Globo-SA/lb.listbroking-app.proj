@@ -137,7 +137,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     public function exportExtraction(ExtractionTemplate $extraction_template, $contacts, $info = array())
     {
         // Get File Template
-        $template = $extraction_template->getTemplate();
+        $template = json_decode($extraction_template->getTemplate(), true);
         if(!array_key_exists("headers", $template) || !array_key_exists("extension", $template)){
             throw new InvalidExtractionException('Headers or Extension missing on the ExtractionTemplate, in' . __CLASS__);
         }
@@ -248,7 +248,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     {
         $message = $this->mailer->createMessage()
             ->setSubject("LB Extraction - {$extraction->getName()}")
-            ->setFrom($this->getConfig('system.email'))
+            ->setFrom($this->getConfig('system.email')->getValue())
             ->setTo($emails)
             ->setBody(
                 $this->twig->render(

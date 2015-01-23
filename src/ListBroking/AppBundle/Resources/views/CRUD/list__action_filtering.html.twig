@@ -1,6 +1,0 @@
-{% if admin.isGranted('FILTERING', object) and admin.hasRoute('filtering') %}
-    <a href="{{ admin.generateObjectUrl('filtering', object) }}" class="btn btn-sm btn-primary edit_link" title="{{ 'action_filtering'|trans }}">
-        <i class="glyphicon glyphicon-filter"></i>
-        {{ 'action_filtering'|trans }}
-    </a>
-{% endif %}

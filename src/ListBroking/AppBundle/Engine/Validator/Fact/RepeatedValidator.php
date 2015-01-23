@@ -89,7 +89,7 @@ class RepeatedValidator implements ValidatorInterface {
             // LEAD IS FULLY REPEATED
             if($owner_contact){
                 $contact->setContactId($owner_contact->getId());
-                throw new DimensionValidationException('Lead is fully repeated');
+                $info = 'Lead is fully repeated';
             }
             $validations['infos'][$this->getName()][] = $info;
         }

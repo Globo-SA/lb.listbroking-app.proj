@@ -1,5 +1,13 @@
 {% extends '@ListBrokingApp/base.html.twig' %}
 
+{% block breadcrumb %}
+    <li><a href="{{ url('sonata_admin_dashboard') }}">{{ 'title_dashboard'|trans({}, 'SonataAdminBundle') }}</a></li>
+    <li>
+        <a href=""{{ url('admin_listbroking_app_extraction_list') }}">Extraction List</a>
+    </li>
+    <li class="active"><span>{{ extraction.name }}</span></li>
+{% endblock %}
+
 {% block sonata_page_content_nav %}
     <nav class="navbar navbar-default" role="navigation">
         <div class="navbar-header">
@@ -140,9 +148,9 @@
                                         <i class="fa fa-share"></i>&nbsp;SEND EXTRACTION
                                     </button>
                                     or
-                                    <button class="btn btn-flat btn-default" disabled>
+                                    <a href="{{ admin.generateObjectUrl('clone', extraction) }}" class="btn btn-flat btn-default" target="_blank">
                                         <i class="fa fa-asterisk"></i>&nbsp;DUPLICATE EXTRACTION
-                                    </button>
+                                    </a>
                                 </p>
                             </blockquote>
                             {% include '@ListBrokingApp/Extraction/_configuration/modal_delivery.html.twig' %}

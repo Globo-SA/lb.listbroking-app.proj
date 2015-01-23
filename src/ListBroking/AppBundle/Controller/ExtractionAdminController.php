@@ -2,19 +2,51 @@
 
 namespace ListBroking\AppBundle\Controller;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
-use ListBroking\AppBundle\Service\BusinessLogic\ExtractionService;
 use ListBroking\AppBundle\Service\Helper\AppService;
 use ListBroking\TaskControllerBundle\Entity\Queue;
 use Sonata\AdminBundle\Controller\CRUDController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class ExtractionAdminController extends CRUDController
 {
 
+    public function cloneAction()
+    {
+        $id = $this->get('request')->get($this->admin->getIdParameter());
+
+        $object = $this->admin->getObject($id);
+
+        if (!$object) {
+            throw new NotFoundHttpException(sprintf('unable to find the object with id : %s', $id));
+        }
+
+        /** @var Extraction $clonedObject */
+        $clonedObject = clone $object;
+
+        $clonedObject->setName($object->getName() . " (duplicate)");
+        $clonedObject->setStatus(Extraction::STATUS_FILTRATION);
+        $clonedObject->setContacts(new ArrayCollection());
+        $clonedObject->setExtractionDeduplications(new ArrayCollection());
+
+        $this->admin->create($clonedObject);
+
+        $this->addFlash('sonata_flash_success', 'Extraction successfully duplicated');
+
+        return new RedirectResponse($this->admin->generateUrl('edit', array('id'=> $clonedObject->getId())));
+    }
+
     public function filteringAction()
     {
+        if (false === $this->admin->isGranted('EXTRACTION')) {
+            throw new AccessDeniedException();
+        }
+
         // Services
         $e_service = $this->get('extraction');
         $t_service = $this->get('task');
@@ -49,7 +81,6 @@ class ExtractionAdminController extends CRUDController
                 break;
             }
         }
-
         // Render Response
         return $this->render('@ListBrokingApp/Extraction/filtering.html.twig',
             array(

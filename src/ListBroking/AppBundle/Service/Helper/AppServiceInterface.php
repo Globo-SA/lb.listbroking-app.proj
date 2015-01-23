@@ -34,20 +34,4 @@ interface AppServiceInterface {
      * @return mixed
      */
     function getEntityList($type, $parent_type, $parent_id);
-
-    //TODO: Check if this is still needed
-//    /**
-//     * @param $form_name
-//     * @param $request
-//     * @return mixed
-//     */
-//    function submitForm($form_name, $request);
-//
-//    /**
-//     * Generates a new CSRF token
-//     * @param $intention
-//     * @return mixed
-//     */
-//    function generateNewCsrfToken($intention);
-
 }
