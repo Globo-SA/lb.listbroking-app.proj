@@ -76,7 +76,12 @@ class NameValidator implements ValidatorInterface {
             if(preg_match($rule['regex'], $lastname)){
                 throw new DimensionValidationException("Lastname  matched a invalid regex rule: {$rule['msg']}");
             }
-        }    }
+        }
+
+        // Uppercase the first character of each word in a string
+        $contact->setFirstname(ucwords($firstname));
+        $contact->setLastname(ucwords($lastname));
+    }
 
     /**
      * Gets the name of the validator

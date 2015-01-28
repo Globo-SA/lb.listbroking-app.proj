@@ -19,7 +19,7 @@ use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 class EmailValidator implements ValidatorInterface {
 
     protected $rules = array(
-        array('regex' => '/(adctst|adclick)/i', 'msg' => 'Test contact'),
+        array('regex' => '/(adctst|adclick|test)/i', 'msg' => 'Test contact'),
     );
 
     /**
