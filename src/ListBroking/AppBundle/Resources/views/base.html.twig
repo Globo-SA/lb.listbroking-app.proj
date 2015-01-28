@@ -3,10 +3,10 @@
 {% block stylesheets %}
     {{ parent() }}
     {% stylesheets
-    'bower/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css'
-    'bower/bootstrap-daterangepicker/daterangepicker-bs3.css'
-    'bower/jquery-file-upload/css/jquery.fileupload.css'
-    'bundles/listbrokingapp/css/*.css'
+        'bower/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css'
+        'bower/bootstrap-daterangepicker/daterangepicker-bs3.css'
+        'bower/jquery-file-upload/css/jquery.fileupload.css'
+        'bundles/listbrokingapp/css/*.css'
     filter='cssrewrite,?yui_css'
     output='css/global.min.css'
     %}
@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block sonata_head_title %}
-ListBroking - Contact broking simplified
+    ListBroking - Contact broking simplified
 {% endblock %}
 
 
@@ -63,7 +63,7 @@ ListBroking - Contact broking simplified
         'bower/moment/moment.js'
         'bower/bootstrap-daterangepicker/daterangepicker.js'
         'bower/iCheck/icheck.min.js'
-        'bower/DataTables/media/js/jquery.dataTables.min.js'
+        'bower/datatables/media/js/jquery.dataTables.min.js'
         'bower/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js'
         'bower/jquery.inputmask/dist/inputmask/jquery.inputmask.js'
         'bower/jquery.inputmask/dist/inputmask/jquery.inputmask.numeric.extensions.js'

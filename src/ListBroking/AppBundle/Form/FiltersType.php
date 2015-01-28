@@ -106,6 +106,48 @@ class FiltersType extends AbstractType
                     )
                 )
             ),
+            'lead_details' => array(
+                'label' => 'Lead Details',
+                'fields' => array(
+                    array(
+                        'name' => 'lead:is_mobile',
+                        'type' => 'checkbox',
+                        'options' => array(
+                            'required' => false,
+                            'attr' => array(
+                                'class' => 'form-control'
+                            ),
+                            'label' => 'Only mobile numbers'
+                        )
+                    ),
+//                    array(
+//                        'name' => 'lead:id',
+//                        'type' => 'textarea',
+//                        'options' => array(
+//                            'required' => false,
+//                            'attr' => array(
+//                                'id' => 'filters_lead_details_lead_id',
+//                                'placeholder' => 'Write and press enter...',
+//                                'class' => 'form-control'
+//                            ),
+//                            'label' => 'Lead IDs to remove',
+//                        )
+//                    ),
+//                    array(
+//                        'name' => 'lead:phone',
+//                        'type' => 'textarea',
+//                        'options' => array(
+//                            'required' => false,
+//                            'attr' => array(
+//                                'id' => 'filters_lead_details_lead_phone',
+//                                'placeholder' => 'Write and press enter...',
+//                                'class' => 'form-control'
+//                            ),
+//                            'label' => 'Lead phones to remove',
+//                        )
+//                    ),
+                )
+            ),
             "location" => array(
                 'label' => 'Location',
                 'fields' => array(
@@ -398,37 +440,6 @@ class FiltersType extends AbstractType
                         )
                     ),
                 ),
-            ),
-            'lead_details' => array(
-                'label' => 'Lead Details',
-                'fields' => array(
-                    array(
-                        'name' => 'lead:id',
-                        'type' => 'textarea',
-                        'options' => array(
-                            'required' => false,
-                            'attr' => array(
-                                'id' => 'filters_lead_details_lead_id',
-                                'placeholder' => 'Write and press enter...',
-                                'class' => 'form-control'
-                            ),
-                            'label' => 'Lead IDs to remove',
-                        )
-                    ),
-                    array(
-                        'name' => 'lead:phone',
-                        'type' => 'textarea',
-                        'options' => array(
-                            'required' => false,
-                            'attr' => array(
-                                'id' => 'filters_lead_details_lead_phone',
-                                'placeholder' => 'Write and press enter...',
-                                'class' => 'form-control'
-                            ),
-                            'label' => 'Lead phones to remove',
-                        )
-                    ),
-                )
             )
         );
     }
@@ -445,7 +456,7 @@ class FiltersType extends AbstractType
                 'label' => $group['label'],
                 'virtual' => true,
                 'label_attr' => array('class' => 'text-blue'),
-                'attr' => array('class' => 'row', 'style' => 'display:none;')
+                'attr' => array('class' => 'row')
             ));
             foreach ($group['fields'] as $filter)
             {

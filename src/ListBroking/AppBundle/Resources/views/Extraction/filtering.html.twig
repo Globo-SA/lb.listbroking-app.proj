@@ -21,7 +21,7 @@
 {% endblock sonata_page_content_nav %}
 
 {% block content %}
-    <div class="row collapsed">
+    <div class="row closed">
     <div class="col-xs-12">
         <!-- Nav tabs -->
         {% set filter_tab = '' %}
@@ -56,7 +56,7 @@
                         <div class="panel-heading">The following filters should be seen as a inclusion filters, the only
                             exception are the <b>Lead Details</b></div>
                         <div class="panel-body">
-                            {% include '@ListBrokingApp/_partials/forms/filters.html.twig' %}
+                            {% include '@ListBrokingApp/Extraction/_forms/filters.html.twig' %}
                         </div>
                     </div>
                 </div>
@@ -89,17 +89,17 @@
                                             <small>Used to exclude leads by CSV file</small>
                                         </p>
                                     </blockquote>
-                                    {% include '@ListBrokingApp/Extraction/_configuration/modal_deduplication.html.twig' %}
+                                    {% include '@ListBrokingApp/Extraction/_partials/modal_deduplication.html.twig' %}
                                 </div>
                                 <div class="col-md-6">
-                                    {% include '@ListBrokingApp/Extraction/_configuration/extraction_summary.html.twig' %}
+                                    {% include '@ListBrokingApp/Extraction/_partials/extraction_summary.html.twig' %}
                                 </div>
                             </div>
                             <div class="row">
                                 <div id="extraction_table_container" class="col-md-12">
                                     <i class="icon icon-huge ion-loading-c hidden"></i>
                                     <span>
-                                        {% include '@ListBrokingApp/Extraction/_configuration/contacts_table.html.twig' %}
+                                        {% include '@ListBrokingApp/Extraction/_partials/contacts_table.html.twig' %}
                                     </span>
                                 </div>
                             </div>
@@ -115,7 +115,7 @@
                                     <small>After this step the extraction will be closed and marked as final.</small>
                                 </p>
                             </blockquote>
-                            {% include '@ListBrokingApp/Extraction/_configuration/modal_locks.html.twig' %}
+                            {% include '@ListBrokingApp/Extraction/_partials/modal_locks.html.twig' %}
                         </div>
                     </div>
                 </div>
@@ -128,14 +128,14 @@
                         <div class="panel-body">
                             <div class="row row-margin">
                                 <div class="col-md-12">
-                                    {% include '@ListBrokingApp/Extraction/_configuration/extraction_summary.html.twig' %}
+                                    {% include '@ListBrokingApp/Extraction/_partials/extraction_summary.html.twig' %}
                                 </div>
                             </div>
                             <div class="row">
                                 <div id="extraction_table_container" class="col-md-12">
                                     <i class="icon icon-huge ion-loading-c hidden"></i>
                                         <span>
-                                            {% include '@ListBrokingApp/Extraction/_configuration/contacts_table.html.twig' %}
+                                            {% include '@ListBrokingApp/Extraction/_partials/contacts_table.html.twig' %}
                                         </span>
                                 </div>
                             </div>
@@ -153,7 +153,7 @@
                                     </a>
                                 </p>
                             </blockquote>
-                            {% include '@ListBrokingApp/Extraction/_configuration/modal_delivery.html.twig' %}
+                            {% include '@ListBrokingApp/Extraction/_partials/modal_delivery.html.twig' %}
                         </div>
                     </div>
                 </div>

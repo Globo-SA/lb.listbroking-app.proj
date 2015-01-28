@@ -1,0 +1,33 @@
+{% form_theme forms.filters '@ListBrokingApp/Extraction/_forms/themes/filters_form_theme.html.twig' %}
+{{ form_start(forms.filters) }}
+    <div class="panel-group" id="filters">
+        {% for widget in forms.filters %}
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#filters" href="#{{ widget.vars.name }}">
+                            {{ widget.vars.label }}
+                        </a>
+                    </h4>
+                </div>
+                <div id="{{ widget.vars.name }}" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        {% for compound in widget %}
+                            {% if compound.vars.block_prefixes.1 == 'collection' %}
+                                <div class="col-md-12">
+                                    {{ form_widget(compound) }}
+                                </div>
+                            {% else %}
+                                {{ form_row(compound) }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        {{ form_rest(forms.filters) }}
+    </div>
+    <button type="submit" class="btn btn-primary btn-flat">
+        <i class="fa fa-share"></i>&#32;Continue
+    </button>
+{{ form_end(forms.filters) }}

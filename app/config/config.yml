@@ -36,7 +36,7 @@ assetic:
     debug:          "%kernel.debug%"
     use_controller: false
     bundles:        [ ListBrokingAppBundle, FOSUserBundle ]
-    #java: /usr/bin/java
+    java: /usr/bin/java
     filters:
         cssrewrite: ~
         closure:

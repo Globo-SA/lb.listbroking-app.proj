@@ -19,7 +19,7 @@
         });
 
         // Opens all collapsed tags
-        $(".collapsed").each(function() {
+        $(".closed").each(function() {
             $(this).fadeIn();
         });
 

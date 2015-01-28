@@ -2,97 +2,149 @@
  * Created by scastro on 11/10/14.
  */
 
-(function ($, App)
-{
-    $(function() {
+(function ($, App) {
+    $(function () {
         "use strict";
 
-       $('[data-collection]').each(function(){
+        // Init collections
+        $('[data-collection]').each(function () {
 
-           var $collectionHolder = $(this);
+            var $collectionHolder = $(this);
+            var $collections = $collectionHolder.find('.collection');
 
-           var index = $collectionHolder.find('[data-id]').length;
-           $collectionHolder.data('index', index);
-           if(index == 0){
-               addTagForm($collectionHolder);
-           }
+            // If no widget was added add one
+            var index = $collections.length;
+            $collectionHolder.data('index', index);
+            if (index == 0) {
+                addCollection($collectionHolder);
+            }else{
 
-           $collectionHolder.find('.add_collection').on('click', function(e) {
-               e.preventDefault();
-
-               // add a new tag form (see next code block)
-               addTagForm($collectionHolder);
-           });
-
-           $collectionHolder.find('.del_collection').on('click', function(e) {
-               e.preventDefault();
-
-               var $collectionHolder2 = $(this).parent('div').parent('div')
-               $(this).parent('div').remove();
-
-               var new_index = 0;
-               if($collectionHolder2.find('div').length > 0){
-
-                   new_index = $collectionHolder2.data('index') - 1;
-               }
-               $collectionHolder2.data('index', new_index);
-
-           });
-       });
+                addControls($collectionHolder);
+            }
+        });
         initDateRangePickers($('form'));
 
-        function addTagForm($collectionHolder) {
+        /**
+         * Adds a new collection
+         * @param $collectionHolder
+         */
+        function addCollection($collectionHolder) {
+
             var prototype = $collectionHolder.data('prototype');
 
             var index = $collectionHolder.data('index') + 1;
-
             var $newForm = $(prototype.replace(/__name__/g, index));
 
-            $newForm.find('.del_collection').on('click', function(e) {
-                e.preventDefault();
-                $(this).parent('div').remove();
-            });
-
-            $collectionHolder.data('index', index );
-
-            $collectionHolder.find('.add_collection').after($newForm);
+            // Add the new index to the collectionHolder and form
+            $collectionHolder.data('index', index);
+            $collectionHolder.append($newForm);
 
             // Select2 Ajax widgets
             $collectionHolder.find("[data-select-mode=local]").select2();
             $("[data-mask]").inputmask();
 
             initDateRangePickers($collectionHolder);
-
+            addControls($collectionHolder);
         }
 
-        function initDateRangePickers($this){
-            // Datepickers
-            $this.find('[data-toggle=daterangepicker]').daterangepicker({
-                    format: 'YYYY/MM/DD',
-                    ranges: {
-                        '18-24 Years': [moment().subtract(24, 'years'), moment().subtract(18, 'years')],
-                        '25-34 Years': [moment().subtract(34, 'years'), moment().subtract(25, 'years')],
-                        '35-44 Years': [moment().subtract(44, 'years'), moment().subtract(35, 'years')],
-                        '45-54 Years': [moment().subtract(54, 'years'), moment().subtract(45, 'years')],
-                        '55-64 Years': [moment().subtract(64, 'years'), moment().subtract(55, 'years')],
-                        '65-90 Years': [moment().subtract(90, 'years'), moment().subtract(65, 'years')]
-                    },
-                    startDate: moment().subtract(29, 'days'),
-                    endDate: moment()
-                },
-                function(start, end) {
-                    var range_start = moment().format('YYYY') - end.format('YYYY');
-                    var range_end = moment().format('YYYY') - start.format('YYYY');
+        /**
+         * Removes a collection
+         * @param $collectionHolder
+         * @param $collection
+         */
+        function removeCollection($collectionHolder, $collection) {
 
-                    var $datepicker = this.element;
-                    var $help = $datepicker.next('.help-block');
-                    if($help.length == 0){
-                        $datepicker.after('<div class="help-block"></div>');
-                        $help = $datepicker.next('.help-block');
-                    }
-                    $help.html('Range: <strong>' + range_start + '-' + range_end + ' Years</strong>');
-                });
+            $collection.remove();
+            var new_index = 0;
+            if ($collectionHolder.find('.collection').length > 0) {
+
+                new_index = $collectionHolder.data('index') - 1;
+            }
+            $collectionHolder.data('index', new_index);
+
+            addControls($collectionHolder);
+        }
+
+        /**
+         * Adds the add/remove controls
+         * @param $collectionHolder
+         */
+        function addControls($collectionHolder){
+
+            var collectionControl = '<div class="collection_control btn-group" style="margin: 0 0 -5px 5px;"><button type="button" class="btn btn-xs btn-danger del_collection"><i class="fa fa-minus"></i></button><button type="button" class="btn btn-xs btn-default add_collection"><i class="fa fa-plus"></i></button></div>';
+            var collectionDelete = '<div class="collection_delete btn-group" style="margin: 0 0 0 5px;"><button type="button" class="btn btn-xs btn-danger del_collection"><i class="fa fa-minus"></i></button></div>';
+
+            var $collections = $collectionHolder.find('.collection');
+
+            // remove old controls
+            $collectionHolder.find('.collection_control, .collection_delete').remove();
+
+            // Only one widget
+            if($collections.length == 1){
+                $collections.find('label').after(collectionControl);
+            }else{
+                var $labels = $collections.find('label');
+                $labels.not(':last').after(collectionDelete);
+                $labels.last().after(collectionControl);
+            }
+
+            refreshClickEvents($collectionHolder);
+        }
+
+        /**
+         * Refreshes the controls eventListeners
+         * @param $collectionHolder
+         */
+        function refreshClickEvents($collectionHolder){
+
+            // Remove old events
+            $collectionHolder.find('.collection_control, .collection_delete').undelegate('click');
+
+            $collectionHolder.find('.add_collection').on('click', function (e) {
+                e.preventDefault();
+
+                // add a new collection
+                addCollection($collectionHolder);
+            });
+
+            $collectionHolder.find('.del_collection').on('click', function (e) {
+                e.preventDefault();
+
+                // Remove a collection
+                removeCollection($collectionHolder, $(this).parents('.collection'));
+            });
+        }
+
+        /**
+         * Starts the DateRange Pickers
+         * @param $this
+         */
+        function initDateRangePickers($this) {
+            // Datepickers
+            $this.find('[data-toggle=daterangepicker]').each(function(){
+                $(this).after('<div class="help-block"></div>');
+                $(this).daterangepicker({
+                        format: 'YYYY/MM/DD',
+                        ranges: {
+                            '18-24 Years': [moment().subtract(24, 'years'), moment().subtract(18, 'years')],
+                            '25-34 Years': [moment().subtract(34, 'years'), moment().subtract(25, 'years')],
+                            '35-44 Years': [moment().subtract(44, 'years'), moment().subtract(35, 'years')],
+                            '45-54 Years': [moment().subtract(54, 'years'), moment().subtract(45, 'years')],
+                            '55-64 Years': [moment().subtract(64, 'years'), moment().subtract(55, 'years')],
+                            '65-90 Years': [moment().subtract(90, 'years'), moment().subtract(65, 'years')]
+                        }
+                    },
+                    function (start, end) {
+
+                        var $datepicker = $(this.element);
+                        var $help = $datepicker.next('.help-block');
+
+                        $help.html('Range: ' + $datepicker.data('daterangepicker').chosenLabel);
+                    });
+
+                $(this).next('.help-block').html('Range: ' + $(this).data('daterangepicker').chosenLabel);
+            });
+
         }
     });
-}
-)(jQuery, ListBroking);
+})(jQuery, ListBroking);

@@ -1,0 +1,38 @@
+{% block form_widget_compound -%}
+    <div {{ block('widget_container_attributes') }} class="collection col-md-3">
+        {%- if form.parent is empty -%}
+                {{ form_errors(form) }}
+            {%- endif -%}
+        {{- block('form_rows') -}}
+        {{- form_rest(form) -}}
+    </div>
+{%- endblock form_widget_compound %}
+
+{% block form_row %}
+    {% spaceless %}
+        {% if not compound -%}
+        <div class="form-group {% if form.parent.vars.block_prefixes.1 != 'filter' %}col-md-3{% endif %}">
+        {% endif %}
+            {% if form.vars.block_prefixes.1 == 'checkbox' %}
+                {{ form_widget(form) }}&nbsp;
+                {{ form_label(form) }}
+            {% else %}
+                {% if form.vars.block_prefixes.1 not in ['filter', 'collection'] %}
+                    {{ form_label(form) }}
+                {% endif %}
+            {% endif %}
+            {{ form_widget(form) }}
+        {% if not compound -%}
+        </div>
+        {% endif %}
+    {% endspaceless %}
+{% endblock %}
+
+{% block hidden_widget -%}
+    {% if form.vars.attr['data-select-mode'] is defined %}
+        {{ form_row(form) }}
+    {% else %}
+        {% set type = type|default('hidden') %}
+        {{- block('form_widget_simple') -}}
+    {% endif %}
+{%- endblock hidden_widget -%}
