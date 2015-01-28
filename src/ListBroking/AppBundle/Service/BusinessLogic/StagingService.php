@@ -96,7 +96,7 @@ class StagingService extends BaseService implements StagingServiceInterface {
     {
         return $contacts = $this->em->getRepository('ListBrokingAppBundle:StagingContact')->findBy(array(
             'valid' => 0
-        ), null, $limit);
+        ), array('id' => 'ASC'), $limit);
     }
 
     /**
