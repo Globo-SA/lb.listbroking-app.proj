@@ -8,6 +8,10 @@ ListBroking\AppBundle\Entity\StagingContactDQP:
             generator:
                 strategy: AUTO
     fields:
+        external_id:
+            type:   string
+            column: external_id
+            nullable: true
         valid:
             type:   boolean
             column: valid

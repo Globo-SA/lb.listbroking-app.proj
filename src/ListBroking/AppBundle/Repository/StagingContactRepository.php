@@ -114,6 +114,7 @@ SQL;
 
         }
 
+        $contact->setExternalId($s_contact->getExternalId());
         $contact->setFirstname($s_contact->getFirstname());
         $contact->setLastname($s_contact->getLastname());
         $contact->setBirthdate(new \DateTime($s_contact->getBirthdate()));

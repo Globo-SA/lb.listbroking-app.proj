@@ -25,6 +25,8 @@ class StagingContactDQP {
 
     protected $id;
 
+    protected $external_id;
+
     protected $processed = 0;
 
     protected $valid = 0;
@@ -90,6 +92,22 @@ class StagingContactDQP {
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExternalId()
+    {
+        return $this->external_id;
+    }
+
+    /**
+     * @param mixed $external_id
+     */
+    public function setExternalId($external_id)
+    {
+        $this->external_id = $external_id;
     }
 
     /**

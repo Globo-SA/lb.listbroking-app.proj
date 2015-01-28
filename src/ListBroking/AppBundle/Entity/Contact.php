@@ -21,6 +21,8 @@ class Contact {
 
     protected $id;
 
+    protected $external_id;
+
     protected $email;
 
     protected $firstname;
@@ -82,6 +84,22 @@ class Contact {
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExternalId()
+    {
+        return $this->external_id;
+    }
+
+    /**
+     * @param mixed $external_id
+     */
+    public function setExternalId($external_id)
+    {
+        $this->external_id = $external_id;
     }
 
     /**

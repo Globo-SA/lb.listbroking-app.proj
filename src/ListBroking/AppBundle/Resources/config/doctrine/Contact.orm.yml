@@ -9,6 +9,10 @@ ListBroking\AppBundle\Entity\Contact:
             generator:
                 strategy: AUTO
     fields:
+        external_id:
+            type:   string
+            column: external_id
+            nullable: true
         email:
             type:   string
             column: email

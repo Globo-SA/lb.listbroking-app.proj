@@ -219,6 +219,7 @@ class StagingService extends BaseService implements StagingServiceInterface {
 
         $filename = $this->generateFilename('staging_contact_import_template');
         $filehandler->export($filename, array(
+            'external_id',
             'phone',
             'email',
             'firstname',
