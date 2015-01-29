@@ -159,12 +159,13 @@ class TaskService implements TaskServiceInterface
      */
     public function throwError(\Exception $exception)
     {
+        $this->write('ENDING WITH ERROR - ' . $exception->getMessage());
+
         $this->isStarted();
         $this->task->setStatus(Task::STATUS_ERROR);
         $this->task->setMsg($exception->getMessage());
         $this->em->flush();
 
-        $this->write('ENDING WITH ERROR - ' . $exception->getMessage());
     }
 
     /**
