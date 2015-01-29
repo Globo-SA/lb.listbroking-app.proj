@@ -21,7 +21,7 @@ class NameValidator implements ValidatorInterface {
     protected $rules = array(
         array('regex' => '/^\S{1}$/i', 'msg' => 'Name only contains one letter'),
         array('regex' => '/\d/i', 'msg' => 'Name contains a digit'),
-        array('regex' => '/(test|teste|fake)/i', 'msg' => 'Test name'),
+        array('regex' => '/(test|teste|fake|asd)/i', 'msg' => 'Test name'),
     );
 
     /**
@@ -66,8 +66,11 @@ class NameValidator implements ValidatorInterface {
             $name = explode(' ', $firstname, 2);
 
             $firstname = $name[0];
-            $lastname = $name[1];
-            $contact->setLastname($lastname);
+            $contact->setFirstname($firstname);
+            if(count($name) > 1){
+                $lastname = $name[1];
+                $contact->setLastname($lastname);
+            }
         }
 
         foreach ($this->rules as $rule)
