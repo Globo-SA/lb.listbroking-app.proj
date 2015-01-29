@@ -86,6 +86,7 @@ class GenderValidator implements ValidatorInterface {
             $gender->setName($field);
 
             $this->em->persist($gender);
+            $this->em->flush($gender);
 
             $validations['infos'][$this->getName()][] = 'New Gender created: ' .  $gender->getName();
         }

@@ -74,6 +74,7 @@ class CategoryValidator implements ValidatorInterface {
                 $global_category = new Category();
                 $global_category->setName('global');
                 $this->em->persist($global_category);
+                $this->em->flush($global_category);
 
                 $validations['infos'][$this->getName()][] = 'New Category created: ' .  $global_category->getName();
             }
@@ -83,6 +84,7 @@ class CategoryValidator implements ValidatorInterface {
             $sub_category->setCategory($global_category);
 
             $this->em->persist($sub_category);
+            $this->em->flush($sub_category);
 
             $validations['infos'][$this->getName()][] = 'New SubCategory created: ' .  $sub_category->getName();
         }

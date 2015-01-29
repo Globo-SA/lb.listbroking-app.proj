@@ -71,6 +71,7 @@ class CountryValidator implements ValidatorInterface {
             $country->setName($field);
 
             $this->em->persist($country);
+            $this->em->flush($country);
 
             $validations['infos'][$this->getName()][] = 'New Country created: ' .  $country->getName();
         }

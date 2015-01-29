@@ -89,6 +89,7 @@ class SourceValidator implements ValidatorInterface {
                 $country->setName($source_country);
 
                 $this->em->persist($country);
+                $this->em->flush($country);
 
                 $validations['infos'][$this->getName()][] = 'New Country created: ' .  $country->getName();
             }
@@ -101,6 +102,7 @@ class SourceValidator implements ValidatorInterface {
             $source->setOwner($owner);
 
             $this->em->persist($source);
+            $this->em->flush($source);
 
             $validations['infos'][$this->getName()][] = 'New Source created: ' .  $source->getName();
         }

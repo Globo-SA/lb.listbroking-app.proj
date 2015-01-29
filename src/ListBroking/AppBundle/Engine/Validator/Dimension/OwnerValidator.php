@@ -68,6 +68,7 @@ class OwnerValidator implements ValidatorInterface {
             $owner->setName($field);
 
             $this->em->persist($owner);
+            $this->em->flush($owner);
 
             $validations['infos'][$this->getName()][] = 'New Owner created: ' .  $owner->getName();
         }

@@ -68,6 +68,7 @@ class DistrictValidator implements ValidatorInterface {
             $district->setName($field);
 
             $this->em->persist($district);
+            $this->em->flush($district);
 
             $validations['infos'][$this->getName()][] = 'New District created: ' .  $district->getName();
         }

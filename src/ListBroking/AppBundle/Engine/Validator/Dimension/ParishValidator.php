@@ -68,6 +68,7 @@ class ParishValidator implements ValidatorInterface {
             $parish->setName($field);
 
             $this->em->persist($parish);
+            $this->em->flush($parish);
 
             $validations['infos'][$this->getName()][] = 'New Parish created: ' .  $parish->getName();
         }

@@ -68,6 +68,7 @@ class CountyValidator implements ValidatorInterface {
             $county->setName($field);
 
             $this->em->persist($county);
+            $this->em->flush($county);
 
             $validations['infos'][$this->getName()][] = 'New County created: ' .  $county->getName();
         }
