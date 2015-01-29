@@ -83,6 +83,8 @@ swiftmailer:
 
 stof_doctrine_extensions:
   default_locale: en_UK
+  class:
+    blameable: ListBroking\AppBundle\EventListener\BlameableListener
   orm:
     default:
       timestampable: true

@@ -19,7 +19,7 @@ use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 
 class PostalCodeValidator implements ValidatorInterface {
 
-    const POSTALCODE_API_URL = 'http://postalcode.adctools.com';
+    const POSTALCODE_API_PT_URL = 'http://postalcode.adctools.com';
 
     /**
      * @var EntityManager
@@ -71,11 +71,10 @@ class PostalCodeValidator implements ValidatorInterface {
             $contact->setPostalcode1($explode[0]);
             $contact->setPostalcode2($explode[1]);
         }
-        $field1 = strtoupper($contact->getPostalcode1());
-        $field2 = strtoupper($contact->getPostalcode2());
+        $field1 = $contact->getPostalcode1();
+        $field2 = $contact->getPostalcode2();
 
         // Enrich contact PostalCode = District + County + Parish
-        $postalcode_info = $this->getPostalCodeDetails($country, $field1, $field2);
         if(empty($field1) && empty($field2)){
             if(!$this->is_required){
                 return;
@@ -83,7 +82,8 @@ class PostalCodeValidator implements ValidatorInterface {
             throw new DimensionValidationException('Empty postalcode1 and postalcode2 fields');
         }
 
-        if($postalcode_info){
+        $postalcode_info = $this->getPostalCodeDetails($country, $field1, $field2);
+        if(!empty($postalcode_info)){
             if(!empty($postalcode_info['district'])){
                 $contact->setDistrict($postalcode_info['district']);
             }
@@ -110,7 +110,7 @@ class PostalCodeValidator implements ValidatorInterface {
         $info = null;
         switch($country){
             case 'PT':
-                $request = $this->guzzle->get(PostalCodeValidator::POSTALCODE_API_URL, null, array('query'=> array(
+                $request = $this->guzzle->get(self::POSTALCODE_API_PT_URL, null, array('query'=> array(
                     'postal' => array('cp1' => $postalcode1, 'cp2' =>  $postalcode2)
                 )));
                 $response =  $request->send();

@@ -63,10 +63,10 @@ class ValidatorEngine
         $this->guzzle = $guzzle;
 
         $this->validators = array(
-            new PostalCodeValidator($this->em, false, $this->guzzle),
 
             // Dimension validations
             new CountryValidator($this->em, true),
+            new PostalCodeValidator($this->em, false, $this->guzzle),
             new DistrictValidator($this->em, false),
             new CountyValidator($this->em, false),
             new ParishValidator($this->em, false),
@@ -101,7 +101,7 @@ class ValidatorEngine
                 $validator->validate($contact, $validations);
             } catch (\Exception $e)
             {
-                $validations['errors'][$validator->getName()][] = $e->getMessage();
+                $validations['errors'][$validator->getName()][] = $e->getMessage() . ', line:' . $e->getLine();
             }
         }
 

@@ -148,7 +148,7 @@ SQL;
 
         $em->persist($contact);
 
-//        $em->remove($s_contact);
+        $em->remove($s_contact);
 
         $em->flush();
     }

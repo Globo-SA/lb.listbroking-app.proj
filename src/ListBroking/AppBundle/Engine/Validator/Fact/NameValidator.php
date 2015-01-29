@@ -54,18 +54,20 @@ class NameValidator implements ValidatorInterface {
     public function validate(StagingContact $contact, &$validations){
 
         $firstname = $contact->getFirstname();
+        $lastname = $contact->getLastname();
         if(empty($firstname)){
             if(!$this->is_required){
                 return;
             }
             throw new DimensionValidationException('Empty firstname field');
         }
-        $lastname = $contact->getLastname();
+
         if(empty($lastname)){
-            if(!$this->is_required){
-                return;
-            }
-            throw new DimensionValidationException('Empty lastname field');
+            $name = explode(' ', $firstname, 2);
+
+            $firstname = $name[0];
+            $lastname = $name[1];
+            $contact->setLastname($lastname);
         }
 
         foreach ($this->rules as $rule)
