@@ -16,6 +16,7 @@ use ListBroking\TaskControllerBundle\Service\TaskService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ProcessStagingContactsCommand extends ContainerAwareCommand{
@@ -31,7 +32,7 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand{
         $this
             ->setName('listbroking:staging:process')
             ->setDescription('Processes StagingContacts and send them to the prod env')
-            ->addArgument('limit', InputArgument::OPTIONAL, 'Max contacts to validate per task iteration', 100)
+            ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Max contacts to validate per task iteration', 100)
         ;
     }
 
@@ -44,7 +45,7 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand{
 
                 $s_service = $this->getContainer()->get('staging');
 
-                $limit = $input->getArgument('limit');
+                $limit = $input->getOption('limit');
 
                 /** @var  StagingContact[] $contacts */
                 $contacts = $s_service->findContactsToValidate($limit);
