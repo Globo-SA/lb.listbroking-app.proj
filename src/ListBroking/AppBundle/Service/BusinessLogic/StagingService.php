@@ -12,6 +12,8 @@ namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 
 use Doctrine\Common\Util\Inflector;
+use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Engine\ValidatorEngine;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\PHPExcel\FileHandler;
@@ -88,34 +90,40 @@ class StagingService extends BaseService implements StagingServiceInterface {
     }
 
     /**
-     * Gets contacts that need validation
+     * Gets contacts that need validation and lock them
+     * to the current process
      * @param int $limit
      * @return mixed
      */
-    public function findContactsToValidate($limit = 50)
+    public function findContactsToValidateAndLock($limit = 50)
     {
-        return $contacts = $this->em->getRepository('ListBrokingAppBundle:StagingContact')->findBy(array(
-            'valid' => false,
-            'running' => false
-        ), array('id' => 'ASC'), $limit);
+        // Get contacts and lock the rows
+        $this->em->beginTransaction();
+        $contacts = $this->em->getRepository('ListBrokingAppBundle:StagingContact')->createQueryBuilder('s')
+            ->where('s.valid = :valid')
+            ->andWhere('s.running = :running')
+            ->setParameter('valid', false)
+            ->setParameter('running', false)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->setLockMode(LockMode::PESSIMISTIC_WRITE) // Don't "READ" OR "WRITE" while the lock is active
+            ->execute(null, Query::HYDRATE_OBJECT)
+        ;
 
-    }
-
-    /**
-     * sets running to true on contacts being processed
-     * (running = 1)
-     * @param $contacts
-     * @return mixed
-     */
-    public function setRunningContacts($contacts)
-    {
+        // Set the contacts as Running
         /** @var StagingContact $contact */
         foreach ($contacts as $contact){
             $contact->setRunning(true);
         }
-        $this->em->flush();
-    }
 
+        // Flush the changes
+        $this->em->flush();
+
+        // Commit the transaction removing the lock
+        $this->em->commit();
+
+        return $contacts;
+    }
 
     /**
      * Validates a StagingContact using exceptions and

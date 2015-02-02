@@ -47,9 +47,8 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand{
 
                 $limit = $input->getOption('limit');
 
-                /** @var  StagingContact[] $contacts */
-                $contacts = $s_service->findContactsToValidate($limit);
-                $s_service->setRunningContacts($contacts);
+                $this->service->write('Selecting contacts');
+                $contacts = $s_service->findContactsToValidateAndLock($limit);
 
                 // Iterate staging contacts
                 $this->service->createProgressBar('STARTING CONTACT VALIDATION', count($contacts));

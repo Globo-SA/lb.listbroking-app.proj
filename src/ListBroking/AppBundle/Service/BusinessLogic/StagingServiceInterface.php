@@ -33,19 +33,12 @@ interface StagingServiceInterface {
     public function importStagingContacts($filename);
 
     /**
-     * Gets contacts that need validation
+     * Gets contacts that need validation and lock them
+     * to the current process
      * @param int $limit
      * @return mixed
      */
-    public function findContactsToValidate($limit = 50);
-
-    /**
-     * sets running to true on contacts being processed
-     * (running = 1)
-     * @param $contacts
-     * @return mixed
-     */
-    public function setRunningContacts($contacts);
+    public function findContactsToValidateAndLock($limit = 50);
 
     /**
      * Validates a StagingContact using exceptions and
