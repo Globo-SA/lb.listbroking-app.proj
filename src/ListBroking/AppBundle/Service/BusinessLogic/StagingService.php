@@ -111,7 +111,7 @@ class StagingService extends BaseService implements StagingServiceInterface {
     {
         /** @var StagingContact $contact */
         foreach ($contacts as $contact){
-            $contact->setRunning(1);
+            $contact->setRunning(true);
         }
         $this->em->flush();
     }
