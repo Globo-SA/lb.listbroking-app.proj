@@ -31,6 +31,8 @@ class StagingContact {
 
     protected $valid = 0;
 
+    protected $running = 0;
+
     /**
      * Contact Information
      */
@@ -142,6 +144,22 @@ class StagingContact {
     public function setValid($valid)
     {
         $this->valid = $valid;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRunning()
+    {
+        return $this->running;
+    }
+
+    /**
+     * @param int $running
+     */
+    public function setRunning($running)
+    {
+        $this->running = $running;
     }
 
     /**

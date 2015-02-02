@@ -100,6 +100,10 @@ fos_user:
     service:
         user_manager: sonata.user.orm.user_manager
 
+fos_js_routing:
+    cache_control:
+        public: true
+
 sonata_user:
     security_acl: true
     manager_type: orm # can be orm or mongodb

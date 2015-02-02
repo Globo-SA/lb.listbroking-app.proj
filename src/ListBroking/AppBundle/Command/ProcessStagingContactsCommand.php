@@ -21,7 +21,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ProcessStagingContactsCommand extends ContainerAwareCommand{
 
-    const MAX_RUNNING = 1;
+    const MAX_RUNNING = 90;
 
     /**
      * @var TaskService
@@ -49,6 +49,7 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand{
 
                 /** @var  StagingContact[] $contacts */
                 $contacts = $s_service->findContactsToValidate($limit);
+                $s_service->setRunningContacts($contacts);
 
                 // Iterate staging contacts
                 $this->service->createProgressBar('STARTING CONTACT VALIDATION', count($contacts));

@@ -16,11 +16,20 @@ ListBroking\AppBundle\Entity\StagingContact:
         valid:
             type:   boolean
             column: valid
-            nullable: true
+            options:
+                default: 0
         processed:
             type:   boolean
             column: processed
             nullable: true
+            options:
+                default: 0
+        running:
+            type:   boolean
+            column: running
+            nullable: true
+            options:
+                default: 0
         phone:
             type:   string
             column: phone

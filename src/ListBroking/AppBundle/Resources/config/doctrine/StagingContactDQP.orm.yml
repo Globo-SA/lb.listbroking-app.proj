@@ -15,9 +15,18 @@ ListBroking\AppBundle\Entity\StagingContactDQP:
         valid:
             type:   boolean
             column: valid
+            options:
+                default: 0
         processed:
             type:   boolean
             column: processed
+            options:
+                default: 0
+        running:
+            type:   boolean
+            column: running
+            options:
+                default: 0
         phone:
             type:   string
             column: phone

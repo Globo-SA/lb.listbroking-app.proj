@@ -95,9 +95,27 @@ class StagingService extends BaseService implements StagingServiceInterface {
     public function findContactsToValidate($limit = 50)
     {
         return $contacts = $this->em->getRepository('ListBrokingAppBundle:StagingContact')->findBy(array(
-            'valid' => 0
+            'valid' => false,
+            'running' => false
         ), array('id' => 'ASC'), $limit);
+
     }
+
+    /**
+     * sets running to true on contacts being processed
+     * (running = 1)
+     * @param $contacts
+     * @return mixed
+     */
+    public function setRunningContacts($contacts)
+    {
+        /** @var StagingContact $contact */
+        foreach ($contacts as $contact){
+            $contact->setRunning(1);
+        }
+        $this->em->flush();
+    }
+
 
     /**
      * Validates a StagingContact using exceptions and
