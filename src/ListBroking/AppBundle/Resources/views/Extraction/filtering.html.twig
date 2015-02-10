@@ -3,7 +3,7 @@
 {% block breadcrumb %}
     <li><a href="{{ url('sonata_admin_dashboard') }}">{{ 'title_dashboard'|trans({}, 'SonataAdminBundle') }}</a></li>
     <li>
-        <a href=""{{ url('admin_listbroking_app_extraction_list') }}">Extraction List</a>
+        <a href="{{ url('admin_listbroking_app_extraction_list') }}">Extraction List</a>
     </li>
     <li class="active"><span>{{ extraction.name }}</span></li>
 {% endblock %}

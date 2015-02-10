@@ -12,7 +12,6 @@ ListBroking\AppBundle\Entity\Extraction:
         name:
             type: string
             column: name
-            unique: true
         status:
             type: smallint
             column: status
