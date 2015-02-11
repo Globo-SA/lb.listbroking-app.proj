@@ -81,11 +81,11 @@
 
             // Only one widget
             if($collections.length == 1){
-                $collections.find('label').after(collectionControl);
+                $collections.find('label:first').after(collectionControl);
             }else{
                 var $labels = $collections.find('label');
-                $labels.not(':last').after(collectionDelete);
-                $labels.last().after(collectionControl);
+                $collectionHolder.find('.collection:not(:last-child)').find('label:first').after(collectionDelete);
+                $collectionHolder.find('.collection:last label:first').after(collectionControl);
             }
 
             refreshClickEvents($collectionHolder);
@@ -121,8 +121,10 @@
          */
         function initDateRangePickers($this) {
             // Datepickers
-            $this.find('[data-toggle=daterangepicker]').each(function(){
-                $(this).after('<div class="help-block"></div>');
+            $this.find('[data-toggle=birthdaterangepicker]').each(function(){
+                if($(this).siblings('.help-block').length <= 0){
+                    $(this).after('<div class="help-block"></div>');
+                }
                 $(this).daterangepicker({
                         format: 'YYYY/MM/DD',
                         ranges: {
@@ -145,6 +147,34 @@
                 $(this).next('.help-block').html('Range: ' + $(this).data('daterangepicker').chosenLabel);
             });
 
+
+            // Datepickers
+            $this.find('[data-toggle=daterangepicker]').each(function(){
+                if($(this).siblings('.help-block').length <= 0){
+                    $(this).after('<div class="help-block"></div>');
+                }
+                $(this).daterangepicker({
+                        format: 'YYYY/MM/DD',
+                        ranges: {
+                            'Last 3 years': [moment().subtract(3, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+                            'Last 2 years': [moment().subtract(2, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+                            'Last year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+                            'Last 6 months': [moment().subtract(6, 'months'), moment().endOf('month')],
+                            'Last 3 months': [moment().subtract(3, 'months'), moment().endOf('month')],
+                            'Last Month': [moment().subtract(1, 'months'), moment().subtract(1,'months').endOf('month')],
+                            'This Month': [moment().startOf('month'), moment().endOf('month')]
+                        }
+                    },
+                    function (start, end) {
+
+                        var $datepicker = $(this.element);
+                        var $help = $datepicker.next('.help-block');
+
+                        $help.html('Range: ' + $datepicker.data('daterangepicker').chosenLabel);
+                    });
+
+                $(this).next('.help-block').html('Range: ' + $(this).data('daterangepicker').chosenLabel);
+            });
         }
     });
 })(jQuery, ListBroking);

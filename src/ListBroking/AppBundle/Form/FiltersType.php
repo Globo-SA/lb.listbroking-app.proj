@@ -30,6 +30,7 @@ class FiltersType extends AbstractType
         $this->a_service = $appService;
 
         $default_country = $this->a_service->getCountryByCode('PT', false);
+        $default_date = array(date('Y/m/01 - Y/m/t')); // Current month
 
         // Choice values arrays
         $genders = $this->a_service->getEntities('gender', false);
@@ -98,12 +99,28 @@ class FiltersType extends AbstractType
                                 'data-collection' => 'true',
                                 'class' => 'col-md-12'
                             ),
-                            'type' => new RangeType('birthdate_range', 'Birthdate Range'),
+                            'type' => new RangeType('birthdate_range', 'birthdaterangepicker','Birthdate Range'),
                             'allow_add' => true,
                             'allow_delete' => true,
                             'label' => 'Birthdate'
                         )
-                    )
+                    ),
+                    array(
+                        'name' => 'contact:date',
+                        'type' => 'collection',
+                        'options' => array(
+                            'required' => false,
+                            'empty_data' => array($default_date),
+                            'attr' => array(
+                                'data-collection' => 'true',
+                                'class' => 'col-md-12'
+                            ),
+                            'type' => new RangeType('date', 'daterangepicker', 'Date Range'),
+                            'allow_add' => true,
+                            'allow_delete' => true,
+                            'label' => 'Contact date'
+                        )
+                    ),
                 )
             ),
             'lead_details' => array(
@@ -155,7 +172,7 @@ class FiltersType extends AbstractType
                         'name' => 'contact:country',
                         'type' => 'choice',
                         'options' => array(
-                            'data' => array($default_country['id']),
+                            'empty_data' => array($default_country['id']),
                             'multiple' => true,
                             'required' => false,
                             'attr' => array(

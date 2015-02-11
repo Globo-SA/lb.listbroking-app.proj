@@ -18,22 +18,30 @@ class RangeType extends AbstractType
 {
 
     private $uniqid;
+
     /**
      * @var
      */
     private $name;
+
+    /**
+     * @var
+     */
+    private $type;
+
     /**
      * @var
      */
     private $label;
 
-    function __construct($name, $label)
+    function __construct($name, $type, $label)
     {
         // An UniqueID is appended to the
         // name to avoid form collisions
         $this->uniqid = uniqid();
 
         $this->name = $name;
+        $this->type = $type;
         $this->label = $label;
     }
 
@@ -48,7 +56,7 @@ class RangeType extends AbstractType
                 'label' => $this->label,
                 'required' => false,
                 'attr' => array(
-                    'data-toggle' => 'daterangepicker',
+                    'data-toggle' => $this->type,
                     'placeholder' => 'Select one...',
                     'class' => 'form-control'
                     )

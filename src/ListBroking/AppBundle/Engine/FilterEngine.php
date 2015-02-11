@@ -68,7 +68,7 @@ class FilterEngine
             'sub_category_lock_filter' => new SubCategoryLockFilter(Lock::TYPE_SUB_CATEGORY, Lock::TYPE_CATEGORY)
         );
         $this->contact_filter_types = array(
-            1 => new BasicContactFilter()
+            1 => new BasicContactFilter(),
         );
         $this->lead_filter_types = array(
             1 => new BasicLeadFilter()
@@ -228,6 +228,24 @@ class FilterEngine
                     {
                         if(!empty($value['birthdate_range'])){
                             $tmp[] = explode('-', $value['birthdate_range']);
+                        }
+                    }
+                    $contact_filters[1]['filters'][] = array(
+                        'field' => $field,
+                        'opt' => 'between',
+                        'value' => $tmp
+
+                    );
+                    continue;
+                }
+
+                // Date Widget is a bit different !!
+                $tmp = array();
+                if($field == 'date'){
+                    foreach ($values as $key => $value)
+                    {
+                        if(!empty($value['date'])){
+                            $tmp[] = explode('-', $value['date']);
                         }
                     }
                     $contact_filters[1]['filters'][] = array(
