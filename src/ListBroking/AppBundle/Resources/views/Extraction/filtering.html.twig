@@ -11,6 +11,9 @@
 {% block sonata_page_content_nav %}
     <nav class="navbar navbar-default" role="navigation">
         <div class="navbar-header">
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <button class="btn btn-flat btn-default navbar-right navbar-btn" data-toggle="modal" data-target="#sql-modal">SQL</button>
+            {% endif %}
             <span class="navbar-brand"><i class="fa fa-wrench"></i>&nbsp;Extraction Wizard&nbsp;
                 <small>
                     <span class="label label-{% if extraction.status == 3 %}success{% else %}primary{% endif %}">{{ extraction.getStatusName }}</span>
@@ -18,8 +21,10 @@
             </span>
         </div>
     </nav>
+    {% if is_granted('ROLE_SUPER_ADMIN') %}
+        {% include '@ListBrokingApp/Extraction/_partials/modal_sql.html.twig' %}
+    {% endif %}
 {% endblock sonata_page_content_nav %}
-
 {% block content %}
     <div class="row closed">
     <div class="col-xs-12">

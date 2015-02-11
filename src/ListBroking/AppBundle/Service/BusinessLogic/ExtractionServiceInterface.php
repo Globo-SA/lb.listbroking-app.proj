@@ -22,7 +22,8 @@ interface ExtractionServiceInterface {
     /**
      * Used the LockService to compile and run the Extraction
      * @param Extraction $extraction
-     * @return void
+     * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
+     * @return null|Query
      */
     public function runExtraction(Extraction $extraction);
 

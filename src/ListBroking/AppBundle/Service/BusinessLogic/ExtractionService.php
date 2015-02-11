@@ -58,7 +58,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      * Used the LockService to compile and run the Extraction
      * @param Extraction $extraction
      * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
-     * @return void
+     * @return null|Query
      */
     public function runExtraction(Extraction $extraction){
 
@@ -94,12 +94,16 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         }
 
         // Reprocess leads list
+
+        $query = null;
         if($reprocess){
             // Runs the Filter compilation and generates the QueryBuilder
             $qb = $this->f_engine->compileFilters($extraction);
 
+            $query = $qb->getQuery();
+
             // Add Contacts to the Extraction
-            $contacts = $qb->getQuery()->execute();
+            $contacts = $query->execute();
 
             $this->em->getRepository('ListBrokingAppBundle:Extraction')->addContacts($extraction, $contacts, false);
 
@@ -112,6 +116,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
 
         }
         $this->updateEntity('extraction', $extraction);
+
+        return $query;
     }
 
     /**

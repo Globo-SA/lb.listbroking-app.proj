@@ -56,7 +56,7 @@ class ExtractionAdminController extends CRUDController
 
         // Run Extraction
         $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
-        $e_service->runExtraction($extraction);
+        $query = $e_service->runExtraction($extraction);
 
         // Get all contacts in one Query (Better then using $extraction->getContacts())
         $contacts = $e_service->getExtractionContacts($extraction);
@@ -88,6 +88,7 @@ class ExtractionAdminController extends CRUDController
                 'extraction' => $extraction,
                 'contacts' => $contacts,
                 'has_queues' => $running_queue,
+                'query' => $query ? \SqlFormatter::format($query->getSQL()): '',
                 'forms' =>  array(
                     'filters' => $filters_form->createView(),
                     'adv_exclusion' => $adv_exclusion->createView(),
