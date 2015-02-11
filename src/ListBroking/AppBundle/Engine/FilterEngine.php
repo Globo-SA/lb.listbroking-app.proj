@@ -302,7 +302,7 @@ class FilterEngine
                 if(count($values) > 0){
                     $lead_filters[1]['filters'][] = array(
                         'field' => $field,
-                        'opt' => 'not_equal',
+                        'opt' => 'equal',
                         'value' => is_array($values) ? array_values($values) : array($values)
                     );
                 }
