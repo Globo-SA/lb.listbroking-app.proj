@@ -37,7 +37,7 @@
             <td>{{ contact['source']['name'] }}</td>
             <td>{{ contact['sub_category']['category']['name']|default('-') }}</td>
             <td>{{ contact['sub_category']['name']|default('-') }}</td>
-            <td>{{ contact['date']|default('-') }}</td>
+            <td>{{ contact['date']|default('-')|date('Y-m-d') }}</td>
             {% if extraction.status != 3 %}
             <td>
                 <div class="btn-group lead_exclude">

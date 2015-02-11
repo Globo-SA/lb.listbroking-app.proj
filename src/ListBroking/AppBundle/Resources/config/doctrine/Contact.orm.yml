@@ -8,6 +8,13 @@ ListBroking\AppBundle\Entity\Contact:
             id:   true
             generator:
                 strategy: AUTO
+    indexes:
+        date_index:
+          columns: [ date ]
+        postalcode1_index:
+          columns: [ postalcode1 ]
+        postalcode2_index:
+          columns: [ postalcode2 ]
     fields:
         external_id:
             type:   string
