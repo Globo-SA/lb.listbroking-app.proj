@@ -66,12 +66,13 @@
 
         // Select2 widgets
         $("[data-select-mode=local]").each(function(){
-            $(this).select2();
+            $(this).select2({allowClear: true});
         });
 
         $("[data-select-mode=open]").each(function(){
             $(this).select2({
                 tags: [],
+                allowClear: true
             });
         });
 
