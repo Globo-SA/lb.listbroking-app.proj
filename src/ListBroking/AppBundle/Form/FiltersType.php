@@ -331,7 +331,6 @@ class FiltersType extends AbstractType
                         'type' => 'checkbox',
                         'options' => array(
                             'value' => 1, //NoLocksFilter
-                            'data' => true,
                             'required' => false,
                             'attr' => array(
                                 'data-toggle' => 'tooltip',
@@ -348,7 +347,6 @@ class FiltersType extends AbstractType
                         'type' => 'checkbox',
                         'options' => array(
                             'value' => 2, //ReservedLockType
-                            'data' => true,
                             'required' => false,
                             'attr' => array(
                                 'data-toggle' => 'tooltip',
