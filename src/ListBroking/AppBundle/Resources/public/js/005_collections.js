@@ -72,19 +72,23 @@
         function addControls($collectionHolder){
 
             var collectionControl = '<div class="collection_control btn-group" style="margin: 0 0 -5px 5px;"><button type="button" class="btn btn-xs btn-danger del_collection"><i class="fa fa-minus"></i></button><button type="button" class="btn btn-xs btn-default add_collection"><i class="fa fa-plus"></i></button></div>';
-            var collectionDelete = '<div class="collection_delete btn-group" style="margin: 0 0 0 5px;"><button type="button" class="btn btn-xs btn-danger del_collection"><i class="fa fa-minus"></i></button></div>';
+            var collectionDelete = '<div class="collection_control btn-group" style="margin: 0 0 0 5px;"><button type="button" class="btn btn-xs btn-danger del_collection"><i class="fa fa-minus"></i></button></div>';
+            var collectionAdd = '<div class="collection_control btn-group" style="margin: 0 0 0 5px;"><button type="button" class="btn btn-xs btn-default add_collection"><i class="fa fa-plus"></i></button></div>';
 
             var $collections = $collectionHolder.find('.collection');
 
             // remove old controls
-            $collectionHolder.find('.collection_control, .collection_delete').remove();
+            $collectionHolder.find('.collection_control').remove();
 
             // Only one widget
             if($collections.length == 1){
-                $collections.find('label:first').after(collectionControl);
+                $collections.find('label:first').after(collectionAdd);
             }else{
                 var $labels = $collections.find('label');
-                $collectionHolder.find('.collection:not(:last-child)').find('label:first').after(collectionDelete);
+                // Dont apply to the first and the last collections
+                $collectionHolder.find('.collection:not(:last-child).collection:not(:first-child)').find('label:first').after(collectionDelete);
+
+                // Only apply to the last collection
                 $collectionHolder.find('.collection:last label:first').after(collectionControl);
             }
 
@@ -98,7 +102,7 @@
         function refreshClickEvents($collectionHolder){
 
             // Remove old events
-            $collectionHolder.find('.collection_control, .collection_delete').undelegate('click');
+            $collectionHolder.find('.collection_control').undelegate('click');
 
             $collectionHolder.find('.add_collection').on('click', function (e) {
                 e.preventDefault();

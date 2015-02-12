@@ -57,9 +57,8 @@
         <div class="tab-content">
             {% if extraction.status != 3 %}
                 <div class="tab-pane{% if extraction.status == 1 %} active{% endif %}" id="filters">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">The following filters should be seen as a inclusion filters, the only
-                            exception are the <b>Lead Details</b></div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">The Extraction Filters should be seen as <strong>INCLUSION FILTERS</strong></div>
                         <div class="panel-body">
                             {% include '@ListBrokingApp/Extraction/_forms/filters.html.twig' %}
                         </div>
@@ -67,8 +66,8 @@
                 </div>
                 <div class="tab-pane{% if extraction.status == 2 %} active{% endif %}" id="summary">
                     <div class="panel panel-info">
-                        <div class="panel-heading">This summary is not final, filters can always be updated and Leads
-                            can be <b>Desduplicated</b></div>
+                        <div class="panel-heading">This summary is not final, filters can always be <strong>UPDATED</strong> and Leads
+                            can be <b>DEDUPLICATED</b></div>
                         <div class="panel-body">
                             <div class="row row-margin">
                                 <div class="col-md-6">
@@ -127,8 +126,8 @@
             {% else %}
                 <div class="tab-pane active" id="confirmation">
                     <div class="panel panel-success">
-                        <div class="panel-heading">This is the <b>final step</b> of the extraction, here you can review
-                            the contacts and choose how to send them to the client
+                        <div class="panel-heading">This is the <strong>FINAL STEP</strong> of the extraction, here you can review
+                            the contacts and choose how to send them to the client, but the extraction cannot be changed
                         </div>
                         <div class="panel-body">
                             <div class="row row-margin">

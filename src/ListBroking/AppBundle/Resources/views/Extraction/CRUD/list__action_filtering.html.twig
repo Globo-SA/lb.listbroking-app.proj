@@ -1,7 +1,15 @@
 {% if admin.isGranted('FILTERING', object) and admin.hasRoute('filtering') %}
     {% set status_final = constant('ListBroking\\AppBundle\\Entity\\Extraction::STATUS_FINAL') %}
-    <a href="{{ admin.generateObjectUrl('filtering', object) }}" class="btn btn-sm btn-primary edit_link" title="{{ 'action_filtering'|trans }}" {% if object.status == status_final %}disabled="disabled"{% endif %}>
-        <i class="glyphicon glyphicon-filter"></i>
-        {{ 'action_filtering'|trans }}
-    </a>
+    {% if object.status == status_final %}
+        <a href="{{ admin.generateObjectUrl('filtering', object) }}" class="btn btn-sm btn-default edit_link" title="{{ 'action_show'|trans({}, 'SonataAdminBundle') }}">
+            <i class="glyphicon glyphicon-search"></i>
+            {{ 'action_show'|trans({}, 'SonataAdminBundle') }}
+        </a>
+    {% else %}
+        <a href="{{ admin.generateObjectUrl('filtering', object) }}" class="btn btn-sm btn-primary edit_link" title="{{ 'action_filtering'|trans }}">
+            <i class="glyphicon glyphicon-filter"></i>
+            {{ 'action_filtering'|trans }}
+        </a>
+    {% endif %}
+
 {% endif %}
