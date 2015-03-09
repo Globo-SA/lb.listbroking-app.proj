@@ -20,6 +20,7 @@ class ExceptionLogAdmin extends Admin
     {
         $collection->remove('create');
         $collection->remove('edit');
+        $collection->add('exception', $this->getRouterIdParameter().'/exception');
     }
 
     /**

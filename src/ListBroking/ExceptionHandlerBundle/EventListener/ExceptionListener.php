@@ -13,22 +13,27 @@ namespace ListBroking\ExceptionHandlerBundle\EventListener;
 
 use Doctrine\ORM\EntityManager;
 use ListBroking\ExceptionHandlerBundle\Entity\ExceptionLog;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\Routing\Router;
 
 class ExceptionListener {
 
     protected $em;
     protected $mailer;
     protected $twig;
+    protected $router;
 
     function __construct(
         EntityManager $entityManager,
         \Swift_Mailer $mailer,
-        \Twig_Environment $twig)
+        \Twig_Environment $twig,
+        Router $router)
     {
         $this->em = $entityManager;
         $this->mailer = $mailer;
         $this->twig = $twig;
+        $this->router = $router;
     }
 
     public function onKernelException(GetResponseForExceptionEvent $event)
@@ -59,6 +64,9 @@ class ExceptionListener {
                 ->setContentType('text/html');
             $this->mailer->send($message);
         }
+
+        $event->setResponse(new RedirectResponse($this->router->generate('admin_listbroking_exceptionhandler_exceptionlog_exception', array(
+            'id' => $error->getId()))));
     }
 
 } 

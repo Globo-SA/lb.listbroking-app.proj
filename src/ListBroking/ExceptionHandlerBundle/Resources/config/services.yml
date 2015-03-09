@@ -1,12 +1,12 @@
 services:
   listbroking.exceptionhandler.exception_listener:
     class: ListBroking\ExceptionHandlerBundle\EventListener\ExceptionListener
-    arguments: [@doctrine.orm.entity_manager, @mailer, @twig]
+    arguments: [@doctrine.orm.entity_manager, @mailer, @twig, @router]
     tags:
       - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
 
   listbroking.exceptionhandler.admin.exception_log:
     class: ListBroking\ExceptionHandlerBundle\Admin\ExceptionLogAdmin
-    arguments: [~, ListBroking\ExceptionHandlerBundle\Entity\ExceptionLog, SonataAdminBundle:CRUD]
+    arguments: [~, ListBroking\ExceptionHandlerBundle\Entity\ExceptionLog, ListBrokingExceptionHandlerBundle:ExceptionLogAdmin]
     tags:
       - {name: sonata.admin, manager_type: orm, group: System, label: ExceptionLog}
