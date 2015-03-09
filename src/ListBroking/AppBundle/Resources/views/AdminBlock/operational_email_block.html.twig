@@ -1,0 +1,136 @@
+{% extends sonata_block.templates.block_base %}
+
+{% block block %}
+    <div class="box box-primary">
+        <div class="box-header">
+            <h3 class="box-title">{{ settings.title }}</h3>
+        </div>
+        <div class="box-body">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h4>Email Templates</h4>
+                    <button class="btn btn-xs btn-default template_btn" value="beta">BETA TEMPLATE</button>
+                </div>
+            </div>
+            <hr>
+            <h4>Send Email</h4>
+            <form role="form" id="email_submit_form" method="post">
+                <div class="form-group">
+                    <label for="emailsubject">To</label>
+                    <input type="text" class="form-control" id="email_to" name="emails" placeholder="Send email to (separated by ',')" required="required">
+                </div>
+                <div class="form-group">
+                    <label for="emailsubject">Subject</label>
+                    <input type="text" class="form-control" id="email_subject" name="subject" placeholder="Subject" required="required">
+                </div>
+                <div class="form-group">
+                    <label for="email_body">Text</label>
+                    <textarea id="email_body" name="body" class="form-control" rows="3" style="min-height: 250px;" required="required"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" id="email_submit">Send</button>
+            </form>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <h3 class="box-title">Preview</h3>
+                        </div>
+                        <div class="box-body">
+                            <div id="email_preview">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <style type="text/css">
+        #email_preview {
+            width: 660px;
+            margin: 0 auto;
+            height: 100%;
+        }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+
+            var $submit_btn = $('#email_submit');
+            var $form = $('#email_submit_form');
+
+            var templates = {
+                beta:
+                '<h3>Congratulations, you were selected for our beta !!!</h3>' +
+                '<hr>' +
+                '<p>We are happy to announce that you were selected to experience our <b>beta service</b></p>' +
+                '<p>Your login information is: </p>' +
+                '<p><b>Username:&nbsp;</b>USERNAME</p>' +
+                '<p><b>Password:&nbsp;</b>PASSWORD</p>' +
+                '<br><br>' +
+                '<p>Enjoy our service, and please gives feedback on your experience</p>' +
+                '<p><a href="mailto:samuel.castro@adclick.pt" target="_top">samuel.castro@adclick.pt</a></p>'
+            }
+            getPreview();
+
+            var timer = 0;
+            $('#email_body').keyup(function () {
+
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                  getPreview();
+                }, 20);
+
+            });
+            $form.submit(function (e) {
+                e.preventDefault();
+
+                $submit_btn
+                    .attr('disabled','disabled')
+                    .html("<i class='icon icon-large ion-loading-c'></i>&nbsp;Sending emails...");
+
+                $.ajax({
+                    type: "POST",
+                    url: Routing.generate('ajax_operational_email_deliver'),
+                    dataType: 'html',
+                    data: $(this).serializeArray(),
+                    success: function (data) {
+
+                        $submit_btn
+                                .html('<i class="fa fa-check"></i>&nbsp;DONE')
+                        ;
+
+                        setTimeout(function(){
+                            $submit_btn
+                                    .removeAttr('disabled')
+                                    .html("Send")
+                            ;
+                        }, 1000)
+                    }
+                });
+            });
+
+            $('.template_btn').click(function(){
+                $('#email_body').html(templates[$(this).val()]);
+                getPreview();
+            });
+        });
+
+        function getPreview(){
+            $.ajax({
+                type: "POST",
+                url: Routing.generate('ajax_operational_email_preview'),
+                dataType: 'html',
+                data: {
+                    body: $('#email_body').val()
+                },
+                success: function (data) {
+
+                    $('#email_preview').html(data);
+                }
+            });
+        }
+    </script>
+{% endblock %}

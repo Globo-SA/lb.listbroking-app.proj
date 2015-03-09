@@ -85,6 +85,19 @@ ajax_staging_contact_import:
     defaults: { _controller: ListBrokingAppBundle:Ajax:StagingContactImport }
     options:
         expose: true
+
+ajax_operational_email_deliver:
+    path: /ajax/operational_email/deliver
+    defaults: { _controller: ListBrokingAppBundle:Ajax:OperationalEmailDeliver }
+    options:
+        expose: true
+
+ajax_operational_email_preview:
+    path: /ajax/operational_email/preview
+    defaults: { _controller: ListBrokingAppBundle:Ajax:OperationalEmailPreview }
+    options:
+        expose: true
+
 api_create_lead:
     path:     /v1/lead/create
     defaults: { _controller: ListBrokingAppBundle:API:createStagingLead }

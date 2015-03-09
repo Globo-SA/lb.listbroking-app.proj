@@ -1,4 +1,14 @@
 services:
+  app.admin.operational_email:
+        class: ListBroking\AppBundle\AdminBlock\OperationalEmailService
+        tags:
+          - { name: sonata.block }
+        arguments:
+          - "sonata.block.service.statistics"
+          - @templating
+          - @doctrine.orm.default_entity_manager
+          - @security.authorization_checker
+
   app.admin.statistics_block:
         class: ListBroking\AppBundle\AdminBlock\StatisticsBlockService
         tags:

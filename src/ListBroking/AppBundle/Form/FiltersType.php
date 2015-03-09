@@ -29,15 +29,15 @@ class FiltersType extends AbstractType
     {
         $this->a_service = $appService;
 
-        $default_country = $this->a_service->getCountryByCode('PT', false);
+//        $default_country = $this->a_service->getCountryByCode('PT', false);
         $default_date = array(date('Y/m/01 - Y/m/t')); // Current month
 
         // Choice values arrays
         $genders = $this->a_service->getEntities('gender', false);
-        $countries = $this->a_service->getEntities('country', false);
-        $districts = $this->a_service->getEntities('district', false);
-        $counties = $this->a_service->getEntities('county', false);
-        $parishes = $this->a_service->getEntities('parish', false);
+//        $countries = $this->a_service->getEntities('country', false);
+//        $districts = $this->a_service->getEntities('district', false);
+//        $counties = $this->a_service->getEntities('county', false);
+//        $parishes = $this->a_service->getEntities('parish', false);
         $owners = $this->a_service->getEntities('owner', false);
         $sources = $this->a_service->getEntities('source', false);
         $categories = $this->a_service->getEntities('category', false);
@@ -61,6 +61,7 @@ class FiltersType extends AbstractType
         $this->filters = array(
             "contact_details" => array(
                 'label' => 'Contact Details',
+                'attr' => array('class' => 'in'),
                 'fields' => array(
                     array(
                         'name' => 'contact:gender',
@@ -125,6 +126,7 @@ class FiltersType extends AbstractType
             ),
             'lead_details' => array(
                 'label' => 'Lead Details',
+                'attr' => array('class' => 'in'),
                 'fields' => array(
                     array(
                         'name' => 'lead:is_mobile',
@@ -137,96 +139,74 @@ class FiltersType extends AbstractType
                             'label' => 'Only mobile numbers'
                         )
                     ),
-//                    array(
-//                        'name' => 'lead:id',
-//                        'type' => 'textarea',
-//                        'options' => array(
-//                            'required' => false,
-//                            'attr' => array(
-//                                'id' => 'filters_lead_details_lead_id',
-//                                'placeholder' => 'Write and press enter...',
-//                                'class' => 'form-control'
-//                            ),
-//                            'label' => 'Lead IDs to remove',
-//                        )
-//                    ),
-//                    array(
-//                        'name' => 'lead:phone',
-//                        'type' => 'textarea',
-//                        'options' => array(
-//                            'required' => false,
-//                            'attr' => array(
-//                                'id' => 'filters_lead_details_lead_phone',
-//                                'placeholder' => 'Write and press enter...',
-//                                'class' => 'form-control'
-//                            ),
-//                            'label' => 'Lead phones to remove',
-//                        )
-//                    ),
                 )
             ),
             "location" => array(
                 'label' => 'Location',
+                'attr' => array('class' => 'in'),
                 'fields' => array(
                     array(
                         'name' => 'contact:country',
-                        'type' => 'choice',
+                        'type' => 'hidden',
                         'options' => array(
-                            'empty_data' => array($default_country['id']),
-                            'multiple' => true,
                             'required' => false,
                             'attr' => array(
-                                'data-select-mode' => 'local',
+                                'data-select-mode' => 'ajax',
+                                'data-select-minimum-input' => 2,
+                                'data-select-multiple' => true,
+                                'data-select-type' => 'Country',
                                 'placeholder' => 'Select one or more...',
                                 'class' => 'form-control'
                             ),
                             'label' => 'Country',
-                            'choices' => $this->getChoicesArray($countries)
                         )
                     ),
                     array(
                         'name' => 'contact:district',
-                        'type' => 'choice',
+                        'type' => 'hidden',
                         'options' => array(
-                            'multiple' => true,
                             'required' => false,
                             'attr' => array(
-                                'data-select-mode' => 'local',
+                                'data-select-mode' => 'ajax',
+                                'data-select-minimum-input' => 2,
+                                'data-select-multiple' => true,
+                                'data-select-type' => 'District',
                                 'placeholder' => 'Select one or more...',
                                 'class' => 'form-control'
                             ),
                             'label' => 'District',
-                            'choices' => $this->getChoicesArray($districts)
                         )
                     ),
                     array(
                         'name' => 'contact:county',
-                        'type' => 'choice',
+                        'type' => 'hidden',
                         'options' => array(
-                            'multiple' => true,
                             'required' => false,
                             'attr' => array(
-                                'data-select-mode' => 'local',
+                                'data-select-mode' => 'ajax',
+                                'data-select-minimum-input' => 2,
+                                'data-select-multiple' => true,
+                                'data-select-type' => 'County',
                                 'placeholder' => 'Select one or more...',
                                 'class' => 'form-control'
                             ),
                             'label' => 'County',
-                            'choices' => $this->getChoicesArray($counties)
                         )
                     ),
                     array(
                         'name' => 'contact:parish',
-                        'type' => 'choice',
+                        'type' => 'hidden',
                         'options' => array(
-                            'multiple' => true,
                             'required' => false,
                             'attr' => array(
-                                'data-select-mode' => 'local',
+                                'data-select-mode' => 'ajax',
+                                'data-select-minimum-input' => 2,
+                                'data-select-multiple' => true,
+                                'data-select-type' => 'Parish',
                                 'placeholder' => 'Select one or more...',
                                 'class' => 'form-control'
                             ),
                             'label' => 'Parish',
-                            'choices' => $this->getChoicesArray($parishes)
                         )
                     ),
                     array(
@@ -259,13 +239,14 @@ class FiltersType extends AbstractType
             ),
             "ownership_source_and_categorization" => array(
                 'label' => 'Ownership, Source and Categorization',
+                'attr' => array('class' => 'in'),
                 'fields' => array(
                     array(
                         'name' => 'contact:owner',
                         'type' => 'choice',
                         'options' => array(
-                            'multiple' => true,
                             'required' => false,
+                            'multiple' => 'multiple',
                             'attr' => array(
                                 'data-select-mode' => 'local',
                                 'placeholder' => 'Select one or more...',
@@ -279,8 +260,8 @@ class FiltersType extends AbstractType
                         'name' => 'contact:source',
                         'type' => 'choice',
                         'options' => array(
-                            'multiple' => true,
                             'required' => false,
+                            'multiple' => 'multiple',
                             'attr' => array(
                                 'data-select-mode' => 'local',
                                 'placeholder' => 'Select one or more...',
@@ -290,28 +271,29 @@ class FiltersType extends AbstractType
                             'choices' => $this->getChoicesArray($sources)
                         )
                     ),
-                    array(
-                        'name' => 'contact:category',
-                        'type' => 'choice',
-                        'options' => array(
-                            'disabled' => 'disabeld',
-                            'multiple' => true,
-                            'required' => false,
-                            'attr' => array(
-                                'data-select-mode' => 'local',
-                                'placeholder' => 'Select one or more...',
-                                'class' => 'form-control'
-                            ),
-                            'label' => 'Category (TODO)',
-                            'choices' => $this->getChoicesArray($categories)
-                        )
-                    ),
+//                    array(
+//                        'name' => 'contact:category',
+//                        'type' => 'hidden',
+//                        'options' => array(
+//                            'disabled' => 'disabeld',
+//                            'required' => false,
+//                            'attr' => array(
+//                                'data-select-mode' => 'ajax',
+//                                'data-select-minimum-input' => 2,
+//                                'data-select-multiple' => true,
+//                                'data-select-type' => 'Category',
+//                                'placeholder' => 'Select one or more...',
+//                                'class' => 'form-control'
+//                            ),
+//                            'label' => 'Category (TODO)',
+//                        )
+//                    ),
                     array(
                         'name' => 'contact:sub_category',
                         'type' => 'choice',
                         'options' => array(
-                            'multiple' => true,
                             'required' => false,
+                            'multiple' => 'multiple',
                             'attr' => array(
                                 'data-select-mode' => 'local',
                                 'placeholder' => 'Select one or more...',
@@ -325,6 +307,7 @@ class FiltersType extends AbstractType
             ),
             'basic_locks' => array(
                 'label' => 'Basic Lead Locks',
+                'attr' => array(),
                 'fields' => array(
                     array(
                         'name' => 'lock:no_locks_lock_filter',
@@ -362,6 +345,7 @@ class FiltersType extends AbstractType
             ),
             'client_locks' => array(
                 'label' => 'Client Locks',
+                'attr' => array(),
                 'fields' => array(
                     array(
                         'name' => 'lock:client_lock_filter',
@@ -386,6 +370,7 @@ class FiltersType extends AbstractType
             ),
             'campaign_locks' => array(
                 'label' => 'Campaign Locks',
+                'attr' => array(),
                 'fields' => array(
                     array(
                         'name' => 'lock:campaign_lock_filter',
@@ -410,6 +395,7 @@ class FiltersType extends AbstractType
             ),
             'category_locks' => array(
                 'label' => 'Category Locks',
+                'attr' => array(),
                 'fields' => array(
                     array(
                         'name' => 'lock:category_lock_filter',
@@ -434,6 +420,7 @@ class FiltersType extends AbstractType
             ),
             'sub_category_locks' => array(
                 'label' => 'SubCategory Locks',
+                'attr' => array(),
                 'fields' => array(
                     array(
                         'name' => 'lock:sub_category_lock_filter',
@@ -471,10 +458,13 @@ class FiltersType extends AbstractType
                 'label' => $group['label'],
                 'virtual' => true,
                 'label_attr' => array('class' => 'text-blue'),
-                'attr' => array('class' => 'row')
+                'attr' => $group['attr'],
             ));
             foreach ($group['fields'] as $filter)
             {
+                // Disable default Sonata selec2
+                $filter['options']['attr']['data-sonata-select2'] = 'false';
+
                 // Filters should always be optional
                 if (!array_key_exists('required', $filter['options']))
                 {

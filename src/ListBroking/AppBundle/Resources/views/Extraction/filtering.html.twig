@@ -1,30 +1,27 @@
 {% extends '@ListBrokingApp/base.html.twig' %}
 
-{% block breadcrumb %}
-    <li><a href="{{ url('sonata_admin_dashboard') }}">{{ 'title_dashboard'|trans({}, 'SonataAdminBundle') }}</a></li>
-    <li>
-        <a href="{{ url('admin_listbroking_app_extraction_list') }}">Extraction List</a>
-    </li>
-    <li class="active"><span>{{ extraction.name }}</span></li>
-{% endblock %}
+{% block title %}
+    {{ "title_filtering"|trans({'%name%': admin.toString(extraction)|truncate(15) }) }}
+{% endblock%}
 
 {% block sonata_page_content_nav %}
     <nav class="navbar navbar-default" role="navigation">
         <div class="navbar-header">
-            {% if is_granted('ROLE_SUPER_ADMIN') %}
-                <button class="btn btn-flat btn-default navbar-right navbar-btn" data-toggle="modal" data-target="#sql-modal">SQL</button>
-            {% endif %}
-            <span class="navbar-brand"><i class="fa fa-wrench"></i>&nbsp;Extraction Wizard&nbsp;
+            <span class="navbar-brand"><i class="fa fa-wrench"></i>&nbsp;Extraction Wizard&nbsp;<small>({{ admin.toString(extraction) }})</small>&nbsp;
                 <small>
                     <span class="label label-{% if extraction.status == 3 %}success{% else %}primary{% endif %}">{{ extraction.getStatusName }}</span>
                 </small>
             </span>
         </div>
+        {% if is_granted('ROLE_SUPER_ADMIN') %}
+            <div class="container-fluid">
+                <button class="btn btn-flat btn-default navbar-right navbar-btn" data-toggle="modal" data-target="#sql-modal">SQL</button>
+            </div>
+            {% include '@ListBrokingApp/Extraction/_partials/modal_sql.html.twig' %}
+        {% endif %}
     </nav>
-    {% if is_granted('ROLE_SUPER_ADMIN') %}
-        {% include '@ListBrokingApp/Extraction/_partials/modal_sql.html.twig' %}
-    {% endif %}
 {% endblock sonata_page_content_nav %}
+
 {% block content %}
     <div class="row closed">
     <div class="col-xs-12">
@@ -110,7 +107,7 @@
                             <hr>
                             <blockquote class="small-label">
                                 <p>
-                                    <button class="btn btn-primary disabled"  data-toggle="modal" id="confirm-extraction-btn"
+                                    <button class="btn btn-primary btn-flat disabled"  data-toggle="modal" id="confirm-extraction-btn"
                                        data-target="#create_locks_modal" role="button">
                                         <i class="fa fa-list"></i>&nbsp;Extract
                                     </button>

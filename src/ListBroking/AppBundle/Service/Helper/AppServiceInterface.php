@@ -27,11 +27,20 @@ interface AppServiceInterface {
      * Gets a list of entities using the services
      * provided in various bundles
      * @param $type
-     * @param $parent_type
-     * @param $parent_id
-     * @internal param $parent
-     * @internal param $name
+     * @param $query
+     * @throws \Exception
      * @return mixed
      */
-    function getEntityList($type, $parent_type, $parent_id);
+    public function getEntityList($type, $query);
+
+    /**
+     * Deliver emails using the system
+     * @param $template
+     * @param $parameters
+     * @param $subject
+     * @param $emails
+     * @internal param $body
+     * @return int
+     */
+    public function deliverEmail($template, $subject, $parameters, $emails);
 }

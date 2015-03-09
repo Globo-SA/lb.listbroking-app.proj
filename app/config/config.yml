@@ -122,9 +122,12 @@ sonata_block:
             contexts:   [admin]
         app.admin.statistics_block:
             contexts:   [admin]
+        app.admin.operational_email:
+            contexts:   [admin]
 sonata_admin:
     options:
       title_mode: single_image
+    title: ListBroking - Contact broking simplified
     title_logo: bundles/listbrokingapp/images/logo.png
     security:
         handler: sonata.admin.security.handler.role
@@ -141,4 +144,91 @@ sonata_admin:
         layout: ListBrokingAppBundle::base.html.twig
     dashboard:
         blocks:
-            - { position: top, type: app.admin.statistics_block, class: col-md-12 }
+            -
+              position: top
+              type: app.admin.statistics_block
+              class: col-md-12
+            -
+              position: top
+              type: app.admin.operational_email
+              class: col-md-12
+    assets:
+      stylesheets:
+
+          # Defaults:
+          - bundles/sonataadmin/vendor/bootstrap/dist/css/bootstrap.min.css
+          - bundles/sonataadmin/vendor/AdminLTE/css/font-awesome.min.css
+          - bundles/sonataadmin/vendor/AdminLTE/css/ionicons.min.css
+          - bundles/sonataadmin/vendor/AdminLTE/css/AdminLTE.css
+          - bundles/sonatacore/vendor/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css
+          - bundles/sonataadmin/vendor/jqueryui/themes/base/jquery-ui.css
+
+          # Overrides
+          - bundles/sonataadmin/vendor/select2/select2.css # OLD VERSION
+          - bundles/sonataadmin/vendor/select2/select2-bootstrap.css # OLD VERSION
+#          - bower/select2/dist/css/select2.min.css  # NEW VERSION
+#          - bower/select2-bootstrap-css/select2-bootstrap.min.css # NEW VERSION
+
+
+          # More Defaults:
+          - bundles/sonataadmin/vendor/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css
+          - bundles/sonataadmin/css/styles.css
+          - bundles/sonataadmin/css/layout.css
+
+          # Extra
+          - bower/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css
+          - bower/bootstrap-daterangepicker/daterangepicker-bs3.css
+          - bower/jquery-file-upload/css/jquery.fileupload.css
+          - bundles/listbrokingapp/css/000_global.css
+          - bundles/listbrokingapp/css/001_fixed_columns.css
+          - bundles/listbrokingapp/css/002_extraction.css
+          
+      javascripts:
+
+        # Defaults:
+        - bundles/sonataadmin/vendor/jquery/dist/jquery.min.js
+
+        # Overrides
+#        - bundles/sonatacore/vendor/moment/min/moment.min.js # OLD VERSION - 2.6.0
+        - bundles/sonataadmin/vendor/select2/select2.min.js # OLD VERSION - V3
+        - bower/moment/min/moment.min.js # NEW VERSION - ~2.8.4
+#        - bower/select2/dist/js/select2.min.js # NEW VERSION - V4
+
+        # More Defaults:
+        - bundles/sonataadmin/vendor/jquery.scrollTo/jquery.scrollTo.min.js
+        - bundles/sonataadmin/vendor/bootstrap/dist/js/bootstrap.min.js
+        - bundles/sonatacore/vendor/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js
+        - bundles/sonataadmin/vendor/jqueryui/ui/minified/jquery-ui.min.js
+        - bundles/sonataadmin/vendor/jqueryui/ui/minified/i18n/jquery-ui-i18n.min.js
+        - bundles/sonataadmin/jquery/jquery.form.js
+        - bundles/sonataadmin/jquery/jquery.confirmExit.js
+        - bundles/sonataadmin/vendor/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js
+
+        # Extra
+        - bower/bootstrap-daterangepicker/daterangepicker.js
+        - bower/DataTables/media/js/jquery.dataTables.min.js
+        - bower/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js
+        - bower/jquery.inputmask/dist/inputmask/jquery.inputmask.js
+        - bower/jquery.inputmask/dist/inputmask/jquery.inputmask.numeric.extensions.js
+        - bower/jquery-file-upload/js/jquery.iframe-transport.js
+        - bower/jquery-file-upload/js/jquery.fileupload.js
+        - bower/jquery-file-upload/js/jquery.fileupload-process.js
+        - bower/jquery-file-upload/js/jquery.fileupload-validate.js
+        - bundles/fosjsrouting/js/router.js
+
+        # More Defaults
+        - bundles/sonataadmin/App.js
+        - bundles/sonataadmin/Admin.js
+        
+        # More Extra
+        - bundles/listbrokingapp/js/000_listbroking.js
+        - bundles/listbrokingapp/js/001_global.js
+        - bundles/listbrokingapp/js/002_tables.js
+        - bundles/listbrokingapp/js/003_configuration.js
+        - bundles/listbrokingapp/js/004_forms.js
+        - bundles/listbrokingapp/js/005_collections.js
+        - bundles/listbrokingapp/js/006_deduplication.js
+        - bundles/listbrokingapp/js/007_confirm_extraction.js
+        - bundles/listbrokingapp/js/008_opposition_list.js
+        - bundles/listbrokingapp/js/009_staging_contact.js
+        - bundles/listbrokingapp/js/999_lastJs.js

@@ -50,6 +50,9 @@ SQL;
             'extraction' => $extraction->getId()
         );
 
+        ladybug_dump($insert_sql);
+        ladybug_dump($insert_sql_params);
+
         $conn->prepare($insert_sql)
              ->execute($insert_sql_params);
 

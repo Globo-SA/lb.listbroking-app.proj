@@ -52,7 +52,7 @@ class LockType extends AbstractType
                 'required' => false,
                 'attr' => array(
                     'data-select-mode' => 'local',
-                    'placeholder' => 'Select one or more...',
+                    'data-placeholder' => 'Select one or more...',
                     'class' => 'form-control'
                 ),
                 'label' => $this->label,
@@ -63,7 +63,7 @@ class LockType extends AbstractType
 
                 'attr' => array(
                     'data-select-mode' => 'local',
-                    'placeholder' => 'Select one...',
+                    'data-placeholder' => 'Select one...',
                     'class' => 'form-control'
                 ),
                 'label' => 'Expired',

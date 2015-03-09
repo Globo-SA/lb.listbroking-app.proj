@@ -49,14 +49,14 @@ class AjaxController extends Controller {
      */
     public function listsAction(Request $request){
         try{
-            $this->validateRequest($request);
+//            $this->validateRequest($request);
 
             $ui_service = $this->get('app');
 
             $type = $request->get('type', '');
-            $parent_type = $request->get('parent_type', '');
-            $parent_id = $request->get('parent_id', '');
-            $list = $ui_service->getEntityList($type, $parent_type, $parent_id);
+            $query = $request->get('q', '');
+
+            $list = $ui_service->getEntityList($type, $query);
 
             return $this->createJsonResponse($list);
 
@@ -82,7 +82,7 @@ class AjaxController extends Controller {
 
             if($format == 'html'){
                 // Render Response
-                return $this->render('@ListBrokingApp/Extraction/_configuration/contacts_table.html.twig',
+                return $this->render('@ListBrokingApp/Extraction/_partials/contacts_table.html.twig',
                     array(
                         'extraction' => $extraction,
                         'contacts' => $contacts
@@ -210,6 +210,35 @@ class AjaxController extends Controller {
             return $this->createJsonResponse(array(
                 "code" => 200,
                 "response" => "Emails sent",
+            ));
+        }catch(\Exception $e){
+            return $this->createJsonResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * Excludes leads of a given Extraction
+     * @param Request $request
+     * @param $extraction_id
+     * @param $lead_id
+     * @return JsonResponse
+     */
+    public function extractionExcludeLeadAction(Request $request, $extraction_id, $lead_id){
+        try{
+            $this->validateRequest($request);
+
+            $e_service = $this->get('extraction');
+
+            $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
+
+            $e_service->excludeLead($extraction,$lead_id);
+            $e_service->deduplicateExtraction($extraction);
+
+            return $this->createJsonResponse(array(
+                "code" => 200,
+                "response" => "success",
+                "extraction_id" => $extraction_id,
+                "lead_id" => $lead_id
             ));
         }catch(\Exception $e){
             return $this->createJsonResponse($e->getMessage(), $e->getCode());
@@ -351,6 +380,52 @@ class AjaxController extends Controller {
                 "clear_old" => $queue->getValue3(),
                 "queue_id" => $queue->getId()
             ));
+        }catch(\Exception $e){
+            return $this->createJsonResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function OperationalEmailDeliverAction(Request $request){
+        try{
+//            $this->validateRequest($request);
+
+            /** @var AppService $a_service */
+            $a_service = $this->get('app');
+
+            $subject = $request->get('subject');
+            $body = $request->get('body');
+            $emails = $request->get('emails');
+
+            $response = $a_service->deliverEmail('ListBrokingAppBundle:KitEmail:operational_email.html.twig', array(
+                'body' => $body
+            ),$subject, $emails);
+
+            if($response != 1){
+                return $this->createJsonResponse(array(
+                        "code" => 500,
+                        "response" => "Emails could not be delivered"
+                    )
+                );
+            }
+            return $this->createJsonResponse(array(
+                    "code" => 200,
+                    "response" => "Emails delivered"
+                )
+            );
+
+        }catch(\Exception $e){
+            return $this->createJsonResponse($e->getMessage(), $e->getCode());
+        }
+    }
+    public function OperationalEmailPreviewAction(Request $request){
+        try{
+            $this->validateRequest($request);
+
+            $body = $request->get('body');
+
+        return $this->render('ListBrokingAppBundle:KitEmail:operational_email.html.twig', array(
+            'body' => $body
+        ));
         }catch(\Exception $e){
             return $this->createJsonResponse($e->getMessage(), $e->getCode());
         }

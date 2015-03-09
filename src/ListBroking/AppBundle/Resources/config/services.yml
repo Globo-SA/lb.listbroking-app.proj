@@ -51,7 +51,7 @@ services:
   app:
     class: ListBroking\AppBundle\Service\Helper\AppService
     parent: base
-
+    arguments: [@mailer, @twig]
   lead:
     class: ListBroking\AppBundle\Service\BusinessLogic\LeadService
     arguments:

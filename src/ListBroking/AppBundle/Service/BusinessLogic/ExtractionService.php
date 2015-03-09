@@ -107,6 +107,9 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
 
             $this->em->getRepository('ListBrokingAppBundle:Extraction')->addContacts($extraction, $contacts, false);
 
+            // Deduplicate Extraction
+            $this->deduplicateExtraction($extraction);
+
             // Change the Extraction Status back to filtration if there are no contacts
             if(count($contacts) < 0){
                 $extraction->setStatus(Extraction::STATUS_FILTRATION);
@@ -115,6 +118,9 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             }
 
         }
+
+
+
         $this->updateEntity('extraction', $extraction);
 
         return $query;
@@ -216,6 +222,18 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
 
         $this->em->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
             ->uploadDeduplicationsByFile($filename, $extraction, $field, $merge);
+    }
+
+    public function excludeLead(Extraction $extraction, $lead_id){
+
+        $dedup = new ExtractionDeduplication();
+        $dedup->setExtraction($extraction);
+        $dedup->setLeadId($lead_id);
+
+        $extraction->addExtractionDeduplication($dedup);
+
+        $this->em->persist($dedup);
+        $this->em->flush();
     }
 
     /**

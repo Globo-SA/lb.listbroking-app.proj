@@ -46,7 +46,23 @@
             url: ListBroking.routing.generate('ajax_deduplication', {extraction_id:  $extraction_deduplication_form.data('extraction')}),
             dataType: 'json',
             autoUpload: false,
-            removeAfterUpload: false
+            removeAfterUpload: false,
+            add: function(e, data) {
+                var acceptFileTypes = /\.(csv)/i;
+                var $errors = $('#fileuploaderror');
+                var $extraction_deduplication_btn= $('#extraction_deduplication_upload_button');
+
+                if(data.originalFiles[0]['name'].length && !acceptFileTypes.test(data.originalFiles[0]['name'])) {
+                    $errors
+                        .html('Only csv files are accepted')
+                        .fadeIn()
+                    ;
+                    $extraction_deduplication_btn.attr('disabled', 'disabled');
+                }else{
+                    $errors.fadeOut();
+                    $extraction_deduplication_btn.attr('disabled', null);
+                }
+            }
         })
         .on('fileuploadadd', function (e, data) {
             $.each(data.files, function (index, file) {
