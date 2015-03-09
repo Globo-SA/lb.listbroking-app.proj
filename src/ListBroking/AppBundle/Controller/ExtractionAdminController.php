@@ -43,7 +43,7 @@ class ExtractionAdminController extends CRUDController
 
     public function filteringAction()
     {
-        if (false === $this->admin->isGranted('EXTRACTION')) {
+        if (false === $this->admin->isGranted('ROLE_LISTBROKING_ADMIN_EXTRACTION_TEMPLATE_EXPORT')) {
             throw new AccessDeniedException();
         }
 

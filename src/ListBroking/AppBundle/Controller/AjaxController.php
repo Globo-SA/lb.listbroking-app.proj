@@ -387,7 +387,7 @@ class AjaxController extends Controller {
 
     public function OperationalEmailDeliverAction(Request $request){
         try{
-//            $this->validateRequest($request);
+            $this->validateRequest($request);
 
             /** @var AppService $a_service */
             $a_service = $this->get('app');
