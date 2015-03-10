@@ -1,4 +1,4 @@
-{% if admin.isGranted('EDIT', object) and admin.hasRoute('clone') %}
+{% if admin.isGranted('ROLE_SUPER_ADMIN', object) and admin.hasRoute('clone') %}
     <a href="{{ admin.generateObjectUrl('clone', object) }}" class="btn btn-sm btn-default clone_link"
        onclick="if(confirm('Do you really want to duplicate this extraction?')){return true}else{return false}" title="{{ 'action_clone'|trans }}">
         <i class="fa fa-files-o"></i>

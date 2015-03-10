@@ -1,4 +1,4 @@
-{% if admin.isGranted('EDIT', object) and admin.hasRoute('edit') %}
+{% if admin.isGranted('ROLE_SUPER_ADMIN', object) and admin.hasRoute('edit') %}
     {% set status_final = constant('ListBroking\\AppBundle\\Entity\\Extraction::STATUS_FINAL') %}
     {% if object.status != status_final %}
         <a href="{{ admin.generateObjectUrl('edit', object) }}" class="btn btn-sm btn-default edit_link" title="{{ 'action_edit'|trans({}, 'SonataAdminBundle') }}" >

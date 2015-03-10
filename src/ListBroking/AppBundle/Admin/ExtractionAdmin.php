@@ -2,6 +2,7 @@
 
 namespace ListBroking\AppBundle\Admin;
 
+use Application\Sonata\UserBundle\Entity\User;
 use ListBroking\AppBundle\Entity\Extraction;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
@@ -9,6 +10,8 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\DoctrineORMAdminBundle\Tests\Filter\QueryBuilder;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class ExtractionAdmin extends Admin
 {
@@ -17,24 +20,34 @@ class ExtractionAdmin extends Admin
     );
 
 
-//    /**
-//     * Remove Query
-//     * {@inheritdoc}
-//     */
-//    public function createQuery($context = 'list')
-//    {
-//
-//        return parent::createQuery($context);
-//
-//    }
-
-
     protected function configureRoutes(RouteCollection $collection)
     {
-        $collection->remove('delete');
-
         $collection->add('clone', $this->getRouterIdParameter().'/clone');
         $collection->add('filtering', $this->getRouterIdParameter() . '/filtering');
+
+
+    }
+
+    public function createQuery($context = 'list')
+    {
+        $query = parent::createQuery($context);
+
+        /* @var TokenInterface $security */
+        $token = $this->getConfigurationPool()->getContainer()->get('security.token_storage')->getToken();
+        $user = $token->getUser();
+
+        if ($user) {
+
+            // Admins are allowed to view all
+            if ($this->isGranted('ROLE_SUPER_ADMIN')){
+                return $query;
+            }
+
+            $query->andWhere($query->getRootAlias() . '.created_by = :user_id');
+            $query->setParameter('user_id', $user->getId());
+        }
+
+        return $query;
     }
 
     /**
@@ -71,8 +84,7 @@ class ExtractionAdmin extends Admin
                     ),
                     'clone' => array(
                         'template' => 'ListBrokingAppBundle:Extraction:CRUD/list__action_clone.html.twig'
-                    ),
-                    'delete' => array()
+                    )
                 )
             ))
         ;
