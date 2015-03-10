@@ -32,7 +32,7 @@ interface AppServiceInterface {
      * @throws \Exception
      * @return mixed
      */
-    public function getEntityList($type, $query, $bundle = 'ListBrokingAppBundle');
+    public function getEntityList($type, $query, $bundle);
 
     /**
      * Deliver emails using the system

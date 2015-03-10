@@ -84,7 +84,7 @@
             var $select = $(this);
 
             $select.select2({
-                minimumInputLength: $select.data('minimum-input'),
+                minimumInputLength: $select.data('select-minimum-input'),
                 multiple: $select.data('select-multiple'),
                 allowClear: true,
                 ajax: {

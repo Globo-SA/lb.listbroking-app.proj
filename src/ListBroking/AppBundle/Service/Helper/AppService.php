@@ -64,7 +64,7 @@ class AppService extends BaseService implements AppServiceInterface {
      * @throws \Exception
      * @return mixed
      */
-    public function getEntityList($type, $query, $bundle = 'ListBrokingAppBundle')
+    public function getEntityList($type, $query, $bundle)
     {
         if (empty($type))
         {

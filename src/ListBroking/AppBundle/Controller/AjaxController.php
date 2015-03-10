@@ -49,20 +49,15 @@ class AjaxController extends Controller {
      */
     public function listsAction(Request $request){
         try{
-//            $this->validateRequest($request);
+            $this->validateRequest($request);
 
             $ui_service = $this->get('app');
 
             $type = $request->get('type', '');
             $query = $request->get('q', '');
-            $bundle = $request->get('b');
+            $bundle = $request->get('b', 'ListBrokingAppBundle');
 
-            if($bundle){
-                $list = $ui_service->getEntityList($type, $query, $bundle);
-                return $this->createJsonResponse($list);
-            }
-
-            $list = $ui_service->getEntityList($type, $query);
+            $list = $ui_service->getEntityList($type, $query,$bundle);
             return $this->createJsonResponse($list);
 
         }catch (\Exception $e){
