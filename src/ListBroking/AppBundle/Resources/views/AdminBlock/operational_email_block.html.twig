@@ -18,7 +18,7 @@
             <form role="form" id="email_submit_form" method="post">
                 <div class="form-group">
                     <label for="emailsubject">To</label>
-                    <input type="text" class="form-control" id="email_to" name="emails" placeholder="Send email to (separated by ',')" required="required">
+                    <input type="hidden" class="form-control" id="email_to" name="emails" data-placeholder="Send email to (separated by ',')" required="required" data-select-type="User" data-select-bundle="ApplicationSonataUserBundle" data-select-multiple="true" data-minimum-input="0" >
                 </div>
                 <div class="form-group">
                     <label for="emailsubject">Subject</label>
@@ -60,7 +60,6 @@
 
             var $submit_btn = $('#email_submit');
             var $form = $('#email_submit_form');
-
             var templates = {
                 beta:
                 '<h3>Congratulations, you were selected for our beta !!!</h3>' +
@@ -73,7 +72,56 @@
                 '<br><br>' +
                 '<p>Enjoy our service, and please gives feedback on your experience</p>' +
                 '<p><a href="mailto:samuel.castro@adclick.pt" target="_top">samuel.castro@adclick.pt</a></p>'
-            }
+            };
+
+            $("#email_to").each(function () {
+
+                // Current data type
+                var $select = $(this);
+
+                $select.select2({
+                    minimumInputLength: $select.data('minimum-input'),
+                    multiple: $select.data('select-multiple'),
+                    allowClear: true,
+                    ajax: {
+                        url: Routing.generate('ajax_form_lists'),
+                        dataType: 'json',
+                        data: function (term, page) {
+                            var bundle = $select.data('select-bundle');
+                            // Ajax call data
+                            var data = {};
+                            data.type = $select.data('select-type');
+                            if(bundle){
+                                data.b = bundle;
+                            }
+                            data.q = term;
+
+                            return data;
+                        },
+                        results: function (data, page) {
+                            return {results: data.response};
+                        },
+                        cache: true
+                    },
+                    formatResult: function (item) {
+                        var markup = "";
+                        if (item.email !== undefined) {
+                            markup += "<option value='" + item.email + "'>" + item.email + "</option>";
+                        }
+                        console.log(markup)
+                        return markup;
+                    },
+                    formatSelection: function (item) {
+                        console.log(item)
+
+                        return item.email;
+                    },
+                    id: function(item) {
+                        return item.email;
+                    }
+                });
+            });
+
             getPreview();
 
             var timer = 0;
@@ -82,7 +130,7 @@
                 clearTimeout(timer);
                 timer = setTimeout(function () {
                   getPreview();
-                }, 20);
+                }, 500);
 
             });
             $form.submit(function (e) {
@@ -108,7 +156,7 @@
                                     .removeAttr('disabled')
                                     .html("Send")
                             ;
-                        }, 1000)
+                        }, 1000);
 
                         // Loading Widget, stop when everything is loaded
                         $('#loading_widget').fadeOut();

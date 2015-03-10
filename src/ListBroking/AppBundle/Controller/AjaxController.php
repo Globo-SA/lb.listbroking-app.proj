@@ -55,8 +55,9 @@ class AjaxController extends Controller {
 
             $type = $request->get('type', '');
             $query = $request->get('q', '');
+            $bundle = $request->get('b');
 
-            $list = $ui_service->getEntityList($type, $query);
+            $list = $ui_service->getEntityList($type, $query, $bundle);
 
             return $this->createJsonResponse($list);
 
@@ -394,7 +395,7 @@ class AjaxController extends Controller {
 
             $subject = $request->get('subject');
             $body = $request->get('body');
-            $emails = $request->get('emails');
+            $emails = explode(',',$request->get('emails'));
 
             $response = $a_service->deliverEmail('ListBrokingAppBundle:KitEmail:operational_email.html.twig', array(
                 'body' => $body
@@ -414,7 +415,7 @@ class AjaxController extends Controller {
             );
 
         }catch(\Exception $e){
-            return $this->createJsonResponse($e->getMessage(), $e->getCode());
+            return $this->createJsonResponse($e->getTrace(), $e->getCode());
         }
     }
     public function OperationalEmailPreviewAction(Request $request){

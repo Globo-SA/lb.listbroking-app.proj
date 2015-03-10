@@ -60,17 +60,18 @@ class AppService extends BaseService implements AppServiceInterface {
      * provided in various bundles
      * @param $type
      * @param $query
+     * @param string $bundle
      * @throws \Exception
      * @return mixed
      */
-    public function getEntityList($type, $query)
+    public function getEntityList($type, $query, $bundle = 'ListBrokingAppBundle')
     {
         if (empty($type))
         {
             throw new \Exception("Type can not be empty", 400);
         }
 
-        $qb = $this->em->getRepository("ListBrokingAppBundle:{$type}")
+        $qb = $this->em->getRepository("{$bundle}:{$type}")
             ->createQueryBuilder('l')
         ;
 
@@ -97,7 +98,6 @@ class AppService extends BaseService implements AppServiceInterface {
      * @return int
      */
     public function deliverEmail($template, $parameters, $subject, $emails){
-
         $message = $this->mailer->createMessage()
             ->setSubject($subject)
             ->setFrom($this->getConfig('system.email')->getValue())

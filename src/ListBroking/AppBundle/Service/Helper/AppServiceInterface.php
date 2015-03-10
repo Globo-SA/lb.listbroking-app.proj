@@ -28,10 +28,11 @@ interface AppServiceInterface {
      * provided in various bundles
      * @param $type
      * @param $query
+     * @param string $bundle
      * @throws \Exception
      * @return mixed
      */
-    public function getEntityList($type, $query);
+    public function getEntityList($type, $query, $bundle = 'ListBrokingAppBundle');
 
     /**
      * Deliver emails using the system
