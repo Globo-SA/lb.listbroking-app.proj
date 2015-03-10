@@ -52,3 +52,28 @@
     {% endif %}
 
 {% endblock sonata_wrapper %}
+
+
+{# Cleaner Actions menu #}
+{% block sonata_page_content_nav %}
+    {% if _tab_menu is not empty or _actions is not empty %}
+        <nav class="navbar navbar-default" role="navigation">
+            {% block tab_menu_navbar_header %}
+               {{ parent() }}
+            {% endblock %}
+            <div class="container-fluid">
+                <div class="navbar-left">
+                    {% if _tab_menu is not empty %}
+                        {{ _tab_menu|raw }}
+                    {% endif %}
+                </div>
+
+                {% if _actions|replace({ '<li>': '', '</li>': '' })|trim is not empty %}
+                    <ul class="nav navbar-nav navbar-right">
+                        {{ _actions|raw }}
+                    </ul>
+                {% endif %}
+            </div>
+        </nav>
+    {% endif %}
+{% endblock sonata_page_content_nav %}

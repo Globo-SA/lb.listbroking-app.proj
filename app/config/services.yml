@@ -11,3 +11,8 @@
 #    arguments: [@session.memcached, { prefix: %session_memcached_prefix%, expiretime: %session_memcached_expire% }]
 #
 #  cache: @local_cache
+
+parameters:
+  security.acl.permission.map.class: Sonata\AdminBundle\Security\Acl\Permission\AdminPermissionMap
+      # optionally use a custom MaskBuilder
+      #sonata.admin.security.mask.builder.class: Sonata\AdminBundle\Security\Acl\Permission\MaskBuilder

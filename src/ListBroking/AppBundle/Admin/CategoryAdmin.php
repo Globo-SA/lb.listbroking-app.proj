@@ -6,6 +6,7 @@ use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
 
 class CategoryAdmin extends Admin
@@ -13,6 +14,16 @@ class CategoryAdmin extends Admin
     protected $datagridValues = array(
         '_sort_order' => 'DESC'
     );
+
+    protected function configureRoutes(RouteCollection $collection)
+    {
+        if (!$this->isGranted('ROLE_SUPER_ADMIN'))
+        {
+            $collection->remove('delete');
+            $collection->remove('edit');
+        }
+
+    }
 
     /**
      * @param DatagridMapper $datagridMapper
@@ -33,6 +44,7 @@ class CategoryAdmin extends Admin
         $listMapper
             ->add('id')
             ->add('name')
+            ->add('created_by')
             ->add('updated_at')
             ->add('_action', 'actions', array(
                 'actions' => array(

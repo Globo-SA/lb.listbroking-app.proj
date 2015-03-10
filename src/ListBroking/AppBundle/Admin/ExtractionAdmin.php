@@ -16,6 +16,19 @@ class ExtractionAdmin extends Admin
         '_sort_order' => 'DESC'
     );
 
+
+//    /**
+//     * Remove Query
+//     * {@inheritdoc}
+//     */
+//    public function createQuery($context = 'list')
+//    {
+//
+//        return parent::createQuery($context);
+//
+//    }
+
+
     protected function configureRoutes(RouteCollection $collection)
     {
         $collection->remove('delete');
@@ -46,6 +59,7 @@ class ExtractionAdmin extends Admin
             ->add('status', 'choice', array('choices' => Extraction::$status_names))
             ->add('quantity')
             ->add('payout')
+            ->add('created_by')
             ->add('updated_at')
             ->add('_action', 'actions', array(
                 'actions' => array(
@@ -71,7 +85,7 @@ class ExtractionAdmin extends Admin
     {
         $formMapper
             ->add('name')
-            ->add('campaign', 'sonata_type_model_list', array())
+            ->add('campaign')
             ->add('quantity')
             ->add('payout')
         ;

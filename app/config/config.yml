@@ -109,6 +109,12 @@ sonata_user:
     manager_type: orm # can be orm or mongodb
     impersonating:
         route: sonata_admin_dashboard
+    profile:  # Profile Form (firstname, lastname, etc ...)
+        form:
+            type:               sonata_user_profile
+            handler:            sonata.user.profile.form.handler.default
+            name:               sonata_user_profile_form
+            validation_groups:  [Profile]
 sonata_block:
     default_contexts: [cms]
     blocks:
@@ -130,16 +136,13 @@ sonata_admin:
     title: ListBroking - Contact broking simplified
     title_logo: bundles/listbrokingapp/images/logo.png
     security:
-        handler: sonata.admin.security.handler.role
+        handler: sonata.admin.security.handler.acl
         information:
-            EDIT: EDIT
-            LIST: LIST
-            CREATE: CREATE
-            VIEW: VIEW
-            DELETE: DELETE
-            EXPORT: EXPORT
-            OPERATOR: OPERATOR
-            MASTER: MASTER
+            STAFF:    [VIEW, LIST, CREATE]
+            EDITOR:   [OPERATOR, EXPORT]
+            ADMIN:    [MASTER]
+        admin_permissions: [CREATE, LIST, DELETE, UNDELETE, EXPORT, OPERATOR, MASTER, OWNER]
+        object_permissions: [VIEW, EDIT, DELETE, UNDELETE, OPERATOR, MASTER, OWNER]
     templates:
         layout: ListBrokingAppBundle::base.html.twig
     dashboard:
@@ -182,7 +185,7 @@ sonata_admin:
           - bundles/listbrokingapp/css/000_global.css
           - bundles/listbrokingapp/css/001_fixed_columns.css
           - bundles/listbrokingapp/css/002_extraction.css
-          
+
       javascripts:
 
         # Defaults:
@@ -219,7 +222,7 @@ sonata_admin:
         # More Defaults
         - bundles/sonataadmin/App.js
         - bundles/sonataadmin/Admin.js
-        
+
         # More Extra
         - bundles/listbrokingapp/js/000_listbroking.js
         - bundles/listbrokingapp/js/001_global.js
