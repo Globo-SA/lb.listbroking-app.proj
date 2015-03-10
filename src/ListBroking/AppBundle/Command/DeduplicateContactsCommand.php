@@ -29,7 +29,7 @@ class DeduplicateContactsCommand extends ContainerAwareCommand {
     protected function configure(){
         $this
             ->setName('listbroking:extraction:deduplicate')
-            ->setDescription('Deduplicates contacts of a given Extraction')
+            ->setDescription('Deduplicates contacts of a given Extraction waiting on the Queue system')
         ;
     }
 

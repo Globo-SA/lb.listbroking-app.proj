@@ -57,8 +57,12 @@ class AjaxController extends Controller {
             $query = $request->get('q', '');
             $bundle = $request->get('b');
 
-            $list = $ui_service->getEntityList($type, $query, $bundle);
+            if($bundle){
+                $list = $ui_service->getEntityList($type, $query, $bundle);
+                return $this->createJsonResponse($list);
+            }
 
+            $list = $ui_service->getEntityList($type, $query);
             return $this->createJsonResponse($list);
 
         }catch (\Exception $e){
