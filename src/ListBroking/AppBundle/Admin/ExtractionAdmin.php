@@ -10,7 +10,6 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
-use Sonata\DoctrineORMAdminBundle\Tests\Filter\QueryBuilder;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class ExtractionAdmin extends Admin
@@ -97,7 +96,7 @@ class ExtractionAdmin extends Admin
     {
         $formMapper
             ->add('name')
-            ->add('campaign')
+            ->add('campaign', null, array('required' => true))
             ->add('quantity')
             ->add('payout')
         ;

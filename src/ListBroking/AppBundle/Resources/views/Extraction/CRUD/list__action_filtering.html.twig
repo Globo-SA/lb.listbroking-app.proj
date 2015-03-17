@@ -1,4 +1,5 @@
-{% if admin.isGranted('ROLE_SUPER_ADMIN', object) and admin.hasRoute('filtering') %}
+{% if (admin.isGranted('ROLE_SUPER_ADMIN', object) or admin.isGranted('ROLE_LISTBROKER',
+object)) and admin.hasRoute('filtering') %}
     {% set status_final = constant('ListBroking\\AppBundle\\Entity\\Extraction::STATUS_FINAL') %}
     {% if object.status == status_final %}
         <a href="{{ admin.generateObjectUrl('filtering', object) }}" class="btn btn-sm btn-default edit_link" title="{{ 'action_show'|trans({}, 'SonataAdminBundle') }}">
