@@ -23,7 +23,7 @@ class ContactRepository extends EntityRepository {
      * @param Extraction $extraction
      * @return mixed
      */
-    public function getExtractionContacts(Extraction $extraction){
+    public function getExtractionContacts(Extraction $extraction, $limit){
 
         $qb = $this->createQueryBuilder('e')
             ->join("e.extractions", 'extractions')
@@ -43,7 +43,7 @@ class ContactRepository extends EntityRepository {
                 $qb->addSelect('category');
             }
         }
-        $qb->setMaxResults(10);
+        $qb->setMaxResults($limit);
 
         return $qb->getQuery()->execute(null, AbstractQuery::HYDRATE_ARRAY);
     }

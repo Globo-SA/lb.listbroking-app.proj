@@ -127,14 +127,26 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     }
 
     /**
-     * Gets all the contacts of a given Extraction with
-     * all the dimensions eagerly loaded
      * @param Extraction $extraction
+     *
      * @return mixed
      */
-    public function getExtractionContacts(Extraction $extraction){
+    public function getExtractionSummary(Extraction $extraction){
+        return $this->em->getRepository('ListBrokingAppBundle:Extraction')->getExtractionSummary($extraction);
+    }
 
-        return $this->em->getRepository('ListBrokingAppBundle:Contact')->getExtractionContacts($extraction);
+    /**
+     * Gets all the contacts of a given Extraction with
+     * all the dimensions eagerly loaded
+     *
+     * @param Extraction $extraction
+     * @param            $limit
+     *
+     * @return mixed
+     */
+    public function getExtractionContacts(Extraction $extraction, $limit){
+
+        return $this->em->getRepository('ListBrokingAppBundle:Contact')->getExtractionContacts($extraction, $limit);
     }
 
     /**

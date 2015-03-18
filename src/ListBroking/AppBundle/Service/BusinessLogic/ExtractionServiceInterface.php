@@ -28,12 +28,22 @@ interface ExtractionServiceInterface {
     public function runExtraction(Extraction $extraction);
 
     /**
-     * Gets all the contacts of a given Extraction with
-     * all the dimensions eagerly loaded
      * @param Extraction $extraction
+     *
      * @return mixed
      */
-    public function getExtractionContacts(Extraction $extraction);
+    public function getExtractionSummary(Extraction $extraction);
+
+    /**
+     * Gets all the contacts of a given Extraction with
+     * all the dimensions eagerly loaded
+     *
+     * @param Extraction $extraction
+     * @param            $limit
+     *
+     * @return mixed
+     */
+    public function getExtractionContacts(Extraction $extraction, $limit);
 
 
     /**

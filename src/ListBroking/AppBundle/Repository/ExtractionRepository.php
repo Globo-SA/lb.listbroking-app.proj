@@ -36,9 +36,23 @@ class ExtractionRepository extends EntityRepository {
             $extraction->addContact($contact);
             if (($batch % $batchSize) === 0) {
                 $batch = 1;
-                $this->_em->flush();
+                $em->flush();
             }
             $batch++;
         }
     }
+
+    public function getExtractionSummary(Extraction $extraction){
+        $qb = $this->createQueryBuilder('e')
+            ->select('o.name, count(o.name) as total')
+            ->join('e.contacts', 'c')
+            ->join('c.owner', 'o')
+            ->where('e = :extraction')
+            ->setParameter('extraction', $extraction)
+            ->groupBy('c.owner')
+        ;
+
+        return $qb->getQuery()->execute();
+    }
+
 } 

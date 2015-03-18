@@ -1,4 +1,4 @@
-<div class="TODO">
+<div class="">
     <h4><i class="fa fa-table"></i>&nbsp;Extraction Summary</h4>
     <table class="table table-condensed">
         <thead>
@@ -8,17 +8,20 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td>SOURCE-1</td>
-            <td>0</td>
+        {% set total = 0 %}
+        {% for row in extraction_summary %}
+            {% set total = total + row.total %}
+            <tr>
+            <td>{{ row.name }}</td>
+            <td>{{ row.total }}</td>
         </tr>
+        {% endfor %}
         </tbody>
         <tfoot>
         <tr>
-            <th>-</th>
-            <th class="text-success">99999</th>
+            <th></th>
+            <th class="text-success"><strong>{{ total }}</strong></th>
         </tr>
         </tfoot>
     </table>
 </div>
-<small class="pull-right text-mute">Not implemented yet</small>

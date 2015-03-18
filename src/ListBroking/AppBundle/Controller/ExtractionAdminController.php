@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
 use ListBroking\AppBundle\Service\Helper\AppService;
+use ListBroking\TaskControllerBundle\DependencyInjection\Configuration;
 use ListBroking\TaskControllerBundle\Entity\Queue;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -59,7 +60,10 @@ class ExtractionAdminController extends CRUDController
         $query = $e_service->runExtraction($extraction);
 
         // Get all contacts in one Query (Better then using $extraction->getContacts())
-        $contacts = $e_service->getExtractionContacts($extraction);
+        $limit = $e_service->getConfig('extraction.contact.show_limit')->getValue();
+
+        $extraction_summary = $e_service->getExtractionSummary($extraction);
+        $contacts = $e_service->getExtractionContacts($extraction, $limit);
 
         // Forms
         $adv_exclusion = $e_service->generateForm(new ExtractionDeduplicationType());
@@ -87,6 +91,7 @@ class ExtractionAdminController extends CRUDController
             array(
                 'action' => 'filtering',
                 'lock_time' => $e_service->getConfig('lock.time')->getValue(),
+                'extraction_summary' => $extraction_summary,
                 'extraction' => $extraction,
                 'contacts' => $contacts,
                 'has_queues' => $running_queue,
