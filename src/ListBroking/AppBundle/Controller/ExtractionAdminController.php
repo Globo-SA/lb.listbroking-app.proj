@@ -60,10 +60,10 @@ class ExtractionAdminController extends CRUDController
         $query = $e_service->runExtraction($extraction);
 
         // Get all contacts in one Query (Better then using $extraction->getContacts())
-        $limit = $e_service->getConfig('extraction.contact.show_limit')->getValue();
+        $preview_limit = $e_service->getConfig('extraction.contact.show_limit')->getValue();
 
         $extraction_summary = $e_service->getExtractionSummary($extraction);
-        $contacts = $e_service->getExtractionContacts($extraction, $limit);
+        $contacts = $e_service->getExtractionContacts($extraction, $preview_limit);
 
         // Forms
         $adv_exclusion = $e_service->generateForm(new ExtractionDeduplicationType());
@@ -91,6 +91,7 @@ class ExtractionAdminController extends CRUDController
             array(
                 'action' => 'filtering',
                 'lock_time' => $e_service->getConfig('lock.time')->getValue(),
+                'preview_limit' => $preview_limit,
                 'extraction_summary' => $extraction_summary,
                 'extraction' => $extraction,
                 'contacts' => $contacts,

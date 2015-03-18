@@ -8,9 +8,10 @@
         "use strict";
 
         $('[data-toggle=simple_table]').dataTable({
-            bPaginate: true,
+            bPaginate: false,
+            bFilter: false,
             bSort: true,
-            bInfo: true
+            bInfo: false
         });
 
         $('body').attachExclude();
