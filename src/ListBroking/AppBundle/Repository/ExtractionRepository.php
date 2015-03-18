@@ -35,8 +35,8 @@ class ExtractionRepository extends EntityRepository {
             $contact = $em->getPartialReference('ListBrokingAppBundle:Contact', $contact['contact_id']);
             $extraction->addContact($contact);
             if (($batch % $batchSize) === 0) {
-
                 $batch = 1;
+                $this->_em->flush();
             }
             $batch++;
         }

@@ -43,6 +43,7 @@ class ContactRepository extends EntityRepository {
                 $qb->addSelect('category');
             }
         }
+        $qb->setMaxResults(10);
 
         return $qb->getQuery()->execute(null, AbstractQuery::HYDRATE_ARRAY);
     }
