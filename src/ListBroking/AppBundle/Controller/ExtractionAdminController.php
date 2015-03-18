@@ -43,6 +43,8 @@ class ExtractionAdminController extends CRUDController
 
     public function filteringAction()
     {
+        ini_set('memory_limit', '-1');
+        
         if (false === $this->admin->isGranted('ROLE_LISTBROKER')) {
             throw new AccessDeniedException();
         }
