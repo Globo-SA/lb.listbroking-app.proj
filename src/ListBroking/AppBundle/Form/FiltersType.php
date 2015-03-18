@@ -78,19 +78,19 @@ class FiltersType extends AbstractType
                             'choices' => $this->getChoicesArray($genders)
                         )
                     ),
-                    array(
-                        'name' => 'contact:email',
-                        'type' => 'hidden',
-                        'options' => array(
-                            'required' => false,
-                            'attr' => array(
-                                'data-select-mode' => 'open',
-                                'placeholder' => 'Write and press enter...',
-                                'class' => 'form-control'
-                            ),
-                            'label' => 'Email',
-                        )
-                    ),
+//                    array(
+//                        'name' => 'contact:email',
+//                        'type' => 'hidden',
+//                        'options' => array(
+//                            'required' => false,
+//                            'attr' => array(
+//                                'data-select-mode' => 'open',
+//                                'placeholder' => 'Write and press enter...',
+//                                'class' => 'form-control'
+//                            ),
+//                            'label' => 'Email',
+//                        )
+//                    ),
                     array(
                         'name' => 'contact:birthdate',
                         'type' => 'collection',
