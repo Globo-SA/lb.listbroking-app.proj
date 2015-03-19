@@ -43,7 +43,9 @@ class ContactRepository extends EntityRepository {
                 $qb->addSelect('category');
             }
         }
-        $qb->setMaxResults($limit);
+        if($limit){
+            $qb->setMaxResults($limit);
+        }
 
         return $qb->getQuery()->execute(null, AbstractQuery::HYDRATE_ARRAY);
     }

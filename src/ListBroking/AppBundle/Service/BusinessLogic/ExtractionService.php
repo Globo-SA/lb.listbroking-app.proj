@@ -144,7 +144,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      *
      * @return mixed
      */
-    public function getExtractionContacts(Extraction $extraction, $limit){
+    public function getExtractionContacts(Extraction $extraction, $limit = null){
 
         return $this->em->getRepository('ListBrokingAppBundle:Contact')->getExtractionContacts($extraction, $limit);
     }
