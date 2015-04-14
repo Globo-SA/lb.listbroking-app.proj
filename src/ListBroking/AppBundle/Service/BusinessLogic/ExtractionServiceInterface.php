@@ -28,6 +28,15 @@ interface ExtractionServiceInterface {
     public function runExtraction(Extraction $extraction);
 
     /**
+     * Executes the filtering engine and adds the contacts
+     * to the Extraction
+     * @param Extraction $extraction
+     *
+     * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
+     */
+    public function executeFilterEngine(Extraction $extraction);
+
+    /**
      * @param Extraction $extraction
      *
      * @return mixed

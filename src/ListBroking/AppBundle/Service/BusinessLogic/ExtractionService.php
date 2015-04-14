@@ -97,33 +97,42 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
 
         $query = null;
         if($reprocess){
-            // Runs the Filter compilation and generates the QueryBuilder
-            $qb = $this->f_engine->compileFilters($extraction);
-
-            $query = $qb->getQuery();
-
-            // Add Contacts to the Extraction
-            $contacts = $query->execute();
-
-            $this->em->getRepository('ListBrokingAppBundle:Extraction')->addContacts($extraction, $contacts, false);
-
-            // Deduplicate Extraction
-            $this->deduplicateExtraction($extraction);
-
-            // Change the Extraction Status back to filtration if there are no contacts
-            if(count($contacts) < 0){
-                $extraction->setStatus(Extraction::STATUS_FILTRATION);
-            }else{
-                $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
-            }
-
+            $this->executeFilterEngine($extraction);
         }
-
-
 
         $this->updateEntity('extraction', $extraction);
 
         return $query;
+    }
+
+    /**
+     * Executes the filtering engine and adds the contacts
+     * to the Extraction
+     * @param Extraction $extraction
+     *
+     * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
+     */
+    public function executeFilterEngine(Extraction $extraction){
+
+        // Runs the Filter compilation and generates the QueryBuilder
+        $qb = $this->f_engine->compileFilters($extraction);
+
+        $query = $qb->getQuery();
+
+        // Add Contacts to the Extraction
+        $contacts = $query->execute();
+
+        $this->em->getRepository('ListBrokingAppBundle:Extraction')->addContacts($extraction, $contacts, false);
+
+        // deduplicateExtraction is not needed now, it's made on the filter engine
+//        $e_service->deduplicateExtraction($extraction);
+
+        // Change the Extraction Status back to filtration if there are no contacts
+        if(count($contacts) < 0){
+            $extraction->setStatus(Extraction::STATUS_FILTRATION);
+        }else{
+            $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
+        }
     }
 
     /**

@@ -69,7 +69,8 @@ class DeduplicateContactsCommand extends ContainerAwareCommand {
                     foreach ($extractions as $id =>$extraction)
                     {
                         $this->service->advanceProgressBar("Deduplicating Extraction ID: {$id}");
-                        $e_service->deduplicateExtraction($extraction);
+                        $e_service->executeFilterEngine($extraction);
+                        $e_service->updateEntity('extraction', $extraction);
                     }
                     $this->service->finishProgressBar();
 

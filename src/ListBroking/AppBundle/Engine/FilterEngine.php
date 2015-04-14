@@ -106,6 +106,13 @@ class FilterEngine
                 ->from('ListBrokingAppBundle:Lead', 'leads')
         ;
 
+        // Remove ExtractionDeduplications
+        $dedup_and = $lead_qb->expr()->andX();
+        $dedup_and->add($lead_qb->expr()->eq('dedup.phone', 'leads.phone'));
+        $dedup_and->add($lead_qb->expr()->eq('dedup.extraction', ":extraction"));
+        $lead_qb->setParameter('extraction', $extraction);
+        $lead_qb->Join('ListBroking\AppBundle\Entity\ExtractionDeduplication', 'dedup', 'WITH', $dedup_and);
+
         // Check if there are Lock filters
         if(array_key_exists('lock_filters',$filters) && !empty($filters['lock_filters'])){
             $locksOrX = $lead_qb->expr()->orX();
