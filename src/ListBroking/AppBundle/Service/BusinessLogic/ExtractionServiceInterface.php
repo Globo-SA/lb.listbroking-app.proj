@@ -30,8 +30,10 @@ interface ExtractionServiceInterface {
     /**
      * Executes the filtering engine and adds the contacts
      * to the Extraction
+     *
      * @param Extraction $extraction
      *
+     * @return \Doctrine\ORM\Query
      * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
      */
     public function executeFilterEngine(Extraction $extraction);

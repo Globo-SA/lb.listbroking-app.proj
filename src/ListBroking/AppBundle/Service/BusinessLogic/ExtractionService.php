@@ -97,7 +97,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
 
         $query = null;
         if($reprocess){
-            $this->executeFilterEngine($extraction);
+            $query = $this->executeFilterEngine($extraction);
         }
 
         $this->updateEntity('extraction', $extraction);
@@ -108,8 +108,10 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     /**
      * Executes the filtering engine and adds the contacts
      * to the Extraction
+     *
      * @param Extraction $extraction
      *
+     * @return \Doctrine\ORM\Query
      * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
      */
     public function executeFilterEngine(Extraction $extraction){
@@ -133,6 +135,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         }else{
             $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
         }
+
+        return $query;
     }
 
     /**
