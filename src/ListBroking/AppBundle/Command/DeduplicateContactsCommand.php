@@ -56,7 +56,7 @@ class DeduplicateContactsCommand extends ContainerAwareCommand {
 
                         // Persist deduplications to the DB
                         $filename = $dir . $queue->getValue2();
-                        $extraction = $e_service->getEntity('extraction', $queue->getValue1());
+                        $extraction = $e_service->getEntity('extraction', $queue->getValue1(), true, true);
                         $e_service->uploadDeduplicationsByFile($extraction, $filename, $queue->getValue3(), true);
 
                         // Add Extraction to the duplication process
