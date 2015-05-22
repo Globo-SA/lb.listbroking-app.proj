@@ -6,6 +6,8 @@
     $(function() {
         "use strict";
 
+        var $finalize_btn =  $("#finalize-extraction-btn");
+
         // Confirm that the Extraction is final before submit
         $("#confirm-extraction-chk").on('ifChanged', function(){
             $("#confirm-extraction-btn").toggleClass('disabled');
@@ -48,16 +50,17 @@
 
         // Check if there is at least 1 lock_type selected for
         // enabling the finalize button
-        $('[name=lock_chk]').on('change', function(){
-            if($('[name=lock_chk]:checked').length > 0){
-                $("#finalize-extraction-btn").removeClass('disabled');
-            }else{
-                $("#finalize-extraction-btn").addClass('disabled');
-            }
-        });
+        //$('[name=lock_chk]').on('change', function(){
+        //    if($('[name=lock_chk]:checked').length > 0){
+        //        $finalize_btn.removeClass('disabled');
+        //    }else{
+        //        $finalize_btn.addClass('disabled');
+        //    }
+        //});
+        $finalize_btn.removeClass('disabled');
 
         // Generate the locks and redirect to the last step
-        $('#finalize-extraction-btn').click(function(){
+        $finalize_btn.click(function(){
 
             $(this).find('i.ion-loading-c').fadeIn();
 
@@ -66,6 +69,9 @@
                 return parseInt($(this).val());
             }).get();
 
+            if(lock_types.length == 0 && !confirm('Do you really want to continue without locking the contacts ?')) {
+                return false;
+            }
 
             // Send locks to the server
             $.ajax({
