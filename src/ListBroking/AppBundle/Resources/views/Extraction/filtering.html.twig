@@ -2,7 +2,7 @@
 
 {% block title %}
     {{ "title_filtering"|trans({'%name%': admin.toString(extraction)|truncate(15) }) }}
-{% endblock%}
+{% endblock %}
 
 {% block sonata_page_content_nav %}
     <nav class="navbar navbar-default" role="navigation">
@@ -29,7 +29,7 @@
         {% set filter_tab = '' %}
         {% set summary_tab = '' %}
         {% set confirmation_tab = 'class="disabled"' %}
-        {% if extraction.status == 1  %}
+        {% if extraction.status == 1 %}
             {% set filter_tab = 'class="active"' %}
         {% elseif extraction.status == 2 %}
             {% set summary_tab = 'class="active"' %}
@@ -68,13 +68,6 @@
                         <div class="panel-body">
                             <div class="row row-margin">
                                 <div class="col-md-6">
-                                    {% if has_queues %}
-                                        {% set text = "<i class='icon icon-large ion-loading-c'></i>Deduplicating..." %}
-                                        {% set alt_text = "Deduplication by File" %}
-                                    {% else %}
-                                        {% set text = "Deduplication by File" %}
-                                        {% set alt_text = "<i class='icon icon-large ion-loading-c'></i>Deduplicating..." %}
-                                    {% endif %}
                                     <blockquote>
                                         <p>
                                             <button
@@ -82,10 +75,11 @@
                                                     class="btn btn-flat btn-primary"
                                                     data-toggle="modal"
                                                     data-target="#lead_deduplication_modal"
-                                                    data-alt="{{ alt_text }}"
-                                                    {% if has_queues is not empty %}disabled="disabled" {% endif %}
+                                                    disabled="disabled"
                                                     >
-                                                {{ text|raw }}
+                                                <i class="fa fa-file-text"></i>&nbsp;DEDUPLICATION BY FILE&nbsp;
+                                                <i class="loading ion-loading-c" {% if not extraction.isDeduplicating %}style="display: none;"{% endif %}></i>
+                                            </button>
                                             </button>
                                             <small>Used to exclude leads by CSV file</small>
                                         </p>
@@ -93,25 +87,24 @@
                                     {% include '@ListBrokingApp/Extraction/_partials/modal_deduplication.html.twig' %}
                                 </div>
                                 <div class="col-md-6">
-                                    {% include '@ListBrokingApp/Extraction/_partials/extraction_summary.html.twig' %}
+                                    <div id="extraction_summary" class="grey-bg">
+                                        {% include '@ListBrokingApp/Extraction/_partials/extraction_summary.html.twig' %}
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div id="extraction_table_container" class="col-md-12">
-                                    <i class="icon icon-huge ion-loading-c hidden"></i>
-                                    <span>
-                                        {% include '@ListBrokingApp/Extraction/_partials/contacts_table.html.twig' %}
-                                    </span>
+                                <div id="extraction_table_container" class="col-md-12 grey-bg">
+                                    {% include '@ListBrokingApp/Extraction/_partials/contacts_table.html.twig' %}
                                 </div>
                             </div>
                             <hr>
-                            <blockquote class="small-label">
+                            <blockquote class="footer-btn small-label">
                                 <p>
-                                    <button class="btn btn-primary btn-flat disabled"  data-toggle="modal" id="confirm-extraction-btn"
-                                       data-target="#create_locks_modal" role="button">
+                                    <button class="btn btn-primary btn-flat footer-button" data-toggle="modal" id="confirm_extraction_btn"
+                                            data-target="#create_locks_modal" role="button" disabled="disabled">
                                         <i class="fa fa-list"></i>&nbsp;Extract
                                     </button>
-                                    <input type="checkbox" id="confirm-extraction-chk" class="pull-right"><label>&nbsp;Confirm
+                                    <input type="checkbox" id="confirm_extraction_chk" class="pull-right footer-button" disabled><label>&nbsp;Confirm
                                         as final extraction.</label>
                                     <small>After this step the extraction will be closed and marked as final.</small>
                                 </p>
@@ -129,27 +122,27 @@
                         <div class="panel-body">
                             <div class="row row-margin">
                                 <div class="col-md-12">
-                                    {% include '@ListBrokingApp/Extraction/_partials/extraction_summary.html.twig' %}
+                                    <div id="extraction_summary" class="grey-bg">
+                                        {% include '@ListBrokingApp/Extraction/_partials/extraction_summary.html.twig' %}
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div id="extraction_table_container" class="col-md-12">
-                                    <i class="icon icon-huge ion-loading-c hidden"></i>
-                                        <span>
-                                            {% include '@ListBrokingApp/Extraction/_partials/contacts_table.html.twig' %}
-                                        </span>
+                                <div id="extraction_table_container" class="col-md-12 grey-bg">
+                                    {% include '@ListBrokingApp/Extraction/_partials/contacts_table.html.twig' %}
                                 </div>
                             </div>
                             <hr>
-                            <blockquote class="small-label">
+                            <blockquote class="footer-btn small-label">
                                 <p>
 
-                                    <button class="btn btn-flat btn-primary" data-toggle="modal"
-                                            data-target="#delivery_modal">
-                                        <i class="fa fa-share"></i>&nbsp;SEND EXTRACTION
+                                    <button id="deliver_extraction_trigger" class="btn btn-flat btn-primary footer-button" data-toggle="modal"
+                                            data-target="#delivery_modal" disabled="disabled">
+                                        <i class="fa fa-fighter-jet"></i>&nbsp;SEND EXTRACTION&nbsp;
+                                        <i class="loading ion-loading-c" {% if not extraction.isDelivering %}style="display: none;"{% endif %}></i>
                                     </button>
                                     or
-                                    <a href="{{ admin.generateObjectUrl('clone', extraction) }}" class="btn btn-flat btn-default" target="_blank">
+                                    <a href="{{ admin.generateObjectUrl('clone', extraction) }}" class="btn btn-flat btn-default footer-button" target="_blank" disabled="disabled">
                                         <i class="fa fa-asterisk"></i>&nbsp;DUPLICATE EXTRACTION
                                     </a>
                                 </p>

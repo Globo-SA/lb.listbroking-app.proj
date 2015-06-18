@@ -1,0 +1,6 @@
+services:
+  listbroking.flush_listener:
+    class: ListBroking\AppBundle\EventListener\FlushListener
+    arguments: [@doctrine_cache.providers.memcached_query_cache]
+    tags:
+        - { name: doctrine.event_listener, event: onFlush }

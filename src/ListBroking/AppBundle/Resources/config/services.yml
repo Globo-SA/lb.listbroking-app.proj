@@ -1,68 +1,7 @@
 imports:
-    - { resource: admin_services.yml }
-
-services:
-  listbroking.flush_listener:
-    class: ListBroking\AppBundle\EventListener\FlushListener
-    arguments: [@doctrine_cache.providers.memcached_query_cache]
-    tags:
-        - { name: doctrine.event_listener, event: onFlush }
-
-  listbroking.appbundle.filters.form:
-    class:  ListBroking\AppBundle\Form\FiltersType
-    arguments: [@app]
-    tags:
-      - { name: form.type, alias: filters }
-
-  listbroking.appbundle.json.form.type:
-    class: ListBroking\AppBundle\Form\Type\JsonType
-    tags:
-      - { name: form.type, alias: json }
-
-  listbroking.appbundle.opposition_list_import.form.type:
-    class: ListBroking\AppBundle\Form\OppositionListImportType
-    arguments: [@app]
-    tags:
-      - { name: form.type, alias: opposition_list_import }
-
-  guzzle.client:
-      class: %guzzle.client.class%
-      tags:
-          - { name: "guzzle.client" }
-
-  filter_engine:
-    class: ListBroking\AppBundle\Engine\FilterEngine
-    arguments:
-      entityManager: @doctrine.orm.entity_manager
-
-  validator_engine:
-    class: ListBroking\AppBundle\Engine\ValidatorEngine
-    arguments: [@doctrine, @guzzle.client]
-
-  base:
-    class: ListBroking\AppBundle\Service\Base\BaseService
-    abstract: true
-    calls:
-      - [setDoctrine, [@doctrine]]
-      - [setEntityManager, [@doctrine.orm.entity_manager]]
-      - [setCache, [@doctrine_cache.providers.memcached_query_cache]]
-      - [setFormFactory, [@form.factory]]
-
-  app:
-    class: ListBroking\AppBundle\Service\Helper\AppService
-    parent: base
-    arguments: [@mailer, @twig]
-  lead:
-    class: ListBroking\AppBundle\Service\BusinessLogic\LeadService
-    arguments:
-      entityManager: @doctrine.orm.entity_manager
-
-  extraction:
-    class: ListBroking\AppBundle\Service\BusinessLogic\ExtractionService
-    parent: base
-    arguments: [@request_stack, @filter_engine, @mailer, @twig ]
-
-  staging:
-    class: ListBroking\AppBundle\Service\BusinessLogic\StagingService
-    parent: base
-    arguments: [@validator_engine]
+    - { resource: services/listener.yml }
+    - { resource: services/form.yml }
+    - { resource: services/base.yml }
+    - { resource: services/service.yml }
+    - { resource: services/consumer.yml }
+    - { resource: services/admin.yml }

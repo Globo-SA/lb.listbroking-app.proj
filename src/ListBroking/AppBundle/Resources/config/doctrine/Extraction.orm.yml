@@ -25,7 +25,26 @@ ListBroking\AppBundle\Entity\Extraction:
         payout:
             type: float
             column: payout
-
+        is_already_extracted:
+          type: boolean
+          column: is_already_extracted
+        is_deduplicating:
+          type: boolean
+          column: is_deduplicating
+        is_locking:
+          type: boolean
+          column: is_locking
+        is_delivering:
+          type: boolean
+          column: is_delivering
+        deduplication_type:
+          type: string
+          column: deduplication_type
+          nullable: true
+        query:
+          type: text
+          column: query
+          nullable: true
 # Timestampable
         created_at:
             type: datetime
@@ -42,6 +61,10 @@ ListBroking\AppBundle\Entity\Extraction:
             targetEntity: ListBroking\AppBundle\Entity\ExtractionDeduplication
             mappedBy:     extraction
             cascade:      [persist]
+        extraction_contacts:
+            targetEntity: ListBroking\AppBundle\Entity\ExtractionContact
+            mappedBy:     extraction
+            cascade:      [all]
 # Blameable
     manyToOne:
         created_by:
@@ -67,15 +90,3 @@ ListBroking\AppBundle\Entity\Extraction:
                 name: campaign_id
                 referencedColumnName: id
                 onDelete: restrict
-    manyToMany:
-        contacts:
-            targetEntity: ListBroking\AppBundle\Entity\Contact
-            inversedBy:   extractions
-            joinTable:
-                name:         extractions_contacts
-                joinColumns:
-                    extraction_id:
-                        referencedColumnName: id
-                inverseJoinColumns:
-                    contact_id:
-                        referencedColumnName: id

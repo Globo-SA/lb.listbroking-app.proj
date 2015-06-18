@@ -1,27 +1,28 @@
-<div class="">
-    <h4><i class="fa fa-table"></i>&nbsp;Extraction Summary</h4>
-    <table class="table table-condensed">
-        <thead>
-        <tr>
-            <th>Source</th>
-            <th>Total</th>
-        </tr>
-        </thead>
-        <tbody>
+<i class="icon icon-small ion-loading-c"></i>
+<h4><i class="fa fa-table"></i>&nbsp;Extraction Summary</h4>
+<table class="table table-condensed">
+    <thead>
+    <tr>
+        <th>Source</th>
+        <th>Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% if extraction_summary is defined %}
         {% set total = 0 %}
         {% for row in extraction_summary %}
             {% set total = total + row.total %}
             <tr>
-            <td>{{ row.name }}</td>
-            <td>{{ row.total }}</td>
-        </tr>
+                <td>{{ row.name }}</td>
+                <td>{{ row.total }}</td>
+            </tr>
         {% endfor %}
-        </tbody>
-        <tfoot>
-        <tr>
-            <th></th>
-            <th class="text-success"><strong>{{ total }}</strong></th>
-        </tr>
-        </tfoot>
-    </table>
-</div>
+    {% endif %}
+    </tbody>
+    <tfoot>
+    <tr>
+        <th></th>
+        <th class="text-success"><strong>{% if extraction_summary is defined %}{{ total }}{% endif %}</strong></th>
+    </tr>
+    </tfoot>
+</table>

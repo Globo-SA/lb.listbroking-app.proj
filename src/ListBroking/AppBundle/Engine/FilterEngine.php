@@ -106,13 +106,33 @@ class FilterEngine
                 ->from('ListBrokingAppBundle:Lead', 'leads')
         ;
 
-        // Remove ExtractionDeduplications
-        $dedup_and = $lead_qb->expr()->andX();
-        $dedup_and->add($lead_qb->expr()->eq('dedup.phone', 'leads.phone'));
-        $dedup_and->add($lead_qb->expr()->eq('dedup.extraction', ":extraction"));
-        $lead_qb->setParameter('extraction', $extraction);
-        $lead_qb->leftJoin('ListBroking\AppBundle\Entity\ExtractionDeduplication', 'dedup', 'WITH', $dedup_and);
-        $lead_qb->andWhere($lead_qb->expr()->isNull('dedup.id'));
+        if($extraction->getDeduplicationType()){
+
+            // Contact Deduplication
+            $dedup_and = $lead_qb->expr()->andX();
+            $dedup_and->add($lead_qb->expr()->eq('dedup.phone', 'leads.phone'));
+            $dedup_and->add($lead_qb->expr()->eq('dedup.extraction', ":extraction"));
+            $lead_qb->setParameter('extraction', $extraction);
+            $lead_qb->leftJoin('ListBroking\AppBundle\Entity\ExtractionDeduplication', 'dedup', 'WITH', $dedup_and);
+
+            // Remove ExtractionDeduplications
+            if($extraction->getDeduplicationType() == Extraction::EXCLUDE_DEDUPLICATION_TYPE)
+            {
+                $lead_qb->andWhere($lead_qb->expr()
+                                           ->isNull('dedup.id'))
+                ;
+            }
+
+            // Include ExtractionDeduplications
+            if($extraction->getDeduplicationType() == Extraction::INCLUDE_DEDUPLICATION_TYPE)
+            {
+                $lead_qb->andWhere($lead_qb->expr()
+                                           ->isNotNull('dedup.id'))
+                ;
+            }
+        }
+
+
 
         // Check if there are Lock filters
         if(array_key_exists('lock_filters',$filters) && !empty($filters['lock_filters'])){
@@ -160,7 +180,10 @@ class FilterEngine
                 $contact_filter_type->addFilter($contactsAndX, $lead_qb, $contact_filter['filters']);
 
             }
-            $lead_qb->join('leads.contacts', 'contacts', 'WITH', $contactsAndX);
+
+            if($contactsAndX->getParts()){
+                $lead_qb->join('leads.contacts', 'contacts', 'WITH', $contactsAndX);
+            };
         }
         else{
             $lead_qb->join('leads.contacts', 'contacts');

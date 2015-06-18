@@ -1,106 +1,85 @@
 <?php
 /**
- * 
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
 namespace ListBroking\AppBundle\PHPExcel;
 
+use Doctrine\ORM\Query;
+use Exporter\Handler;
+use Exporter\Source\DoctrineORMQuerySourceIterator;
+use Exporter\Writer\CsvWriter;
+use Exporter\Writer\JsonWriter;
+use Exporter\Writer\XlsWriter;
+use Exporter\Writer\XmlExcelWriter;
 
-class FileHandler {
+class FileHandler
+{
 
+    // Export File types
+    public static $export_types = array(
+        'XLS'    => array('type' => 'Excel2007', 'extension' => 'xlsx', 'label' => 'Excel File (.xlsx)'),
+        'CSV'          => array('type' => 'CSV', 'extension' => 'csv', 'label' => 'Save as a CSV file (.csv)'),
+        'XML'          => array('type' => 'XML', 'extension' => 'xml', 'label' => 'Save as a XML file (.xml)'),
+        'JSON'          => array('type' => 'JSON', 'extension' => 'json', 'label' => 'Save as a JSON file (.json)')
+    );
 
-    private $export_types;
-
-    function __construct()
+    function __construct ()
     {
-        // Give PHP more resources
-        ini_set('memory_limit','225M');
-        set_time_limit(-1);
-
         //Set APC to cache cells
         $cacheMethod = \PHPExcel_CachedObjectStorageFactory::cache_to_sqlite3;
         \PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
-
-        // Export File types
-        $this->export_types = array(
-            'Excel5' => array('type' => 'Excel5', 'extension' => 'xls', 'label' => 'Excel File (.xls)'),
-            'Excel2007' => array('type' => 'Excel2007', 'extension' => 'xlsx', 'label' => 'Excel File (.xlsx)'),
-            'Excel2003XML' => array('type' => 'Excel2003XML', 'extension' => 'xml', 'label' => 'Excel File (.xml)'),
-            'HTML' => array('type' => 'HTML', 'extension' => 'html', 'label' => 'HTML File (.html)'),
-            'CSV' =>  array('type' => 'CSV', 'extension' => 'csv', 'label' => 'Save as a CSV file (.csv)')
-        );
     }
 
     /**
      * Used to export a file
-     * @param $filename
-     * @param $headers
-     * @param $array_data
+     *
+     * @param string $filename
+     * @param array  $headers
+     * @param string $type
+     * @param Query  $query
      */
-    public function export($filename, $headers, $array_data){
+    public function export ($filename, $headers, $type, Query $query)
+    {
 
-        // File Object
-        $obj = new \PHPExcel();
-        $sheet = $obj->getActiveSheet();
-
-        // Writer Object
-        $writer = \PHPExcel_IOFactory::createWriter($obj, $this->export_types['Excel2007']['type']);
-
-        $header_column = 'A';
-        foreach($headers as $label){
-            $sheet->setCellValue("{$header_column}1", $label);
-            $header_column++;
-        }
-
-        $row = 2; // 1 line is used for headers
-        foreach ($array_data as $data)
+        $source = new DoctrineORMQuerySourceIterator($query, $headers);
+        switch ( $type )
         {
-            $column = 'A';
-            foreach ($headers as $field => $label){
-
-                switch($field){
-                    case 'lead_id':
-                        $field_value = $data['lead']['id'];
-                        break;
-                    case 'phone':
-                        $field_value = $data['lead']['phone'];
-                        break;
-                    case 'contact_id':
-                        $field_value = $data['id'];
-                        break;
-                    default:
-                        $field_value = $data[$field];
-                        if($field_value instanceof \DateTime){
-                            $field_value = $field_value->format('Y-m-d');
-                        }
-                        if(is_array($field_value) && array_key_exists('name', $field_value)){
-                            $field_value = $field_value['name'];
-                        }
-                        break;
-                }
-                $sheet->setCellValue("{$column}{$row}", $field_value);
-                $column++;
-            }
-            $row++;
+            case 'CSV':
+                $writer = new CsvWriter($filename);
+                break;
+            case 'Excel':
+                $writer = new XlsWriter($filename);
+                break;
+            case 'XML':
+                $writer = new XmlExcelWriter($filename);
+                break;
+            case 'JSON':
+                $writer = new JsonWriter($filename);
+                break;
+            default:
+                $writer = new CsvWriter($filename);
+                break;
         }
 
-        // Save file
-        $writer->save($filename);
+        Handler::create($source, $writer)
+               ->export()
+        ;
     }
-
 
     /**
      * Used to import a file
+     *
      * @param $filename
+     *
      * @internal param $filename
      * @return \PHPExcel
      */
-    public function import($filename){
+    public function import ($filename)
+    {
 
         /** @var \PHPExcel_Reader_Abstract $reader */
         $reader = \PHPExcel_IOFactory::createReader(\PHPExcel_IOFactory::identify($filename));
@@ -112,33 +91,45 @@ class FileHandler {
 
     /**
      * Converts a PHPExcel Object to an array
+     *
      * @param \PHPExcel $obj
-     * @param $with_headers
-     * @param string $endColumn
+     * @param           $with_headers
+     * @param string    $endColumn
+     *
      * @return array
      */
-    public function convertToArray(\PHPExcel $obj, $with_headers = true, $endColumn = 'all'){
+    public function convertToArray (\PHPExcel $obj, $with_headers = true, $endColumn = 'all')
+    {
 
         $headers = array();
         $array_data = array();
-        $row_iterator = $obj->getActiveSheet()->getRowIterator();
+        $row_iterator = $obj->getActiveSheet()
+                            ->getRowIterator()
+        ;
 
-        foreach ($row_iterator as $row)
+        foreach ( $row_iterator as $row )
         {
-            foreach ($row->getCellIterator() as $cell)
+            foreach ( $row->getCellIterator() as $cell )
             {
-                if($row->getRowIndex() == 1){
+                if ( $row->getRowIndex() == 1 )
+                {
                     $headers[] = $cell->getValue();
-                }else {
-                    if($with_headers){
+                }
+                else
+                {
+                    if ( $with_headers )
+                    {
                         $array_data[][$headers[$cell->getXfIndex()]] = $cell->getValue();
-                    }else{
+                    }
+                    else
+                    {
                         $array_data[] = $cell->getValue();
                     }
                 }
 
                 // If if the final column stop the foreach
-                if($endColumn != 'all' && $cell->getColumn() == $endColumn){
+                if ( $endColumn != 'all' && $cell->getColumn() == $endColumn )
+                {
                     break;
                 }
             }

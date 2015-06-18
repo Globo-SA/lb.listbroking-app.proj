@@ -11,22 +11,25 @@
                 <blockquote class="small-label">
                     <div class="form-group">
                         <label>Download file</label>
-                        <input type="hidden" data-select-mode="ajax" data-select-minimum-input="0" data-select-type="ExtractionTemplate" data-placeholder="Select a template..." class="form-control row-margin">
-                        <button type="button" id="deduplication-download" data-extraction="{{ extraction.id }}" class="btn btn-flat btn-primary"><i class="icon icon-large ion-loading-c" style="display: none;"></i>&nbsp;Extract Leads List</button>
+                        <input type="hidden" data-select-mode="ajax" data-select-minimum-input="0" data-select-type="ExtractionTemplate" data-placeholder="Select a template..." class="form-control
+                        row-margin" value="1" disabled="disabled">
+                        <button type="button" id="deduplication-download" data-extraction="{{ extraction.id }}" class="btn btn-flat btn-primary space"><i class="icon icon-large ion-loading-c" style="display: none;
+                        "></i>&nbsp;Extract Leads List</button>
                     </div>
                     <small>Excel file with contact information for deduplication</small>
                 </blockquote>
                 </div>
-            {{ form_start(forms.adv_exclusion, {attr: {'data-extraction': extraction.id}}) }}
+            {{ form_start(forms.extraction_deduplication, {attr: {'data-extraction': extraction.id}}) }}
             <div class="modal-body">
                 <blockquote class="small-label">
-                    {{ form_row(forms.adv_exclusion.field) }}
-                    {{ form_label(forms.adv_exclusion.upload_file) }}
+                    {{ form_row(forms.extraction_deduplication.deduplication_type) }}
+                    {{ form_row(forms.extraction_deduplication.field) }}
+                    {{ form_label(forms.extraction_deduplication.upload_file) }}
                     <span class="btn btn-flat btn-primary fileinput-button form-control">
                         <i class="glyphicon glyphicon-plus"></i>
                         <span>Select file...</span>
                         <!-- The file input field used as target for the file upload widget -->
-                        {{ form_widget(forms.adv_exclusion.upload_file) }}
+                        {{ form_widget(forms.extraction_deduplication.upload_file) }}
                     </span>
                     <small><strong id="files">No file chosen</strong></small>
                     <small>CSV file with duplicated contacts (one column <strong>only</strong>)</small>
@@ -39,11 +42,14 @@
             </div>
 
             <div class="modal-footer">
+                <button id="extraction_deduplication_upload_button" type="button" class="btn btn-flat btn-primary">
+                    <i class="fa fa-filter"></i>&nbsp;Deduplicate&nbsp;
+                    <i class="loading ion-loading-c" style="display: none;"></i>
+                </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button id="extraction_deduplication_upload_button" class="btn btn-flat btn-primary">Deduplicate</button>
             </div>
-            {{ form_rest(forms.adv_exclusion) }}
-            {{ form_end(forms.adv_exclusion) }}
+            {{ form_rest(forms.extraction_deduplication) }}
+            {{ form_end(forms.extraction_deduplication) }}
         </div>
         <!-- /.modal-content -->
     </div> <!-- /.modal-dialog -->

@@ -2,8 +2,6 @@
 
 namespace ListBroking\AppBundle\Entity;
 
-use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
-use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -11,10 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * NOTE: This entity doesn't have associations, it's only
  * used to persist deduplications by field:
- *          . lead_id
- *          . contact_id
  *          . phone
- *          . email
  */
 class ExtractionDeduplication
 {

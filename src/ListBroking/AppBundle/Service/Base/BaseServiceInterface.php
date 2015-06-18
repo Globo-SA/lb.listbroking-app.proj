@@ -17,8 +17,21 @@ use ListBroking\AppBundle\Exception\InvalidEntityTypeException;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactory;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\Tests\Logger;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 interface BaseServiceInterface {
+
+    /**
+     * @param Kernel $kernel
+     */
+    public function setKernel ($kernel);
+    /**
+     * @param $doctrine
+     */
+    public function setDoctrine($doctrine);
 
     /**
      * @param EntityManager $entityManager
@@ -37,6 +50,47 @@ interface BaseServiceInterface {
      * @return mixed
      */
     public function setFormFactory(FormFactory $formFactory);
+
+    /**
+     * @param Logger $logger
+     */
+    public function setLogger ($logger);
+
+    /**
+     * Gets the App Root Dir
+     * @return mixed|string
+     */
+    public function getRootDir();
+
+    /**
+     * @param TokenStorageInterface $token_storage
+     */
+    public function setTokenStorage ($token_storage);
+    /**
+     * Log an error to the channel
+     *
+     * @param $msg
+     */
+    public function logError ($msg);
+
+    /**
+     * Log an info to the channel
+     *
+     * @param $msg
+     */
+    public function logInfo ($msg);
+
+    /**
+     * Get Currently logged in user
+     * @return mixed
+     */
+    public function getUser();
+
+    /**
+     * Clears the EntityManager
+     * @return void
+     */
+    public function clearEntityManager();
 
     /**
      * Attaches an entity to the EntityManager
@@ -126,4 +180,12 @@ interface BaseServiceInterface {
      * @return mixed
      */
     public function getExceptions($limit);
+
+    /**
+     * Saves a file on a form
+     * @param Form $form
+     *
+     * @return UploadedFile
+     */
+    public function saveFile(Form $form);
 } 

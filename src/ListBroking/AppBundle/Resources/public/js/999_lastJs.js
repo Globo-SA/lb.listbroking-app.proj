@@ -4,13 +4,12 @@
 
 // This should always be the last
 // script to run
-(function ($, App)
-{
-    $(function() {
+(function ($, App) {
+    $(function () {
         "use strict";
 
         // Opens all the collapsed boxes
-        $(".box.collapsed-box").each(function() {
+        $(".box.collapsed-box").each(function () {
             var box = $(this);
             var bf = box.find(".box-body, .box-footer");
 
@@ -19,7 +18,7 @@
         });
 
         // Opens all collapsed tags
-        $(".closed").each(function() {
+        $(".closed").each(function () {
             $(this).fadeIn();
         });
 
@@ -27,9 +26,8 @@
         $('#loading_widget').fadeOut();
 
         // Starts the Loading Widget when clicked
-        $('[data-load=start],[type=submit]').on('click', function(){
+        $('[data-load=start],[type=submit]').on('click', function () {
             $('#loading_widget').fadeIn();
         });
     });
-}
-)(jQuery, ListBroking);
+})(jQuery, ListBroking);

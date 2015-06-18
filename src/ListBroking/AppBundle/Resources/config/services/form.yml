@@ -1,0 +1,27 @@
+services:
+  listbroking.appbundle.json.form.type:
+    class: ListBroking\AppBundle\Form\Type\JsonType
+    tags:
+      - { name: form.type, alias: json }
+
+  listbroking.appbundle.filters.form:
+    class:  ListBroking\AppBundle\Form\FiltersType
+    arguments: [@app]
+    tags:
+      - { name: form.type, alias: filters }
+
+  listbroking.appbundle.extraction_deduplication.from:
+    class: ListBroking\AppBundle\Form\ExtractionDeduplicationType
+    tags:
+      - { name: form.type, alias: extraction_deduplication }
+
+  listbroking.appbundle.extraction_locking.from:
+    class: ListBroking\AppBundle\Form\ExtractionLockingType
+    tags:
+      - { name: form.type, alias: extraction_locking }
+
+  listbroking.appbundle.opposition_list_import.form.type:
+    class: ListBroking\AppBundle\Form\OppositionListImportType
+    arguments: [@app]
+    tags:
+      - { name: form.type, alias: opposition_list_import }

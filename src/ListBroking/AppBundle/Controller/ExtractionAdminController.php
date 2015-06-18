@@ -2,108 +2,135 @@
 
 namespace ListBroking\AppBundle\Controller;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use ListBroking\AppBundle\Entity\Extraction;
-use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
-use ListBroking\AppBundle\Service\Helper\AppService;
-use ListBroking\TaskControllerBundle\DependencyInjection\Configuration;
-use ListBroking\TaskControllerBundle\Entity\Queue;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class ExtractionAdminController extends CRUDController
 {
 
-    public function cloneAction()
+    /**
+     * Clones a given extraction and resets it's status
+     * @return RedirectResponse
+     */
+    public function cloneAction ()
     {
-        $id = $this->get('request')->get($this->admin->getIdParameter());
+        // Services
+        $e_service = $this->get('extraction');
 
-        $object = $this->admin->getObject($id);
+        $id = $this->get('request')
+                   ->get($this->admin->getIdParameter())
+        ;
 
-        if (!$object) {
+        $extraction = $this->admin->getObject($id);
+
+        if ( ! $extraction )
+        {
             throw new NotFoundHttpException(sprintf('unable to find the object with id : %s', $id));
         }
 
         /** @var Extraction $clonedObject */
-        $clonedObject = clone $object;
+        $new_extraction = $e_service->cloneExtraction($extraction);
 
-        $clonedObject->setName($object->getName() . " (duplicate)");
-        $clonedObject->setStatus(Extraction::STATUS_FILTRATION);
-        $clonedObject->setContacts(new ArrayCollection());
-        $clonedObject->setExtractionDeduplications(new ArrayCollection());
-
-        $this->admin->create($clonedObject);
+        $this->admin->create($new_extraction);
 
         $this->addFlash('sonata_flash_success', 'Extraction successfully duplicated');
 
-        return new RedirectResponse($this->admin->generateUrl('edit', array('id'=> $clonedObject->getId())));
+        return new RedirectResponse($this->admin->generateUrl('filtering', array('id' => $new_extraction->getId(), 'is_new' => true)));
     }
 
-    public function filteringAction()
+    /**
+     * Create action and redirect to filtering
+     * @return RedirectResponse
+     * @throws AccessDeniedException If access is not granted
+     */
+    public function createAction ()
     {
-        if (false === $this->admin->isGranted('ROLE_LISTBROKER')) {
+        if ( $this->getRestMethod() == 'POST' )
+        {
+            parent::createAction();
+
+            $form = $this->admin->getForm();
+
+            return new RedirectResponse($this->admin->generateUrl('filtering', array(
+                'id' => $form->getData()
+                             ->getId(),
+                'is_new' => true
+            )));
+        }
+
+        return parent::createAction();
+    }
+
+    /**
+     * Extraction filter interface
+     * @return Response
+     */
+    public function filteringAction ()
+    {
+        if ( false === $this->admin->isGranted('EDIT') )
+        {
             throw new AccessDeniedException();
         }
 
+        $is_new = $this->get('request')
+                          ->get('is_new')
+        ;
+
         // Services
         $e_service = $this->get('extraction');
-        $t_service = $this->get('task');
+        $m_service = $this->get('messaging');
 
-        // Current Extraction and step
-        $extraction_id = $this->get('request')->get($this->admin->getIdParameter());
-
-        // Run Extraction
+        // Current Extraction
+        $extraction_id = $this->get('request')
+                              ->get($this->admin->getIdParameter())
+        ;
+        /** @var Extraction $extraction */
         $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
-        $query = $e_service->runExtraction($extraction);
 
-        // Get all contacts in one Query (Better then using $extraction->getContacts())
-        $preview_limit = $e_service->getConfig('extraction.contact.show_limit')->getValue();
+        if($this->getUser() != $extraction->getCreatedBy() && !$this->admin->isGranted('SUPER_ADMIN')){
+            throw new AccessDeniedException('You can only edit extractions created by you ');
+        }
 
-        $extraction_summary = $e_service->getExtractionSummary($extraction);
-        $contacts = $e_service->getExtractionContacts($extraction, $preview_limit);
-
-        // Forms
-        $adv_exclusion = $e_service->generateForm(new ExtractionDeduplicationType());
-        $adv_external_exclusion = $e_service->generateForm(new ExtractionDeduplicationType());
-        $filters_form = $e_service->generateForm(
-            'filters',
-            $this->generateUrl(
-                'admin_listbroking_app_extraction_filtering', array('id' => $extraction_id)),
-            $extraction->getFilters()
-        );
-
-        //Check for Queues
-        $running_queue = false;
-        /** @var Queue[] $queues */
-        $queues = $t_service->findQueuesByType(AppService::DEDUPLICATION_QUEUE_TYPE);
-        foreach($queues as $queue){
-            if($queue->getValue1() == $extraction->getId()){
-                $running_queue = true;
-                break;
+        // Handle Filters and update Extraction
+        if ( ! $is_new )
+        {
+            $is_extraction_ready = $e_service->handleFiltration($extraction);
+            if ( $is_extraction_ready )
+            {
+                // Publish Extraction to the Queue
+                $m_service->publishMessage('run_extraction', array(
+                    'object_id' => $extraction->getId()
+                ))
+                ;
             }
         }
 
+        // Forms
+        $extraction_deduplication = $e_service->generateForm('extraction_deduplication');
+        $extraction_locking = $e_service->generateForm('extraction_locking');
+
+        $filters_form = $e_service->generateForm('filters', $this->generateUrl('admin_listbroking_app_extraction_filtering', array('id' => $extraction_id)), $extraction->getFilters());
+
         // Render Response
-        return $this->render('@ListBrokingApp/Extraction/filtering.html.twig',
-            array(
-                'action' => 'filtering',
-                'lock_time' => $e_service->getConfig('lock.time')->getValue(),
-                'preview_limit' => $preview_limit,
-                'extraction_summary' => $extraction_summary,
-                'extraction' => $extraction,
-                'contacts' => $contacts,
-                'has_queues' => $running_queue,
-                'query' => $query ? \SqlFormatter::format($query->getSQL()): '',
-                'forms' =>  array(
-                    'filters' => $filters_form->createView(),
-                    'adv_exclusion' => $adv_exclusion->createView(),
-                    'adv_external_exclusion' => $adv_external_exclusion->createView()
-                ),
-                'elements' => $this->admin->getShow(),
-            )
-        );
+        return $this->render('@ListBrokingApp/Extraction/filtering.html.twig', array(
+            'action'        => 'filtering',
+            'lock_time'     => $e_service->getConfig('lock.time')
+                                         ->getValue(),
+            'preview_limit' => $e_service->getConfig('extraction.contact.show_limit')
+                                         ->getValue(),
+            'extraction'    => $extraction,
+            'forms'         => array(
+                'filters'                  => $filters_form->createView(),
+                'extraction_deduplication' => $extraction_deduplication->createView(),
+                'extraction_locking'       => $extraction_locking->createView(),
+            ),
+            'elements'      => $this->admin->getShow(),
+        ))
+            ;
     }
 }

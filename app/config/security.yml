@@ -7,22 +7,15 @@ security:
     role_hierarchy:
         ROLE_API_USER: ROLE_API_USER
         ROLE_LISTBROKER:
-            - ROLE_LISTBROKING_ADMIN_CLIENT_STAFF
+            - ROLE_USER
+            - ROLE_ADMIN
 
-            - ROLE_LISTBROKING_ADMIN_CAMPAIGN_STAFF
-
-            - ROLE_LISTBROKING_ADMIN_CATEGORY_STAFF
-
-            - ROLE_LISTBROKING_ADMIN_SUB_CATEGORY_STAFF
-
-            - ROLE_LISTBROKING_ADMIN_EXTRACTION_STAFF
         ROLE_ADMIN:
             - ROLE_USER
             - ROLE_SONATA_ADMIN
         ROLE_SUPER_ADMIN:
             - ROLE_ADMIN
             - ROLE_ALLOWED_TO_SWITCH
-
     acl:
         connection: default
     providers:

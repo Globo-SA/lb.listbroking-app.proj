@@ -30,6 +30,7 @@
         "doctrine/doctrine-fixtures-bundle": "~2.2",
         "stof/doctrine-extensions-bundle": "1.2.*@dev",
 
+        "cboden/ratchet": "^0.3.3",
         "tedivm/fetch": "0.5.*",
         "friendsofsymfony/jsrouting-bundle": "2.0.*@dev",
         "jms/serializer-bundle": "~0.13",
@@ -43,7 +44,9 @@
         "sonata-project/admin-bundle": "~2.3",
         "sonata-project/doctrine-orm-admin-bundle": "~2.3",
         "sonata-project/user-bundle": "~2.2",
-        "tilleuls/acl-sonata-admin-extension-bundle": "~1.1"
+        "tilleuls/acl-sonata-admin-extension-bundle": "~1.1",
+
+        "oldsound/rabbitmq-bundle": "1.*"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

@@ -1,0 +1,44 @@
+<?php
+/**
+ * 
+ * @author     Pedro Tentugal <pedro.tentugal@adclick.pt>
+ * @copyright  2014 Adclick
+ * @license    [LISTBROKING_URL_LICENSE_HERE]
+ *
+ * [LISTBROKING_DISCLAIMER]
+ */
+
+namespace ListBroking\AppBundle\Entity;
+
+
+use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
+use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
+use Doctrine\Common\Collections\ArrayCollection;
+use ListBroking\AppBundle\Entity\Country;
+use ListBroking\AppBundle\Entity\County;
+use ListBroking\AppBundle\Entity\District;
+use ListBroking\AppBundle\Entity\ExtractionContact;
+use ListBroking\AppBundle\Entity\Gender;
+use ListBroking\AppBundle\Entity\Lead;
+use ListBroking\AppBundle\Entity\Owner;
+use ListBroking\AppBundle\Entity\Parish;
+use ListBroking\AppBundle\Entity\Source;
+use ListBroking\AppBundle\Entity\SubCategory;
+
+class Contact {
+    use TimestampableEntityBehavior,
+        BlameableEntityBehavior;
+
+
+    function __construct()
+    {
+        $this->extractions = new ArrayCollection();
+    }
+
+    function __toString()
+    {
+        return $this->firstname . ' ' . $this->lastname;
+    }
+
+    // GENERATED STUFF
+}

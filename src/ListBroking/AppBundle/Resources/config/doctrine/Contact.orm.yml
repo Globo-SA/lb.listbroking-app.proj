@@ -75,7 +75,11 @@ ListBroking\AppBundle\Entity\Contact:
             nullable: true
             gedmo: { timestampable: { on: update } }
 # End of Timestampable
-
+    oneToMany:
+        extraction_contacts:
+            targetEntity: ListBroking\AppBundle\Entity\ExtractionContact
+            mappedBy:     contact
+            cascade:      [all]
 # Blameable
     manyToOne:
         created_by:
@@ -165,7 +169,3 @@ ListBroking\AppBundle\Entity\Contact:
                 referencedColumnName: id
                 onDelete:             restrict
                 nullable:             false
-    manyToMany:
-        extractions:
-            targetEntity: ListBroking\AppBundle\Entity\Extraction
-            mappedBy:     contacts

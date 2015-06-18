@@ -10,16 +10,16 @@
                         <blockquote>
                             <i class="fa fa-6 fa-times" style="font-size: 6em;color: rgb(245, 105, 84);"></i>
 
-                            <h3>Sorry, the server returned a "{{ status_code }} {{ status_text }}"</h3>
+                            <h3>Sorry, the server returned a "{{ status_text }}"</h3>
+                            <br>
+                            <p>Status code: {{ status_code }}</p>
                             <br>
                             <small>Something is broken. Please let us know what you were doing when this error occurred.
                                 We
                                 will fix
                                 it as soon as possible. Sorry for any inconvenience caused.
                             </small>
-
                             <br>
-
                             <div class="error-actions">
                                 <a href="{{ path('sonata_admin_dashboard') }}" class="btn btn-primary btn-lg"><span
                                             class="glyphicon glyphicon-home"></span>

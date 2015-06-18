@@ -8,10 +8,11 @@
     margin-right: 25px;
 }
 
-.col-md-12 > .form-group.col-md-3{
+.col-md-12 > .form-group.col-md-3 {
     padding-left: 0;
 }
-form .col-md-12 > .col-md-3{
+
+form .col-md-12 > .col-md-3 {
     padding-right: 2px;
 }
 
@@ -19,17 +20,20 @@ form .col-md-12 {
     padding-left: 0;
 }
 
-form .col-md-12 > .col-md-3{
+form .col-md-12 > .col-md-3 {
     padding-right: 2px;
 }
+
 @media (max-width: 970px) {
-    form .col-md-12 .col-md-3{
+    form .col-md-12 .col-md-3 {
         float: left;
         width: 100%;
     }
+
     .add_collection {
         float: right;
     }
+
     .del_collection {
         margin-right: 22px;
     }
@@ -40,6 +44,13 @@ blockquote {
     padding: 0 20px;
 }
 
-td .lead_exclude{
-  min-width: 76px;
+td .lead_exclude {
+    min-width: 76px;
+}
+
+@media (min-width: 768px) {
+    .modal-dialog {
+        width: 800px;
+        margin: 30px auto;
+    }
 }

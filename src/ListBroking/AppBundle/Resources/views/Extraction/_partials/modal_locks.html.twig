@@ -9,50 +9,64 @@
             </div>
             <div class="modal-body">
                 <p>Lock all extracted lead by:</p>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="btn-group btn-group-justified">
-                            <div class="btn-group btn-group-lg">
-                                <label class="btn btn-default">
-                                    <i class="fa fa-user"></i>
-                                    <input type="checkbox" name="lock_chk"
-                                           value="{{ constant('ListBroking\\AppBundle\\Entity\\Lock::TYPE_CLIENT') }}">
-                                    <p>CLIENT</p>
-                                </label>
-                            </div>
-                            <div class="btn-group btn-group-lg">
-                                <label class="btn btn-default">
-                                    <i class="fa fa-users"></i>
-                                    <input type="checkbox" name="lock_chk"
-                                           value="{{ constant('ListBroking\\AppBundle\\Entity\\Lock::TYPE_CAMPAIGN') }}">
-                                    <p>CAMPAIGN</p>
-                                </label>
-                            </div>
-                            <div class="btn-group btn-group-lg">
-                                <label class="btn btn-default">
-                                    <i class="fa fa-folder"></i>
-                                    <input type="checkbox" name="lock_chk"
-                                           value="{{ constant('ListBroking\\AppBundle\\Entity\\Lock::TYPE_CATEGORY') }}">
-                                    <p>CATEGORY</p>
-                                </label>
-                            </div>
-                            <div class="btn-group btn-group-lg">
-                                <label class="btn btn-default">
-                                    <i class="fa fa-file"></i>
-                                    <input type="checkbox" name="lock_chk"
-                                           value="{{ constant('ListBroking\\AppBundle\\Entity\\Lock::TYPE_SUB_CATEGORY') }}">
-                                    <p>SUBCATEGORY</p>
-                                </label>
+
+                {{ form_start(forms.extraction_locking, {attr: {'data-extraction': extraction.id }}) }}
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="btn-group btn-group-justified">
+                                <div class="btn-group btn-group-lg">
+                                    <label class="btn btn-default">
+                                        <i class="fa fa-user"></i>&nbsp;
+                                        {{ form_widget(forms.extraction_locking.lock_type.0) }}
+                                        {{ form_label(forms.extraction_locking.lock_type.0) }}
+                                    </label>
+                                </div>
+                                <div class="btn-group btn-group-lg">
+                                    <label class="btn btn-default">
+                                        <i class="fa fa-users"></i>&nbsp;
+                                        {{ form_widget(forms.extraction_locking.lock_type.1) }}
+                                        {{ form_label(forms.extraction_locking.lock_type.1) }}
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <blockquote>
-                        <small>All extracted lead will be automatically locked for <b>{{ lock_time }}</b></small>
-                    </blockquote>
+                    <div class="row space">
+                        <div class="col-md-12">
+                            <div class="btn-group btn-group-justified">
+                                <div class="btn-group btn-group-lg">
+                                    <label class="btn btn-default">
+                                        <i class="fa fa-folder"></i>&nbsp;
+                                        {{ form_widget(forms.extraction_locking.lock_type.2) }}
+                                        {{ form_label(forms.extraction_locking.lock_type.2) }}
+                                    </label>
+                                </div>
+                                <div class="btn-group btn-group-lg">
+                                    <label class="btn btn-default">
+                                        <i class="fa fa-file"></i>&nbsp;
+                                        {{ form_widget(forms.extraction_locking.lock_type.3) }}
+                                        {{ form_label(forms.extraction_locking.lock_type.3) }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{ form_rest(forms.extraction_locking) }}
+                    {{ form_end(forms.extraction_locking) }}
+                    <div class="row space">
+                        <div class="col-md-12">
+                            <blockquote>
+                                <small>All extracted lead will be automatically locked for <b>{{ lock_time }}</b></small>
+                            </blockquote>
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <div class="modal-footer">
-                <button id="finalize-extraction-btn" class="btn btn-primary disabled" data-url="{{ path('admin_listbroking_app_extraction_filtering', {id: extraction.id}) }}">
+                <button id="finalize_extraction_btn" class="btn btn-primary disabled" disabled="disabled"
+                        data-url="{{ path('admin_listbroking_app_extraction_filtering', {id: extraction.id}) }}">
                     <i class="fa fa-list"></i>&nbsp;Finalize&nbsp;<i class="icon icon-large ion-loading-c" style="display: none;"></i>
                 </button>
                 <button data-dismiss="modal" class="btn btn-flat btn-default">CLOSE</button>

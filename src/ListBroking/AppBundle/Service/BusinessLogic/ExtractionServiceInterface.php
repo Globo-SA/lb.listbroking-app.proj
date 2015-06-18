@@ -11,6 +11,7 @@
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 
+use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionTemplate;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
@@ -20,12 +21,26 @@ use Symfony\Component\Form\Form;
 interface ExtractionServiceInterface {
 
     /**
-     * Used the LockService to compile and run the Extraction
+     * Handles Extraction Filtration
+     *  . Saves new Filters
+     *  . Marks Extraction to be Extracted
+     *  . Sets the Extraction Status to CONFIRMATION
+     *
      * @param Extraction $extraction
-     * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
-     * @return null|Query
+     *
+     * @return bool Returns true if the extraction is ready to be processed by a consumer
      */
-    public function runExtraction(Extraction $extraction);
+    public function handleFiltration (Extraction $extraction);
+
+    /**
+     * Used the LockService to compile and run the Extraction
+     *
+     * @param Extraction $extraction
+     *
+     * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
+     * @return boolean
+     */
+    public function runExtraction (Extraction $extraction);
 
     /**
      * Executes the filtering engine and adds the contacts
@@ -33,7 +48,7 @@ interface ExtractionServiceInterface {
      *
      * @param Extraction $extraction
      *
-     * @return \Doctrine\ORM\Query
+     * @return void
      * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
      */
     public function executeFilterEngine(Extraction $extraction);
@@ -58,15 +73,17 @@ interface ExtractionServiceInterface {
 
 
     /**
-     * Exports Leads using a given type
-     * @param $extraction_template ExtractionTemplate
-     * @param $contacts
-     * @param array $info
+     * Exports Leads to file
+     *
+     * @param Extraction $extraction
+     * @param            $extraction_template ExtractionTemplate
+     * @param array      $info
+     *
      * @throws InvalidExtractionException
      * @internal param $type
      * @return mixed
      */
-    public function exportExtraction(ExtractionTemplate $extraction_template, $contacts, $info = array());
+    public function exportExtraction (Extraction $extraction, ExtractionTemplate $extraction_template, $info = array());
 
     /**
      * Used to import a file with Leads
@@ -77,22 +94,15 @@ interface ExtractionServiceInterface {
     public function importExtraction($filename);
 
     /**
-     * Handle the uploaded file and adds it to the queue
-     * @param Extraction $extraction
-     * @param Form $form
-     * @return Queue
-     */
-    public function addDeduplicationFileToQueue(Extraction $extraction, Form $form);
-
-    /**
      * Persists Deduplications to the database, this function uses PHPExcel with APC
+     *
      * @param Extraction $extraction
-     * @param string $filename
-     * @param string $field
-     * @param $merge
+     * @param string     $filename
+     * @param string     $field
+     *
      * @return void
      */
-    public function uploadDeduplicationsByFile(Extraction $extraction, $filename, $field, $merge);
+    public function uploadDeduplicationsByFile (Extraction $extraction, $filename, $field);
 
     /**
      * Removes Deduplicated Leads from an Extraction
@@ -112,16 +122,20 @@ interface ExtractionServiceInterface {
 
     /**
      * Delivers the Extraction to a set of Emails
+     *
      * @param Extraction $extraction
-     * @param $emails
+     * @param            $emails
+     * @param            $filename
+     *
      * @return mixed
      */
-    public function deliverExtraction(Extraction $extraction, $emails);
+    public function deliverExtraction (Extraction $extraction, $emails, $filename);
+
     /**
-     * Adds Leads to the Lead Filter of a given Extraction
+     * Clones a given extraction and resets it's status
      * @param Extraction $extraction
-     * @param $leads_array
-     * @param string $field
+     *
+     * @return Extraction
      */
-    //public function excludeLeads(Extraction $extraction, $leads_array, $field = 'id');
+    public function cloneExtraction(Extraction $extraction);
 } 

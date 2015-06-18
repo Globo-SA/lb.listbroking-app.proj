@@ -1,0 +1,41 @@
+{% form_theme forms.filters '@ListBrokingApp/Extraction/_forms/themes/filters_form_theme.html.twig' %}
+{{ form_start(forms.filters) }}
+<div class="panel-group" id="filters" role="tablist" aria-multiselectable="true">
+    {% for widget in forms.filters if widget.vars.block_prefixes.1 != 'hidden' %}
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="{{ widget.vars.name }}-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse"  href="#{{ widget.vars.name }}" aria-expanded="true"
+                       aria-controls="{{ widget.vars.name }}">
+                        {{ widget.vars.label }}
+                    </a>
+                </h4>
+            </div>
+            <div id="{{ widget.vars.name }}" class="panel-collapse collapse {{ widget.vars.attr.class|default('') }}" role="tabpanel"
+                 aria-labelledby="{{ widget.vars.name }}-heading">
+                <div class="panel-body">
+                    {% for compound in widget %}
+                        {% if compound.vars.block_prefixes.1 == 'collection' %}
+                            <div class="col-md-12">
+                                {{ form_widget(compound,{attr: 'disabled'}) }}
+                            </div>
+                        {% else %}
+                            {{ form_row(compound) }}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{{ form_rest(forms.filters) }}
+<hr>
+<blockquote class="small-label">
+    <p>
+        <button type="submit" class="btn btn-primary btn-flat">
+            <i class="fa fa-share"></i>&#32;Continue
+        </button>
+        <small>This step way take some time depending on the choosen filters</small>
+    </p>
+</blockquote>
+{{ form_end(forms.filters) }}

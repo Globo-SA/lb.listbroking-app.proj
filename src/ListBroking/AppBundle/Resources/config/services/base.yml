@@ -1,0 +1,38 @@
+services:
+  base:
+    class: ListBroking\AppBundle\Service\Base\BaseService
+    abstract: true
+    calls:
+      - [setKernel,[@kernel]]
+      - [setDoctrine, [@doctrine]]
+      - [setEntityManager, [@doctrine.orm.entity_manager]]
+      - [setCache, [@doctrine_cache.providers.memcached_query_cache]]
+      - [setFormFactory, [@form.factory]]
+      - [setLogger, [@logger]]
+      - [setTokenStorage, [@security.token_storage]]
+    tags:
+      - { name: monolog.logger, channel: app_services }
+
+  messaging:
+    class: ListBroking\AppBundle\Service\Helper\MessagingService
+    parent: base
+    arguments: [@service_container]
+
+  app:
+    class: ListBroking\AppBundle\Service\Helper\AppService
+    parent: base
+    arguments: [@mailer, @twig, @old_sound_rabbit_mq.parts_holder]
+
+  lead:
+    class: ListBroking\AppBundle\Service\BusinessLogic\LeadService
+    parent: base
+
+  extraction:
+    class: ListBroking\AppBundle\Service\BusinessLogic\ExtractionService
+    parent: base
+    arguments: [@request_stack, @filter_engine, @mailer, @twig ]
+
+  staging:
+    class: ListBroking\AppBundle\Service\BusinessLogic\StagingService
+    parent: base
+    arguments: [@validator_engine]

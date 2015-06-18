@@ -4,6 +4,14 @@
     opacity: 0.4;
 }
 
+.space{
+    margin-top: 10px;
+}
+
+.grey-bg{
+    background-color: rgb(234, 234, 234);
+}
+
 .logo img{
     max-width: 100%;
 }
@@ -35,8 +43,6 @@
 
 .btn-link {
     box-shadow: none;
-    -moz-box-shadow:    none;
-    box-shadow:         none;
 }
 
 .box-body form {
@@ -66,9 +72,18 @@ blockquote.small-label label{
 
 .icon-huge {
     position: absolute;
-    top: 40%;
-    left: 43%;
-    font-size: 150px;
-    z-index: 9999;
-    opacity: 0.5;
+    bottom: 16%;
+    right: 50%;
+    font-size: 120px;
+    z-index: 2;
+    opacity: 0.25;
+}
+
+.icon-small {
+    position: absolute;
+    bottom: 26%;
+    right: 50%;
+    font-size: 60px;
+    z-index: 2;
+    opacity: 0.25;
 }

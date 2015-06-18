@@ -12,6 +12,7 @@ namespace ListBroking\AppBundle\Service\Base;
 
 use Doctrine\Common\Cache\Cache;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
@@ -33,9 +34,13 @@ use ListBroking\AppBundle\Entity\SubCategory;
 use ListBroking\AppBundle\Exception\InvalidEntityTypeException;
 use ListBroking\TaskControllerBundle\Entity\Queue;
 use ListBroking\TaskControllerBundle\Entity\Task;
+use Monolog\Logger;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactory;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 abstract class BaseService implements BaseServiceInterface
 {
@@ -72,6 +77,11 @@ abstract class BaseService implements BaseServiceInterface
     );
 
     /**
+     * @var Kernel
+     */
+    protected $kernel;
+
+    /**
      * @var Connection
      */
     protected $doctrine;
@@ -79,7 +89,7 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * @var EntityManager
      */
-    protected $em;
+    public $em;
 
     /**
      * @var Cache
@@ -91,6 +101,27 @@ abstract class BaseService implements BaseServiceInterface
      */
     protected $form_factory;
 
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
+     * @var TokenStorageInterface
+     */
+    protected $token_storage;
+
+    /**
+     * @param Kernel $kernel
+     */
+    public function setKernel ($kernel)
+    {
+        $this->kernel = $kernel;
+    }
+
+    /**
+     * @param $doctrine
+     */
     public function setDoctrine($doctrine){
         $this->doctrine = $doctrine;
     }
@@ -120,6 +151,71 @@ abstract class BaseService implements BaseServiceInterface
     public function setFormFactory(FormFactory $formFactory)
     {
        $this->form_factory = $formFactory;
+    }
+
+    /**
+     * @param Logger $logger
+     */
+    public function setLogger ($logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Gets the App Root Dir
+     * @return mixed|string
+     */
+    public function getRootDir(){
+        return $this->kernel->getRootDir();
+    }
+
+    /**
+     * @param TokenStorageInterface $token_storage
+     */
+    public function setTokenStorage ($token_storage)
+    {
+        $this->token_storage = $token_storage;
+    }
+
+    /**
+     * Log an error to the channel
+     *
+     * @param $msg
+     */
+    public function logError ($msg)
+    {
+        $msg = '[' . date('Y-m-d h:d:s') . '] ' . $msg;
+        $this->logger->error($msg);
+    }
+
+
+    /**
+     * Log an info to the channel
+     *
+     * @param $msg
+     */
+    public function logInfo ($msg)
+    {
+
+        $msg = '[' . date('Y-m-d h:d:s') . '] ' . $msg;
+        $this->logger->info($msg);
+    }
+
+    /**
+     * Get Currently logged in user
+     * @return mixed
+     */
+    public function getUser(){
+        return $this->token_storage->getToken()->getUser();
+    }
+
+    /**
+     * Clears the EntityManager
+     * @return void
+     */
+    public function clearEntityManager()
+    {
+            $this->em->clear();
     }
 
     /**
@@ -172,7 +268,6 @@ abstract class BaseService implements BaseServiceInterface
     {
         // Entity information
         $entity_info = $this->getCacheIdAndRepo($type, $hydrate, $id);
-
         // Check if there's cache
         if (!$this->dcache->contains($entity_info['cache_id']) || $attach)
         {
@@ -322,11 +417,11 @@ abstract class BaseService implements BaseServiceInterface
         if($action){
             $form->setAction($action);
         }
-
         if ($view)
         {
             return $form->getForm()->createView();
         }
+
         return $form->getForm();
     }
 
@@ -339,6 +434,24 @@ abstract class BaseService implements BaseServiceInterface
 
         return $this->em->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
             ->findLastExceptions($limit);
+    }
+
+    /**
+     * Saves a file on a form
+     *
+     * @param Form $form
+     *
+     * @return UploadedFile
+     */
+    public function saveFile (Form $form){
+
+        // Handle Form
+        $data = $form->getData();
+        /** @var UploadedFile $file */
+        $file = $data['upload_file'];
+        $filename = $this->generateFilename($file->getClientOriginalName(), null, 'imports/');
+
+        return $file->move('imports', $filename);
     }
 
     /**

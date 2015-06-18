@@ -13,6 +13,8 @@ namespace ListBroking\AppBundle\Service\Helper;
 
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Service\Base\BaseService;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class AppService extends BaseService implements AppServiceInterface {
 
@@ -58,13 +60,16 @@ class AppService extends BaseService implements AppServiceInterface {
     /**
      * Gets a list of entities using the services
      * provided in various bundles
-     * @param $type
-     * @param $query
+     *
+     * @param        $type
+     * @param        $ids
+     * @param string $query
      * @param string $bundle
+     *
      * @throws \Exception
      * @return mixed
      */
-    public function getEntityList($type, $query, $bundle)
+    public function getEntityList($type, $ids, $query, $bundle)
     {
         if (empty($type))
         {
@@ -74,6 +79,9 @@ class AppService extends BaseService implements AppServiceInterface {
         $qb = $this->em->getRepository("{$bundle}:{$type}")
             ->createQueryBuilder('l')
         ;
+        if(!empty($ids)){
+            $qb->where($qb->expr()->in('l.id', $ids));
+        }
 
         if(!empty($query)){
             $qb->where($qb->expr()->like('l.name', $qb->expr()->literal("%%{$query}%%")))
@@ -111,5 +119,43 @@ class AppService extends BaseService implements AppServiceInterface {
             ->setContentType('text/html');
 
         return $this->mailer->send($message);
+    }
+
+    /**
+     * Generates a Json Response
+     *
+     * @param     $response
+     * @param int $code
+     *
+     * @return JsonResponse
+     */
+    public function createJsonResponse ($response, $code = 200)
+    {
+
+        // Handle exceptions that don't have a valid http code
+        if ( ! is_int($code) || $code == '0' )
+        {
+            $code = 500;
+        }
+
+        return new JsonResponse(array(
+            "code"     => $code,
+            "response" => $response
+        ), $code);
+    }
+
+    /**
+     * Validates the Ajax Request
+     *
+     * @param $request Request
+     *
+     * @throws \Exception
+     */
+    public function validateAjaxRequest (Request $request)
+    {
+        if ( ! $request->isXmlHttpRequest() )
+        {
+            throw new \Exception("Only Xml Http Requests allowed", 400);
+        }
     }
 }

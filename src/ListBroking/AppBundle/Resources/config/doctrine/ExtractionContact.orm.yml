@@ -1,0 +1,23 @@
+ListBroking\AppBundle\Entity\ExtractionContact:
+    type: entity
+    table: extraction_contact
+    repositoryClass: ListBroking\AppBundle\Repository\ExtractionContactRepository
+    id:
+        id:
+            type: bigint
+            id: true
+            generator:
+                strategy: AUTO
+    manyToOne:
+        extraction:
+            targetEntity: ListBroking\AppBundle\Entity\Extraction
+            inversedBy: extraction_contacts
+            joinColumn:
+                name: extraction_id
+                referencedColumnName: id
+        contact:
+            targetEntity: ListBroking\AppBundle\Entity\Contact
+            inversedBy: extraction_contacts
+            joinColumn:
+                name: contact_id
+                referencedColumnName: id

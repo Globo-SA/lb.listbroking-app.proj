@@ -1,0 +1,48 @@
+ajax_last_exceptions:
+    path: /ajax/exception/last
+    defaults: { _controller: ListBrokingAppBundle:Ajax:lastExceptions }
+    options:
+        expose: true
+
+#ajax_publish_message:
+#    path: /ajax/message/publish
+#    defaults: { _controller: ListBrokingAppBundle:Ajax:publishMessage }
+#    options:
+#        expose: true
+
+ajax_operational_email_deliver:
+    path: /ajax/operational_email/deliver
+    defaults: { _controller: ListBrokingAppBundle:Ajax:operationalEmailDeliver }
+    options:
+        expose: true
+
+ajax_operational_email_preview:
+    path: /ajax/operational_email/preview
+    defaults: { _controller: ListBrokingAppBundle:Ajax:operationalEmailPreview }
+    options:
+        expose: true
+
+ajax_form_lists:
+    path: /ajax/form/lists
+    defaults: { _controller: ListBrokingAppBundle:Ajax:lists }
+    options:
+        expose: true
+
+ajax_opposition_list_import:
+    path: /ajax/oppositionlist/import
+    defaults: { _controller: ListBrokingAppBundle:Ajax:oppositionListImport }
+    options:
+        expose: true
+
+ajax_staging_contact_import_template:
+    path: /ajax/stagingcontact/import/template
+    defaults: { _controller: ListBrokingAppBundle:Ajax:stagingContactImportTemplate }
+    options:
+        expose: true
+
+ajax_staging_contact_import:
+    path: /ajax/stagingcontact/import
+    defaults: { _controller: ListBrokingAppBundle:Ajax:stagingContactImport }
+    options:
+        expose: true
+

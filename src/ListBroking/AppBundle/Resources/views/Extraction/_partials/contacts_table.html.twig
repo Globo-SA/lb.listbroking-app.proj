@@ -1,8 +1,9 @@
+<i class="icon icon-huge ion-loading-c"></i>
 <h4><i class="fa fa-table"></i>&nbsp;Extraction Preview&nbsp;
     <small>(only the first {{ preview_limit }} contacts are shown)</small>
 </h4>
 <div class="table-responsive">
-    <table id="leads_table" class="table table-hover" data-toggle="simple_table" width="100%">
+    <table id="leads_table" class="table table-hover" width="100%">
         <thead>
         <tr>
             <th>Phone</th>
@@ -19,38 +20,29 @@
             <th>Category</th>
             <th>SubCategory</th>
             <th>Date</th>
-            {#{% if extraction.status != 3 %}#}
-            {#<th>Exclude?</th>#}
-            {#{% endif %}#}
         </tr>
         </thead>
         <tbody>
-        {% for contact in contacts %}
-            <tr>
-                <td>{{ contact['lead']['phone']|default('-') }}</td>
-                <td>{{ contact['gender']['name']|default('-') }}</td>
-                <td>{{ contact['birthdate']|date('Y-m-d')|default('-') }}</td>
-                <td>{{ contact['country']['name']|default('-') }}</td>
-                <td>{{ contact['postalcode1']|default('-') }}</td>
-                <td>{{ contact['postalcode2']|default('-') }}</td>
-                <td>{{ contact['district']['name']|default('-') }}</td>
-                <td>{{ contact['county']['name']|default('-') }}</td>
-                <td>{{ contact['parish']['name']|default('-') }}</td>
-                <td>{{ contact['owner']['name']|default('-') }}</td>
-                <td>{{ contact['source']['name'] }}</td>
-                <td>{{ contact['sub_category']['category']['name']|default('-') }}</td>
-                <td>{{ contact['sub_category']['name']|default('-') }}</td>
-                <td>{{ contact['date']|default('-')|date('Y-m-d') }}</td>
-                {#{% if extraction.status != 3 %}#}
-                {#<td>#}
-                {#<div class="btn-group lead_exclude">#}
-                {#<button class="exclude_lead btn btn-flat btn-xs btn-warning"><i class="fa fa-times"></i></button>#}
-                {#<button class="confirm_exclude_lead btn btn-flat btn-xs btn-danger" style="display: none;" data-extraction-id="{{ extraction.id }}" data-lead-id="{{ contact['lead']['id'] }}">exclude?</button>#}
-                {#</div>#}
-                {#</td>#}
-                {#{% endif %}#}
-            </tr>
-        {% endfor %}
+        {% if extraction_contacts_preview is defined %}
+            {% for extraction_contact in extraction_contacts_preview %}
+                <tr>
+                    <td>{{ extraction_contact.contact.lead.phone|default('-') }}</td>
+                    <td>{{ extraction_contact.contact.gender.name|default('-') }}</td>
+                    <td>{{ extraction_contact.contact.birthdate|date('Y-m-d')|default('-') }}</td>
+                    <td>{{ extraction_contact.contact.country.name|default('-') }}</td>
+                    <td>{{ extraction_contact.contact.postalcode1|default('-') }}</td>
+                    <td>{{ extraction_contact.contact.postalcode2|default('-') }}</td>
+                    <td>{{ extraction_contact.contact.district.name|default('-') }}</td>
+                    <td>{{ extraction_contact.contact.county.name|default('-') }}</td>
+                    <td>{{ extraction_contact.contact.parish.name|default('-') }}</td>
+                    <td>{{ extraction_contact.contact.owner.name|default('-') }}</td>
+                    <td>{{ extraction_contact.contact.source.name }}</td>
+                    <td>{{ extraction_contact.contact.sub_category.category.name|default('-') }}</td>
+                    <td>{{ extraction_contact.contact.sub_category.name|default('-') }}</td>
+                    <td>{{ extraction_contact.contact.date|default('-')|date('Y-m-d') }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
         </tbody>
         <tfoot>
         <tr>
@@ -68,9 +60,6 @@
             <th>Category</th>
             <th>SubCategory</th>
             <th>Date</th>
-            {#{% if extraction.status != 3 %}#}
-            {#<th>Exclude?</th>#}
-            {#{% endif %}#}
         </tr>
         </tfoot>
     </table>

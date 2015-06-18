@@ -12,7 +12,10 @@ namespace ListBroking\AppBundle\Repository;
 
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
+use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Extraction;
+use ListBroking\AppBundle\Entity\ExtractionContact;
 
 class ExtractionRepository extends EntityRepository {
 
@@ -20,20 +23,30 @@ class ExtractionRepository extends EntityRepository {
      * Associates multiple contacts to an extraction
      * @param $extraction Extraction
      * @param $contacts
-     * @param $merge
      * @return mixed
      */
-    public function addContacts(Extraction $extraction, $contacts, $merge)
+    public function addContacts(Extraction $extraction, $contacts)
     {
         $em = $this->getEntityManager();
         $batch = 1;
         $batchSize = 1000;
-        if(!$merge){
-            $extraction->getContacts()->clear();
+        // Remove old ExtractionContacts of current Extraction
+        foreach ( $extraction->getExtractionContacts()->getIterator() as $extraction_contact )
+        {
+            $em->remove($extraction_contact);
         }
+        $em->flush();
+
+        // Add the new Contacts
         foreach ($contacts as $contact){
             $contact = $em->getPartialReference('ListBrokingAppBundle:Contact', $contact['contact_id']);
-            $extraction->addContact($contact);
+
+            $extraction_contact = new ExtractionContact();
+            $extraction_contact->setContact($contact);
+            $extraction_contact->setExtraction($extraction);
+
+            $extraction->addExtractionContact($extraction_contact);
+
             if (($batch % $batchSize) === 0) {
                 $batch = 1;
                 $em->flush();
@@ -41,18 +54,4 @@ class ExtractionRepository extends EntityRepository {
             $batch++;
         }
     }
-
-    public function getExtractionSummary(Extraction $extraction){
-        $qb = $this->createQueryBuilder('e')
-            ->select('o.name, count(o.name) as total')
-            ->join('e.contacts', 'c')
-            ->join('c.owner', 'o')
-            ->where('e = :extraction')
-            ->setParameter('extraction', $extraction)
-            ->groupBy('c.owner')
-        ;
-
-        return $qb->getQuery()->execute();
-    }
-
 } 

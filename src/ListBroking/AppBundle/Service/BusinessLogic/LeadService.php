@@ -14,6 +14,7 @@ namespace ListBroking\AppBundle\Service\BusinessLogic;
 use Doctrine\ORM\EntityManager;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\Lead;
+use ListBroking\AppBundle\Service\Base\BaseService;
 
 /**
  * This service can not use a cache system, as locks are too volatile.
@@ -21,17 +22,7 @@ use ListBroking\AppBundle\Entity\Lead;
  * Class LeadService
  * @package ListBroking\AppBundle\Service
  */
-class LeadService implements LeadServiceInterface {
-
-    /**
-     * @var EntityManager
-     */
-    private $em;
-
-    function __construct(EntityManager $entityManager)
-    {
-        $this->em = $entityManager;
-    }
+class LeadService extends BaseService  implements LeadServiceInterface {
 
     /**
      * @param $id
@@ -184,17 +175,6 @@ class LeadService implements LeadServiceInterface {
 
         $this->em->persist($entity);
         $this->em->flush();
-    }
-
-    /**
-     * Removes expire locks
-     * NOTE: Locks are always moved to a _log table
-     * @param $days
-     * @return int
-     */
-    public function removeExpiredLocks($days)
-    {
-        return $this->lock_repo->removeByExpirationDate($days);
     }
 
     /**

@@ -111,14 +111,6 @@ interface LeadServiceInterface
     public function removeLock($entity);
 
     /**
-     * Removes expire locks
-     * NOTE: Locks are always moved to a _log table
-     * @param $days
-     * @return int
-     */
-    public function removeExpiredLocks($days);
-
-    /**
      * Updates a single country
      * @param $entity
      * @return mixed

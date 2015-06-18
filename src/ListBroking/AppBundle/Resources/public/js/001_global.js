@@ -14,15 +14,6 @@
             }
         });
 
-        // Extra animations
-        jQuery.fn.extend({
-            slide: function (direction, time) {
-                return this.each(function () {
-                    $(this).toggle('slide', {direction: direction}, time);
-                });
-            }
-        });
-
         // Exception menu
         $('.exceptions_menu').click(function (e) {
             e.preventDefault();
@@ -33,7 +24,7 @@
             $('#loading_widget').fadeIn();
             $.ajax({
                 type: "GET",
-                url: App.routing.generate('last_exceptions'),
+                url: App.routing.generate('ajax_last_exceptions'),
                 dataType: 'json',
                 success: function (data) {
                     var response = data.response;
@@ -64,118 +55,38 @@
             return false;
         });
 
-        // Select2 widgets
-        $("[data-select-mode=local]").each(function () {
-            $(this).select2();
+        // Simple dataTable instance
+        $('[data-toggle=simple_table]').dataTable({
+            bPaginate: false,
+            bFilter: false,
+            bSort: true,
+            bInfo: false
         });
 
-        $("[data-select-mode=open]").each(function () {
-            $(this).select2({
-                tags: [],
-                allowClear: true,
-                placeholder: $(this).data('placeholder'),
-                multiple: true
-            });
-        });
-
-        $("[data-select-mode=ajax]").each(function () {
-
-            // Current data type
-            var $select = $(this);
-
-            $select.select2({
-                minimumInputLength: $select.data('select-minimum-input'),
-                multiple: $select.data('select-multiple'),
-                allowClear: true,
-                ajax: {
-                    url: App.routing.generate('ajax_form_lists'),
-                    dataType: 'json',
-                    data: function (term, page) {
-
-                        // Ajax call data
-                        var data = {};
-                        data.type = $select.data('select-type');
-
-                        data.q = term;
-
-                        return data;
-                    },
-                    results: function (data, page) {
-                        return {results: data.response};
-                    },
-                    cache: true
-                },
-                formatResult: function (item) {
-                    var markup = "";
-                    if (item.name !== undefined) {
-                        markup += "<option value='" + item.id + "'>" + item.name + "</option>";
-                    }
-                    return markup;
-                },
-                formatSelection: function (item) {
-                    return item.name
-                }
-            });
-        });
-
-
-        $('[data-toggle=datepicker]').daterangepicker({
-            singleDatePicker: true,
-            startDate: moment()
-        });
-
-        // Fix tooltips on checkboxes
-        $("[data-toggle='tooltip'][type='checkbox']").each(function () {
-            var $el = $(this);
-            var $label = $el.parents('.form-group').find('label');
-            if ($label.length > 0) {
-                $(this).tooltip('destroy');
-                $label.attr('title', $el.data('original-title'));
-                $label.data('placement', $el.data('placement'));
-                $label.tooltip()
+        /**
+         * Extra jQuery animations
+         */
+        $.fn.extend({
+            slide: function (direction, time) {
+                return this.each(function () {
+                    $(this).toggle('slide', {direction: direction}, time);
+                });
             }
         });
 
-        // Input masks
-        $("[data-mask]").inputmask();
-
-        // Toggles elements text and disable state
+        /**
+         * Toggles elements text and disable state
+         * @returns {*|HTMLElement}
+         */
         $.fn.toggleLoading = function () {
             var $trigger = $(this);
             var text = $trigger.html();
             var alt_text = $trigger.data('alt');
 
-            $trigger.html(alt_text)
+            $trigger.html(alt_text);
             $trigger.data('alt', text);
-
-            if ($trigger.is(':disabled')) {
-                $trigger.removeAttr('disabled');
-            } else {
-                $trigger.attr('disabled', 'disabled');
-            }
 
             return $(this);
         };
-
-        // Check for queues
-        $.fn.checkQueues = function (type, key, value, callback) {
-            return setInterval(function () {
-                $.ajax({
-                    type: "GET",
-                    url: App.routing.generate('ajax_taskcontroller_queue_check'),
-                    dataType: 'json',
-                    data: {type: type, key: key, value: value},
-                    success: function (data) {
-
-                        var response = data.response;
-                        if (response.response == 'ended') {
-                            callback();
-                        }
-
-                    }
-                });
-            }, 5000);
-        }
-
     });
 })(jQuery, ListBroking);

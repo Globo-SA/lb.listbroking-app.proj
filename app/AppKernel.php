@@ -26,6 +26,7 @@ class AppKernel extends Kernel
             new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new Misd\GuzzleBundle\MisdGuzzleBundle(),
+            new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
 
             //Security
             new FOS\UserBundle\FOSUserBundle(),

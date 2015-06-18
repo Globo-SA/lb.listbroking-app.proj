@@ -1,0 +1,51 @@
+old_sound_rabbit_mq:
+    connections:
+        default:
+            host:     %rabbitmq_host%
+            port:     %rabbitmq_port%
+            user:     %rabbitmq_user%
+            password: %rabbitmq_password%
+            vhost:    /
+            lazy:     false
+            connection_timeout: 3
+            read_write_timeout: 3
+
+            # requires php-amqplib v2.4.1+ and PHP5.4+
+            keepalive: false
+
+            # requires php-amqplib v2.4.1+
+            heartbeat: 0
+    producers:
+        run_extraction:
+            connection: default
+            exchange_options: {name: 'run-extraction', type: direct}
+        deduplicate_extraction:
+            connection: default
+            exchange_options: {name: 'deduplicate-extraction', type: direct}
+        lock_extraction:
+            connection: default
+            exchange_options: {name: 'lock-extraction', type: direct}
+        deliver_extraction:
+            connection: default
+            exchange_options: {name: 'deliver-extraction', type: direct}
+    consumers:
+        run_extraction:
+            connection:       default
+            exchange_options: {name: 'run-extraction', type: direct}
+            queue_options:    {name: 'run-extraction'}
+            callback:         app.consumer.run_extraction
+        deduplicate_extraction:
+            connection:       default
+            exchange_options: {name: 'deduplicate-extraction', type: direct}
+            queue_options:    {name: 'deduplicate-extraction'}
+            callback:         app.consumer.deduplicate_extraction
+        lock_extraction:
+            connection:       default
+            exchange_options: {name: 'lock-extraction', type: direct}
+            queue_options:    {name: 'lock-extraction'}
+            callback:         app.consumer.lock_extraction
+        deliver_extraction:
+            connection:       default
+            exchange_options: {name: 'deliver-extraction', type: direct}
+            queue_options:    {name: 'deliver-extraction'}
+            callback:         app.consumer.deliver_extraction

@@ -1,0 +1,473 @@
+<?php
+/**
+ * @author     Samuel Castro <samuel.castro@adclick.pt>
+ * @copyright  2014 Adclick
+ * @license    [LISTBROKING_URL_LICENSE_HERE]
+ * [LISTBROKING_DISCLAIMER]
+ */
+
+namespace ListBroking\AppBundle\Entity;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
+use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
+
+class Extraction
+{
+
+    const CACHE_ID = 'extraction';
+
+    use TimestampableEntityBehavior, BlameableEntityBehavior;
+
+    const STATUS_FILTRATION   = 1;
+
+    const STATUS_CONFIRMATION = 2;
+
+    const STATUS_FINAL        = 3;
+
+    const EXCLUDE_DEDUPLICATION_TYPE = 'exclude';
+
+    const INCLUDE_DEDUPLICATION_TYPE = 'include';
+
+    public static $status_names      = array(
+        1 => 'Filtration',
+        2 => 'Confirmation',
+        3 => 'Finished'
+    );
+
+    function __construct ()
+    {
+        $this->extraction_contacts = new ArrayCollection();
+        $this->extraction_deduplications = new ArrayCollection();
+    }
+
+    function __toString ()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatusName ()
+    {
+        return Extraction::$status_names[$this->status];
+    }
+
+
+    // GENERATED STUFF
+
+
+    /**
+     * @var integer
+     */
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var integer
+     */
+    private $status = Extraction::STATUS_FILTRATION;
+
+    /**
+     * @var integer
+     */
+    private $quantity;
+
+    /**
+     * @var array
+     */
+    private $filters;
+
+    /**
+     * @var float
+     */
+    private $payout;
+
+    /**
+     * @var boolean
+     */
+    private $is_already_extracted = false;
+
+    /**
+     * @var boolean
+     */
+    private $is_deduplicating = false;
+
+    /**
+     * @var boolean
+     */
+    private $is_locking = false;
+
+    /**
+     * @var string
+     */
+    private $deduplication_type;
+
+    /**
+     * @var string
+     */
+    private $query;
+
+    /**
+     * @var ArrayCollection
+     */
+    private $extraction_deduplications;
+
+    /**
+     * @var ArrayCollection
+     */
+    private $extraction_contacts;
+
+    /**
+     * @var \ListBroking\AppBundle\Entity\Campaign
+     */
+    private $campaign;
+
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     *
+     * @return Extraction
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set status
+     *
+     * @param integer $status
+     *
+     * @return Extraction
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return integer
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set quantity
+     *
+     * @param integer $quantity
+     *
+     * @return Extraction
+     */
+    public function setQuantity($quantity)
+    {
+        $this->quantity = $quantity;
+
+        return $this;
+    }
+
+    /**
+     * Get quantity
+     *
+     * @return integer
+     */
+    public function getQuantity()
+    {
+        return $this->quantity;
+    }
+
+    /**
+     * Set filters
+     *
+     * @param array $filters
+     *
+     * @return Extraction
+     */
+    public function setFilters($filters)
+    {
+        $this->filters = $filters;
+
+        return $this;
+    }
+
+    /**
+     * Get filters
+     *
+     * @return array
+     */
+    public function getFilters()
+    {
+        return $this->filters;
+    }
+
+    /**
+     * Set payout
+     *
+     * @param float $payout
+     *
+     * @return Extraction
+     */
+    public function setPayout($payout)
+    {
+        $this->payout = $payout;
+
+        return $this;
+    }
+
+    /**
+     * Get payout
+     *
+     * @return float
+     */
+    public function getPayout()
+    {
+        return $this->payout;
+    }
+
+    /**
+     * Set isAlreadyExtracted
+     *
+     * @param boolean $isAlreadyExtracted
+     *
+     * @return Extraction
+     */
+    public function setIsAlreadyExtracted($isAlreadyExtracted)
+    {
+        $this->is_already_extracted = $isAlreadyExtracted;
+
+        return $this;
+    }
+
+    /**
+     * Get isAlreadyExtracted
+     *
+     * @return boolean
+     */
+    public function getIsAlreadyExtracted()
+    {
+        return $this->is_already_extracted;
+    }
+
+    /**
+     * Set isDeduplicating
+     *
+     * @param boolean $isDeduplicating
+     *
+     * @return Extraction
+     */
+    public function setIsDeduplicating($isDeduplicating)
+    {
+        $this->is_deduplicating = $isDeduplicating;
+
+        return $this;
+    }
+
+    /**
+     * Get isDeduplicating
+     *
+     * @return boolean
+     */
+    public function getIsDeduplicating()
+    {
+        return $this->is_deduplicating;
+    }
+
+    /**
+     * Set isLocking
+     *
+     * @param boolean $isLocking
+     *
+     * @return Extraction
+     */
+    public function setIsLocking($isLocking)
+    {
+        $this->is_locking = $isLocking;
+
+        return $this;
+    }
+
+    /**
+     * Get isLocking
+     *
+     * @return boolean
+     */
+    public function getIsLocking()
+    {
+        return $this->is_locking;
+    }
+
+    /**
+     * Set deduplicationType
+     *
+     * @param string $deduplicationType
+     *
+     * @return Extraction
+     */
+    public function setDeduplicationType($deduplicationType)
+    {
+        $this->deduplication_type = $deduplicationType;
+
+        return $this;
+    }
+
+    /**
+     * Get deduplicationType
+     *
+     * @return string
+     */
+    public function getDeduplicationType()
+    {
+        return $this->deduplication_type;
+    }
+
+    /**
+     * Set query
+     *
+     * @param string $query
+     *
+     * @return Extraction
+     */
+    public function setQuery($query)
+    {
+        $this->query = $query;
+
+        return $this;
+    }
+
+    /**
+     * Get query
+     *
+     * @return string
+     */
+    public function getQuery()
+    {
+        return $this->query;
+    }
+
+    /**
+     * Add extractionDeduplication
+     *
+     * @param \ListBroking\AppBundle\Entity\ExtractionDeduplication $extractionDeduplication
+     *
+     * @return Extraction
+     */
+    public function addExtractionDeduplication(\ListBroking\AppBundle\Entity\ExtractionDeduplication $extractionDeduplication)
+    {
+        $this->extraction_deduplications[] = $extractionDeduplication;
+
+        return $this;
+    }
+
+    /**
+     * Remove extractionDeduplication
+     *
+     * @param \ListBroking\AppBundle\Entity\ExtractionDeduplication $extractionDeduplication
+     */
+    public function removeExtractionDeduplication(\ListBroking\AppBundle\Entity\ExtractionDeduplication $extractionDeduplication)
+    {
+        $this->extraction_deduplications->removeElement($extractionDeduplication);
+    }
+
+    /**
+     * Get extractionDeduplications
+     *
+     * @return ArrayCollection
+     */
+    public function getExtractionDeduplications()
+    {
+        return $this->extraction_deduplications;
+    }
+
+    /**
+     * Add extractionContact
+     *
+     * @param \ListBroking\AppBundle\Entity\ExtractionContact $extractionContact
+     *
+     * @return Extraction
+     */
+    public function addExtractionContact(\ListBroking\AppBundle\Entity\ExtractionContact $extractionContact)
+    {
+        $this->extraction_contacts[] = $extractionContact;
+
+        return $this;
+    }
+
+    /**
+     * Remove extractionContact
+     *
+     * @param \ListBroking\AppBundle\Entity\ExtractionContact $extractionContact
+     */
+    public function removeExtractionContact(\ListBroking\AppBundle\Entity\ExtractionContact $extractionContact)
+    {
+        $this->extraction_contacts->removeElement($extractionContact);
+    }
+
+    /**
+     * Get extractionContacts
+     *
+     * @return ArrayCollection
+     */
+    public function getExtractionContacts()
+    {
+        return $this->extraction_contacts;
+    }
+
+    /**
+     * Set campaign
+     *
+     * @param \ListBroking\AppBundle\Entity\Campaign $campaign
+     *
+     * @return Extraction
+     */
+    public function setCampaign(\ListBroking\AppBundle\Entity\Campaign $campaign = null)
+    {
+        $this->campaign = $campaign;
+
+        return $this;
+    }
+
+    /**
+     * Get campaign
+     *
+     * @return \ListBroking\AppBundle\Entity\Campaign
+     */
+    public function getCampaign()
+    {
+        return $this->campaign;
+    }
+}

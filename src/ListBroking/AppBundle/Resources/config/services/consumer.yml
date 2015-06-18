@@ -1,0 +1,16 @@
+services:
+  app.consumer.run_extraction:
+    class: ListBroking\AppBundle\Consumer\RunExtractionConsumer
+    arguments: [@extraction]
+
+  app.consumer.deduplicate_extraction:
+    class: ListBroking\AppBundle\Consumer\DeduplicateExtractionConsumer
+    arguments: [@extraction]
+
+  app.consumer.lock_extraction:
+    class: ListBroking\AppBundle\Consumer\LockExtractionConsumer
+    arguments: [@extraction]
+
+  app.consumer.deliver_extraction:
+    class: ListBroking\AppBundle\Consumer\DeliverExtractionConsumer
+    arguments: [@extraction]

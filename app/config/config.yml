@@ -3,6 +3,7 @@ imports:
     - { resource: security.yml }
     - { resource: services.yml }
     - { resource: doctrine_cache.yml }
+    - { resource: rabbit_mq.yml }
 
 framework:
     #esi:             ~
@@ -30,6 +31,8 @@ framework:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
+    globals:
+      domain: %domain%
 
 # Assetic Configuration
 assetic:
@@ -74,12 +77,20 @@ doctrine:
 
 # Swiftmailer Configuration
 swiftmailer:
-    transport: "%mailer_transport%"
     encryption: "%mailer_encryption%"
-    host:       "%mailer_host%"
+    transport: "%mailer_transport%"
+    host:      "%mailer_host%"
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+
+monolog:
+  channels: ["app_services"]
+  handlers:
+    app_services:
+        type:     stream
+        path:     "%app_services_channel_log_file_path%"
+        channels: ["app_services"]
 
 stof_doctrine_extensions:
   default_locale: en_UK
@@ -105,7 +116,7 @@ fos_js_routing:
         public: true
 
 sonata_user:
-    security_acl: true
+    security_acl: false
     manager_type: orm # can be orm or mongodb
     impersonating:
         route: sonata_admin_dashboard
@@ -136,13 +147,7 @@ sonata_admin:
     title: ListBroking - Contact broking simplified
     title_logo: bundles/listbrokingapp/images/logo.png
     security:
-        handler: sonata.admin.security.handler.acl
-        information:
-            STAFF:    [VIEW, LIST, CREATE]
-            EDITOR:   [OPERATOR, EXPORT]
-            ADMIN:    [MASTER]
-        admin_permissions: [CREATE, LIST, DELETE, UNDELETE, EXPORT, OPERATOR, MASTER, OWNER]
-        object_permissions: [VIEW, EDIT, DELETE, UNDELETE, OPERATOR, MASTER, OWNER]
+        handler: sonata.admin.security.handler.role
     templates:
         layout: ListBrokingAppBundle::base.html.twig
     dashboard:
@@ -167,10 +172,8 @@ sonata_admin:
           - bundles/sonataadmin/vendor/jqueryui/themes/base/jquery-ui.css
 
           # Overrides
-          - bundles/sonataadmin/vendor/select2/select2.css # OLD VERSION
-          - bundles/sonataadmin/vendor/select2/select2-bootstrap.css # OLD VERSION
-#          - bower/select2/dist/css/select2.min.css  # NEW VERSION
-#          - bower/select2-bootstrap-css/select2-bootstrap.min.css # NEW VERSION
+          - bundles/sonataadmin/vendor/select2/select2.css
+          - bundles/sonataadmin/vendor/select2/select2-bootstrap.css #
 
 
           # More Defaults:
@@ -192,10 +195,8 @@ sonata_admin:
         - bundles/sonataadmin/vendor/jquery/dist/jquery.min.js
 
         # Overrides
-#        - bundles/sonatacore/vendor/moment/min/moment.min.js # OLD VERSION - 2.6.0
-        - bundles/sonataadmin/vendor/select2/select2.min.js # OLD VERSION - V3
-        - bower/moment/min/moment.min.js # NEW VERSION - ~2.8.4
-#        - bower/select2/dist/js/select2.min.js # NEW VERSION - V4
+        - bundles/sonataadmin/vendor/select2/select2.min.js
+        - bower/moment/min/moment.min.js
 
         # More Defaults:
         - bundles/sonataadmin/vendor/jquery.scrollTo/jquery.scrollTo.min.js
@@ -217,6 +218,7 @@ sonata_admin:
         - bower/jquery-file-upload/js/jquery.fileupload.js
         - bower/jquery-file-upload/js/jquery.fileupload-process.js
         - bower/jquery-file-upload/js/jquery.fileupload-validate.js
+        - bower/jquery.fileDownload/src/Scripts/jquery.fileDownload.js
         - bundles/fosjsrouting/js/router.js
 
         # More Defaults
@@ -226,12 +228,12 @@ sonata_admin:
         # More Extra
         - bundles/listbrokingapp/js/000_listbroking.js
         - bundles/listbrokingapp/js/001_global.js
-        - bundles/listbrokingapp/js/002_tables.js
-        - bundles/listbrokingapp/js/003_configuration.js
-        - bundles/listbrokingapp/js/004_forms.js
+        - bundles/listbrokingapp/js/002_forms.js
+        - bundles/listbrokingapp/js/004_extraction.js
         - bundles/listbrokingapp/js/005_collections.js
         - bundles/listbrokingapp/js/006_deduplication.js
         - bundles/listbrokingapp/js/007_confirm_extraction.js
-        - bundles/listbrokingapp/js/008_opposition_list.js
-        - bundles/listbrokingapp/js/009_staging_contact.js
+        - bundles/listbrokingapp/js/008_deliver_extraction.js
+        - bundles/listbrokingapp/js/009_opposition_list.js
+        - bundles/listbrokingapp/js/010_staging_contact.js
         - bundles/listbrokingapp/js/999_lastJs.js

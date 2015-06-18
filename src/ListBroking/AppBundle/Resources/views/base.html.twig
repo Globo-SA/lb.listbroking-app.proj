@@ -10,6 +10,7 @@
     {% if extraction is defined %}
         <script type="text/javascript">
             ListBroking.variables.extractionId = '{{ extraction.id }}';
+            ListBroking.variables.extractionStatus = '{{ extraction.status }}';
         </script>
     {% endif %}
 {% endblock %}
