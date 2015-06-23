@@ -1,10 +1,8 @@
 <?php
 /**
- *
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
@@ -12,28 +10,31 @@ namespace ListBroking\AppBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class LockType extends AbstractType
 {
+
     /**
      * @var
      */
     private $name;
+
     /**
      * @var
      */
     private $label;
+
     /**
      * @var
      */
     private $choices;
+
     /**
      * @var
      */
     private $expiration_choices;
 
-    function __construct($name, $label, $choices, $expiration_choices)
+    function __construct ($name, $label, $choices, $expiration_choices)
     {
         $this->name = $name;
         $this->label = $label;
@@ -43,47 +44,39 @@ class LockType extends AbstractType
 
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm (FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add($this->name, 'choice', array(
-                'required' => false,
-                'attr' => array(
-                    'data-select-mode' => 'local',
-                    'data-placeholder' => 'Select one or more...',
-                    'class' => 'form-control'
-                ),
-                'label' => $this->label,
-                'choices' => $this->choices
-            ))
-            ->add('interval', 'choice', array(
-                'required' => false,
-
-                'attr' => array(
-                    'data-select-mode' => 'local',
-                    'data-placeholder' => 'Select one...',
-                    'class' => 'form-control'
-                ),
-                'label' => 'Expired',
-                'choices' => $this->expiration_choices
-            ));
-    }
-
-    /**
-     * @param OptionsResolverInterface $resolver
-     */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
-    {
-        $resolver->setDefaults(array(
-        ));
+        $builder->add($this->name, 'choice', array(
+            'required'          => false,
+            'attr'              => array(
+                'data-select-mode' => 'local',
+                'data-placeholder' => 'Select one or more...',
+                'class'            => 'form-control'
+            ),
+            'label'             => $this->label,
+            'choices'           => $this->choices,
+            'choices_as_values' => true,
+        ))
+                ->add('interval', 'choice', array(
+                    'required'          => false,
+                    'attr'              => array(
+                        'data-select-mode' => 'local',
+                        'data-placeholder' => 'Select one...',
+                        'class'            => 'form-control'
+                    ),
+                    'label'             => 'Expired',
+                    'choices'           => $this->expiration_choices,
+                    'choices_as_values' => true,
+                ))
+        ;
     }
 
     /**
      * @return string
      */
-    public function getName()
+    public function getName ()
     {
         return 'filter';
     }

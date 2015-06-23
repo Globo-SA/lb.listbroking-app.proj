@@ -17,34 +17,41 @@ class ExtractionContact
     private $id;
 
     /**
-     * @var \ListBroking\AppBundle\Entity\Extraction
+     * @var Extraction
      */
     private $extraction;
 
     /**
-     * @var \ListBroking\AppBundle\Entity\Contact
+     * @var Contact
      */
     private $contact;
 
-
     /**
      * Get id
-     *
      * @return integer
      */
-    public function getId()
+    public function getId ()
     {
         return $this->id;
     }
 
     /**
+     * Get extraction
+     * @return Extraction
+     */
+    public function getExtraction ()
+    {
+        return $this->extraction;
+    }
+
+    /**
      * Set extraction
      *
-     * @param \ListBroking\AppBundle\Entity\Extraction $extraction
+     * @param Extraction $extraction
      *
      * @return ExtractionContact
      */
-    public function setExtraction(\ListBroking\AppBundle\Entity\Extraction $extraction = null)
+    public function setExtraction (Extraction $extraction = null)
     {
         $this->extraction = $extraction;
 
@@ -52,36 +59,25 @@ class ExtractionContact
     }
 
     /**
-     * Get extraction
-     *
-     * @return \ListBroking\AppBundle\Entity\Extraction
+     * Get contact
+     * @return Contact
      */
-    public function getExtraction()
+    public function getContact ()
     {
-        return $this->extraction;
+        return $this->contact;
     }
 
     /**
      * Set contact
      *
-     * @param \ListBroking\AppBundle\Entity\Contact $contact
+     * @param Contact $contact
      *
      * @return ExtractionContact
      */
-    public function setContact(\ListBroking\AppBundle\Entity\Contact $contact = null)
+    public function setContact (Contact $contact = null)
     {
         $this->contact = $contact;
 
         return $this;
-    }
-
-    /**
-     * Get contact
-     *
-     * @return \ListBroking\AppBundle\Entity\Contact
-     */
-    public function getContact()
-    {
-        return $this->contact;
     }
 }

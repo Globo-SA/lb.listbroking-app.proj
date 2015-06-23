@@ -75,34 +75,7 @@
 
             //Close modal
             $('#opposition_list_import_modal').modal('hide');
-
-            // Start checking for deduplication end
-            App.variables.deduplicationQueueId = $('body').checkQueues('opposition_queue', null, null, function(){
-                // Stop interval
-                clearInterval(App.variables.deduplicationQueueId);
-
-                // Stop loading button
-                $('#opposition_list_import_trigger').toggleLoading();
-
-                location.reload();
-            });
         })
         ;
-
-        // If the button is disabled there were Queues when
-        // the page was rendered
-        if($('#opposition_list_import_trigger').is(':disabled')){
-
-            // Start checking for deduplication end
-            App.variables.deduplicationQueueId = $('body').checkQueues('opposition_queue', null, null , function(){
-                // Stop interval
-                clearInterval(App.variables.deduplicationQueueId);
-
-                // Stop loading button
-                $('#opposition_list_import_trigger').toggleLoading();
-
-                location.reload();
-            });
-        }
     });
 })(jQuery, ListBroking);

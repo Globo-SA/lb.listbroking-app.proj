@@ -1,10 +1,8 @@
 <?php
 /**
- *
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
@@ -12,7 +10,6 @@ namespace ListBroking\AppBundle\Service\Base;
 
 use Doctrine\Common\Cache\Cache;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
@@ -48,19 +45,21 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * Queue types
      */
-    const DEDUPLICATION_QUEUE_TYPE = 'deduplication_queue';
+    const DEDUPLICATION_QUEUE_TYPE   = 'deduplication_queue';
+
     const OPPOSITION_LIST_QUEUE_TYPE = 'opposition_queue';
-    const CONTACT_IMPORT_QUEUE_TYPE = 'staging_contact_import_queue';
+
+    const CONTACT_IMPORT_QUEUE_TYPE  = 'staging_contact_import_queue';
 
     /**
      * Queue mapping (just for information purpose)
      */
     public $queue_mapping = array(
-        self::DEDUPLICATION_QUEUE_TYPE => array(
-          'value1' => 'extraction_id',
-          'value2' => 'filename',
-          'value3' => 'deduplication_field',
-          'value4' => ''
+        self::DEDUPLICATION_QUEUE_TYPE   => array(
+            'value1' => 'extraction_id',
+            'value2' => 'filename',
+            'value3' => 'deduplication_field',
+            'value4' => ''
         ),
         self::OPPOSITION_LIST_QUEUE_TYPE => array(
             'value1' => 'type',
@@ -68,13 +67,18 @@ abstract class BaseService implements BaseServiceInterface
             'value3' => 'clear_old',
             'value4' => ''
         ),
-        self::CONTACT_IMPORT_QUEUE_TYPE => array(
+        self::CONTACT_IMPORT_QUEUE_TYPE  => array(
             'value1' => 'owner',
             'value2' => 'source',
             'value3' => 'country',
             'value4' => 'filename'
         )
     );
+
+    /**
+     * @var EntityManager
+     */
+    public $em;
 
     /**
      * @var Kernel
@@ -85,11 +89,6 @@ abstract class BaseService implements BaseServiceInterface
      * @var Connection
      */
     protected $doctrine;
-
-    /**
-     * @var EntityManager
-     */
-    public $em;
 
     /**
      * @var Cache
@@ -112,69 +111,236 @@ abstract class BaseService implements BaseServiceInterface
     protected $token_storage;
 
     /**
-     * @param Kernel $kernel
+     * Adds a given entity
+     *
+     * @param $type
+     * @param $entity
+     *
+     * @return mixed
      */
-    public function setKernel ($kernel)
+    public function addEntity ($type, $entity)
     {
-        $this->kernel = $kernel;
+        // Entity information (not used for now)
+        $entity_info = $this->getCacheIdAndRepo($type, true);
+
+        if ( $entity )
+        {
+            $this->em->persist($entity);
+            $this->em->flush();
+        }
+
+        // Clear list cache
+        $this->clearCache($entity);
     }
 
     /**
-     * @param $doctrine
+     * Attaches an entity to the EntityManager
+     * if needed
+     *
+     * @param $entity
+     *
+     * @return void
      */
-    public function setDoctrine($doctrine){
-        $this->doctrine = $doctrine;
+    public function attach (&$entity)
+    {
+        if ( $this->em->getUnitOfWork()
+                      ->getEntityState($entity) == UnitOfWork::STATE_DETACHED
+        )
+        {
+            $entity = $this->em->merge($entity);
+        }
     }
 
     /**
-     * @param EntityManager $entityManager
-     * @return mixed|void
+     * Clears list cache
+     *
+     * @param      $entity
+     * @param null $extra
      */
-    public function setEntityManager(EntityManager $entityManager)
+    public function clearCache ($entity, $extra = null)
     {
-        $this->em = $entityManager;
+        $cache_id = $entity::CACHE_ID;
+        $cache_id_array = $cache_id . '_array';
+
+        $this->dcache->delete($cache_id);
+        $this->dcache->delete($cache_id_array);
+
+        if ( $extra )
+        {
+            $this->dcache->delete($extra);
+        }
     }
 
     /**
-     * @param Cache $cache
-     * @return mixed|void
+     * Clears the EntityManager
+     * @return void
      */
-    public function setCache(Cache $cache)
+    public function clearEntityManager ()
     {
-       $this->dcache = $cache;
+        $this->em->clear();
     }
 
     /**
-     * @param FormFactory $formFactory
-     * @return mixed|void
+     * Flushes all database changes
      */
-    public function setFormFactory(FormFactory $formFactory)
+    public function flushAll ()
     {
-       $this->form_factory = $formFactory;
+        $this->em->flush();
     }
 
     /**
-     * @param Logger $logger
+     * Generates a new form view
+     *
+     * @param      $type
+     * @param bool $view
+     * @param null $data
+     * @param      $action
+     *
+     * @return FormBuilderInterface|Form
      */
-    public function setLogger ($logger)
+    public function generateForm ($type, $action = null, $data = null, $view = false)
     {
-        $this->logger = $logger;
+        $form = $this->form_factory->createBuilder($type, $data);
+        if ( $action )
+        {
+            $form->setAction($action);
+        }
+        if ( $view )
+        {
+            return $form->getForm()
+                        ->createView()
+                ;
+        }
+
+        return $form->getForm();
+    }
+
+    /**
+     * Gets a configuration
+     *
+     * @param $name
+     *
+     * @return mixed
+     */
+    public function getConfig ($name)
+    {
+        $entities = $this->getEntities('configuration');
+        foreach ( $entities as $entity )
+        {
+            if ( $entity->getName() == $name )
+            {
+                return $entity;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets a List of Entities by type
+     *
+     * @param $type
+     * @param $hydrate
+     *
+     * @internal param $cache_id
+     * @return mixed
+     */
+    public function getEntities ($type, $hydrate = true)
+    {
+        // Entity information
+        $entity_info = $this->getCacheIdAndRepo($type, $hydrate);
+
+        // Check if there's cache
+        if ( ! $this->dcache->contains($entity_info['cache_id']) )
+        {
+            $repo = $this->em->getRepository($entity_info['repo_name']);
+            $entities = $repo->createQueryBuilder('e')
+                             ->getQuery()
+                             ->getResult($entity_info['hydration_mode'])
+            ;
+            $this->dcache->save($entity_info['cache_id'], $entities);
+        }
+
+        return $this->dcache->fetch($entity_info['cache_id']);
+    }
+
+    /**
+     * Gets and entity by type and id
+     *
+     * @param      $type
+     * @param      $id
+     * @param bool $hydrate
+     * @param bool $attach
+     *
+     * @return mixed|object
+     * @throws InvalidEntityTypeException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getEntity ($type, $id, $hydrate = true, $attach = false)
+    {
+        // Entity information
+        $entity_info = $this->getCacheIdAndRepo($type, $hydrate, $id);
+        // Check if there's cache
+        if ( ! $this->dcache->contains($entity_info['cache_id']) || $attach )
+        {
+            $repo = $this->em->getRepository($entity_info['repo_name']);
+            $entity = $repo->createQueryBuilder('e')
+                           ->where('e = :id')
+                           ->setParameter('id', $id)
+                           ->getQuery()
+                           ->getOneOrNullResult($entity_info['hydration_mode'])
+            ;
+            if ( $entity )
+            {
+                $this->dcache->save($entity_info['cache_id'], $entity);
+            }
+
+            // Return the attached entity
+            if ( $attach )
+            {
+                return $entity;
+            }
+        }
+
+        // Fetch from cache
+        $entity = $this->dcache->fetch($entity_info['cache_id']);
+
+        return $entity;
+    }
+
+    /**
+     * Get thrown Exceptions
+     *
+     * @param $limit
+     *
+     * @return mixed
+     */
+    public function getExceptions ($limit)
+    {
+
+        return $this->em->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
+                        ->findLastExceptions($limit)
+            ;
     }
 
     /**
      * Gets the App Root Dir
      * @return mixed|string
      */
-    public function getRootDir(){
+    public function getRootDir ()
+    {
         return $this->kernel->getRootDir();
     }
 
     /**
-     * @param TokenStorageInterface $token_storage
+     * Get Currently logged in user
+     * @return mixed
      */
-    public function setTokenStorage ($token_storage)
+    public function getUser ()
     {
-        $this->token_storage = $token_storage;
+        return $this->token_storage->getToken()
+                                   ->getUser()
+            ;
     }
 
     /**
@@ -187,7 +353,6 @@ abstract class BaseService implements BaseServiceInterface
         $msg = '[' . date('Y-m-d h:d:s') . '] ' . $msg;
         $this->logger->error($msg);
     }
-
 
     /**
      * Log an info to the channel
@@ -202,150 +367,16 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
-     * Get Currently logged in user
-     * @return mixed
-     */
-    public function getUser(){
-        return $this->token_storage->getToken()->getUser();
-    }
-
-    /**
-     * Clears the EntityManager
-     * @return void
-     */
-    public function clearEntityManager()
-    {
-            $this->em->clear();
-    }
-
-    /**
-     * Attaches an entity to the EntityManager
-     * if needed
-     * @param $entity
-     * @return void
-     */
-    public function attach(&$entity)
-    {
-        if($this->em->getUnitOfWork()->getEntityState($entity) == UnitOfWork::STATE_DETACHED){
-            $entity = $this->em->merge($entity);
-        }
-    }
-
-    /**
-     * Gets a List of Entities by type
-     * @param $type
-     * @param $hydrate
-     * @internal param $cache_id
-     * @return mixed
-     */
-    public function getEntities($type, $hydrate = true)
-    {
-        // Entity information
-        $entity_info = $this->getCacheIdAndRepo($type, $hydrate);
-
-        // Check if there's cache
-        if (!$this->dcache->contains($entity_info['cache_id']))
-        {
-            $repo = $this->em->getRepository($entity_info['repo_name']);
-            $entities = $repo->createQueryBuilder('e')->getQuery()->getResult($entity_info['hydration_mode']);
-            $this->dcache->save($entity_info['cache_id'], $entities);
-        }
-
-        return $this->dcache->fetch($entity_info['cache_id']);
-    }
-
-    /**
-     * Gets and entity by type and id
-     * @param $type
-     * @param $id
-     * @param bool $hydrate
-     * @param bool $attach
-     * @return mixed|object
-     * @throws InvalidEntityTypeException
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
-    public function getEntity($type, $id, $hydrate = true, $attach = false)
-    {
-        // Entity information
-        $entity_info = $this->getCacheIdAndRepo($type, $hydrate, $id);
-        // Check if there's cache
-        if (!$this->dcache->contains($entity_info['cache_id']) || $attach)
-        {
-            $repo = $this->em->getRepository($entity_info['repo_name']);
-            $entity = $repo->createQueryBuilder('e')
-                ->where('e = :id')
-                ->setParameter('id', $id)
-                ->getQuery()
-                ->getOneOrNullResult($entity_info['hydration_mode']);
-            if ($entity)
-            {
-                $this->dcache->save($entity_info['cache_id'], $entity);
-            }
-
-            // Return the attached entity
-            if ($attach)
-            {
-                return $entity;
-            }
-        }
-
-        // Fetch from cache
-        $entity = $this->dcache->fetch($entity_info['cache_id']);
-
-        return $entity;
-    }
-
-    /**
-     * Adds a given entity
-     * @param $type
-     * @param $entity
-     * @return mixed
-     */
-    public function addEntity($type, $entity)
-    {
-        // Entity information (not used for now)
-        $entity_info = $this->getCacheIdAndRepo($type, true);
-
-        if ($entity)
-        {
-            $this->em->persist($entity);
-            $this->em->flush();
-        }
-
-        // Clear list cache
-        $this->clearCache($entity);
-    }
-
-    /**
-     * Updates a given Entity
-     * @param $type
-     * @param $entity
-     * @return mixed
-     */
-    public function updateEntity($type, $entity)
-    {
-        if ($entity)
-        {
-            // Entity information
-            $entity_info = $this->getCacheIdAndRepo($type, true, $entity->getId());
-
-            $this->attach($entity);
-            $this->em->flush();
-
-            // Clear list cache & entity cache
-            $this->clearCache($entity, $entity_info['cache_id']);
-        }
-    }
-
-    /**
      * Removes a given Entity
+     *
      * @param $type
      * @param $entity
+     *
      * @return mixed
      */
-    public function removeEntity($type, $entity)
+    public function removeEntity ($type, $entity)
     {
-        if ($entity)
+        if ( $entity )
         {
             // Entity information
             $entity_info = $this->getCacheIdAndRepo($type, true, $entity->getId());
@@ -362,88 +393,14 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
-     * Clears list cache
-     * @param $entity
-     * @param null $extra
-     */
-    public function clearCache($entity, $extra = null)
-    {
-        $cache_id = $entity::CACHE_ID;
-        $cache_id_array = $cache_id . '_array';
-
-        $this->dcache->delete($cache_id);
-        $this->dcache->delete($cache_id_array);
-
-        if($extra){
-            $this->dcache->delete($extra);
-        }
-    }
-
-    /**
-     * Flushes all database changes
-     */
-    public function flushAll(){
-        $this->em->flush();
-    }
-
-    /**
-     * Gets a configuration
-     * @param $name
-     * @return mixed
-     */
-    public function getConfig($name)
-    {
-        $entities = $this->getEntities('configuration');
-        foreach ($entities as $entity){
-            if($entity->getName() == $name){
-                return $entity;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Generates a new form view
-     * @param $type
-     * @param bool $view
-     * @param null $data
-     * @param $action
-     * @return FormBuilderInterface|Form
-     */
-    public function generateForm($type, $action = null, $data = null, $view = false)
-    {
-        $form = $this->form_factory->createBuilder($type, $data);
-        if($action){
-            $form->setAction($action);
-        }
-        if ($view)
-        {
-            return $form->getForm()->createView();
-        }
-
-        return $form->getForm();
-    }
-
-    /**
-     * Get thrown Exceptions
-     * @param $limit
-     * @return mixed
-     */
-    public function getExceptions($limit){
-
-        return $this->em->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
-            ->findLastExceptions($limit);
-    }
-
-    /**
      * Saves a file on a form
      *
      * @param Form $form
      *
      * @return UploadedFile
      */
-    public function saveFile (Form $form){
+    public function saveFile (Form $form)
+    {
 
         // Handle Form
         $data = $form->getData();
@@ -455,20 +412,107 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
+     * @param Cache $cache
+     *
+     * @return mixed|void
+     */
+    public function setCache (Cache $cache)
+    {
+        $this->dcache = $cache;
+    }
+
+    /**
+     * @param $doctrine
+     */
+    public function setDoctrine ($doctrine)
+    {
+        $this->doctrine = $doctrine;
+    }
+
+    /**
+     * @param EntityManager $entityManager
+     *
+     * @return mixed|void
+     */
+    public function setEntityManager (EntityManager $entityManager)
+    {
+        $this->em = $entityManager;
+    }
+
+    /**
+     * @param FormFactory $formFactory
+     *
+     * @return mixed|void
+     */
+    public function setFormFactory (FormFactory $formFactory)
+    {
+        $this->form_factory = $formFactory;
+    }
+
+    /**
+     * @param Kernel $kernel
+     */
+    public function setKernel ($kernel)
+    {
+        $this->kernel = $kernel;
+    }
+
+    /**
+     * @param Logger $logger
+     */
+    public function setLogger ($logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @param TokenStorageInterface $token_storage
+     */
+    public function setTokenStorage ($token_storage)
+    {
+        $this->token_storage = $token_storage;
+    }
+
+    /**
+     * Updates a given Entity
+     *
+     * @param $type
+     * @param $entity
+     *
+     * @return mixed
+     */
+    public function updateEntity ($type, $entity)
+    {
+        if ( $entity )
+        {
+            // Entity information
+            $entity_info = $this->getCacheIdAndRepo($type, true, $entity->getId());
+
+            $this->attach($entity);
+            $this->em->flush();
+
+            // Clear list cache & entity cache
+            $this->clearCache($entity, $entity_info['cache_id']);
+        }
+    }
+
+    /**
      * Gets a Entity type cache and repo info
+     *
      * @param $type
      * @param $hydrate
      * @param $uniqid
+     *
      * @throws InvalidEntityTypeException
      * @return array
      */
-    private function getCacheIdAndRepo($type, $hydrate, $uniqid = null)
+    private function getCacheIdAndRepo ($type, $hydrate, $uniqid = null)
     {
 
         $entity_info['hydration_mode'] = $hydrate ? Query::HYDRATE_OBJECT : Query:: HYDRATE_ARRAY;
 
         //TODO: Rethink this system, its not very flexible
-        switch ($type)
+        switch ( $type )
         {
             case 'client':
                 $entity_info['cache_id'] = $hydrate ? Client::CACHE_ID : Client::CACHE_ID . '_array';;
@@ -543,9 +587,10 @@ abstract class BaseService implements BaseServiceInterface
                 break;
         }
 
-        if($uniqid){
+        if ( $uniqid )
+        {
 
-           $entity_info['cache_id'] .= "_{$uniqid}";
+            $entity_info['cache_id'] .= "_{$uniqid}";
         }
 
         return $entity_info;
@@ -553,16 +598,22 @@ abstract class BaseService implements BaseServiceInterface
 
     /**
      * Generates the filename and generate a filename for it
-     * @param $name
-     * @param $extension
+     *
+     * @param        $name
+     * @param        $extension
      * @param string $dir
+     *
      * @return string
      */
-    protected function generateFilename($name, $extension = null, $dir = 'exports/'){
+    protected function generateFilename ($name, $extension = null, $dir = 'exports/')
+    {
 
-        if($extension){
+        if ( $extension )
+        {
             $filename = $dir . uniqid() . "-{$name}-" . date('Y-m-d') . '.' . $extension;
-        }else{
+        }
+        else
+        {
             $filename = $dir . uniqid() . "-{$name}";
         }
 

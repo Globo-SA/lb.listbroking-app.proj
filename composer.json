@@ -12,41 +12,43 @@
         { "type": "git", "url": "git@git.adclick.pt:bundles/doctrine-behavior-bundle.git" }
     ],
     "require": {
-        "php": ">=5.3.3",
-        "symfony/symfony": "2.6.*",
-        "doctrine/orm": "~2.2,>=2.2.3",
-        "doctrine/doctrine-bundle": "~1.2",
-        "twig/extensions": "~1.0",
+        "php": ">=5.3.9",
+        "symfony/symfony": "2.7.*",
+        "doctrine/orm": "~2.2,>=2.2.3,<2.5",
+        "doctrine/dbal": "<2.5",
+        "doctrine/doctrine-bundle": "~1.4",
         "symfony/assetic-bundle": "~2.3",
         "symfony/swiftmailer-bundle": "~2.3",
         "symfony/monolog-bundle": "~2.4",
-        "sensio/distribution-bundle": "~3.0",
-        "sensio/framework-extra-bundle": "~3.0",
+        "sensio/distribution-bundle": "~4.0",
+        "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
 
+        "twig/extensions": "~1.0",
         "nervo/yuicompressor": "~2.4",
 
         "doctrine/doctrine-cache-bundle": "~1.0",
         "doctrine/doctrine-fixtures-bundle": "~2.2",
-        "stof/doctrine-extensions-bundle": "1.2.*@dev",
+        "stof/doctrine-extensions-bundle": "~1.1",
 
-        "cboden/ratchet": "^0.3.3",
-        "tedivm/fetch": "0.5.*",
-        "friendsofsymfony/jsrouting-bundle": "2.0.*@dev",
+        "tedivm/fetch": "~0.5",
+
+        "oldsound/rabbitmq-bundle": "~1.0",
+
         "jms/serializer-bundle": "~0.13",
         "phpoffice/phpexcel": "~1.8",
         "misd/guzzle-bundle": "~1.0",
 
-        "commerceguys/addressing": "dev-master",
+        "commerceguys/addressing": "~0.6",
         "giggsey/libphonenumber-for-php": "~7.0",
 
+        "friendsofsymfony/jsrouting-bundle": "~1.5",
         "sonata-project/easy-extends-bundle": "~2.1",
         "sonata-project/admin-bundle": "~2.3",
         "sonata-project/doctrine-orm-admin-bundle": "~2.3",
         "sonata-project/user-bundle": "~2.2",
-        "tilleuls/acl-sonata-admin-extension-bundle": "~1.1",
+        "tilleuls/acl-sonata-admin-extension-bundle": "~1.1"
 
-        "oldsound/rabbitmq-bundle": "1.*"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -84,7 +86,7 @@
             "file": "app/config/parameters.yml"
         },
         "branch-alias": {
-            "dev-master": "2.6-dev"
+            "dev-master": "2.7-dev"
         }
     }
 }

@@ -13,9 +13,9 @@ namespace ListBroking\AppBundle\AdminBlock;
 use Doctrine\ORM\EntityManagerInterface;
 use Sonata\BlockBundle\Block\BaseBlockService;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Sonata\BlockBundle\Block\BlockContextInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class StatisticsBlockService extends BaseBlockService {
 
@@ -28,14 +28,6 @@ class StatisticsBlockService extends BaseBlockService {
     {
         parent::__construct($name, $templating);
         $this->em = $entity_manager;
-    }
-
-    public function setDefaultSettings(OptionsResolverInterface $resolver)
-    {
-        $resolver->setDefaults(array(
-            'title' => 'Lead Statistics',
-            'template' => 'ListBrokingAppBundle:AdminBlock:statistics_block.html.twig',
-        ));
     }
 
     public function execute(BlockContextInterface $blockContext, Response $response = null)
@@ -77,9 +69,9 @@ class StatisticsBlockService extends BaseBlockService {
           ),
         );
 
-        return $this->renderResponse($blockContext->getTemplate(), array(
+        return $this->renderResponse('ListBrokingAppBundle:AdminBlock:statistics_block.html.twig', array(
             'block'    => $blockContext->getBlock(),
-            'settings' => $settings,
+            'title' => 'Lead Statistics',
             'statistics' => $statistics
         ), $response);
     }

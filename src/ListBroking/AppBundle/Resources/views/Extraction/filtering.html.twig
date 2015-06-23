@@ -13,147 +13,180 @@
                 </small>
             </span>
         </div>
-        {% if is_granted('ROLE_SUPER_ADMIN') %}
-            <div class="container-fluid">
+        <div class="container-fluid">
+            <button class="btn btn-flat btn-default navbar-right navbar-btn" data-toggle="modal" data-target="#edit_extraction_modal">EDIT</button>
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
                 <button class="btn btn-flat btn-default navbar-right navbar-btn" data-toggle="modal" data-target="#sql-modal">SQL</button>
-            </div>
-            {% include '@ListBrokingApp/Extraction/_partials/modal_sql.html.twig' %}
-        {% endif %}
+                {% include '@ListBrokingApp/Extraction/_partials/modal_sql.html.twig' %}
+            {% endif %}
+        </div>
     </nav>
 {% endblock sonata_page_content_nav %}
 
 {% block content %}
-    <div class="row closed">
-    <div class="col-xs-12">
-        <!-- Nav tabs -->
-        {% set filter_tab = '' %}
-        {% set summary_tab = '' %}
-        {% set confirmation_tab = 'class="disabled"' %}
-        {% if extraction.status == 1 %}
-            {% set filter_tab = 'class="active"' %}
-        {% elseif extraction.status == 2 %}
-            {% set summary_tab = 'class="active"' %}
-        {% elseif extraction.status == 3 %}
-            {% set filter_tab  = 'class="disabled"' %}
-            {% set summary_tab = 'class="disabled"' %}
-            {% set confirmation_tab  = 'class="active"' %}
-        {% endif %}
-        <ul class="nav nav-tabs" role="tablist">
-            <li {{ filter_tab|raw }}>
-                <a href="#filters" role="tab" data-toggle="tab">1 - Filters&nbsp;&nbsp;&nbsp;<i class="fa fa-arrow-circle-right"></i></a>
-            </li>
-            <li {{ summary_tab|raw }}>
-                <a href="#summary" role="tab" data-toggle="tab">2 - Summary&nbsp;&nbsp;&nbsp;<i class="fa fa-arrow-circle-right"></i></a>
-            </li>
-            <li {{ confirmation_tab|raw }}>
-                <a href="#confirmation" role="tab" data-toggle="tab">3 - Confirmation</a>
-            </li>
-        </ul>
-
-        <!-- Tab panes -->
-        <div class="tab-content">
-            {% if extraction.status != 3 %}
-                <div class="tab-pane{% if extraction.status == 1 %} active{% endif %}" id="filters">
-                    <div class="panel panel-info">
-                        <div class="panel-heading">The Extraction Filters should be seen as <strong>INCLUSION FILTERS</strong></div>
-                        <div class="panel-body">
-                            {% include '@ListBrokingApp/Extraction/_forms/filters.html.twig' %}
-                        </div>
-                    </div>
+    <div class="modal fade" id="edit_extraction_modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                                class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <i class="fa fa-pencil-square-o"></i>&nbsp;Edit Extraction
+                        <i class="ion-loading-c" style="display: none;"></i>
+                    </h4>
                 </div>
-                <div class="tab-pane{% if extraction.status == 2 %} active{% endif %}" id="summary">
-                    <div class="panel panel-info">
-                        <div class="panel-heading">This summary is not final, filters can always be <strong>UPDATED</strong> and Leads
-                            can be <b>DEDUPLICATED</b></div>
-                        <div class="panel-body">
-                            <div class="row row-margin">
-                                <div class="col-md-6">
-                                    <blockquote>
-                                        <p>
-                                            <button
-                                                    id="lead_deduplication_trigger"
-                                                    class="btn btn-flat btn-primary"
-                                                    data-toggle="modal"
-                                                    data-target="#lead_deduplication_modal"
-                                                    disabled="disabled"
-                                                    >
-                                                <i class="fa fa-file-text"></i>&nbsp;DEDUPLICATION BY FILE&nbsp;
-                                                <i class="loading ion-loading-c" {% if not extraction.isDeduplicating %}style="display: none;"{% endif %}></i>
-                                            </button>
-                                            </button>
-                                            <small>Used to exclude leads by CSV file</small>
-                                        </p>
-                                    </blockquote>
-                                    {% include '@ListBrokingApp/Extraction/_partials/modal_deduplication.html.twig' %}
-                                </div>
-                                <div class="col-md-6">
-                                    <div id="extraction_summary" class="grey-bg">
-                                        {% include '@ListBrokingApp/Extraction/_partials/extraction_summary.html.twig' %}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div id="extraction_table_container" class="col-md-12 grey-bg">
-                                    {% include '@ListBrokingApp/Extraction/_partials/contacts_table.html.twig' %}
-                                </div>
-                            </div>
-                            <hr>
-                            <blockquote class="footer-btn small-label">
-                                <p>
-                                    <button class="btn btn-primary btn-flat footer-button" data-toggle="modal" id="confirm_extraction_btn"
-                                            data-target="#create_locks_modal" role="button" disabled="disabled">
-                                        <i class="fa fa-list"></i>&nbsp;Extract
-                                    </button>
-                                    <input type="checkbox" id="confirm_extraction_chk" class="pull-right footer-button" disabled><label>&nbsp;Confirm
-                                        as final extraction.</label>
-                                    <small>After this step the extraction will be closed and marked as final.</small>
-                                </p>
-                            </blockquote>
-                            {% include '@ListBrokingApp/Extraction/_partials/modal_locks.html.twig' %}
-                        </div>
-                    </div>
+                <div class="modal-body">
+                    <iframe src="{{ path('admin_listbroking_app_extraction_edit', {id: extraction.id, iframe : 'true'}) }}" seamless frameBorder="0" width="100%" height="350px"></iframe>
                 </div>
-            {% else %}
-                <div class="tab-pane active" id="confirmation">
-                    <div class="panel panel-success">
-                        <div class="panel-heading">This is the <strong>FINAL STEP</strong> of the extraction, here you can review
-                            the contacts and choose how to send them to the client, but the extraction cannot be changed
-                        </div>
-                        <div class="panel-body">
-                            <div class="row row-margin">
-                                <div class="col-md-12">
-                                    <div id="extraction_summary" class="grey-bg">
-                                        {% include '@ListBrokingApp/Extraction/_partials/extraction_summary.html.twig' %}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div id="extraction_table_container" class="col-md-12 grey-bg">
-                                    {% include '@ListBrokingApp/Extraction/_partials/contacts_table.html.twig' %}
-                                </div>
-                            </div>
-                            <hr>
-                            <blockquote class="footer-btn small-label">
-                                <p>
-
-                                    <button id="deliver_extraction_trigger" class="btn btn-flat btn-primary footer-button" data-toggle="modal"
-                                            data-target="#delivery_modal" disabled="disabled">
-                                        <i class="fa fa-fighter-jet"></i>&nbsp;SEND EXTRACTION&nbsp;
-                                        <i class="loading ion-loading-c" {% if not extraction.isDelivering %}style="display: none;"{% endif %}></i>
-                                    </button>
-                                    or
-                                    <a href="{{ admin.generateObjectUrl('clone', extraction) }}" class="btn btn-flat btn-default footer-button" target="_blank" disabled="disabled">
-                                        <i class="fa fa-asterisk"></i>&nbsp;DUPLICATE EXTRACTION
-                                    </a>
-                                </p>
-                            </blockquote>
-                            {% include '@ListBrokingApp/Extraction/_partials/modal_delivery.html.twig' %}
-                        </div>
-                    </div>
+                <div class="modal-footer">
+                    <button data-dismiss="modal" class="btn btn-flat btn-default">CLOSE</button>
                 </div>
-            {% endif %}
+            </div>
         </div>
-        <!-- /.col-xs-12 -->
+    </div>
+    <div class="row closed">
+        <div class="col-xs-12">
+            <!-- Nav tabs -->
+            {% set filter_tab = '' %}
+            {% set summary_tab = '' %}
+            {% set confirmation_tab = 'class="disabled"' %}
+            {% if extraction.status == 1 %}
+                {% set filter_tab = 'class="active"' %}
+            {% elseif extraction.status == 2 %}
+                {% set summary_tab = 'class="active"' %}
+            {% elseif extraction.status == 3 %}
+                {% set filter_tab  = 'class="disabled"' %}
+                {% set summary_tab = 'class="disabled"' %}
+                {% set confirmation_tab  = 'class="active"' %}
+            {% endif %}
+            <ul class="nav nav-tabs" role="tablist">
+                <li {{ filter_tab|raw }}>
+                    <a href="#filters" role="tab" data-toggle="tab">1 - Filters&nbsp;&nbsp;&nbsp;<i class="fa fa-arrow-circle-right"></i></a>
+                </li>
+                <li {{ summary_tab|raw }}>
+                    <a href="#summary" role="tab" data-toggle="tab">2 - Summary&nbsp;&nbsp;&nbsp;<i class="fa fa-arrow-circle-right"></i></a>
+                </li>
+                <li {{ confirmation_tab|raw }}>
+                    <a href="#confirmation" role="tab" data-toggle="tab">3 - Confirmation</a>
+                </li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                {% if extraction.status != 3 %}
+                    <div class="tab-pane{% if extraction.status == 1 %} active{% endif %}" id="filters">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">The Extraction Filters should be seen as <strong>INCLUSION FILTERS</strong></div>
+                            <div class="panel-body">
+                                {% include '@ListBrokingApp/Extraction/_forms/filters.html.twig' %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane{% if extraction.status == 2 %} active{% endif %}" id="summary">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">This summary is not final, filters can always be <strong>UPDATED</strong> and Leads
+                                can be <b>DEDUPLICATED</b></div>
+                            <div class="panel-body">
+                                <div class="row row-margin">
+                                    <div class="col-md-6">
+                                        <blockquote>
+                                            <p>
+                                                <button
+                                                        id="lead_deduplication_trigger"
+                                                        class="btn btn-flat btn-primary"
+                                                        data-toggle="modal"
+                                                        data-target="#lead_deduplication_modal"
+                                                        disabled="disabled"
+                                                        >
+                                                    <i class="fa fa-file-text"></i>&nbsp;DEDUPLICATION BY FILE&nbsp;
+                                                    <i class="loading ion-loading-c" {% if not extraction.isDeduplicating %}style="display: none;"{% endif %}></i>
+                                                </button>
+                                                <small>Used to exclude leads by CSV file</small>
+                                            </p>
+                                        </blockquote>
+                                        {% include '@ListBrokingApp/Extraction/_partials/modal_deduplication.html.twig' %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div id="extraction_summary" class="grey-bg">
+                                            {% include '@ListBrokingApp/Extraction/_partials/extraction_summary.html.twig' %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div id="extraction_table_container" class="col-md-12 grey-bg">
+                                        {% include '@ListBrokingApp/Extraction/_partials/contacts_table.html.twig' %}
+                                    </div>
+                                </div>
+                                <hr>
+                                <blockquote class="footer-btn small-label">
+                                    <p>
+                                        <button class="btn btn-primary btn-flat footer-button" data-toggle="modal" id="confirm_extraction_btn"
+                                                data-target="#create_locks_modal" role="button" disabled="disabled">
+                                            <i class="fa fa-list"></i>&nbsp;Extract
+                                        </button>
+                                        <input type="checkbox" id="confirm_extraction_chk" class="pull-right footer-button" disabled><label>&nbsp;Confirm
+                                            as final extraction.</label>
+                                        <small>After this step the extraction will be closed and marked as final.</small>
+                                    </p>
+                                </blockquote>
+                                {% include '@ListBrokingApp/Extraction/_partials/modal_locks.html.twig' %}
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="tab-pane active" id="confirmation">
+                        <div class="panel panel-success">
+                            <div class="panel-heading">This is the <strong>FINAL STEP</strong> of the extraction, here you can review
+                                the contacts and choose how to send them to the client, but the extraction cannot be changed
+                            </div>
+                            <div class="panel-body">
+                                <div class="row row-margin">
+                                    <div class="col-md-6">
+                                        <h4><i class="fa fa-info-circle"></i>&nbsp;Extraction Information</h4>
+                                        <hr>
+                                        <p><strong>Name:&nbsp;</strong><span>{{ extraction.name }}</span></p>
+
+                                        <p><strong>Status:&nbsp;</strong><span>{{ extraction.getStatusName }}</span></p>
+
+                                        <p><strong>Quantity:&nbsp;</strong><span>{{ extraction.quantity }}</span></p>
+
+                                        <p><strong>Payout:&nbsp;</strong><span id="extraction_info_payout">{{ extraction.payout }}</span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div id="extraction_summary" class="grey-bg">
+                                            {% include '@ListBrokingApp/Extraction/_partials/extraction_summary.html.twig' %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div id="extraction_table_container" class="col-md-12 grey-bg">
+                                        {% include '@ListBrokingApp/Extraction/_partials/contacts_table.html.twig' %}
+                                    </div>
+                                </div>
+                                <hr>
+                                <blockquote class="footer-btn small-label">
+                                    <p>
+
+                                        <button id="deliver_extraction_trigger" class="btn btn-flat btn-primary footer-button" data-toggle="modal"
+                                                data-target="#delivery_modal" disabled="disabled">
+                                            <i class="fa fa-fighter-jet"></i>&nbsp;SEND EXTRACTION&nbsp;
+                                            <i class="loading ion-loading-c" {% if not extraction.isDelivering %}style="display: none;"{% endif %}></i>
+                                        </button>
+                                        or
+                                        <a href="{{ admin.generateObjectUrl('clone', extraction) }}" class="btn btn-flat btn-default footer-button" target="_blank" disabled="disabled">
+                                            <i class="fa fa-asterisk"></i>&nbsp;DUPLICATE EXTRACTION
+                                        </a>
+                                    </p>
+                                </blockquote>
+                                {% include '@ListBrokingApp/Extraction/_partials/modal_delivery.html.twig' %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <!-- /.col-xs-12 -->
+        </div>
     </div>
     <!-- /.row -->
 {% endblock %}

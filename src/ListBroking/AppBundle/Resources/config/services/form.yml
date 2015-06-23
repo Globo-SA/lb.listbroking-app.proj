@@ -1,9 +1,4 @@
 services:
-  listbroking.appbundle.json.form.type:
-    class: ListBroking\AppBundle\Form\Type\JsonType
-    tags:
-      - { name: form.type, alias: json }
-
   listbroking.appbundle.filters.form:
     class:  ListBroking\AppBundle\Form\FiltersType
     arguments: [@app]

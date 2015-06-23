@@ -1,24 +1,20 @@
 <?php
 /**
- * 
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
-
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionTemplate;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
-use ListBroking\TaskControllerBundle\Entity\Queue;
-use Symfony\Component\Form\Form;
 
-interface ExtractionServiceInterface {
+interface ExtractionServiceInterface
+{
 
     /**
      * Handles Extraction Filtration
@@ -51,14 +47,14 @@ interface ExtractionServiceInterface {
      * @return void
      * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
      */
-    public function executeFilterEngine(Extraction $extraction);
+    public function executeFilterEngine (Extraction $extraction);
 
     /**
      * @param Extraction $extraction
      *
      * @return mixed
      */
-    public function getExtractionSummary(Extraction $extraction);
+    public function getExtractionSummary (Extraction $extraction);
 
     /**
      * Gets all the contacts of a given Extraction with
@@ -69,8 +65,7 @@ interface ExtractionServiceInterface {
      *
      * @return mixed
      */
-    public function getExtractionContacts(Extraction $extraction, $limit);
-
+    public function getExtractionContacts (Extraction $extraction, $limit);
 
     /**
      * Exports Leads to file
@@ -87,11 +82,13 @@ interface ExtractionServiceInterface {
 
     /**
      * Used to import a file with Leads
+     *
      * @param $filename
+     *
      * @internal param $filename
      * @return mixed
      */
-    public function importExtraction($filename);
+    public function importExtraction ($filename);
 
     /**
      * Persists Deduplications to the database, this function uses PHPExcel with APC
@@ -107,18 +104,22 @@ interface ExtractionServiceInterface {
     /**
      * Removes Deduplicated Leads from an Extraction
      * using the ExtractionDeduplication Entity
+     *
      * @param Extraction $extraction
+     *
      * @return mixed
      */
-    public function deduplicateExtraction(Extraction $extraction);
+    public function deduplicateExtraction (Extraction $extraction);
 
     /**
      * Generate locks for the contacts of a given Extraction
+     *
      * @param Extraction $extraction
-     * @param $lock_types
+     * @param            $lock_types
+     *
      * @return mixed
      */
-    public function generateLocks(Extraction $extraction, $lock_types);
+    public function generateLocks (Extraction $extraction, $lock_types);
 
     /**
      * Delivers the Extraction to a set of Emails
@@ -133,9 +134,10 @@ interface ExtractionServiceInterface {
 
     /**
      * Clones a given extraction and resets it's status
+     *
      * @param Extraction $extraction
      *
      * @return Extraction
      */
-    public function cloneExtraction(Extraction $extraction);
+    public function cloneExtraction (Extraction $extraction);
 } 

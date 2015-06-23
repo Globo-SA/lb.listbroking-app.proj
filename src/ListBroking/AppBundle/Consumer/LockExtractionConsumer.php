@@ -31,28 +31,39 @@ class LockExtractionConsumer implements ConsumerInterface
      */
     public function execute (AMQPMessage $msg)
     {
-        // PHP is run in shared nothing architecture, so long running processes need to
-        // Clear the entity manager before running
-        $this->e_service->clearEntityManager();
+        try
+        {
+            // PHP is run in shared nothing architecture, so long running processes need to
+            // Clear the entity manager before running
+            $this->e_service->clearEntityManager();
 
-        $msg_body = unserialize($msg->body);
+            $msg_body = unserialize($msg->body);
 
-        $this->e_service->logInfo(sprintf("Starting 'generateLocks' for extraction_id: %s", $msg_body['object_id']));
+            $this->e_service->logInfo(sprintf("Starting 'generateLocks' for extraction_id: %s", $msg_body['object_id']));
 
-        /** @var Extraction $extraction */
-        $extraction = $this->e_service->em->getRepository('ListBrokingAppBundle:Extraction')
-                                          ->findOneBy(array(
-                                              'id' => $msg_body['object_id']
-                                          ))
-        ;
+            /** @var Extraction $extraction */
+            $extraction = $this->e_service->em->getRepository('ListBrokingAppBundle:Extraction')
+                                              ->findOneBy(array(
+                                                  'id' => $msg_body['object_id']
+                                              ))
+            ;
 
-        // Generate locks
-        $this->e_service->generateLocks($extraction, $msg_body['lock_types']);
-        $extraction->setIsLocking(false);
+            // Generate locks
+            $this->e_service->generateLocks($extraction, $msg_body['lock_types']);
+            $extraction->setIsLocking(false);
 
-        // Save changes
-        $this->e_service->updateEntity('extraction', $extraction);
+            // Save changes
+            $this->e_service->updateEntity('extraction', $extraction);
 
-        $this->e_service->logInfo(sprintf("Ending 'generateLocks' for extraction_id: %s, result: Locks created", $msg_body['object_id']));
+            $this->e_service->logInfo(sprintf("Ending 'generateLocks' for extraction_id: %s, result: Locks created", $msg_body['object_id']));
+
+            return true;
+        }
+        catch ( \Exception $e )
+        {
+            $this->e_service->logError($e);
+
+            return false;
+        }
     }
 }

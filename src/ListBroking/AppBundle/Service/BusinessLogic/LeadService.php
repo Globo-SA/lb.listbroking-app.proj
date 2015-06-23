@@ -1,17 +1,13 @@
 <?php
 /**
- *
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
-
-use Doctrine\ORM\EntityManager;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Service\Base\BaseService;
@@ -22,156 +18,198 @@ use ListBroking\AppBundle\Service\Base\BaseService;
  * Class LeadService
  * @package ListBroking\AppBundle\Service
  */
-class LeadService extends BaseService  implements LeadServiceInterface {
+class LeadService extends BaseService implements LeadServiceInterface
+{
 
     /**
-     * @param $id
-     * @return \Doctrine\ORM\QueryBuilder
+     * @param $entity
+     *
+     * @return $this
      */
-    public function getLead($id){
-
-        return  $this->em->getRepository('ListBrokingAppBundle:Lead')->findOneBy(array('id' => $id));
+    public function addContact ($entity)
+    {
+        if ( $entity )
+        {
+            $this->em->persist($entity);
+            $this->em->flush();
+        }
     }
 
     /**
-     * @param $phone
+     * @param $entity
+     *
+     * @return $this
+     */
+    public function addLead ($entity)
+    {
+        if ( $entity )
+        {
+            $this->em->persist($entity);
+            $this->em->flush();
+        }
+    }
+
+    /**
+     * Adds a single lock
+     *
+     * @param $entity
+     *
      * @return mixed
      */
-    public function getLeadByPhone($phone){
-
-        return  $this->em->getRepository('ListBrokingAppBundle:Lead')->findOneBy(array('phone' => $phone));
-    }
-
-    /**
-     * @param $entity
-     * @return $this
-     */
-    public function addLead($entity){
-        if($entity)
+    public function addLock ($entity)
+    {
+        if ( $entity )
         {
             $this->em->persist($entity);
             $this->em->flush();
         }
-    }
-
-    /**
-     * @param $entity Lead
-     * @return $this
-     */
-    public function removeLead($entity){
-        // Remove entity
-        $this->em->remove($entity);
-        $this->em->flush();
-    }
-
-    /**
-     * @param $entity
-     * @return $this
-     */
-    public function updateLead($entity){
-
-        $this->em->persist($entity);
-        $this->em->flush();
-    }
-
-    /**
-     * @param $id
-     * @return \ListBroking\AppBundle\Entity\Lead
-     */
-    public function getContact($id){
-
-        return  $this->em->getRepository('ListBrokingAppBundle:Lead')->findOneBy(array('id' => $id));
-    }
-
-    /**
-     * @param $email
-     * @return array|mixed
-     */
-    public function getContactsByEmail($email){
-
-        return  $this->em->getRepository('ListBrokingAppBundle:Lead')->findOneBy(array('email' => $email));
-    }
-
-
-    /**
-     * Returns Fields from Contact Table
-     */
-    public function getContactFields(){
-
-        return $this->em->getClassMetadata('ListBroking\AppBundle\Entity\Contact')->columnNames;
-    }
-
-    /**
-     * @param $entity
-     * @return $this
-     */
-    public function addContact($entity){
-        if($entity)
-        {
-            $this->em->persist($entity);
-            $this->em->flush();
-        }
-    }
-
-    /**
-     * @param $entity
-     * @return $this
-     */
-    public function removeContact($entity){
-
-        // Remove entity
-        $this->em->remove($entity);
-        $this->em->flush();
-    }
-
-    /**
-     * @param $entity
-     * @return $this
-     */
-    public function updateContact($entity){
-
-        $this->em->persist($entity);
-        $this->em->flush();
     }
 
     /**
      * Group leads by lock and count them
      * @return array
      */
-    public function countByLock()
+    public function countByLock ()
     {
-        return $this->em->getRepository('ListBrokingAppBundle:Lock')->countByLock();
+        return $this->em->getRepository('ListBrokingAppBundle:Lock')
+                        ->countByLock()
+            ;
+    }
+
+    /**
+     * @param $id
+     *
+     * @return \ListBroking\AppBundle\Entity\Lead
+     */
+    public function getContact ($id)
+    {
+
+        return $this->em->getRepository('ListBrokingAppBundle:Lead')
+                        ->findOneBy(array('id' => $id))
+            ;
+    }
+
+    /**
+     * Returns Fields from Contact Table
+     */
+    public function getContactFields ()
+    {
+
+        return $this->em->getClassMetadata('ListBroking\AppBundle\Entity\Contact')->columnNames;
+    }
+
+    /**
+     * @param $email
+     *
+     * @return array|mixed
+     */
+    public function getContactsByEmail ($email)
+    {
+
+        return $this->em->getRepository('ListBrokingAppBundle:Lead')
+                        ->findOneBy(array('email' => $email))
+            ;
     }
 
     /**
      * Gets all the contacts of a given Extraction with
      * all the dimensions eagerly loaded
+     *
      * @param Extraction $extraction
+     *
      * @return mixed
      */
-    public function getExtractionContacts(Extraction $extraction){
-        return $this->em->getRepository('ListBrokingAppBundle:Lock')->getExtractionContacts($extraction);
+    public function getExtractionContacts (Extraction $extraction)
+    {
+        return $this->em->getRepository('ListBrokingAppBundle:Lock')
+                        ->getExtractionContacts($extraction)
+            ;
     }
 
     /**
-     * Adds a single lock
-     * @param $entity
+     * @param $id
+     *
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function getLead ($id)
+    {
+
+        return $this->em->getRepository('ListBrokingAppBundle:Lead')
+                        ->findOneBy(array('id' => $id))
+            ;
+    }
+
+    /**
+     * @param $phone
+     *
      * @return mixed
      */
-    public function addLock($entity){
-        if($entity)
-        {
-            $this->em->persist($entity);
-            $this->em->flush();
-        }
+    public function getLeadByPhone ($phone)
+    {
+
+        return $this->em->getRepository('ListBrokingAppBundle:Lead')
+                        ->findOneBy(array('phone' => $phone))
+            ;
+    }
+
+    /**
+     * @param $entity
+     *
+     * @return $this
+     */
+    public function removeContact ($entity)
+    {
+
+        // Remove entity
+        $this->em->remove($entity);
+        $this->em->flush();
+    }
+
+    /**
+     * @param $entity Lead
+     *
+     * @return $this
+     */
+    public function removeLead ($entity)
+    {
+        // Remove entity
+        $this->em->remove($entity);
+        $this->em->flush();
     }
 
     /**
      * Removes a single lock
+     *
      * @param $entity
+     *
      * @return mixed
      */
-    public function removeLock($entity){
+    public function removeLock ($entity)
+    {
+
+        $this->em->persist($entity);
+        $this->em->flush();
+    }
+
+    /**
+     * @param $entity
+     *
+     * @return $this
+     */
+    public function updateContact ($entity)
+    {
+
+        $this->em->persist($entity);
+        $this->em->flush();
+    }
+
+    /**
+     * @param $entity
+     *
+     * @return $this
+     */
+    public function updateLead ($entity)
+    {
 
         $this->em->persist($entity);
         $this->em->flush();
@@ -179,10 +217,13 @@ class LeadService extends BaseService  implements LeadServiceInterface {
 
     /**
      * Updates a single country
+     *
      * @param $entity
+     *
      * @return mixed
      */
-    public function updateLock($entity){
+    public function updateLock ($entity)
+    {
 
         $this->em->persist($entity);
         $this->em->flush();

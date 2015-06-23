@@ -1,8 +1,8 @@
 {% block form_widget_compound -%}
     <div {{ block('widget_container_attributes') }} class="collection col-md-3">
         {%- if form.parent is empty -%}
-                {{ form_errors(form) }}
-            {%- endif -%}
+            {{ form_errors(form) }}
+        {%- endif -%}
         {{- block('form_rows') -}}
         {{- form_rest(form) -}}
     </div>
@@ -11,19 +11,23 @@
 {% block form_row %}
     {% spaceless %}
         {% if not compound -%}
-        <div class="form-group {% if form.parent.vars.block_prefixes.1 != 'filter' %}col-md-3{% endif %}">
+            <div class="form-group {% if form.parent.vars.block_prefixes.1 != 'filter' %}col-md-3{% endif %}">
         {% endif %}
-            {% if form.vars.block_prefixes.1 == 'checkbox' %}
-                {{ form_widget(form) }}&nbsp;
-                {{ form_label(form) }}
-            {% else %}
-                {% if form.vars.block_prefixes.1 not in ['filter', 'collection'] %}
+        {% if form.vars.block_prefixes.1 == 'checkbox' %}
+            {{ form_widget(form) }}&nbsp;
+            {{ form_label(form) }}
+        {% else %}
+            {% if form.vars.block_prefixes.1 not in ['filter', 'collection'] %}
+                {% if form.vars.block_prefixes.2 matches  '/exclusion/i' %}
+                    {{ form_label(form, label|default(null), { 'label_attr': { 'class': 'text-danger' } }) }}
+                {% else %}
                     {{ form_label(form) }}
                 {% endif %}
             {% endif %}
-            {{ form_widget(form) }}
+        {% endif %}
+        {{ form_widget(form) }}
         {% if not compound -%}
-        </div>
+            </div>
         {% endif %}
     {% endspaceless %}
 {% endblock %}

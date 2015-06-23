@@ -20,6 +20,11 @@ use ListBroking\AppBundle\Exception\InvalidFilterTypeException;
 interface LeadFilterInterface {
 
     /**
+     * Contact Filter types
+     */
+    const BASIC_TYPE = 'basic';
+
+    /**
      * @param Andx $andx
      * @param QueryBuilder $qb
      * @param $filters

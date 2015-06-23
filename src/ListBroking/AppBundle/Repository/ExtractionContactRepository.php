@@ -1,28 +1,27 @@
 <?php
 /**
- * 
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2015 Adclick
- *
  */
 
 namespace ListBroking\AppBundle\Repository;
 
-
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
 
-class ExtractionContactRepository extends EntityRepository {
+class ExtractionContactRepository extends EntityRepository
+{
 
     /**
      * Gets a Summary of Extraction Contacts
+     *
      * @param Extraction $extraction
      *
      * @return mixed
      */
-    public function getExtractionSummary(Extraction $extraction){
+    public function getExtractionSummary (Extraction $extraction)
+    {
         $qb = $this->createQueryBuilder('ec')
                    ->select('o.name, count(o.name) as total')
                    ->join('ec.contact', 'c')
@@ -32,17 +31,37 @@ class ExtractionContactRepository extends EntityRepository {
                    ->groupBy('c.owner')
         ;
 
-        return $qb->getQuery()->execute(null, Query::HYDRATE_ARRAY);
+        return $qb->getQuery()
+                  ->execute(null, Query::HYDRATE_ARRAY)
+            ;
+    }
+
+    /**
+     * Gets the Extraction Contacts of a given Extraction
+     *
+     * @param Extraction $extraction
+     * @param null       $limit
+     *
+     * @return mixed
+     */
+    public function getExtractionContacts (Extraction $extraction, $limit = null)
+    {
+
+        return $this->getExtractionContactsQuery($extraction, $limit)
+                    ->execute(null, Query::HYDRATE_OBJECT)
+            ;
     }
 
     /**
      * Gets a Query object of the Extraction Contacts
+     *
      * @param Extraction $extraction
      * @param null       $limit
      *
      * @return Query
      */
-    public function getExtractionContactsQuery(Extraction $extraction, $limit = null){
+    public function getExtractionContactsQuery (Extraction $extraction, $limit = null)
+    {
         $qb = $this->createQueryBuilder('ec')
                    ->join('ec.contact', 'c')
                    ->where('ec.extraction = :extraction')
@@ -50,24 +69,11 @@ class ExtractionContactRepository extends EntityRepository {
         ;
 
         // Add Limit
-        if($limit){
+        if ( $limit )
+        {
             $qb->setMaxResults($limit);
         }
 
         return $qb->getQuery();
     }
-
-    /**
-     * Gets the Extraction Contacts of a given Extraction
-     * @param Extraction $extraction
-     * @param null       $limit
-     *
-     * @return mixed
-     */
-    public function getExtractionContacts(Extraction $extraction, $limit = null){
-
-        return $this->getExtractionContactsQuery($extraction, $limit)->execute(null, Query::HYDRATE_OBJECT);
-    }
-
-
-} 
+}

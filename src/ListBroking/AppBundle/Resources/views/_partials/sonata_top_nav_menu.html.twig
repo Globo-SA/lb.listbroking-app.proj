@@ -12,7 +12,7 @@
             </a>
             {% include admin_pool.getTemplate('add_block') %}
         </li>
-        {% if app.security.token and is_granted('ROLE_SUPER_ADMIN') %}
+        {% if app.user and is_granted('ROLE_SUPER_ADMIN') %}
         <li class="dropdown">
             <a class="exceptions_menu dropdown-toggle" data-toggle="dropdown" href="#">
                 <i class="fa fa-exclamation-triangle fa-fw text-danger"></i> <i class="fa fa-caret-down"></i>

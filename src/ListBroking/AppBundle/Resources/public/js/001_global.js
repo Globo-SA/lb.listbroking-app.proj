@@ -19,7 +19,7 @@
             e.preventDefault();
 
             // Clear old entities
-            $('#exceptions_table tbody tr').remove();
+            $('#exceptions_table').find('tbody tr').remove();
 
             $('#loading_widget').fadeIn();
             $.ajax({

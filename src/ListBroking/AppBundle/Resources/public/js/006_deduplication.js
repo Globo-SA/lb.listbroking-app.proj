@@ -102,7 +102,7 @@
                 // Set loading on trigger
                 $('#lead_deduplication_trigger')
                     .attr('disabled', 'disabled')
-                    .find('i.loading').fadeIn();                ;
+                    .find('i.loading').fadeIn();
 
                 $.listenToExtractionChanges(function(extraction){
 

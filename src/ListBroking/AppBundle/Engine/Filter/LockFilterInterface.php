@@ -19,6 +19,16 @@ use ListBroking\AppBundle\Exception\InvalidFilterTypeException;
 interface LockFilterInterface {
 
     /**
+     * Contact Filter types
+     */
+    const NO_LOCKS_TYPE = 'no_locks';
+    const RESERVED_LOCK_TYPE = 'reserved_lock';
+    const CLIENT_LOCK_TYPE = 'client_lock';
+    const CAMPAIGN_LOCK_TYPE = 'campaign_lock';
+    const CATEGORY_LOCK_TYPE = 'category_lock';
+    const SUB_CATEGORY_LOCK_TYPE = 'sub_category_lock';
+
+    /**
      * @param Orx $orX
      * @param QueryBuilder $qb
      * @param $filters

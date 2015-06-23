@@ -3,7 +3,7 @@
 {% block block %}
     <div class="box box-primary">
         <div class="box-header">
-            <h3 class="box-title">{{ settings.title }}</h3>
+            <h3 class="box-title">{{ title }}</h3>
         </div>
         <div class="box-body">
 
@@ -108,11 +108,11 @@
                         if (item.email !== undefined) {
                             markup += "<option value='" + item.email + "'>" + item.email + "</option>";
                         }
-                        console.log(markup)
+                        console.log(markup);
                         return markup;
                     },
                     formatSelection: function (item) {
-                        console.log(item)
+                        console.log(item);
 
                         return item.email;
                     },

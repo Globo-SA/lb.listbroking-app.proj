@@ -13,7 +13,7 @@ namespace ListBroking\AppBundle\AdminBlock;
 use Doctrine\ORM\EntityManagerInterface;
 use Sonata\BlockBundle\Block\BaseBlockService;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Sonata\BlockBundle\Block\BlockContextInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
@@ -37,14 +37,6 @@ class OperationalEmailService extends BaseBlockService {
         $this->check = $check;
     }
 
-    public function setDefaultSettings(OptionsResolverInterface $resolver)
-    {
-        $resolver->setDefaults(array(
-            'title' => 'Operational Email Sender',
-            'template' => 'ListBrokingAppBundle:AdminBlock:operational_email_block.html.twig',
-        ));
-    }
-
     public function execute(BlockContextInterface $blockContext, Response $response = null)
     {
         $settings = $blockContext->getSettings();
@@ -53,9 +45,9 @@ class OperationalEmailService extends BaseBlockService {
             return $this->renderResponse('ListBrokingAppBundle:AdminBlock:empty.html.twig', array(), $response);
         }
 
-        return $this->renderResponse($blockContext->getTemplate(), array(
+        return $this->renderResponse('ListBrokingAppBundle:AdminBlock:operational_email_block.html.twig', array(
             'block'    => $blockContext->getBlock(),
-            'settings' => $settings,
+            'title' => 'Operational Email Sender',
         ), $response);
     }
 } 

@@ -84,7 +84,6 @@
             if($collections.length == 1){
                 $collections.find('label:first').after(collectionAdd);
             }else{
-                var $labels = $collections.find('label');
                 // Dont apply to the first and the last collections
                 $collectionHolder.find('.collection:not(:last-child).collection:not(:first-child)').find('label:first').after(collectionDelete);
 

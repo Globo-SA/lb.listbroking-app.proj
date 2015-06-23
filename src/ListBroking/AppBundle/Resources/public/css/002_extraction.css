@@ -44,10 +44,6 @@ blockquote {
     padding: 0 20px;
 }
 
-td .lead_exclude {
-    min-width: 76px;
-}
-
 @media (min-width: 768px) {
     .modal-dialog {
         width: 800px;

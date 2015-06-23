@@ -2,7 +2,6 @@
 
 namespace ListBroking\AppBundle\Admin;
 
-use Application\Sonata\UserBundle\Entity\User;
 use ListBroking\AppBundle\Entity\Extraction;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
@@ -14,31 +13,36 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class ExtractionAdmin extends Admin
 {
+
     protected $datagridValues = array(
         '_sort_order' => 'DESC'
     );
 
-
-    protected function configureRoutes(RouteCollection $collection)
+    protected function configureRoutes (RouteCollection $collection)
     {
-        $collection->add('clone', $this->getRouterIdParameter().'/clone');
+        $collection->remove('delete');
+        $collection->add('clone', $this->getRouterIdParameter() . '/clone');
         $collection->add('filtering', $this->getRouterIdParameter() . '/filtering');
-
-
     }
 
-    public function createQuery($context = 'list')
+    public function createQuery ($context = 'list')
     {
         $query = parent::createQuery($context);
 
         /* @var TokenInterface $security */
-        $token = $this->getConfigurationPool()->getContainer()->get('security.token_storage')->getToken();
+        $token = $this->getConfigurationPool()
+                      ->getContainer()
+                      ->get('security.token_storage')
+                      ->getToken()
+        ;
         $user = $token->getUser();
 
-        if ($user) {
+        if ( $user )
+        {
 
             // Admins are allowed to view all
-            if ($this->isGranted('ROLE_SUPER_ADMIN')){
+            if ( $this->isGranted('ROLE_SUPER_ADMIN') )
+            {
                 return $query;
             }
 
@@ -52,69 +56,69 @@ class ExtractionAdmin extends Admin
     /**
      * @param DatagridMapper $datagridMapper
      */
-    protected function configureDatagridFilters(DatagridMapper $datagridMapper)
+    protected function configureDatagridFilters (DatagridMapper $datagridMapper)
     {
-        $datagridMapper
-            ->add('name')
-            ->add('campaign')
+        $datagridMapper->add('name')
+                       ->add('campaign')
         ;
     }
 
     /**
      * @param ListMapper $listMapper
      */
-    protected function configureListFields(ListMapper $listMapper)
+    protected function configureListFields (ListMapper $listMapper)
     {
-        $listMapper
-            ->add('name')
-            ->add('campaign')
-            ->add('status', 'choice', array('choices' => Extraction::$status_names))
-            ->add('quantity')
-            ->add('payout')
-            ->add('created_by')
-            ->add('updated_at')
-            ->add('_action', 'actions', array(
-                'actions' => array(
-                    'filtering' => array(
-                        'template' => 'ListBrokingAppBundle:Extraction:CRUD/list__action_filtering.html.twig'
-                    ),
-                    'edit' => array(
-                        'template' => 'ListBrokingAppBundle:Extraction:CRUD/list__action_edit.html.twig'
-                    ),
-                    'clone' => array(
-                        'template' => 'ListBrokingAppBundle:Extraction:CRUD/list__action_clone.html.twig'
-                    )
-                )
-            ))
+        $listMapper->add('name')
+                   ->add('campaign')
+                   ->add('status', 'choice', array('choices' => Extraction::$status_names))
+                   ->add('quantity')
+                   ->add('payout')
+                   ->add('created_by')
+                   ->add('updated_at')
+                   ->add('_action', 'actions', array(
+                       'actions' => array(
+                           'filtering' => array(
+                               'template' => 'ListBrokingAppBundle:Extraction:CRUD/list__action_filtering.html.twig'
+                           ),
+                           'edit'      => array(
+                               'template' => 'ListBrokingAppBundle:Extraction:CRUD/list__action_edit.html.twig'
+                           ),
+                           'clone'     => array(
+                               'template' => 'ListBrokingAppBundle:Extraction:CRUD/list__action_clone.html.twig'
+                           )
+                       )
+                   ))
         ;
     }
 
     /**
      * @param FormMapper $formMapper
      */
-    protected function configureFormFields(FormMapper $formMapper)
+    protected function configureFormFields (FormMapper $formMapper)
     {
-        $formMapper
-            ->add('name')
-            ->add('campaign', null, array('required' => true))
-            ->add('quantity')
-            ->add('payout')
-        ;
+        if ( ! $this->getSubject()->getId() )
+        {
+            $formMapper->add('name')
+                       ->add('campaign', null, array('required' => true))
+                       ->add('quantity')
+            ;
+        }
+
+        $formMapper->add('payout');
     }
 
     /**
      * @param ShowMapper $showMapper
      */
-    protected function configureShowFields(ShowMapper $showMapper)
+    protected function configureShowFields (ShowMapper $showMapper)
     {
-        $showMapper
-            ->add('id')
-            ->add('name')
-            ->add('status')
-            ->add('quantity')
-            ->add('payout')
-            ->add('created_at')
-            ->add('updated_at')
+        $showMapper->add('id')
+                   ->add('name')
+                   ->add('status')
+                   ->add('quantity')
+                   ->add('payout')
+                   ->add('created_at')
+                   ->add('updated_at')
         ;
     }
 }

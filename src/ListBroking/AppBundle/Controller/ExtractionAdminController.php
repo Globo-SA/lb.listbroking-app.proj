@@ -102,6 +102,7 @@ class ExtractionAdminController extends CRUDController
             $is_extraction_ready = $e_service->handleFiltration($extraction);
             if ( $is_extraction_ready )
             {
+
                 // Publish Extraction to the Queue
                 $m_service->publishMessage('run_extraction', array(
                     'object_id' => $extraction->getId()
@@ -115,7 +116,8 @@ class ExtractionAdminController extends CRUDController
         $extraction_locking = $e_service->generateForm('extraction_locking');
 
         $filters_form = $e_service->generateForm('filters', $this->generateUrl('admin_listbroking_app_extraction_filtering', array('id' => $extraction_id)), $extraction->getFilters());
-
+//        ladybug_dump_die($extraction->getFilters());
+//
         // Render Response
         return $this->render('@ListBrokingApp/Extraction/filtering.html.twig', array(
             'action'        => 'filtering',

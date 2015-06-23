@@ -2,11 +2,9 @@
 
 namespace ListBroking\AppBundle\Form;
 
-use ListBroking\AppBundle\Entity\OppositionList;
 use ListBroking\AppBundle\Service\Helper\AppService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class OppositionListImportType extends AbstractType
 {
@@ -36,7 +34,8 @@ class OppositionListImportType extends AbstractType
                     'attr' => array(
                         'class' => 'form-control',
                         'data-select' => 'local'
-                    )
+                    ),
+                    'choices_as_values' => true,
                 )
             )
             ->add('upload_file', 'file', array(
@@ -46,14 +45,7 @@ class OppositionListImportType extends AbstractType
         ;
     }
 
-    /**
-     * @param OptionsResolverInterface $resolver
-     */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
-    {
-        $resolver->setDefaults(array(
-        ));
-    }
+
 
     /**
      * @return string

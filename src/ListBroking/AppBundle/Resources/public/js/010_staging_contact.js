@@ -75,30 +75,7 @@
 
                 //Close modal
                 $('#staging_contact_import_modal').modal('hide');
-
-                // Start checking for deduplication end
-                App.variables.deduplicationQueueId = $('body').checkQueues('staging_contact_import_queue', null, null, function(){
-                    // Stop interval
-                    clearInterval(App.variables.deduplicationQueueId);
-
-                    // Stop loading button
-                    $('#staging_contact_import_trigger').toggleLoading();
-                });
             })
         ;
-
-        // If the button is disabled there were Queues when
-        // the page was rendered
-        if($('#staging_contact_import_trigger').is(':disabled')){
-
-            // Start checking for deduplication end
-            App.variables.deduplicationQueueId = $('body').checkQueues('staging_contact_import_queue', null, null , function(){
-                // Stop interval
-                clearInterval(App.variables.deduplicationQueueId);
-
-                // Stop loading button
-                $('#staging_contact_import_trigger').toggleLoading();
-            });
-        }
     });
 })(jQuery, ListBroking);

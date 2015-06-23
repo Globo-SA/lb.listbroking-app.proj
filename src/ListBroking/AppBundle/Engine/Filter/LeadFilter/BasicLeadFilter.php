@@ -17,6 +17,7 @@ use Doctrine\ORM\QueryBuilder;
 use ListBroking\AppBundle\Engine\Filter\LeadFilterInterface;
 use ListBroking\AppBundle\Exception\InvalidFilterObjectException;
 use ListBroking\AppBundle\Exception\InvalidFilterTypeException;
+use ListBroking\AppBundle\Form\FiltersType;
 
 class BasicLeadFilter implements LeadFilterInterface {
 
@@ -32,69 +33,72 @@ class BasicLeadFilter implements LeadFilterInterface {
     {
         foreach($filters as $filter){
 
+            // Validate the Filter
+            FiltersType::validateFilter($filter);
+
             $filter['field'] = 'leads.' . $filter['field'];
 
             // Generate an unique id for each filter to avoid collisions
             $uid = uniqid();
 
-            // Validate filter array
-            if(!array_key_exists('field', $filter)
-                || !array_key_exists('opt', $filter)
-                || !array_key_exists('value', $filter)
-                || !is_array($filter['value'])
-            ){
-                throw new InvalidFilterObjectException(
-                    'Invalid filter, must be: array(\'field\' => \'\', \'opt\' => \'\', \'value\' => array()), in ' .
-                    __CLASS__ );
-            }
-
             switch($filter['opt']){
-                case 'equal':
+                case FiltersType::EQUAL_OPERATION:
 
-                    // Equal
-                    if(count($filter['value']) > 1){
-                        $andx->add(
-                            $qb->expr()->in($filter['field'], ":in_filter_{$uid}")
-                        );
-                        $qb->setParameter("in_filter_{$uid}", $filter['value']);
+
+                    $name =  "in_filter_{$uid}";
+
+                    // Inclusion or Exclusion Filter
+                    switch($filter['filter_operation']){
+                        case FiltersType::INCLUSION_FILTER:
+                            $andx->add(
+                                $qb->expr()->in($filter['field'],':'. $name)
+                            );
+                            break;
+                        case FiltersType::EXCLUSION_FILTER:
+                            $andx->add(
+                                $qb->expr()->notIn($filter['field'],':'. $name)
+                            );
+                            break;
+                        default:
+                            break;
                     }
-                    // IN
-                    else{
-                        $andx->add(
-                            $qb->expr()->eq($filter['field'], ":equal_filter_{$uid}")
-                        );
-                        $qb->setParameter("equal_filter_{$uid}", $filter['value']);
-                    }
+                    $qb->setParameter($name, $filter['value']);
+
                     break;
-                case 'not_equal':
+                case FiltersType::BETWEEN_OPERATION:
 
-                    // NOT Equal
-                    if(count($filter['value']) > 1){
-                        $andx->add(
-                            $qb->expr()->notIn($filter['field'], ":in_filter_{$uid}")
-                        );
-                        $qb->setParameter("in_filter_{$uid}", $filter['value']);
-                    }
-                    // NOT IN
-                    else{
-                        $andx->add(
-                            $qb->expr()->neq($filter['field'], ":not_equal_filter_{$uid}")
-                        );
-                        $qb->setParameter("not_equal_filter_{$uid}", $filter['value']);
-                    }
-                    break;
-                case 'between':
+                    $name_x =  "between_filter_x_{$uid}";
+                    $name_y =  "between_filter_y_{$uid}";
 
-                    // BETWEEN
-                    $andx->add(
-                        $qb->expr()->between(
-                            $filter['field'],
-                            ":between_filter_x_{$uid}",
-                            ":between_filter_y_{$uid}"
-                        )
-                    );
-                    $qb->setParameter(":between_filter_x_{$uid}", $filter['value'][0]);
-                    $qb->setParameter(":between_filter_y_{$uid}", $filter['value'][1]);
+                    // Inclusion or Exclusion Filter
+                    switch($filter['filter_operation']){
+                        case FiltersType::INCLUSION_FILTER:
+                            $andx->add(
+                                $qb->expr()->between(
+                                    $filter['field'],
+                                    ":between_filter_x_{$uid}",
+                                    ":between_filter_y_{$uid}"
+                                )
+                            );
+                            break;
+                        case FiltersType::EXCLUSION_FILTER:
+                            $andx->add(
+                            // NOT BETWEEN EQ DOESN'T EXIST IN DOCTRINE QUERY BUILDER
+                                $qb->expr()->not(
+                                    $qb->expr()->between(
+                                        $filter['field'],
+                                        ":between_filter_x_{$uid}",
+                                        ":between_filter_y_{$uid}"
+                                    )
+                                )
+                            );
+
+                            break;
+                        default:
+                            break;
+                    }
+                    $qb->setParameter($name_x, $filter['value'][0]);
+                    $qb->setParameter($name_y, $filter['value'][1]);
 
                     break;
                 default:

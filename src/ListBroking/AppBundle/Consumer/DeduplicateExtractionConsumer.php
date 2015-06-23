@@ -31,38 +31,47 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
      */
     public function execute (AMQPMessage $msg)
     {
-        // PHP is run in shared nothing architecture, so long running processes need to
-        // Clear the entity manager before running
-        $this->e_service->clearEntityManager();
+        try
+        {
+            // PHP is run in shared nothing architecture, so long running processes need to
+            // Clear the entity manager before running
+            $this->e_service->clearEntityManager();
 
-        $msg_body = unserialize($msg->body);
+            $msg_body = unserialize($msg->body);
 
-        $this->e_service->logInfo(sprintf("Starting 'deduplication' for extraction_id: %s with field: %s and file: %s", $msg_body['object_id'], $msg_body['field'], $msg_body['filename']));
+            $this->e_service->logInfo(sprintf("Starting 'deduplication' for extraction_id: %s with field: %s and file: %s", $msg_body['object_id'], $msg_body['field'], $msg_body['filename']));
 
-        /** @var Extraction $extraction */
-        $extraction = $this->e_service->em->getRepository('ListBrokingAppBundle:Extraction')
-                                          ->findOneBy(array(
-                                              'id' => $msg_body['object_id']
-                                          ))
-        ;
-        $filename = $msg_body['filename'];
+            /** @var Extraction $extraction */
+            $extraction = $this->e_service->em->getRepository('ListBrokingAppBundle:Extraction')
+                                              ->findOneBy(array(
+                                                  'id' => $msg_body['object_id']
+                                              ))
+            ;
+            $filename = $msg_body['filename'];
 
-        // Persist deduplications to the DB
-        $this->e_service->uploadDeduplicationsByFile($extraction, $filename, $msg_body['field']);
+            // Persist deduplications to the DB
+            $this->e_service->uploadDeduplicationsByFile($extraction, $filename, $msg_body['field']);
 
-        // Filter extraction
-        $extraction->setDeduplicationType($msg_body['deduplication_type']);
-        $this->e_service->executeFilterEngine($extraction);
-        $extraction->setIsDeduplicating(false);
+            // Filter extraction
+            $extraction->setDeduplicationType($msg_body['deduplication_type']);
+            $this->e_service->executeFilterEngine($extraction);
+            $extraction->setIsDeduplicating(false);
 
-        // Save changes
-        $this->e_service->updateEntity('extraction', $extraction);
+            // Save changes
+            $this->e_service->updateEntity('extraction', $extraction);
 
+            // Delete file
+            unlink($filename);
 
-        // Delete file
-        unlink($filename);
+            $this->e_service->logInfo(sprintf("Ending 'deduplication' for extraction_id: %s, result: DONE", $msg_body['object_id']));
 
+            return true;
+        }
+        catch ( \Exception $e )
+        {
+            $this->e_service->logError($e);
 
-        $this->e_service->logInfo(sprintf("Ending 'deduplication' for extraction_id: %s, result: DONE", $msg_body['object_id']));
+            return false;
+        }
     }
 }

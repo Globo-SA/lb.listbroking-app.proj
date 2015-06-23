@@ -13,6 +13,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ExtractionDeduplication
 {
+
+    /**
+     * Extraction Deduplication by phone number
+     */
+    const TYPE_PHONE = 'phone';
+
     /**
      * @var integer
      */

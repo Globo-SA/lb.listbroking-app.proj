@@ -1,37 +1,21 @@
 <?php
 /**
- * 
  * @author     Pedro Tentugal <pedro.tentugal@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
 namespace ListBroking\AppBundle\Entity;
 
-
+use Doctrine\Common\Collections\ArrayCollection;
 use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
 use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
-use Doctrine\Common\Collections\ArrayCollection;
-use ListBroking\AppBundle\Entity\ExtractionContact;
 
-class Contact {
-    use TimestampableEntityBehavior,
-        BlameableEntityBehavior;
+class Contact
+{
 
-
-    function __construct()
-    {
-        $this->extractions = new ArrayCollection();
-    }
-
-    function __toString()
-    {
-        return $this->firstname . ' ' . $this->lastname;
-    }
-
-    // GENERATED STUFF
+    use TimestampableEntityBehavior, BlameableEntityBehavior;
 
     /**
      * @var integer
@@ -42,6 +26,8 @@ class Contact {
      * @var string
      */
     private $external_id;
+
+    // GENERATED STUFF
 
     /**
      * @var string
@@ -104,59 +90,76 @@ class Contact {
     private $extraction_contacts;
 
     /**
-     * @var \ListBroking\AppBundle\Entity\Lead
+     * @var Lead
      */
     private $lead;
 
     /**
-     * @var \ListBroking\AppBundle\Entity\Source
+     * @var Source
      */
     private $source;
 
     /**
-     * @var \ListBroking\AppBundle\Entity\Owner
+     * @var Owner
      */
     private $owner;
 
     /**
-     * @var \ListBroking\AppBundle\Entity\SubCategory
+     * @var SubCategory
      */
     private $sub_category;
 
     /**
-     * @var \ListBroking\AppBundle\Entity\Gender
+     * @var Gender
      */
     private $gender;
 
     /**
-     * @var \ListBroking\AppBundle\Entity\District
+     * @var District
      */
     private $district;
 
     /**
-     * @var \ListBroking\AppBundle\Entity\County
+     * @var County
      */
     private $county;
 
     /**
-     * @var \ListBroking\AppBundle\Entity\Parish
+     * @var Parish
      */
     private $parish;
 
     /**
-     * @var \ListBroking\AppBundle\Entity\Country
+     * @var Country
      */
     private $country;
 
+    function __construct ()
+    {
+        $this->extractions = new ArrayCollection();
+    }
+
+    function __toString ()
+    {
+        return $this->firstname . ' ' . $this->lastname;
+    }
 
     /**
      * Get id
-     *
      * @return integer
      */
-    public function getId()
+    public function getId ()
     {
         return $this->id;
+    }
+
+    /**
+     * Get externalId
+     * @return string
+     */
+    public function getExternalId ()
+    {
+        return $this->external_id;
     }
 
     /**
@@ -166,7 +169,7 @@ class Contact {
      *
      * @return Contact
      */
-    public function setExternalId($externalId)
+    public function setExternalId ($externalId)
     {
         $this->external_id = $externalId;
 
@@ -174,13 +177,12 @@ class Contact {
     }
 
     /**
-     * Get externalId
-     *
+     * Get email
      * @return string
      */
-    public function getExternalId()
+    public function getEmail ()
     {
-        return $this->external_id;
+        return $this->email;
     }
 
     /**
@@ -190,7 +192,7 @@ class Contact {
      *
      * @return Contact
      */
-    public function setEmail($email)
+    public function setEmail ($email)
     {
         $this->email = $email;
 
@@ -198,13 +200,12 @@ class Contact {
     }
 
     /**
-     * Get email
-     *
+     * Get firstname
      * @return string
      */
-    public function getEmail()
+    public function getFirstname ()
     {
-        return $this->email;
+        return $this->firstname;
     }
 
     /**
@@ -214,7 +215,7 @@ class Contact {
      *
      * @return Contact
      */
-    public function setFirstname($firstname)
+    public function setFirstname ($firstname)
     {
         $this->firstname = $firstname;
 
@@ -222,13 +223,12 @@ class Contact {
     }
 
     /**
-     * Get firstname
-     *
+     * Get lastname
      * @return string
      */
-    public function getFirstname()
+    public function getLastname ()
     {
-        return $this->firstname;
+        return $this->lastname;
     }
 
     /**
@@ -238,7 +238,7 @@ class Contact {
      *
      * @return Contact
      */
-    public function setLastname($lastname)
+    public function setLastname ($lastname)
     {
         $this->lastname = $lastname;
 
@@ -246,13 +246,12 @@ class Contact {
     }
 
     /**
-     * Get lastname
-     *
-     * @return string
+     * Get birthdate
+     * @return \DateTime
      */
-    public function getLastname()
+    public function getBirthdate ()
     {
-        return $this->lastname;
+        return $this->birthdate;
     }
 
     /**
@@ -262,7 +261,7 @@ class Contact {
      *
      * @return Contact
      */
-    public function setBirthdate($birthdate)
+    public function setBirthdate ($birthdate)
     {
         $this->birthdate = $birthdate;
 
@@ -270,13 +269,12 @@ class Contact {
     }
 
     /**
-     * Get birthdate
-     *
-     * @return \DateTime
+     * Get address
+     * @return string
      */
-    public function getBirthdate()
+    public function getAddress ()
     {
-        return $this->birthdate;
+        return $this->address;
     }
 
     /**
@@ -286,7 +284,7 @@ class Contact {
      *
      * @return Contact
      */
-    public function setAddress($address)
+    public function setAddress ($address)
     {
         $this->address = $address;
 
@@ -294,13 +292,12 @@ class Contact {
     }
 
     /**
-     * Get address
-     *
-     * @return string
+     * Get postalcode1
+     * @return integer
      */
-    public function getAddress()
+    public function getPostalcode1 ()
     {
-        return $this->address;
+        return $this->postalcode1;
     }
 
     /**
@@ -310,7 +307,7 @@ class Contact {
      *
      * @return Contact
      */
-    public function setPostalcode1($postalcode1)
+    public function setPostalcode1 ($postalcode1)
     {
         $this->postalcode1 = $postalcode1;
 
@@ -318,13 +315,12 @@ class Contact {
     }
 
     /**
-     * Get postalcode1
-     *
+     * Get postalcode2
      * @return integer
      */
-    public function getPostalcode1()
+    public function getPostalcode2 ()
     {
-        return $this->postalcode1;
+        return $this->postalcode2;
     }
 
     /**
@@ -334,7 +330,7 @@ class Contact {
      *
      * @return Contact
      */
-    public function setPostalcode2($postalcode2)
+    public function setPostalcode2 ($postalcode2)
     {
         $this->postalcode2 = $postalcode2;
 
@@ -342,13 +338,12 @@ class Contact {
     }
 
     /**
-     * Get postalcode2
-     *
-     * @return integer
+     * Get ipaddress
+     * @return string
      */
-    public function getPostalcode2()
+    public function getIpaddress ()
     {
-        return $this->postalcode2;
+        return $this->ipaddress;
     }
 
     /**
@@ -358,7 +353,7 @@ class Contact {
      *
      * @return Contact
      */
-    public function setIpaddress($ipaddress)
+    public function setIpaddress ($ipaddress)
     {
         $this->ipaddress = $ipaddress;
 
@@ -366,13 +361,12 @@ class Contact {
     }
 
     /**
-     * Get ipaddress
-     *
-     * @return string
+     * Get date
+     * @return \DateTime
      */
-    public function getIpaddress()
+    public function getDate ()
     {
-        return $this->ipaddress;
+        return $this->date;
     }
 
     /**
@@ -382,7 +376,7 @@ class Contact {
      *
      * @return Contact
      */
-    public function setDate($date)
+    public function setDate ($date)
     {
         $this->date = $date;
 
@@ -390,13 +384,12 @@ class Contact {
     }
 
     /**
-     * Get date
-     *
-     * @return \DateTime
+     * Get postRequest
+     * @return array
      */
-    public function getDate()
+    public function getPostRequest ()
     {
-        return $this->date;
+        return $this->post_request;
     }
 
     /**
@@ -406,7 +399,7 @@ class Contact {
      *
      * @return Contact
      */
-    public function setPostRequest($postRequest)
+    public function setPostRequest ($postRequest)
     {
         $this->post_request = $postRequest;
 
@@ -414,13 +407,12 @@ class Contact {
     }
 
     /**
-     * Get postRequest
-     *
+     * Get validations
      * @return array
      */
-    public function getPostRequest()
+    public function getValidations ()
     {
-        return $this->post_request;
+        return $this->validations;
     }
 
     /**
@@ -430,21 +422,11 @@ class Contact {
      *
      * @return Contact
      */
-    public function setValidations($validations)
+    public function setValidations ($validations)
     {
         $this->validations = $validations;
 
         return $this;
-    }
-
-    /**
-     * Get validations
-     *
-     * @return array
-     */
-    public function getValidations()
-    {
-        return $this->validations;
     }
 
     /**
@@ -454,7 +436,7 @@ class Contact {
      *
      * @return Contact
      */
-    public function addExtractionContact(ExtractionContact $extractionContact)
+    public function addExtractionContact (ExtractionContact $extractionContact)
     {
         $this->extraction_contacts[] = $extractionContact;
 
@@ -466,29 +448,37 @@ class Contact {
      *
      * @param ExtractionContact $extractionContact
      */
-    public function removeExtractionContact(ExtractionContact $extractionContact)
+    public function removeExtractionContact (ExtractionContact $extractionContact)
     {
         $this->extraction_contacts->removeElement($extractionContact);
     }
 
     /**
      * Get extractionContacts
-     *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getExtractionContacts()
+    public function getExtractionContacts ()
     {
         return $this->extraction_contacts;
     }
 
     /**
+     * Get lead
+     * @return Lead
+     */
+    public function getLead ()
+    {
+        return $this->lead;
+    }
+
+    /**
      * Set lead
      *
-     * @param \ListBroking\AppBundle\Entity\Lead $lead
+     * @param Lead $lead
      *
      * @return Contact
      */
-    public function setLead(\ListBroking\AppBundle\Entity\Lead $lead)
+    public function setLead (Lead $lead)
     {
         $this->lead = $lead;
 
@@ -496,23 +486,22 @@ class Contact {
     }
 
     /**
-     * Get lead
-     *
-     * @return \ListBroking\AppBundle\Entity\Lead
+     * Get source
+     * @return Source
      */
-    public function getLead()
+    public function getSource ()
     {
-        return $this->lead;
+        return $this->source;
     }
 
     /**
      * Set source
      *
-     * @param \ListBroking\AppBundle\Entity\Source $source
+     * @param Source $source
      *
      * @return Contact
      */
-    public function setSource(\ListBroking\AppBundle\Entity\Source $source)
+    public function setSource (Source $source)
     {
         $this->source = $source;
 
@@ -520,23 +509,22 @@ class Contact {
     }
 
     /**
-     * Get source
-     *
-     * @return \ListBroking\AppBundle\Entity\Source
+     * Get owner
+     * @return Owner
      */
-    public function getSource()
+    public function getOwner ()
     {
-        return $this->source;
+        return $this->owner;
     }
 
     /**
      * Set owner
      *
-     * @param \ListBroking\AppBundle\Entity\Owner $owner
+     * @param Owner $owner
      *
      * @return Contact
      */
-    public function setOwner(\ListBroking\AppBundle\Entity\Owner $owner)
+    public function setOwner (Owner $owner)
     {
         $this->owner = $owner;
 
@@ -544,23 +532,22 @@ class Contact {
     }
 
     /**
-     * Get owner
-     *
-     * @return \ListBroking\AppBundle\Entity\Owner
+     * Get subCategory
+     * @return SubCategory
      */
-    public function getOwner()
+    public function getSubCategory ()
     {
-        return $this->owner;
+        return $this->sub_category;
     }
 
     /**
      * Set subCategory
      *
-     * @param \ListBroking\AppBundle\Entity\SubCategory $subCategory
+     * @param SubCategory $subCategory
      *
      * @return Contact
      */
-    public function setSubCategory(\ListBroking\AppBundle\Entity\SubCategory $subCategory)
+    public function setSubCategory (SubCategory $subCategory)
     {
         $this->sub_category = $subCategory;
 
@@ -568,23 +555,22 @@ class Contact {
     }
 
     /**
-     * Get subCategory
-     *
-     * @return \ListBroking\AppBundle\Entity\SubCategory
+     * Get gender
+     * @return Gender
      */
-    public function getSubCategory()
+    public function getGender ()
     {
-        return $this->sub_category;
+        return $this->gender;
     }
 
     /**
      * Set gender
      *
-     * @param \ListBroking\AppBundle\Entity\Gender $gender
+     * @param Gender $gender
      *
      * @return Contact
      */
-    public function setGender(\ListBroking\AppBundle\Entity\Gender $gender)
+    public function setGender (Gender $gender)
     {
         $this->gender = $gender;
 
@@ -592,23 +578,22 @@ class Contact {
     }
 
     /**
-     * Get gender
-     *
-     * @return \ListBroking\AppBundle\Entity\Gender
+     * Get district
+     * @return District
      */
-    public function getGender()
+    public function getDistrict ()
     {
-        return $this->gender;
+        return $this->district;
     }
 
     /**
      * Set district
      *
-     * @param \ListBroking\AppBundle\Entity\District $district
+     * @param District $district
      *
      * @return Contact
      */
-    public function setDistrict(\ListBroking\AppBundle\Entity\District $district = null)
+    public function setDistrict (District $district = null)
     {
         $this->district = $district;
 
@@ -616,23 +601,22 @@ class Contact {
     }
 
     /**
-     * Get district
-     *
-     * @return \ListBroking\AppBundle\Entity\District
+     * Get county
+     * @return County
      */
-    public function getDistrict()
+    public function getCounty ()
     {
-        return $this->district;
+        return $this->county;
     }
 
     /**
      * Set county
      *
-     * @param \ListBroking\AppBundle\Entity\County $county
+     * @param County $county
      *
      * @return Contact
      */
-    public function setCounty(\ListBroking\AppBundle\Entity\County $county = null)
+    public function setCounty (County $county = null)
     {
         $this->county = $county;
 
@@ -640,23 +624,22 @@ class Contact {
     }
 
     /**
-     * Get county
-     *
-     * @return \ListBroking\AppBundle\Entity\County
+     * Get parish
+     * @return Parish
      */
-    public function getCounty()
+    public function getParish ()
     {
-        return $this->county;
+        return $this->parish;
     }
 
     /**
      * Set parish
      *
-     * @param \ListBroking\AppBundle\Entity\Parish $parish
+     * @param Parish $parish
      *
      * @return Contact
      */
-    public function setParish(\ListBroking\AppBundle\Entity\Parish $parish = null)
+    public function setParish (Parish $parish = null)
     {
         $this->parish = $parish;
 
@@ -664,36 +647,25 @@ class Contact {
     }
 
     /**
-     * Get parish
-     *
-     * @return \ListBroking\AppBundle\Entity\Parish
+     * Get country
+     * @return Country
      */
-    public function getParish()
+    public function getCountry ()
     {
-        return $this->parish;
+        return $this->country;
     }
 
     /**
      * Set country
      *
-     * @param \ListBroking\AppBundle\Entity\Country $country
+     * @param Country $country
      *
      * @return Contact
      */
-    public function setCountry(\ListBroking\AppBundle\Entity\Country $country)
+    public function setCountry (Country $country)
     {
         $this->country = $country;
 
         return $this;
-    }
-
-    /**
-     * Get country
-     *
-     * @return \ListBroking\AppBundle\Entity\Country
-     */
-    public function getCountry()
-    {
-        return $this->country;
     }
 }

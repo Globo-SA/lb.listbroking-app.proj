@@ -9,7 +9,6 @@
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Engine\FilterEngine;
 use ListBroking\AppBundle\Entity\Extraction;
@@ -52,61 +51,79 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $this->twig = $twig_Environment;
     }
 
-    /**
-     * Handles Extraction Filtration
-     *  . Saves new Filters
-     *  . Marks Extraction to be Extracted
-     *  . Sets the Extraction Status to CONFIRMATION
-     *
-     * @param Extraction $extraction
-     *
-     * @return bool Returns true if the extraction is ready to be processed by a consumer
-     */
-    public function handleFiltration (Extraction $extraction)
+    public function excludeLead (Extraction $extraction, $lead_id)
     {
-        // Filters Form
-        $form = $this->generateForm('filters', null,  $extraction->getFilters());
 
-        // Handle the filters form
-        $filters_form = $form->handleRequest($this->request);
-        $filters = $filters_form->getData();
+        $dedup = new ExtractionDeduplication();
+        $dedup->setExtraction($extraction);
+        $dedup->setLeadId($lead_id);
 
-        if ( $this->request->getMethod() == Request::METHOD_POST)
-        {
+        $extraction->addExtractionDeduplication($dedup);
 
-            // Sets the new Filters and mark the Extraction to reprocess
-            // and sets the status to confirmation
-            $extraction->setFilters($filters);
-            $extraction->setIsAlreadyExtracted(false);
-            $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
-
-            $this->updateEntity('extraction', $extraction);
-
-            return true;
-        }
-
-        return false;
+        $this->em->persist($dedup);
+        $this->em->flush();
     }
 
     /**
-     * Used the LockService to compile and run the Extraction
+     * Clones a given extraction and resets it's status
      *
      * @param Extraction $extraction
      *
-     * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
-     * @return boolean
+     * @return Extraction
      */
-    public function runExtraction (Extraction $extraction)
+    public function cloneExtraction (Extraction $extraction)
     {
-        // if the Extraction is closed save it and return
-        if ( $extraction->getStatus() == Extraction::STATUS_FINAL )
-        {
-            return false;
-        }
 
-        $this->executeFilterEngine($extraction);
+        /** @var Extraction $clonedObject */
+        $clonedObject = clone $extraction;
 
-        return true;
+        $clonedObject->setName($extraction->getName() . " (duplicate)");
+        $clonedObject->setStatus(Extraction::STATUS_FILTRATION);
+        $clonedObject->setContacts(new ArrayCollection());
+        $clonedObject->setExtractionDeduplications(new ArrayCollection());
+        $clonedObject->setDeduplicationType(null);
+        $clonedObject->setQuery(null);
+        $clonedObject->setIsAlreadyExtracted(false);
+
+        return $clonedObject;
+    }
+
+    /**
+     * Removes Deduplicated Leads from an Extraction
+     * using the ExtractionDeduplication Entity
+     *
+     * @param Extraction $extraction
+     *
+     * @return mixed
+     */
+    public function deduplicateExtraction (Extraction $extraction)
+    {
+        $this->em->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
+                 ->deduplicateExtraction($extraction)
+        ;
+    }
+
+    /**
+     * Delivers the Extraction to a set of Emails
+     *
+     * @param Extraction $extraction
+     * @param            $emails
+     * @param            $filename
+     *
+     * @return mixed
+     */
+    public function deliverExtraction (Extraction $extraction, $emails, $filename)
+    {
+        $message = \Swift_Message::newInstance()
+                                 ->setSubject("LB Extraction - {$extraction->getName()}")
+                                 ->setFrom('info@adclick.pt')
+                                 ->setTo($emails)
+                                 ->setBody($this->twig->render('@ListBrokingApp/KitEmail/deliver_extraction.html.twig', array()))
+                                 ->setContentType('text/html')
+                                 ->attach(\Swift_Attachment::fromPath($filename))
+        ;
+
+        return $this->mailer->send($message);
     }
 
     /**
@@ -134,8 +151,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         ;
 
         $query = array(
-            'dql'        => $query->getDQL(),
-            'sql'        => $query->getSQL(),
+            'dql' => $query->getDQL(),
+            'sql' => $query->getSQL(),
         );
 
         // Update Extraction
@@ -144,34 +161,6 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $extraction->setQuery(json_encode($query));
 
         $this->updateEntity('extraction', $extraction);
-    }
-
-    /**
-     * @param Extraction $extraction
-     *
-     * @return mixed
-     */
-    public function getExtractionSummary (Extraction $extraction)
-    {
-        return $this->em->getRepository('ListBrokingAppBundle:ExtractionContact')
-                        ->getExtractionSummary($extraction)
-            ;
-    }
-
-    /**
-     * Gets all the contacts of a given Extraction with
-     * all the dimensions eagerly loaded
-     *
-     * @param Extraction $extraction
-     * @param            $limit
-     *
-     * @return mixed
-     */
-    public function getExtractionContacts (Extraction $extraction, $limit = null)
-    {
-        return $this->em->getRepository('ListBrokingAppBundle:ExtractionContact')
-                        ->getExtractionContacts($extraction, $limit)
-            ;
     }
 
     /**
@@ -199,79 +188,19 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         if ( array_key_exists("filename", $info) )
         {
             $filename = $this->generateFilename($info['filename'], FileHandler::$export_types[$template['extension']]['extension']);
-
         }
         $filename = $this->getRootDir() . '/../web/' . $filename;
 
         // Get the Extraction Contacts Query
-        $query = $this->em->getRepository('ListBrokingAppBundle:ExtractionContact')->getExtractionContactsQuery($extraction);
+        $query = $this->em->getRepository('ListBrokingAppBundle:ExtractionContact')
+                          ->getExtractionContactsQuery($extraction)
+        ;
 
         // Generate File
         $file_handler = new FileHandler();
         $file_handler->export($filename, $template['headers'], $template['extension'], $query);
 
         return $filename;
-    }
-
-    /**
-     * Used to import a file with Leads
-     *
-     * @param $filename
-     *
-     * @internal param $filename
-     * @return mixed
-     */
-    public function importExtraction ($filename)
-    {
-        $file_handler = new FileHandler();
-        $obj = $file_handler->import($filename);
-
-        return $file_handler->convertToArray($obj, false);
-    }
-
-    /**
-     * Persists Deduplications to the database, this function uses PHPExcel with APC
-     *
-     * @param Extraction $extraction
-     * @param string     $filename
-     * @param string     $field
-     *
-     * @return void
-     */
-    public function uploadDeduplicationsByFile (Extraction $extraction, $filename, $field)
-    {
-
-        $this->em->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
-                 ->uploadDeduplicationsByFile($filename, $extraction, $field)
-        ;
-    }
-
-    public function excludeLead (Extraction $extraction, $lead_id)
-    {
-
-        $dedup = new ExtractionDeduplication();
-        $dedup->setExtraction($extraction);
-        $dedup->setLeadId($lead_id);
-
-        $extraction->addExtractionDeduplication($dedup);
-
-        $this->em->persist($dedup);
-        $this->em->flush();
-    }
-
-    /**
-     * Removes Deduplicated Leads from an Extraction
-     * using the ExtractionDeduplication Entity
-     *
-     * @param Extraction $extraction
-     *
-     * @return mixed
-     */
-    public function deduplicateExtraction (Extraction $extraction)
-    {
-        $this->em->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
-                 ->deduplicateExtraction($extraction)
-        ;
     }
 
     /**
@@ -295,49 +224,120 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     }
 
     /**
-     * Delivers the Extraction to a set of Emails
+     * Gets all the contacts of a given Extraction with
+     * all the dimensions eagerly loaded
      *
      * @param Extraction $extraction
-     * @param            $emails
-     * @param            $filename
+     * @param            $limit
      *
      * @return mixed
      */
-    public function deliverExtraction (Extraction $extraction, $emails, $filename)
+    public function getExtractionContacts (Extraction $extraction, $limit = null)
     {
-        $message = \Swift_Message::newInstance()
-                                ->setSubject("LB Extraction - {$extraction->getName()}")
-                                ->setFrom('info@adclick.pt')
-                                ->setTo($emails)
-                                ->setBody($this->twig->render('@ListBrokingApp/KitEmail/deliver_extraction.html.twig', array()))
-                                ->setContentType('text/html')
-                                ->attach(\Swift_Attachment::fromPath($filename))
-        ;
-
-         return $this->mailer->send($message);
+        return $this->em->getRepository('ListBrokingAppBundle:ExtractionContact')
+                        ->getExtractionContacts($extraction, $limit)
+            ;
     }
 
     /**
-     * Clones a given extraction and resets it's status
+     * @param Extraction $extraction
+     *
+     * @return mixed
+     */
+    public function getExtractionSummary (Extraction $extraction)
+    {
+        return $this->em->getRepository('ListBrokingAppBundle:ExtractionContact')
+                        ->getExtractionSummary($extraction)
+            ;
+    }
+
+    /**
+     * Handles Extraction Filtration
+     *  . Saves new Filters
+     *  . Marks Extraction to be Extracted
+     *  . Sets the Extraction Status to CONFIRMATION
      *
      * @param Extraction $extraction
      *
-     * @return Extraction
+     * @return bool Returns true if the extraction is ready to be processed by a consumer
      */
-    public function cloneExtraction (Extraction $extraction)
+    public function handleFiltration (Extraction $extraction)
+    {
+        // Filters Form
+        $form = $this->generateForm('filters', null, $extraction->getFilters());
+
+        // Handle the filters form
+        $filters_form = $form->handleRequest($this->request);
+        $filters = $filters_form->getData();
+
+        if ( $this->request->getMethod() == Request::METHOD_POST )
+        {
+
+            // Sets the new Filters and mark the Extraction to reprocess
+            // and sets the status to confirmation
+            $extraction->setFilters($filters);
+            $extraction->setIsAlreadyExtracted(false);
+            $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
+
+            $this->updateEntity('extraction', $extraction);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Used to import a file with Leads
+     *
+     * @param $filename
+     *
+     * @internal param $filename
+     * @return mixed
+     */
+    public function importExtraction ($filename)
+    {
+        $file_handler = new FileHandler();
+        $obj = $file_handler->import($filename);
+
+        return $file_handler->convertToArray($obj, false);
+    }
+
+    /**
+     * Used the LockService to compile and run the Extraction
+     *
+     * @param Extraction $extraction
+     *
+     * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
+     * @return boolean
+     */
+    public function runExtraction (Extraction $extraction)
+    {
+        // if the Extraction is closed don't run
+        if ( $extraction->getStatus() == Extraction::STATUS_FINAL )
+        {
+            return false;
+        }
+
+        $this->executeFilterEngine($extraction);
+
+        return true;
+    }
+
+    /**
+     * Persists Deduplications to the database, this function uses PHPExcel with APC
+     *
+     * @param Extraction $extraction
+     * @param string     $filename
+     * @param string     $field
+     *
+     * @return void
+     */
+    public function uploadDeduplicationsByFile (Extraction $extraction, $filename, $field)
     {
 
-        /** @var Extraction $clonedObject */
-        $clonedObject = clone $extraction;
-
-        $clonedObject->setName($extraction->getName() . " (duplicate)");
-        $clonedObject->setStatus(Extraction::STATUS_FILTRATION);
-        $clonedObject->setContacts(new ArrayCollection());
-        $clonedObject->setExtractionDeduplications(new ArrayCollection());
-        $clonedObject->setDeduplicationType(null);
-        $clonedObject->setQuery(null);
-        $clonedObject->setIsAlreadyExtracted(false);
-
-        return $clonedObject;
+        $this->em->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
+                 ->uploadDeduplicationsByFile($filename, $extraction, $field)
+        ;
     }
 }

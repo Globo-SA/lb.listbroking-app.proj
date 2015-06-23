@@ -13,11 +13,14 @@
                     console.log('Extraction is ready!!!');
                     $.refreshSummaryTab(extraction);
                 }
+
+                // Change the only "user editable" extraction parameter
+                $("#extraction_info_payout").text(extraction.payout);
             });
         }
 
         // Add Loading on filtering start
-        $("#submit_filters").click(function(){
+        $("#submit_filters").click(function () {
             $(this).find('i.loading').fadeIn();
         });
 
@@ -30,6 +33,7 @@
     $.listenToExtractionChanges = function (callback) {
 
         var previous_extraction = {};
+
         function runLoop() {
             $.findExtraction(function (new_extraction) {
                 if (JSON.stringify(new_extraction) != JSON.stringify(previous_extraction)) {
@@ -116,7 +120,6 @@
      */
     $.refreshExtractionSummary = function (extraction, callback) {
         var $summary_tab = $('#extraction_summary');
-
         $.ajax({
             type: "GET",
             url: App.routing.generate('ajax_extraction_summary', {extraction_id: App.variables.extractionId}),
@@ -135,6 +138,7 @@
 
     /**
      * Refreshes the Contacts Preview partial of the Summary Tab
+     * @param extraction
      * @param callback
      */
     $.refreshContactsPreview = function (extraction, callback) {

@@ -8,7 +8,10 @@
 
         // Select2 widgets - LOCAL
         $("[data-select-mode=local]").each(function () {
-            $(this).select2();
+            $(this).select2({
+                allowClear: true,
+                placeholder: $(this).data('placeholder')
+            });
         });
 
         // Select2 widgets - OPEN INPUT
@@ -77,6 +80,10 @@
                 },
                 formatSelection: function (item) {
                     return item.name
+                },
+                    formatSelectionCssClass: function(tag, container) {
+                        console.log($(container));
+                    $(container).parent().addClass("my-css-class");
                 }
             });
         });

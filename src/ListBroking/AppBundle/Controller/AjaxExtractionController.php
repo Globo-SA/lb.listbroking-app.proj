@@ -13,31 +13,30 @@ use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionDeduplication;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
 use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
-use ListBroking\AppBundle\Service\Helper\AppService;
-use ListBroking\TaskControllerBundle\Entity\Queue;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AjaxExtractionController extends Controller
 {
 
     /**
      * Finds an Extraction by it's id and returns it as a json
+     *
      * @param Request $request
      * @param         $extraction_id
      *
      * @return JsonResponse
      */
-    public function findExtractionAction(Request $request, $extraction_id){
+    public function findExtractionAction (Request $request, $extraction_id)
+    {
         $a_service = $this->get('app');
         try
         {
-//            $a_service->validateAjaxRequest($request);
+            //            $a_service->validateAjaxRequest($request);
 
             // Service
             $e_service = $this->get('extraction');
@@ -49,14 +48,13 @@ class AjaxExtractionController extends Controller
             $extraction['query'] = array();
 
             // Format SQL for better readability
-            $extraction['query']['dql'] =\SqlFormatter::format($query['dql']);
+            $extraction['query']['dql'] = \SqlFormatter::format($query['dql']);
 
             return $a_service->createJsonResponse(array(
                 "code"     => 200,
                 "response" => $extraction,
             ))
                 ;
-
         }
         catch ( \Exception $e )
         {
@@ -66,6 +64,7 @@ class AjaxExtractionController extends Controller
 
     /**
      * Gets the Extraction Preview Table, can be rendered as html or JSON
+     *
      * @param Request $request
      * @param         $extraction_id
      *
@@ -87,7 +86,9 @@ class AjaxExtractionController extends Controller
             $extraction = $e_service->getEntity('extraction', $extraction_id, true);
 
             // Preview limit
-            $preview_limit = $e_service->getConfig('extraction.contact.show_limit')->getValue();
+            $preview_limit = $e_service->getConfig('extraction.contact.show_limit')
+                                       ->getValue()
+            ;
 
             // Get all contacts in one Query (Better then using $extraction->getContacts())
             $extraction_contacts_preview = $e_service->getExtractionContacts($extraction, $preview_limit);
@@ -95,16 +96,16 @@ class AjaxExtractionController extends Controller
             {
                 // Render Response
                 return $this->render('@ListBrokingApp/Extraction/_partials/contacts_table.html.twig', array(
-                    'preview_limit'=> '',
-                    'extraction' => $extraction,
-                    'extraction_contacts_preview'   => $extraction_contacts_preview
+                    'preview_limit'               => '',
+                    'extraction'                  => $extraction,
+                    'extraction_contacts_preview' => $extraction_contacts_preview
                 ))
                     ;
             }
 
             return $a_service->createJsonResponse(array(
-                "code"     => 200,
-                'extraction_contacts_preview'   => $extraction_contacts_preview
+                "code"                        => 200,
+                'extraction_contacts_preview' => $extraction_contacts_preview
             ))
                 ;
         }
@@ -116,6 +117,7 @@ class AjaxExtractionController extends Controller
 
     /**
      * Gets the Extraction Summary Table, can be rendered as html or JSON
+     *
      * @param Request $request
      * @param         $extraction_id
      *
@@ -163,6 +165,7 @@ class AjaxExtractionController extends Controller
 
     /**
      * Downloads the Extraction for deduplication or finalization
+     *
      * @param $extraction_id
      * @param $extraction_template_id
      *
@@ -205,6 +208,7 @@ class AjaxExtractionController extends Controller
 
     /**
      * Publishes the extraction for deduplication
+     *
      * @param Request $request
      * @param         $extraction_id
      *
@@ -241,14 +245,14 @@ class AjaxExtractionController extends Controller
 
             // Publish Extraction to the Queue
             $m_service->publishMessage('deduplicate_extraction', array(
-                'object_id' => $extraction->getId(),
-                'filename' => $file->getRealPath(),
+                'object_id'          => $extraction->getId(),
+                'filename'           => $file->getRealPath(),
                 'deduplication_type' => $deduplication_type,
-                'field' => $field
-            ));
+                'field'              => $field
+            ))
+            ;
 
-            return $a_service->createJsonResponse(array(), 200)
-                ;
+            return $a_service->createJsonResponse(array(), 200);
         }
         catch ( \Exception $e )
         {
@@ -285,13 +289,14 @@ class AjaxExtractionController extends Controller
             $m_service->updateEntity('extraction', $extraction);
 
             // Check if there are lock_types
-            if ( !empty($lock_types) )
+            if ( ! empty($lock_types) )
             {
                 // Publish Extraction to the Queue
                 $m_service->publishMessage('lock_extraction', array(
-                    'object_id' => $extraction_id,
+                    'object_id'  => $extraction_id,
                     'lock_types' => $lock_types
-                ));
+                ))
+                ;
             }
 
             return $a_service->createJsonResponse(array(
@@ -331,10 +336,12 @@ class AjaxExtractionController extends Controller
 
             // Publish Extraction to the Queue
             $m_service->publishMessage('deliver_extraction', array(
-                'object_id' => $extraction->getId(),
+                'object_id'              => $extraction->getId(),
                 'extraction_template_id' => $extraction_template_id,
-                'email' => $a_service->getUser()->getEmail()
-            ));
+                'email'                  => $a_service->getUser()
+                                                      ->getEmail()
+            ))
+            ;
 
             return $a_service->createJsonResponse(array(
                 "response" => "Email being generated",
@@ -347,78 +354,78 @@ class AjaxExtractionController extends Controller
         }
     }
 
-//    /**
-//     * Excludes leads of a given Extraction
-//     *
-//     * @param Request $request
-//     * @param         $extraction_id
-//     * @param         $lead_id
-//     *
-//     * @return JsonResponse
-//     */
-//    public function extractionExcludeLeadAction (Request $request, $extraction_id, $lead_id)
-//    {
-//        $a_service = $this->get('app');
-//        try
-//        {
-//            $a_service->validateAjaxRequest($request);
-//
-//            $e_service = $this->get('extraction');
-//
-//            $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
-//
-//            $e_service->excludeLead($extraction, $lead_id);
-//            $e_service->deduplicateExtraction($extraction);
-//
-//            return $a_service->createJsonResponse(array(
-//                "response"      => "success",
-//                "extraction_id" => $extraction_id,
-//                "lead_id"       => $lead_id
-//            ))
-//                ;
-//        }
-//        catch ( \Exception $e )
-//        {
-//            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
-//        }
-//    }
+    //    /**
+    //     * Excludes leads of a given Extraction
+    //     *
+    //     * @param Request $request
+    //     * @param         $extraction_id
+    //     * @param         $lead_id
+    //     *
+    //     * @return JsonResponse
+    //     */
+    //    public function extractionExcludeLeadAction (Request $request, $extraction_id, $lead_id)
+    //    {
+    //        $a_service = $this->get('app');
+    //        try
+    //        {
+    //            $a_service->validateAjaxRequest($request);
+    //
+    //            $e_service = $this->get('extraction');
+    //
+    //            $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
+    //
+    //            $e_service->excludeLead($extraction, $lead_id);
+    //            $e_service->deduplicateExtraction($extraction);
+    //
+    //            return $a_service->createJsonResponse(array(
+    //                "response"      => "success",
+    //                "extraction_id" => $extraction_id,
+    //                "lead_id"       => $lead_id
+    //            ))
+    //                ;
+    //        }
+    //        catch ( \Exception $e )
+    //        {
+    //            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+    //        }
+    //    }
 
-//    public function extractionDeduplicationQueueAction (Request $request, $extraction_id)
-//    {
-//        $a_service = $this->get('app');
-//        try
-//        {
-//            $a_service->validateAjaxRequest($request);
-//
-//            $e_service = $this->get('extraction');
-//
-//            // Run Extraction
-//            $extraction = $e_service->getEntity('extraction', $extraction_id);
-//
-//            //Check for Queues
-//            /** @var Queue[] $queues */
-//            $queues = $e_service->getQueues(AppService::DEDUPLICATION_QUEUE_TYPE);
-//            foreach ( $queues as $queue )
-//            {
-//                if ( $queue->getValue1() == $extraction->getId() )
-//                {
-//                    return $a_service->createJsonResponse(array(
-//                        "code"     => 200,
-//                        "response" => "running",
-//                    ))
-//                        ;
-//                }
-//            }
-//
-//            return $a_service->createJsonResponse(array(
-//                "code"     => 200,
-//                "response" => 'ended',
-//            ))
-//                ;
-//        }
-//        catch ( \Exception $e )
-//        {
-//            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
-//        }
-//    }
+    //    public function extractionDeduplicationQueueAction (Request $request, $extraction_id)
+    //    {
+    //        $a_service = $this->get('app');
+    //        try
+    //        {
+    //            $a_service->validateAjaxRequest($request);
+    //
+    //            $e_service = $this->get('extraction');
+    //
+    //            // Run Extraction
+    //            $extraction = $e_service->getEntity('extraction', $extraction_id);
+    //
+    //            //Check for Queues
+    //            /** @var Queue[] $queues */
+    //            $queues = $e_service->getQueues(AppService::DEDUPLICATION_QUEUE_TYPE);
+    //            foreach ( $queues as $queue )
+    //            {
+    //                if ( $queue->getValue1() == $extraction->getId() )
+    //                {
+    //                    return $a_service->createJsonResponse(array(
+    //                        "code"     => 200,
+    //                        "response" => "running",
+    //                    ))
+    //                        ;
+    //                }
+    //            }
+    //
+    //            return $a_service->createJsonResponse(array(
+    //                "code"     => 200,
+    //                "response" => 'ended',
+    //            ))
+    //                ;
+    //        }
+    //        catch ( \Exception $e )
+    //        {
+    //            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+    //        }
+    //    }
 }

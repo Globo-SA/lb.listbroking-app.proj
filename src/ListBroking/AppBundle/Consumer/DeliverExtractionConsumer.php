@@ -57,6 +57,8 @@ class DeliverExtractionConsumer implements ConsumerInterface
             $this->e_service->updateEntity('extraction', $extraction);
 
             $this->e_service->logInfo(sprintf("Ending 'deliverExtraction' for extraction_id: %s, email sent (%s) to %s with the file %s", $msg_body['object_id'], $result, $msg_body['email'], $filename));
+
+            return true;
         }
         catch ( \Exception $e )
         {

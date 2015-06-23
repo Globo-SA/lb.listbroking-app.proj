@@ -1,25 +1,21 @@
 <?php
 /**
- * 
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
 namespace ListBroking\AppBundle\Command;
 
-
-use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\TaskControllerBundle\Service\TaskService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ProcessStagingContactsCommand extends ContainerAwareCommand{
+class ProcessStagingContactsCommand extends ContainerAwareCommand
+{
 
     const MAX_RUNNING = 90;
 
@@ -28,22 +24,29 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand{
      */
     private $service;
 
-    protected function configure(){
-        $this
-            ->setName('listbroking:staging:process')
-            ->setDescription('Processes StagingContacts and send them to the prod env')
-            ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Max contacts to validate per task iteration', 100)
+    protected function configure ()
+    {
+        $this->setName('listbroking:staging:process')
+             ->setDescription('Processes StagingContacts and send them to the prod env')
+             ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Max contacts to validate per task iteration', 100)
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output){
+    protected function execute (InputInterface $input, OutputInterface $output)
+    {
 
         /** @var TaskService $service */
-        $this->service = $this->getContainer()->get('task');
-        try{
-            if($this->service->start($this, $input, $output, self::MAX_RUNNING)){
+        $this->service = $this->getContainer()
+                              ->get('task')
+        ;
+        try
+        {
+            if ( $this->service->start($this, $input, $output, self::MAX_RUNNING) )
+            {
 
-                $s_service = $this->getContainer()->get('staging');
+                $s_service = $this->getContainer()
+                                  ->get('staging')
+                ;
 
                 $limit = $input->getOption('limit');
 
@@ -52,7 +55,7 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand{
 
                 // Iterate staging contacts
                 $this->service->createProgressBar('STARTING CONTACT VALIDATION', count($contacts));
-                foreach ($contacts as $contact)
+                foreach ( $contacts as $contact )
                 {
                     $this->service->advanceProgressBar("Validating StagingContact: {$contact->getId()}");
 
@@ -60,7 +63,8 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand{
                     $s_service->validateStagingContact($contact);
 
                     // Load validated contact
-                    if($contact->getValid() && $contact->getProcessed()){
+                    if ( $contact->getValid() && $contact->getProcessed() )
+                    {
                         $this->service->setProgressBarMessage("Loading StagingContact: {$contact->getId()}");
 
                         $s_service->loadValidatedContact($contact);
@@ -77,10 +81,14 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand{
                 $s_service->flushAll();
 
                 $this->service->finish();
-            }else{
+            }
+            else
+            {
                 $this->service->write('Task is Already Running');
             }
-        }catch (\Exception $e){
+        }
+        catch ( \Exception $e )
+        {
             $this->service->throwError($e);
         }
     }
