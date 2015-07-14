@@ -110,14 +110,14 @@ class ExtractionAdminController extends CRUDController
                 ;
             }
         }
+        $result = $e_service->runExtraction($extraction) ? 'EXTRACTED' : 'NOT EXTRACTED!';
 
         // Forms
         $extraction_deduplication = $e_service->generateForm('extraction_deduplication');
         $extraction_locking = $e_service->generateForm('extraction_locking');
 
         $filters_form = $e_service->generateForm('filters', $this->generateUrl('admin_listbroking_app_extraction_filtering', array('id' => $extraction_id)), $extraction->getFilters());
-//        ladybug_dump_die($extraction->getFilters());
-//
+
         // Render Response
         return $this->render('@ListBrokingApp/Extraction/filtering.html.twig', array(
             'action'        => 'filtering',

@@ -22,6 +22,10 @@ ListBroking\AppBundle\Entity\Extraction:
             type: json_array
             column: filters
             nullable: true
+        readable_filters:
+            type: json_array
+            column: readable_filters
+            nullable: true
         payout:
             type: float
             column: payout

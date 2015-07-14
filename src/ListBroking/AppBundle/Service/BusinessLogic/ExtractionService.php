@@ -15,6 +15,7 @@ use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionDeduplication;
 use ListBroking\AppBundle\Entity\ExtractionTemplate;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
+use ListBroking\AppBundle\Form\FiltersType;
 use ListBroking\AppBundle\PHPExcel\FileHandler;
 use ListBroking\AppBundle\Service\Base\BaseService;
 use Symfony\Component\HttpFoundation\Request;
@@ -276,6 +277,9 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             // Sets the new Filters and mark the Extraction to reprocess
             // and sets the status to confirmation
             $extraction->setFilters($filters);
+            $readable_filters = FiltersType::humanizeFilters($this->em, $extraction->getFilters());
+            $extraction->setReadableFilters($readable_filters);
+
             $extraction->setIsAlreadyExtracted(false);
             $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
 

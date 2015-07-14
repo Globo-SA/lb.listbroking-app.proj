@@ -8,6 +8,7 @@
 
 namespace ListBroking\AppBundle\Form;
 
+use Doctrine\ORM\EntityManager;
 use ListBroking\AppBundle\Engine\Filter\ContactFilterInterface;
 use ListBroking\AppBundle\Engine\Filter\LeadFilterInterface;
 use ListBroking\AppBundle\Engine\Filter\LockFilterInterface;
@@ -77,6 +78,120 @@ class FiltersType extends AbstractType
 
         // Filter Schema
         $this->filters = array(
+            "required"                            => array(
+                "label"  => "Required Fields",
+                "attr"   => array("class" => "in"),
+                "fields" => array(
+                    array(
+                        "filter_type"          => ContactFilterInterface::REQUIRED_TYPE,
+                        "has_exclusion_filter" => false,
+                        "table"                => "contact",
+                        "field"                => "gender",
+                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
+                        "type"                 => "checkbox",
+                        "options"              => array(
+                            "required" => false,
+                            "data"     => true,
+                            "attr"     => array(
+                                "class" => "form-control"
+                            ),
+                            "label"    => "Has Gender"
+                        )
+                    ),
+                    array(
+                        "filter_type"          => ContactFilterInterface::REQUIRED_TYPE,
+                        "has_exclusion_filter" => false,
+                        "table"                => "contact",
+                        "field"                => "firstname",
+                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
+                        "type"                 => "checkbox",
+                        "options"              => array(
+                            "required" => false,
+                            "data"     => true,
+                            "attr"     => array(
+                                "class" => "form-control"
+                            ),
+                            "label"    => "Has Firstname"
+                        )
+                    ),
+                    array(
+                        "filter_type"          => ContactFilterInterface::REQUIRED_TYPE,
+                        "has_exclusion_filter" => false,
+                        "table"                => "contact",
+                        "field"                => "lastname",
+                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
+                        "type"                 => "checkbox",
+                        "options"              => array(
+                            "required" => false,
+                            "data"     => true,
+                            "attr"     => array(
+                                "class" => "form-control"
+                            ),
+                            "label"    => "Has Lastname"
+                        )
+                    ),
+                    array(
+                        "filter_type"          => ContactFilterInterface::REQUIRED_TYPE,
+                        "has_exclusion_filter" => false,
+                        "table"                => "contact",
+                        "field"                => "birthdate",
+                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
+                        "type"                 => "checkbox",
+                        "options"              => array(
+                            "required" => false,
+                            "attr"     => array(
+                                "class" => "form-control"
+                            ),
+                            "label"    => "Has Birthdate"
+                        )
+                    ),
+                    array(
+                        "filter_type"          => ContactFilterInterface::REQUIRED_TYPE,
+                        "has_exclusion_filter" => false,
+                        "table"                => "contact",
+                        "field"                => "address",
+                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
+                        "type"                 => "checkbox",
+                        "options"              => array(
+                            "required" => false,
+                            "attr"     => array(
+                                "class" => "form-control"
+                            ),
+                            "label"    => "Has address"
+                        )
+                    ),
+                    array(
+                        "filter_type"          => ContactFilterInterface::REQUIRED_TYPE,
+                        "has_exclusion_filter" => false,
+                        "table"                => "contact",
+                        "field"                => "postalcode1",
+                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
+                        "type"                 => "checkbox",
+                        "options"              => array(
+                            "required" => false,
+                            "attr"     => array(
+                                "class" => "form-control"
+                            ),
+                            "label"    => "Has Postalcode1"
+                        )
+                    ),
+                    array(
+                        "filter_type"          => ContactFilterInterface::REQUIRED_TYPE,
+                        "has_exclusion_filter" => false,
+                        "table"                => "contact",
+                        "field"                => "postalcode2",
+                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
+                        "type"                 => "checkbox",
+                        "options"              => array(
+                            "required" => false,
+                            "attr"     => array(
+                                "class" => "form-control"
+                            ),
+                            "label"    => "Has Postalcode2"
+                        )
+                    )
+                )
+            ),
             "contact"                             => array(
                 "label"  => "Contact Details",
                 "attr"   => array("class" => "in"),
@@ -696,6 +811,106 @@ class FiltersType extends AbstractType
         {
             $values = array($values);
         }
+    }
+
+    /**
+     * Generates and array of human-readable filters
+     *
+     * @param EntityManager $em
+     * @param               $filters_string
+     *
+     * @return array
+     */
+    public static function humanizeFilters (EntityManager $em, $filters_string)
+    {
+        $filters_array = self::prepareFilters($filters_string);
+
+        $final_filters = array();
+        foreach ( $filters_array as $type => $filters )
+        {
+            foreach ( $filters as $filter )
+            {
+                foreach ( $filter as $data )
+                {
+                    $final_values = array();
+                    foreach ( $data['value'] as $value )
+                    {
+                        if(is_bool($value)){
+                            $final_values[] = $value ? 'TRUE' : 'FALSE';
+                            continue;
+                        }
+
+                        if(is_array($value)){
+                            $final_values[] = print_r($value, 1);
+                        }
+
+                        if ($data['filter_type'] == ContactFilterInterface::BASIC_TYPE)
+                        {
+                            switch ( $data['field'] )
+                            {
+                                case 'source':
+                                    $final_values[] = $em->getRepository('ListBrokingAppBundle:Source')
+                                                         ->find($value)
+                                                         ->getName()
+                                    ;
+                                    break;
+                                case 'owner':
+                                    $final_values[] = $em->getRepository('ListBrokingAppBundle:Owner')
+                                                         ->find($value)
+                                                         ->getName()
+                                    ;
+                                    break;
+                                case 'sub_category':
+                                    $final_values[] = $em->getRepository('ListBrokingAppBundle:SubCategory')
+                                                         ->find($value)
+                                                         ->getName()
+                                    ;
+                                    break;
+                                case 'gender':
+                                    $final_values[] = $em->getRepository('ListBrokingAppBundle:Gender')
+                                                         ->find($value)
+                                                         ->getName()
+                                    ;
+                                    break;
+                                case 'district':
+                                    $final_values[] = $em->getRepository('ListBrokingAppBundle:District')
+                                                         ->find($value)
+                                                         ->getName()
+                                    ;
+                                    break;
+                                case 'county':
+                                    $final_values[] = $em->getRepository('ListBrokingAppBundle:County')
+                                                         ->find($value)
+                                                         ->getName()
+                                    ;
+                                    break;
+                                case 'parish':
+                                    $final_values[] = $em->getRepository('ListBrokingAppBundle:Parish')
+                                                         ->find($value)
+                                                         ->getName()
+                                    ;
+                                    break;
+                                case 'country':
+                                    $final_values[] = $em->getRepository('ListBrokingAppBundle:Country')
+                                                         ->find($value)
+                                                         ->getName()
+                                    ;
+                                    break;
+                                default:
+                                    $final_values[] = $value;
+                                    break;
+                            }
+                            continue;
+                        }
+                        $final_values[] = $value;
+
+                    }
+                    $final_filters[$type][] = array('filter_type' => $data['filter_type'], 'filter_operation' => $data['filter_operation'], 'field' => $data['field'], 'values' => $final_values);
+                }
+            }
+
+        }
+        return $final_filters;
     }
 
     /**

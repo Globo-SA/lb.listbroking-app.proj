@@ -11,6 +11,7 @@ namespace ListBroking\AppBundle\Engine;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
 use ListBroking\AppBundle\Engine\Filter\ContactFilter\BasicContactFilter;
+use ListBroking\AppBundle\Engine\Filter\ContactFilter\RequiredContactFilter;
 use ListBroking\AppBundle\Engine\Filter\ContactFilterInterface;
 use ListBroking\AppBundle\Engine\Filter\LeadFilter\BasicLeadFilter;
 use ListBroking\AppBundle\Engine\Filter\LeadFilterInterface;
@@ -66,6 +67,7 @@ class FilterEngine
         );
         $this->contact_filter_types = array(
             ContactFilterInterface::BASIC_TYPE => new BasicContactFilter(),
+            ContactFilterInterface::REQUIRED_TYPE => new RequiredContactFilter(),
         );
         $this->lead_filter_types = array(
             LeadFilterInterface::BASIC_TYPE => new BasicLeadFilter()
@@ -97,7 +99,6 @@ class FilterEngine
          *                                        - Samuel Castro
          */
         $filters = FiltersType::prepareFilters($extraction->getFilters());
-
         $limit = $extraction->getQuantity();
 
         $lead_qb = $this->em->createQueryBuilder()

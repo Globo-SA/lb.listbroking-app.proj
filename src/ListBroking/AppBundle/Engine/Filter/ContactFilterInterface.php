@@ -23,6 +23,7 @@ interface ContactFilterInterface {
      * Contact Filter types
      */
     const BASIC_TYPE = 'basic';
+    const REQUIRED_TYPE = 'required';
 
     /**
      * @param Andx $andx
