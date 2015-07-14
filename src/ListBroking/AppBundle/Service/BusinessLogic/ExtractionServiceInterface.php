@@ -54,10 +54,10 @@ interface ExtractionServiceInterface
      *
      * @return mixed
      */
-    public function getExtractionSummary (Extraction $extraction);
+    public function findExtractionSummary (Extraction $extraction);
 
     /**
-     * Gets all the contacts of a given Extraction with
+     * Finds all the contacts of a given Extraction with
      * all the dimensions eagerly loaded
      *
      * @param Extraction $extraction
@@ -65,7 +65,7 @@ interface ExtractionServiceInterface
      *
      * @return mixed
      */
-    public function getExtractionContacts (Extraction $extraction, $limit);
+    public function findExtractionContacts (Extraction $extraction, $limit);
 
     /**
      * Exports Leads to file
@@ -88,7 +88,7 @@ interface ExtractionServiceInterface
      * @internal param $filename
      * @return mixed
      */
-    public function importExtraction ($filename);
+//    public function importExtraction ($filename);
 
     /**
      * Persists Deduplications to the database, this function uses PHPExcel with APC
@@ -127,10 +127,11 @@ interface ExtractionServiceInterface
      * @param Extraction $extraction
      * @param            $emails
      * @param            $filename
+     * @param            $password
      *
      * @return mixed
      */
-    public function deliverExtraction (Extraction $extraction, $emails, $filename);
+    public function deliverExtraction (Extraction $extraction, $emails, $filename, $password);
 
     /**
      * Clones a given extraction and resets it's status

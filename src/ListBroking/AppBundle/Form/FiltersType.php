@@ -55,13 +55,13 @@ class FiltersType extends AbstractType
         $default_date_range = date('Y/m/01 - Y/m/t'); // Current month
 
         // Arrays for Choices
-        $genders = $this->a_service->getEntities('gender', false);
-        $owners = $this->a_service->getEntities('owner', false);
-        $sources = $this->a_service->getEntities('source', false);
-        $categories = $this->a_service->getEntities('category', false);
-        $sub_categories = $this->a_service->getEntities('sub_category', false);
-        $clients = $this->a_service->getEntities('client', false);
-        $campaigns = $this->a_service->getEntities('campaign', false);
+        $genders = $this->a_service->findEntities('ListBrokingAppBundle:Gender');
+        $owners = $this->a_service->findEntities('ListBrokingAppBundle:Owner');
+        $sources = $this->a_service->findEntities('ListBrokingAppBundle:Source');
+        $categories = $this->a_service->findEntities('ListBrokingAppBundle:Category');
+        $sub_categories = $this->a_service->findEntities('ListBrokingAppBundle:SubCategory');
+        $clients = $this->a_service->findEntities('ListBrokingAppBundle:Client');
+        $campaigns = $this->a_service->findEntities('ListBrokingAppBundle:Campaign');
         $expiration_choices = array(
             ''             => '',
             '1 Week ago'   => '-1 week',

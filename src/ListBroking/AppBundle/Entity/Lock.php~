@@ -31,21 +31,19 @@ class Lock {
 
     const TYPE_SUB_CATEGORY = 6;
 
-    private $id;
+    protected $id;
 
-    private $type;
+    protected $type;
 
-    private $lead;
+    protected $lead;
 
-    private $extraction;
+    protected $client;
 
-    private $client;
+    protected $campaign;
 
-    private $campaign;
+    protected $category;
 
-    private $category;
-
-    private $sub_category;
+    protected $sub_category;
 
     /**
      * Saves a future timestamp for the lock expiration time
@@ -111,29 +109,6 @@ class Lock {
     }
 
     /**
-     * Set extraction
-     *
-     * @param Extraction $extraction
-     * @return Lock
-     */
-    public function setExtraction(Extraction $extraction = null)
-    {
-        $this->extraction = $extraction;
-
-        return $this;
-    }
-
-    /**
-     * Get extraction
-     *
-     * @return Extraction
-     */
-    public function getExtraction()
-    {
-        return $this->extraction;
-    }
-
-    /**
      * @return mixed
      */
     public function getCampaign()
@@ -196,4 +171,5 @@ class Lock {
     {
         $this->sub_category = $sub_category;
     }
+
 }

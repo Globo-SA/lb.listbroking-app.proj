@@ -140,20 +140,24 @@ SQL;
 
     public function generateLocks (Extraction $extraction, $lock_types, $lock_time)
     {
-
         $em = $this->getEntityManager();
+        $extraction_contacts = $extraction->getExtractionContacts();
+        $extraction_id = $extraction->getId();
+
+        $batch = 1;
+        $batchSize = 500;
         foreach ( $lock_types as $lock_type )
         {
-            $batch = 1;
-            $batchSize = 1000;
             /** @var ExtractionContact $extraction_contact */
-            foreach ( $extraction->getExtractionContacts() as $extraction_contact )
+            foreach ( $extraction_contacts as $extraction_contact )
             {
                 $contact = $extraction_contact->getContact();
 
                 $lock = new Lock();
                 $lock->setType($lock_type);
-
+                $lock->setExtraction($extraction);
+                $lock->setLead($contact->getLead());
+                $lock->setExpirationDate(new \DateTime($lock_time));
                 switch ( $lock_type )
                 {
                     case Lock::TYPE_CLIENT:
@@ -175,21 +179,23 @@ SQL;
                     default:
                         break;
                 }
-
-                $lock->setLead($contact->getLead());
-                $lock->setExpirationDate(new \DateTime($lock_time));
                 $em->persist($lock);
 
                 if ( ($batch % $batchSize) === 0 )
                 {
-
                     $batch = 1;
                     $em->flush();
+                    $em->clear();
+
+                    // Add Extraction to the EntityManager after it's cleared
+                    $extraction = $em->getPartialReference('ListBrokingAppBundle:Extraction', $extraction_id);
                 }
                 $batch++;
             }
             $em->flush();
+            $em->clear();
         }
+        $em->flush();
         $em->clear();
     }
-} 
+}

@@ -63,6 +63,11 @@ class Extraction
     private $filters;
 
     /**
+     * @var array
+     */
+    private $readable_filters;
+
+    /**
      * @var float
      */
     private $payout;
@@ -230,6 +235,29 @@ class Extraction
         $this->filters = $filters;
 
         return $this;
+    }
+
+    /**
+     * Set readable_filters
+     *
+     * @param array $readableFilters
+     * @return Extraction
+     */
+    public function setReadableFilters($readableFilters)
+    {
+        $this->readable_filters = $readableFilters;
+
+        return $this;
+    }
+
+    /**
+     * Get readable_filters
+     *
+     * @return array
+     */
+    public function getReadableFilters()
+    {
+        return $this->readable_filters;
     }
 
     /**

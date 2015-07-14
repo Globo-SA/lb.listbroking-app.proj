@@ -27,6 +27,12 @@ ListBroking\AppBundle\Entity\Lock:
             gedmo: { timestampable: { on: update } }
 # End of Timestampable
     manyToOne:
+        extraction:
+            targetEntity: ListBroking\AppBundle\Entity\Extraction
+            joinColumn:
+                name:     extraction_id
+                referencedColumnName: id
+                onDelete: restrict
         client:
             targetEntity: ListBroking\AppBundle\Entity\Client
             joinColumn:

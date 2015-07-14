@@ -35,29 +35,6 @@ class AppService extends BaseService implements AppServiceInterface {
     }
 
     /**
-     * @param $code
-     * @param bool $hydrate
-     * @return mixed
-     */
-    public function getCountryByCode($code, $hydrate = true)
-    {
-       $entities = $this->getEntities('country', $hydrate);
-        foreach ($entities as $entity){
-            if($hydrate){
-                if($entity->getName() == $code){
-                    return $entity;
-                }
-            } else{
-                if($entity['name'] == $code){
-                    return $entity;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Gets a list of entities using the services
      * provided in various bundles
      *
@@ -108,7 +85,7 @@ class AppService extends BaseService implements AppServiceInterface {
     public function deliverEmail($template, $parameters, $subject, $emails){
         $message = $this->mailer->createMessage()
             ->setSubject($subject)
-            ->setFrom($this->getConfig('system.email')->getValue())
+            ->setFrom($this->getConfig('system.email'))
             ->setTo($emails)
             ->setBody(
                 $this->twig->render(

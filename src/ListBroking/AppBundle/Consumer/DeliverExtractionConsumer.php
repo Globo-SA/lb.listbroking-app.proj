@@ -48,15 +48,17 @@ class DeliverExtractionConsumer implements ConsumerInterface
             ;
 
             /** @var Extraction $extraction */
-            $filename = $this->e_service->exportExtraction($extraction, $this->e_service->getEntity('extraction_template', $msg_body['extraction_template_id']));
-            $result = $this->e_service->deliverExtraction($extraction,'samuel.castro@adclick.pt', $filename);
+            list($filename, $password) = $this->e_service->exportExtraction($extraction, $this->e_service->findEntity('ListBrokingAppBundle:ExtractionTemplate', $msg_body['extraction_template_id']));
+            $result = $this->e_service->deliverExtraction($extraction, $msg_body['email'], $filename, $password);
 
             $extraction->setIsDelivering(false);
 
             // Save changes
-            $this->e_service->updateEntity('extraction', $extraction);
+            $this->e_service->updateEntity($extraction);
 
-            $this->e_service->logInfo(sprintf("Ending 'deliverExtraction' for extraction_id: %s, email sent (%s) to %s with the file %s", $msg_body['object_id'], $result, $msg_body['email'], $filename));
+            $this->e_service->logInfo(sprintf("Ending 'deliverExtraction' for extraction_id: %s, email deliver result: %s to %s with the filename: %s and password: %s", $msg_body['object_id'],
+                $result,
+                $msg_body['email'], $filename, $password));
 
             return true;
         }

@@ -15,6 +15,9 @@ use Exporter\Writer\CsvWriter;
 use Exporter\Writer\JsonWriter;
 use Exporter\Writer\XlsWriter;
 use Exporter\Writer\XmlExcelWriter;
+use Symfony\Component\Form\Form;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileHandler
 {
@@ -136,5 +139,47 @@ class FileHandler
         }
 
         return $array_data;
+    }
+
+    /**
+     * Saves a file on a form
+     *
+     * @param Form $form
+     *
+     * @return File
+     */
+    public function saveFormFile (Form $form)
+    {
+        // Handle Form
+        $data = $form->getData();
+        /** @var UploadedFile $file */
+        $uploaded_file = $data['upload_file'];
+        $filename = $this->generateFilename($uploaded_file->getClientOriginalName(), null, 'imports/');
+
+        return $uploaded_file->move('imports', $filename);
+    }
+
+    /**
+     * Generates the filename and generate a filename for it
+     *
+     * @param        $name
+     * @param        $extension
+     * @param string $dir
+     *
+     * @return string
+     */
+    public function generateFilename ($name, $extension = null, $dir = '/')
+    {
+        $name = str_replace(' ', '-', $name);
+        if ( $extension )
+        {
+            $filename = $dir . uniqid() . "-{$name}-" . date('Y-m-d') . '.' . $extension;
+        }
+        else
+        {
+            $filename = $dir . uniqid() . "-{$name}";
+        }
+
+        return strtolower(preg_replace('/\s/i', '-', $filename));
     }
 } 

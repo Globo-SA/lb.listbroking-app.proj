@@ -66,15 +66,12 @@ class FlushListener
         if ( defined($const_name) )
         {
             $cache_id = $entity::CACHE_ID;
-            $cache_id_array = $cache_id . '_array';
 
             $this->dcache->delete($cache_id);
-            $this->dcache->delete($cache_id_array);
 
             if ( $entity )
             {
                 $this->dcache->delete($cache_id . "_{$entity->getId()}");
-                $this->dcache->delete($cache_id_array . "_{$entity->getId()}");
             }
         }
     }

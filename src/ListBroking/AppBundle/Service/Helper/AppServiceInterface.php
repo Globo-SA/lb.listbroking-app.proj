@@ -13,15 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 interface AppServiceInterface
 {
-
-    /**
-     * @param      $code
-     * @param bool $hydrate
-     *
-     * @return mixed
-     */
-    public function getCountryByCode ($code, $hydrate = true);
-
     /**
      * Gets a list of entities using the services
      * provided in various bundles

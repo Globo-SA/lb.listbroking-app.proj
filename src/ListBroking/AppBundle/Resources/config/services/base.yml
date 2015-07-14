@@ -4,9 +4,8 @@ services:
     abstract: true
     calls:
       - [setKernel,[@kernel]]
-      - [setDoctrine, [@doctrine]]
       - [setEntityManager, [@doctrine.orm.entity_manager]]
-      - [setCache, [@doctrine_cache.providers.memcached_query_cache]]
+      - [setDcache, [@doctrine_cache.providers.memcached_query_cache]]
       - [setFormFactory, [@form.factory]]
       - [setLogger, [@logger]]
       - [setTokenStorage, [@security.token_storage]]

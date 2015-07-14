@@ -90,7 +90,7 @@ class ExtractionAdminController extends CRUDController
                               ->get($this->admin->getIdParameter())
         ;
         /** @var Extraction $extraction */
-        $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
+        $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
 
         if($this->getUser() != $extraction->getCreatedBy() && !$this->admin->isGranted('SUPER_ADMIN')){
             throw new AccessDeniedException('You can only edit extractions created by you ');
@@ -110,7 +110,6 @@ class ExtractionAdminController extends CRUDController
                 ;
             }
         }
-        $result = $e_service->runExtraction($extraction) ? 'EXTRACTED' : 'NOT EXTRACTED!';
 
         // Forms
         $extraction_deduplication = $e_service->generateForm('extraction_deduplication');
@@ -121,10 +120,8 @@ class ExtractionAdminController extends CRUDController
         // Render Response
         return $this->render('@ListBrokingApp/Extraction/filtering.html.twig', array(
             'action'        => 'filtering',
-            'lock_time'     => $e_service->getConfig('lock.time')
-                                         ->getValue(),
-            'preview_limit' => $e_service->getConfig('extraction.contact.show_limit')
-                                         ->getValue(),
+            'lock_time'     => $e_service->getConfig('lock.time'),
+            'preview_limit' => $e_service->getConfig('extraction.contact.show_limit'),
             'extraction'    => $extraction,
             'forms'         => array(
                 'filters'                  => $filters_form->createView(),

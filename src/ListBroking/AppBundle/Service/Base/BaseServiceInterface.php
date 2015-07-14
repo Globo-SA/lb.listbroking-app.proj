@@ -25,38 +25,6 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 interface BaseServiceInterface {
 
     /**
-     * @param Kernel $kernel
-     */
-    public function setKernel ($kernel);
-    /**
-     * @param $doctrine
-     */
-    public function setDoctrine($doctrine);
-
-    /**
-     * @param EntityManager $entityManager
-     * @return mixed
-     */
-    public function setEntityManager(EntityManager $entityManager);
-
-    /**
-     * @param Cache $cache
-     * @return mixed
-     */
-    public function setCache(Cache $cache);
-
-    /**
-     * @param FormFactory $formFactory
-     * @return mixed
-     */
-    public function setFormFactory(FormFactory $formFactory);
-
-    /**
-     * @param Logger $logger
-     */
-    public function setLogger ($logger);
-
-    /**
      * Gets the App Root Dir
      * @return mixed|string
      */
@@ -84,7 +52,7 @@ interface BaseServiceInterface {
      * Get Currently logged in user
      * @return mixed
      */
-    public function getUser();
+    public function findUser ();
 
     /**
      * Clears the EntityManager
@@ -93,64 +61,30 @@ interface BaseServiceInterface {
     public function clearEntityManager();
 
     /**
-     * Attaches an entity to the EntityManager
-     * if needed
-     * @param $entity
-     * @return void
-     */
-    public function attach(&$entity);
-
-    /**
-     * Gets a List of Entities by type
-     * @param $type
-     * @param $hydrate
-     * @internal param $cache_id
+     * Finds a List of Entities by type
+     *
+     * @param $repo_name
+     *
      * @return mixed
      */
-    public function getEntities($type, $hydrate = true);
+    public function findEntities ($repo_name);
 
     /**
-     * Gets and entity by type and id
-     * @param $type
+     * Finds an Entity by type and id
+     * @param $repo_name
      * @param $id
-     * @param bool $hydrate
-     * @param bool $attach
      * @return mixed|object
      * @throws InvalidEntityTypeException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getEntity($type, $id, $hydrate = true, $attach = false);
-
-    /**
-     * Adds a given entity
-     * @param $type
-     * @param $entity
-     * @return mixed
-     */
-    public function addEntity($type, $entity);
+    public function findEntity ($repo_name, $id);
 
     /**
      * Updates a given Entity
-     * @param $type
      * @param $entity
      * @return mixed
      */
-    public function updateEntity($type, $entity);
-
-    /**
-     * Removes a given Entity
-     * @param $type
-     * @param $entity
-     * @return mixed
-     */
-    public function removeEntity($type, $entity);
-
-    /**
-     * Clears list cache
-     * @param $entity
-     * @param null $extra
-     */
-    public function clearCache($entity, $extra = null);
+    public function updateEntity($entity);
 
     /**
      * Flushes all database changes
@@ -175,17 +109,9 @@ interface BaseServiceInterface {
     public function generateForm($type, $action = null, $data = null, $view = false);
 
     /**
-     * Get thrown Exceptions
+     * Finds thrown Exceptions
      * @param $limit
      * @return mixed
      */
-    public function getExceptions($limit);
-
-    /**
-     * Saves a file on a form
-     * @param Form $form
-     *
-     * @return UploadedFile
-     */
-    public function saveFile(Form $form);
-} 
+    public function findExceptions ($limit);
+}

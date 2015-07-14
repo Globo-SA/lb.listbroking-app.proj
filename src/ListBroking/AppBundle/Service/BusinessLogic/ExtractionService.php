@@ -110,16 +110,17 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      * @param Extraction $extraction
      * @param            $emails
      * @param            $filename
+     * @param            $password
      *
      * @return mixed
      */
-    public function deliverExtraction (Extraction $extraction, $emails, $filename)
+    public function deliverExtraction (Extraction $extraction, $emails, $filename, $password)
     {
         $message = \Swift_Message::newInstance()
                                  ->setSubject("LB Extraction - {$extraction->getName()}")
                                  ->setFrom('info@adclick.pt')
                                  ->setTo($emails)
-                                 ->setBody($this->twig->render('@ListBrokingApp/KitEmail/deliver_extraction.html.twig', array()))
+                                 ->setBody($this->twig->render('@ListBrokingApp/KitEmail/deliver_extraction.html.twig', array('password' => $password)))
                                  ->setContentType('text/html')
                                  ->attach(\Swift_Attachment::fromPath($filename))
         ;
@@ -161,7 +162,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $extraction->setIsAlreadyExtracted(true);
         $extraction->setQuery(json_encode($query));
 
-        $this->updateEntity('extraction', $extraction);
+        $this->updateEntity($extraction);
     }
 
     /**
@@ -177,6 +178,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     public function exportExtraction (Extraction $extraction, ExtractionTemplate $extraction_template, $info = array())
     {
+        $file_handler = new FileHandler();
+
         // Get File Template
         $template = json_decode($extraction_template->getTemplate(), true);
         if ( ! array_key_exists("headers", $template) )
@@ -185,12 +188,12 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         }
 
         // Manage and dirfilename
-        $filename = $this->generateFilename($extraction_template->getName(), FileHandler::$export_types[$template['extension']]['extension']);
+        $local_filename = $file_handler->generateFilename($extraction->getName(), FileHandler::$export_types[$template['extension']]['extension']);
         if ( array_key_exists("filename", $info) )
         {
-            $filename = $this->generateFilename($info['filename'], FileHandler::$export_types[$template['extension']]['extension']);
+            $local_filename = $file_handler->generateFilename($info['filename'], FileHandler::$export_types[$template['extension']]['extension']);
         }
-        $filename = $this->getRootDir() . '/../web/' . $filename;
+        $filename = $this->getRootDir() . '/../web/exports/' . $local_filename;
 
         // Get the Extraction Contacts Query
         $query = $this->em->getRepository('ListBrokingAppBundle:ExtractionContact')
@@ -198,10 +201,50 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         ;
 
         // Generate File
-        $file_handler = new FileHandler();
         $file_handler->export($filename, $template['headers'], $template['extension'], $query);
 
-        return $filename;
+        // Zip file and password
+        $password = $this->generatePassword(10);
+
+        $zipped_filename = $file_handler->generateFilename($extraction->getName(), 'zip');
+        $zipped_filename = $this->getRootDir() . '/../web/exports/' . $zipped_filename;
+
+        // Php isn't used because password protection on zip files is a php >= 5.6 feature
+        exec(sprintf("zip -j --password %s %s %s", $password, $zipped_filename, $filename));
+
+        // Remove the original file
+        unlink($filename);
+
+        return array($zipped_filename, $password);
+    }
+
+    /**
+     * Finds all the contacts of a given Extraction with
+     * all the dimensions eagerly loaded
+     *
+     * @param Extraction $extraction
+     * @param            $limit
+     *
+     * @return mixed
+     */
+    public function findExtractionContacts (Extraction $extraction, $limit = null)
+    {
+        return $this->em->getRepository('ListBrokingAppBundle:ExtractionContact')
+                        ->getExtractionContacts($extraction, $limit)
+            ;
+    }
+
+    /**
+     * Finds the ExtractionSummary
+     * @param Extraction $extraction
+     *
+     * @return mixed
+     */
+    public function findExtractionSummary (Extraction $extraction)
+    {
+        return $this->em->getRepository('ListBrokingAppBundle:ExtractionContact')
+                        ->getExtractionSummary($extraction)
+            ;
     }
 
     /**
@@ -215,41 +258,12 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     public function generateLocks (Extraction $extraction, $lock_types)
     {
         $this->em->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
-                 ->generateLocks($extraction, $lock_types, $this->getConfig('lock.time')
-                                                                ->getValue())
+                 ->generateLocks($extraction, $lock_types, $this->getConfig('lock.time'))
         ;
 
         // Close extraction
         $extraction->setStatus(Extraction::STATUS_FINAL);
-        $this->updateEntity('extraction', $extraction);
-    }
-
-    /**
-     * Gets all the contacts of a given Extraction with
-     * all the dimensions eagerly loaded
-     *
-     * @param Extraction $extraction
-     * @param            $limit
-     *
-     * @return mixed
-     */
-    public function getExtractionContacts (Extraction $extraction, $limit = null)
-    {
-        return $this->em->getRepository('ListBrokingAppBundle:ExtractionContact')
-                        ->getExtractionContacts($extraction, $limit)
-            ;
-    }
-
-    /**
-     * @param Extraction $extraction
-     *
-     * @return mixed
-     */
-    public function getExtractionSummary (Extraction $extraction)
-    {
-        return $this->em->getRepository('ListBrokingAppBundle:ExtractionContact')
-                        ->getExtractionSummary($extraction)
-            ;
+        $this->updateEntity($extraction);
     }
 
     /**
@@ -283,7 +297,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             $extraction->setIsAlreadyExtracted(false);
             $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
 
-            $this->updateEntity('extraction', $extraction);
+            $this->updateEntity($extraction);
 
             return true;
         }
@@ -291,21 +305,21 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         return false;
     }
 
-    /**
-     * Used to import a file with Leads
-     *
-     * @param $filename
-     *
-     * @internal param $filename
-     * @return mixed
-     */
-    public function importExtraction ($filename)
-    {
-        $file_handler = new FileHandler();
-        $obj = $file_handler->import($filename);
-
-        return $file_handler->convertToArray($obj, false);
-    }
+//    /**
+//     * Used to import a file with Leads
+//     *
+//     * @param $filename
+//     *
+//     * @internal param $filename
+//     * @return mixed
+//     */
+//    public function importExtraction ($filename)
+//    {
+//        $file_handler = new FileHandler();
+//        $obj = $file_handler->import($filename);
+//
+//        return $file_handler->convertToArray($obj, false);
+//    }
 
     /**
      * Used the LockService to compile and run the Extraction
@@ -343,5 +357,19 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $this->em->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
                  ->uploadDeduplicationsByFile($filename, $extraction, $field)
         ;
+    }
+
+    private function generatePassword ($length = 8)
+    {
+        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $count = mb_strlen($chars);
+
+        for ( $i = 0, $result = ''; $i < $length; $i++ )
+        {
+            $index = rand(0, $count - 1);
+            $result .= mb_substr($chars, $index, 1);
+        }
+
+        return $result;
     }
 }

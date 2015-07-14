@@ -53,7 +53,7 @@ class LockExtractionConsumer implements ConsumerInterface
             $extraction->setIsLocking(false);
 
             // Save changes
-            $this->e_service->updateEntity('extraction', $extraction);
+            $this->e_service->updateEntity($extraction);
 
             $this->e_service->logInfo(sprintf("Ending 'generateLocks' for extraction_id: %s, result: Locks created", $msg_body['object_id']));
 

@@ -13,6 +13,7 @@ use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionDeduplication;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
 use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
+use ListBroking\AppBundle\PHPExcel\FileHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -42,7 +43,7 @@ class AjaxExtractionController extends Controller
             $e_service = $this->get('extraction');
 
             // Current Extraction
-            $extraction = $e_service->getEntity('extraction', $extraction_id, false);
+            $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
 
             $query = json_decode($extraction['query'], 1);
             $extraction['query'] = array();
@@ -83,15 +84,14 @@ class AjaxExtractionController extends Controller
             $e_service = $this->get('extraction');
 
             // Current Extraction
-            $extraction = $e_service->getEntity('extraction', $extraction_id, true);
+            $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
 
             // Preview limit
             $preview_limit = $e_service->getConfig('extraction.contact.show_limit')
-                                       ->getValue()
             ;
 
             // Get all contacts in one Query (Better then using $extraction->getContacts())
-            $extraction_contacts_preview = $e_service->getExtractionContacts($extraction, $preview_limit);
+            $extraction_contacts_preview = $e_service->findExtractionContacts($extraction, $preview_limit);
             if ( $format == 'html' )
             {
                 // Render Response
@@ -136,10 +136,10 @@ class AjaxExtractionController extends Controller
             $e_service = $this->get('extraction');
 
             // Current Extraction
-            $extraction = $e_service->getEntity('extraction', $extraction_id, true);
+            $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
 
             // Extraction Summary
-            $extraction_summary = $e_service->getExtractionSummary($extraction);
+            $extraction_summary = $e_service->findExtractionSummary($extraction);
 
             if ( $format == 'html' )
             {
@@ -178,13 +178,13 @@ class AjaxExtractionController extends Controller
         $e_service = $this->get('extraction');
 
         // Current Extraction
-        $extraction = $e_service->getEntity('extraction', $extraction_id, true, true);
+        $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
 
         // Get all contacts in one Query (Better then using $extraction->getContacts())
-        $contacts = $e_service->getExtractionContacts($extraction);
+        $contacts = $e_service->findExtractionContacts($extraction);
 
         /** @var Extraction $extraction */
-        $filename = $e_service->exportExtraction($e_service->getEntity('extraction_template', $extraction_template_id), $contacts);
+        $filename = $e_service->exportExtraction($e_service->findEntity('ListBrokingAppBundle:ExtractionTemplate', $extraction_template_id), $contacts);
 
         // Generate response
         $response = new Response();
@@ -226,18 +226,20 @@ class AjaxExtractionController extends Controller
 
             // Current Extraction
             /** @var Extraction $extraction */
-            $extraction = $m_service->getEntity('extraction', $extraction_id, true, true);
+            $extraction = $m_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
             $extraction->setIsDeduplicating(true);
 
-            $m_service->updateEntity('extraction', $extraction);
+            $m_service->updateEntity($extraction);
 
             // Handle the form and adds file to the Queue
             $form = $m_service->generateForm(new ExtractionDeduplicationType());
             $form->handleRequest($request);
             $data = $form->getData();
 
+            $file_handler = new FileHandler();
+
             /** @var UploadedFile $file */
-            $file = $a_service->saveFile($form);
+            $file = $file_handler->saveFormFile($form);
 
             // Deduplicate field
             $field = isset($data['field']) ? $data['field'] : 'lead_id';
@@ -282,11 +284,11 @@ class AjaxExtractionController extends Controller
 
             // Current Extraction
             /** @var Extraction $extraction */
-            $extraction = $m_service->getEntity('extraction', $extraction_id, true, true);
+            $extraction = $m_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
             $extraction->setStatus(Extraction::STATUS_FINAL);
             $extraction->setIsLocking(true);
 
-            $m_service->updateEntity('extraction', $extraction);
+            $m_service->updateEntity($extraction);
 
             // Check if there are lock_types
             if ( ! empty($lock_types) )
@@ -329,16 +331,16 @@ class AjaxExtractionController extends Controller
 
             // Current Extraction
             /** @var Extraction $extraction */
-            $extraction = $m_service->getEntity('extraction', $extraction_id, true, true);
+            $extraction = $m_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
             $extraction->setIsDelivering(true);
 
-            $m_service->updateEntity('extraction', $extraction);
+            $m_service->updateEntity($extraction);
 
             // Publish Extraction to the Queue
             $m_service->publishMessage('deliver_extraction', array(
                 'object_id'              => $extraction->getId(),
                 'extraction_template_id' => $extraction_template_id,
-                'email'                  => $a_service->getUser()
+                'email'                  => $a_service->findUser()
                                                       ->getEmail()
             ))
             ;

@@ -58,7 +58,7 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
             $extraction->setIsDeduplicating(false);
 
             // Save changes
-            $this->e_service->updateEntity('extraction', $extraction);
+            $this->e_service->updateEntity($extraction);
 
             // Delete file
             unlink($filename);
