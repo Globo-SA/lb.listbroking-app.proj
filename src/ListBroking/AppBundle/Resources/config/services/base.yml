@@ -3,9 +3,8 @@ services:
     class: ListBroking\AppBundle\Service\Base\BaseService
     abstract: true
     calls:
-      - [setKernel,[@kernel]]
       - [setEntityManager, [@doctrine.orm.entity_manager]]
-      - [setDcache, [@doctrine_cache.providers.memcached_query_cache]]
+      - [setDoctrineCache, [@doctrine_cache.providers.memcached_query_cache]]
       - [setFormFactory, [@form.factory]]
       - [setLogger, [@logger]]
       - [setTokenStorage, [@security.token_storage]]
@@ -14,22 +13,21 @@ services:
 
   messaging:
     class: ListBroking\AppBundle\Service\Helper\MessagingService
-    parent: base
     arguments: [@service_container]
+
+  file_handler:
+    class: ListBroking\AppBundle\Service\Helper\FileHandlerService
+    arguments: [@kernel]
 
   app:
     class: ListBroking\AppBundle\Service\Helper\AppService
     parent: base
-    arguments: [@mailer, @twig, @old_sound_rabbit_mq.parts_holder]
-
-  lead:
-    class: ListBroking\AppBundle\Service\BusinessLogic\LeadService
-    parent: base
+    arguments: [@mailer, @twig]
 
   extraction:
     class: ListBroking\AppBundle\Service\BusinessLogic\ExtractionService
     parent: base
-    arguments: [@request_stack, @filter_engine, @mailer, @twig ]
+    arguments: [@request_stack, @filter_engine ]
 
   staging:
     class: ListBroking\AppBundle\Service\BusinessLogic\StagingService

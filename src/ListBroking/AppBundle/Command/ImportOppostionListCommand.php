@@ -39,6 +39,8 @@ class ImportOppostionListCommand extends ContainerAwareCommand
         $this->service = $this->getContainer()
                               ->get('task')
         ;
+        $f_service = $this->getContainer()->get('file_handler');
+
         $dir =
             $this->getContainer()
                  ->get('kernel')
@@ -67,7 +69,9 @@ class ImportOppostionListCommand extends ContainerAwareCommand
                         $filename = $dir . $queue->getValue2();
                         $clear_old = $queue->getValue3();
                         $this->service->advanceProgressBar("Importing file: {$filename}");
-                        $s_service->importOppostionList($type, $filename, $clear_old);
+
+                        $file = $f_service->import($filename);
+                        $s_service->importOppostionList($type, $file, $clear_old);
 
                         // Remove file and Queue
                         $s_service->removeEntity('queue', $queue);

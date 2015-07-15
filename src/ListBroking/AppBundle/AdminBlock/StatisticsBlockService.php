@@ -27,7 +27,7 @@ class StatisticsBlockService extends BaseBlockService {
     public function __construct($name, EngineInterface $templating, EntityManagerInterface $entity_manager)
     {
         parent::__construct($name, $templating);
-        $this->em = $entity_manager;
+        $this->entity_manager = $entity_manager;
     }
 
     public function execute(BlockContextInterface $blockContext, Response $response = null)

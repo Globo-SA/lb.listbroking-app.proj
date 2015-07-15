@@ -42,11 +42,12 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
             $this->e_service->logInfo(sprintf("Starting 'deduplication' for extraction_id: %s with field: %s and file: %s", $msg_body['object_id'], $msg_body['field'], $msg_body['filename']));
 
             /** @var Extraction $extraction */
-            $extraction = $this->e_service->em->getRepository('ListBrokingAppBundle:Extraction')
-                                              ->findOneBy(array(
-                                                  'id' => $msg_body['object_id']
-                                              ))
+            $extraction = $this->e_service->entity_manager->getRepository('ListBrokingAppBundle:Extraction')
+                                                          ->findOneBy(array(
+                                                              'id' => $msg_body['object_id']
+                                                          ))
             ;
+
             $filename = $msg_body['filename'];
 
             // Persist deduplications to the DB
@@ -54,7 +55,7 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
 
             // Filter extraction
             $extraction->setDeduplicationType($msg_body['deduplication_type']);
-            $this->e_service->executeFilterEngine($extraction);
+            $this->e_service->runExtraction($extraction);
             $extraction->setIsDeduplicating(false);
 
             // Save changes

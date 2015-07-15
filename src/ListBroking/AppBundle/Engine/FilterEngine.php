@@ -185,6 +185,7 @@ class FilterEngine
             $leadsAndX = $lead_qb->expr()
                                  ->andX()
             ;
+
             foreach ( $filters['lead'] as $type => $lead_filters )
             {
                 /** @var leadFilterInterface $lead_filter_type */

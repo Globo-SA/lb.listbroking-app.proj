@@ -3,7 +3,6 @@
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2015 Adclick
  */
-
 namespace ListBroking\AppBundle\Service\Helper;
 
 interface MessagingServiceInterface
@@ -18,4 +17,4 @@ interface MessagingServiceInterface
      * @return mixed
      */
     public function publishMessage ($producer_id, $msg);
-} 
+}

@@ -39,6 +39,8 @@ class ImportStagingContactsCommand extends ContainerAwareCommand
         $this->service = $this->getContainer()
                               ->get('task')
         ;
+        $f_service = $this->getContainer()->get('file_handler');
+
         $dir =
             $this->getContainer()
                  ->get('kernel')
@@ -64,7 +66,9 @@ class ImportStagingContactsCommand extends ContainerAwareCommand
                     {
                         $filename = $dir . $queue->getValue1();
                         $this->service->advanceProgressBar("Importing file: {$filename}");
-                        $s_service->importStagingContacts($filename);
+
+                        $file = $f_service->import($filename);
+                        $s_service->importStagingContacts($file);
 
                         // Remove file and Queue
                         $s_service->removeEntity('queue', $queue);

@@ -1,11 +1,8 @@
 <?php
 /**
  * @author     Samuel Castro <samuel.castro@adclick.pt>
- * @copyright  2014 Adclick
- * @license    [LISTBROKING_URL_LICENSE_HERE]
- * [LISTBROKING_DISCLAIMER]
+ * @copyright  2015 Adclick
  */
-
 namespace ListBroking\AppBundle\Service\Helper;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 interface AppServiceInterface
 {
+
     /**
      * Gets a list of entities using the services
      * provided in various bundles
@@ -25,20 +23,32 @@ interface AppServiceInterface
      * @throws \Exception
      * @return mixed
      */
-    public function getEntityList($type, $ids, $query, $bundle);
+    public function getEntityList ($type, $ids, $query, $bundle);
 
     /**
-     * Deliver emails using the system
+     * Generates a Form instance
+     * @param      $type
+     * @param null $action
+     * @param null $data
+     * @param bool $view
      *
-     * @param $template
-     * @param $parameters
-     * @param $subject
-     * @param $emails
+     * @return mixed
+     */
+    public function generateForm ($type, $action = null, $data = null, $view = false);
+
+    /**
+     * Deliver emails using the Mailer System
+     *
+     * @param      $template
+     * @param      $parameters
+     * @param      $subject
+     * @param      $emails
+     * @param null $filename
      *
      * @internal param $body
      * @return int
      */
-    public function deliverEmail ($template, $subject, $parameters, $emails);
+    public function deliverEmail ($template, $parameters, $subject, $emails, $filename = null);
 
     /**
      * Generates a Json Response

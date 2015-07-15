@@ -42,15 +42,17 @@ class LockExtractionConsumer implements ConsumerInterface
             $this->e_service->logInfo(sprintf("Starting 'generateLocks' for extraction_id: %s", $msg_body['object_id']));
 
             /** @var Extraction $extraction */
-            $extraction = $this->e_service->em->getRepository('ListBrokingAppBundle:Extraction')
-                                              ->findOneBy(array(
-                                                  'id' => $msg_body['object_id']
-                                              ))
+            $extraction = $this->e_service->entity_manager->getRepository('ListBrokingAppBundle:Extraction')
+                                                          ->findOneBy(array(
+                                                              'id' => $msg_body['object_id']
+                                                          ))
             ;
-
             // Generate locks
             $this->e_service->generateLocks($extraction, $msg_body['lock_types']);
+
+            // Close extraction
             $extraction->setIsLocking(false);
+            $extraction->setStatus(Extraction::STATUS_FINAL);
 
             // Save changes
             $this->e_service->updateEntity($extraction);

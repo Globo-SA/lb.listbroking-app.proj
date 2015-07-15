@@ -113,19 +113,27 @@ class AjaxController extends Controller
         {
             $a_service->validateAjaxRequest($request);
 
-            $s_service = $this->get('staging');
+            // Services
+            $m_service = $this->get('messaging');
+            $f_service = $this->get('file_handler');
 
-            $form = $s_service->generateForm('opposition_list_import');
+            // Save Opposition File
+            $form = $a_service->generateForm('opposition_list_import');
             $form->handleRequest($request);
+            $file = $f_service->saveFormFile($form);
 
-            $queue = $s_service->addOppositionListFileToQueue($form);
+            $data = $form->getData();
+
+            // Publish Extraction to the Queue
+            $m_service->publishMessage('opposition_list_import', array(
+                'filename'        => $file->getRealPath(),
+                'opposition_list' => $data['type'],
+                'clear_old'       => $data['clear_old']
+            ))
+            ;
 
             return $a_service->createJsonResponse(array(
-                "response"  => "List added to the queue",
-                "type"      => $queue->getValue1(),
-                "filename"  => $queue->getValue2(),
-                "clear_old" => $queue->getValue3(),
-                "queue_id"  => $queue->getId()
+                "response" => "Opposition is being uploaded",
             ))
                 ;
         }
@@ -174,7 +182,7 @@ class AjaxController extends Controller
 
             $s_service = $this->get('staging');
 
-            $form = $s_service->generateForm(new StagingContactImportType());
+            $form = $a_service->generateForm(new StagingContactImportType());
             $form->handleRequest($request);
 
             $queue = $s_service->addStagingContactsFileToQueue($form);
@@ -251,6 +259,4 @@ class AjaxController extends Controller
             return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
         }
     }
-
-
-} 
+}

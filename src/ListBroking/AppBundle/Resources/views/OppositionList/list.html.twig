@@ -22,18 +22,8 @@
                     {% endif %}
                 </div>
 
-                {% if has_queues %}
-                    {% set text = "<i class='icon icon-large ion-loading-c'></i>&nbsp;Importing lists..." %}
-                    {% set alt_text = "Import List" %}
-                {% else %}
-                    {% set text = "Import List" %}
-                    {% set alt_text = "<i class='icon icon-large ion-loading-c'></i>&nbsp;Importing lists..." %}
-                {% endif %}
                 {% if _actions|replace({ '<li>': '', '</li>': '' })|trim is not empty %}
-                    <button id="opposition_list_import_trigger" type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#opposition_list_import_modal" data-alt="{{ alt_text }}"
-                            {% if has_queues %}disabled="disabled"{% endif %}
-                            >
-                        {{ text|raw }}</button>
+                    <button id="opposition_list_import_trigger" type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#opposition_list_import_modal">Import List</button>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown sonata-actions">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ 'link_actions'|trans({}, 'SonataAdminBundle') }} <b class="caret"></b></a>

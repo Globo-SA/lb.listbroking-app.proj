@@ -185,7 +185,6 @@ SQL;
                 {
                     $batch = 1;
                     $em->flush();
-                    $em->clear();
 
                     // Add Extraction to the EntityManager after it's cleared
                     $extraction = $em->getPartialReference('ListBrokingAppBundle:Extraction', $extraction_id);
@@ -194,6 +193,8 @@ SQL;
             }
             $em->flush();
             $em->clear();
+
+            $extraction = $em->getPartialReference('ListBrokingAppBundle:Extraction', $extraction_id);
         }
         $em->flush();
         $em->clear();

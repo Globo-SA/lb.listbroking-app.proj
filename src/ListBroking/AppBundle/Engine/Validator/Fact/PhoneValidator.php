@@ -42,7 +42,7 @@ class PhoneValidator implements ValidatorInterface {
      * @internal param EntityManager $service
      */
     function __construct(EntityManager $em, $is_required){
-        $this->em = $em;
+        $this->entity_manager = $em;
         $this->is_required = $is_required;
     }
 

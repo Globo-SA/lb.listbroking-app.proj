@@ -13,7 +13,6 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Engine\ValidatorEngine;
 use ListBroking\AppBundle\Entity\StagingContact;
-use ListBroking\AppBundle\PHPExcel\FileHandler;
 use ListBroking\AppBundle\Service\Base\BaseService;
 use ListBroking\AppBundle\Service\Helper\AppService;
 use ListBroking\TaskControllerBundle\Entity\Queue;
@@ -31,46 +30,6 @@ class StagingService extends BaseService implements StagingServiceInterface
     function __construct (ValidatorEngine $v_engine)
     {
         $this->v_engine = $v_engine;
-    }
-
-    /**
-     * Handle the uploaded file and adds it to the queue
-     *
-     * @param Form $form
-     *
-     * @throws \Exception
-     * @return Queue
-     */
-    public function addOppositionListFileToQueue (Form $form)
-    {
-        // Handle Form
-        $data = $form->getData();
-
-        if ( empty($data['type']) )
-        {
-            throw new \Exception('Invalid or empty type');
-        }
-        if ( empty($data['upload_file']) )
-        {
-            throw new \Exception('Invalid or empty filename');
-        }
-
-        $file_handler = new FileHandler();
-
-        /** @var UploadedFile $file */
-        $file = $data['upload_file'];
-        $filename = $file_handler->generateFilename($file->getClientOriginalName(), null, 'imports/');
-        $file->move('imports', $filename);
-
-        $queue = new Queue();
-        $queue->setType(AppService::OPPOSITION_LIST_QUEUE_TYPE);
-        $queue->setValue1($data['type']);
-        $queue->setValue2($filename);
-        $queue->setValue3($data['clear_old']);
-
-        $this->addEntity('queue', $queue);
-
-        return $queue;
     }
 
     /**
@@ -93,9 +52,9 @@ class StagingService extends BaseService implements StagingServiceInterface
             }
         }
         $contact->setPostRequest(json_encode($data_array));
-        $this->em->persist($contact);
-        $this->em->flush();
-        $this->em->clear();
+        $this->entity_manager->persist($contact);
+        $this->entity_manager->flush();
+        $this->entity_manager->clear();
     }
 
     /**
@@ -144,8 +103,8 @@ class StagingService extends BaseService implements StagingServiceInterface
     public function findContactsToValidateAndLock ($limit = 50)
     {
         // Get contacts and lock the rows
-        $this->em->beginTransaction();
-        $contacts = $this->em->getRepository('ListBrokingAppBundle:StagingContact')
+        $this->entity_manager->beginTransaction();
+        $contacts = $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
                              ->createQueryBuilder('s')
                              ->where('s.valid = :valid')
                              ->andWhere('s.running = :running')
@@ -165,10 +124,10 @@ class StagingService extends BaseService implements StagingServiceInterface
         }
 
         // Flush the changes
-        $this->em->flush();
+        $this->entity_manager->flush();
 
         // Commit the transaction removing the lock
-        $this->em->commit();
+        $this->entity_manager->commit();
 
         return $contacts;
     }
@@ -214,31 +173,30 @@ class StagingService extends BaseService implements StagingServiceInterface
      * Imports an Opposition list by file
      *
      * @param $type
-     * @param $filename
+     * @param $file
      * @param $clear_old
      */
-    public function importOppostionList ($type, $filename, $clear_old)
+    public function importOppostionList ($type, $file, $clear_old)
     {
 
-        $config = json_decode($this->getConfig('opposition_list.config'), true);
-        $this->em->getRepository('ListBrokingAppBundle:OppositionList')
-                 ->importOppositionListFile($type, $config[$type], $filename, $clear_old)
+        $config = json_decode($this->findConfig('opposition_list.config'), true);
+
+        $this->entity_manager->getRepository('ListBrokingAppBundle:OppositionList')
+                 ->importOppositionListFile($type, $config[$type], $file, $clear_old)
         ;
     }
 
     /**
      * Imports contacts from a file to the staging area
      *
-     * @param $filename
+     * @param $file
      *
      * @return mixed
      */
-    public function importStagingContacts ($filename)
+    public function importStagingContacts ($file)
     {
         $headers = array();
-        $file_handler = new FileHandler();
-        $row_iterator = $file_handler->import($filename)
-                                     ->getActiveSheet()
+        $row_iterator = $file->getActiveSheet()
                                      ->getRowIterator()
         ;
         foreach ( $row_iterator as $row )
@@ -277,7 +235,7 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     public function loadValidatedContact (StagingContact $contact)
     {
-        $this->em->getRepository('ListBrokingAppBundle:StagingContact')
+        $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
                  ->loadValidatedContact($contact)
         ;
     }
@@ -288,7 +246,7 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     public function moveInvalidContactsToDQP ()
     {
-        $this->em->getRepository('ListBrokingAppBundle:StagingContact')
+        $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
                  ->moveInvalidContactsToDQP()
         ;
     }
@@ -298,7 +256,7 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     public function syncContactsWithOppositionLists ()
     {
-        $this->em->getRepository('ListBrokingAppBundle:Lead')
+        $this->entity_manager->getRepository('ListBrokingAppBundle:Lead')
                  ->syncContactsWithOppositionLists()
         ;
     }

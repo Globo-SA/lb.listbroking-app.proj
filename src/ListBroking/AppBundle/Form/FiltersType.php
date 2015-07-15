@@ -273,6 +273,27 @@ class FiltersType extends AbstractType
                                 "class" => "form-control"
                             ),
                             "label"    => "Only mobile numbers"
+                        ),
+                    ),
+                    array(
+                        "filter_type"          => LeadFilterInterface::BASIC_TYPE,
+                        "has_exclusion_filter" => false,
+                        "table"                => "lead",
+                        "field"                => "in_opposition",
+                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
+                        "type"                 => "choice",
+                        "options"              => array(
+                            "data"    => false,
+                            "choices"  => array(
+                                "Yes" => true,
+                                "NO" => false,
+                            ),
+                            "choices_as_values" => true,
+                            'empty_value' => false,
+                            "attr"     => array(
+                                "class" => "form-control"
+                            ),
+                            "label"    => "In Opposition Lists"
                         )
                     ),
                 )
@@ -668,152 +689,6 @@ class FiltersType extends AbstractType
     }
 
     /**
-     * De-serializes the Filters using developer magic
-     *
-     * @param $filters
-     *
-     * @return array
-     */
-    public static function prepareFilters ($filters)
-    {
-        $final_filters = array();
-        foreach ( $filters as $name => $values )
-        {
-            // Clean up the fields
-            self::cleanFilterValues($name, $values, $final_filters);
-        }
-
-        return $final_filters;
-    }
-
-    /**
-     * Clean up contact serialization
-     *
-     * @param $name
-     * @param $values
-     * @param $final_filters
-     *
-     * @internal param $type
-     */
-    private static function cleanFilterValues ($name, &$values, &$final_filters)
-    {
-
-        // Divide Filter name FIELD_TABLE:FIELD_NAME:FIELD_TYPE:FILTER_TYPE:FILTER_OPERATION
-        list($field_table, $field, $field_type, $filter_type, $filter_operation) = explode(':', $name);
-
-        // Clean by field type
-        switch ( $field_type )
-        {
-            case FiltersType::FIELD_TYPE_INTEGER:
-
-                // Convert values to array
-                $values = explode(',', $values);
-                if ( ! is_array($values) )
-                {
-                    $values = array($values);
-                }
-
-                foreach ( $values as $key => $value )
-                {
-                    $op = self::EQUAL_OPERATION;
-                    // Check if its a range
-                    if ( preg_match('/-/i', $value) )
-                    {
-                        $ranges = explode('-', $value);
-                        $value = array($ranges[0], $ranges[1]);
-                        $op = self::BETWEEN_OPERATION;
-                    }
-
-                    if ( ! empty($value) )
-                    {
-                        $final_filters[$field_table][$filter_type][] = array(
-                            'filter_type'      => $filter_type,
-                            'filter_operation' => $filter_operation,
-                            'field'            => $field,
-                            'field_type'       => $field_type,
-                            'opt'              => $op,
-                            'value'            => is_array($value) ? $value : array($value)
-
-                        );
-                    }
-                }
-                break;
-            case FiltersType::FIELD_TYPE_ARRAY:
-            case FiltersType::FIELD_TYPE_BOOLEAN:
-
-                // Convert values to array
-                if ( ! is_array($values) )
-                {
-                    $values = array($values);
-                }
-
-                // Remove empty filters
-                foreach ( $values as $key => $value )
-                {
-                    if ( is_array($value) )
-                    {
-                        $value = array_filter($value);
-                    }
-
-                    if ( empty($value) )
-                    {
-                        unset($values[$key]);
-                    }
-                }
-
-                if ( ! empty($values) )
-                {
-                    $final_filters[$field_table][$filter_type][] = array(
-                        'filter_type'      => $filter_type,
-                        'filter_operation' => $filter_operation,
-                        'field'            => $field,
-                        'field_type'       => $field_type,
-                        'opt'              => self::EQUAL_OPERATION,
-                        'value'            => $values
-
-                    );
-                }
-                break;
-            case FiltersType::FIELD_TYPE_RANGE:
-
-                $value = array();
-                foreach ( $values as $key => $v )
-                {
-                    reset($v);
-                    $first_key = key($v);
-
-                    if ( ! empty($v[$first_key]) )
-                    {
-
-                        list($start, $end) = explode('-', $v[$first_key]);
-                        $value = array(trim($start), trim($end));
-                    }
-                }
-
-                if ( ! empty($value) )
-                {
-                    $final_filters[$field_table][$filter_type][] = array(
-                        'filter_type'      => $filter_type,
-                        'filter_operation' => $filter_operation,
-                        'field'            => $field,
-                        'field_type'       => $field_type,
-                        'opt'              => self::BETWEEN_OPERATION,
-                        'value'            => $value
-
-                    );
-                }
-
-                break;
-        }
-
-        // If the value isn't an array convert it
-        if ( ! is_array($values) )
-        {
-            $values = array($values);
-        }
-    }
-
-    /**
      * Generates and array of human-readable filters
      *
      * @param EntityManager $em
@@ -835,16 +710,18 @@ class FiltersType extends AbstractType
                     $final_values = array();
                     foreach ( $data['value'] as $value )
                     {
-                        if(is_bool($value)){
+                        if ( is_bool($value) )
+                        {
                             $final_values[] = $value ? 'TRUE' : 'FALSE';
                             continue;
                         }
 
-                        if(is_array($value)){
+                        if ( is_array($value) )
+                        {
                             $final_values[] = print_r($value, 1);
                         }
 
-                        if ($data['filter_type'] == ContactFilterInterface::BASIC_TYPE)
+                        if ( $data['filter_type'] == ContactFilterInterface::BASIC_TYPE )
                         {
                             switch ( $data['field'] )
                             {
@@ -903,14 +780,158 @@ class FiltersType extends AbstractType
                             continue;
                         }
                         $final_values[] = $value;
-
                     }
                     $final_filters[$type][] = array('filter_type' => $data['filter_type'], 'filter_operation' => $data['filter_operation'], 'field' => $data['field'], 'values' => $final_values);
                 }
             }
-
         }
+
         return $final_filters;
+    }
+
+    /**
+     * De-serializes the Filters using developer magic
+     *
+     * @param $filters
+     *
+     * @return array
+     */
+    public static function prepareFilters ($filters)
+    {
+        $final_filters = array();
+        foreach ( $filters as $name => $values )
+        {
+            // Clean up the fields
+            self::cleanFilterValues($name, $values, $final_filters);
+        }
+
+        return $final_filters;
+    }
+
+    /**
+     * Clean up contact serialization
+     *
+     * @param $name
+     * @param $values
+     * @param $final_filters
+     *
+     * @internal param $type
+     */
+    private static function cleanFilterValues ($name, &$values, &$final_filters)
+    {
+        // Divide Filter name FIELD_TABLE:FIELD_NAME:FIELD_TYPE:FILTER_TYPE:FILTER_OPERATION
+        list($field_table, $field, $field_type, $filter_type, $filter_operation) = explode(':', $name);
+
+        // Clean by field type
+        switch ( $field_type )
+        {
+            case FiltersType::FIELD_TYPE_INTEGER:
+
+                // Convert values to array
+                $values = explode(',', $values);
+                if ( ! is_array($values) )
+                {
+                    $values = array($values);
+                }
+
+                foreach ( $values as $key => $value )
+                {
+                    $op = self::EQUAL_OPERATION;
+                    // Check if its a range
+                    if ( preg_match('/-/i', $value) )
+                    {
+                        $ranges = explode('-', $value);
+                        $value = array($ranges[0], $ranges[1]);
+                        $op = self::BETWEEN_OPERATION;
+                    }
+
+                    if ( ! empty($value) )
+                    {
+                        $final_filters[$field_table][$filter_type][] = array(
+                            'filter_type'      => $filter_type,
+                            'filter_operation' => $filter_operation,
+                            'field'            => $field,
+                            'field_type'       => $field_type,
+                            'opt'              => $op,
+                            'value'            => is_array($value) ? $value : array($value)
+
+                        );
+                    }
+                }
+                break;
+            case FiltersType::FIELD_TYPE_ARRAY:
+            case FiltersType::FIELD_TYPE_BOOLEAN:
+
+                // Convert values to array
+                if ( ! is_array($values) )
+                {
+                    $values = array($values);
+                }
+
+                // Remove empty filters
+                foreach ( $values as $key => $value )
+                {
+                    if ( is_array($value) )
+                    {
+                        $value = array_filter($value);
+                    }
+
+                    if ( empty($value) && !is_bool($value))
+                    {
+                        unset($values[$key]);
+                    }
+                }
+
+                if ( ! empty($values) )
+                {
+                    $final_filters[$field_table][$filter_type][] = array(
+                        'filter_type'      => $filter_type,
+                        'filter_operation' => $filter_operation,
+                        'field'            => $field,
+                        'field_type'       => $field_type,
+                        'opt'              => self::EQUAL_OPERATION,
+                        'value'            => $values
+
+                    );
+                }
+                break;
+            case FiltersType::FIELD_TYPE_RANGE:
+
+                $value = array();
+                foreach ( $values as $key => $v )
+                {
+                    reset($v);
+                    $first_key = key($v);
+
+                    if ( ! empty($v[$first_key]) )
+                    {
+
+                        list($start, $end) = explode('-', $v[$first_key]);
+                        $value = array(trim($start), trim($end));
+                    }
+                }
+
+                if ( ! empty($value) )
+                {
+                    $final_filters[$field_table][$filter_type][] = array(
+                        'filter_type'      => $filter_type,
+                        'filter_operation' => $filter_operation,
+                        'field'            => $field,
+                        'field_type'       => $field_type,
+                        'opt'              => self::BETWEEN_OPERATION,
+                        'value'            => $value
+
+                    );
+                }
+
+                break;
+        }
+
+        // If the value isn't an array convert it
+        if ( ! is_array($values) )
+        {
+            $values = array($values);
+        }
     }
 
     /**

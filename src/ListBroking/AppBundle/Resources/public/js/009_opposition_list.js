@@ -37,7 +37,7 @@
 
                 if(data.originalFiles[0]['name'].length && !acceptFileTypes.test(data.originalFiles[0]['name'])) {
                     $errors
-                        .html('Only csv files are accepted')
+                        .html('Only xls files are accepted')
                         .fadeIn()
                     ;
                     $opposition_list_import_btn.attr('disabled', 'disabled');

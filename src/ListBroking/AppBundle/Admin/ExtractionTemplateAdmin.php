@@ -51,7 +51,7 @@ class ExtractionTemplateAdmin extends Admin
     {
         $formMapper
             ->add('name')
-            ->add('template', 'textarea')
+            ->add('template', 'textarea', array('attr'=> array('rows' => 20)))
         ;
     }
 

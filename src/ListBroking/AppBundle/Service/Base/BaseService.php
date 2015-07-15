@@ -8,179 +8,51 @@
 
 namespace ListBroking\AppBundle\Service\Base;
 
+use Doctrine\Common\Cache\Cache;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
-use ListBroking\AppBundle\Entity\Configuration;
-use ListBroking\AppBundle\Exception\InvalidEntityTypeException;
-use Symfony\Component\Form\Form;
-use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Bridge\Monolog\Logger;
+use Symfony\Component\Form\FormFactory;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-abstract class BaseService extends AbstractBaseService implements BaseServiceInterface
+abstract class BaseService implements BaseServiceInterface
 {
 
     // Cache TTL of 12h
     const CACHE_TTL = 43200;
 
     /**
-     * Flushes all database changes
+     * @var EntityManager
      */
-    public function flushAll ()
-    {
-        $this->em->flush();
-    }
+    public $entity_manager;
 
     /**
-     * Clears the EntityManager
-     * @return void
+     * @var Cache
      */
+    protected $doctrine_cache;
+
+    /**
+     * @var FormFactory
+     */
+    protected $form_factory;
+
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
+     * @var TokenStorageInterface
+     */
+    protected $token_storage;
+
     public function clearEntityManager ()
     {
-        $this->em->clear();
+        $this->entity_manager->clear();
     }
 
-    /**
-     * Updates a given Entity
-     *
-     * @param $entity
-     *
-     * @return mixed
-     */
-    public function updateEntity ($entity)
-    {
-        if ( $entity )
-        {
-            $this->attachToEntityManager($entity);
-            $this->em->flush();
-        }
-    }
-
-    /**
-     * Finds a List of Entities by type
-     *
-     * @param $repo_name
-     *
-     * @return mixed
-     */
-    public function findEntities ($repo_name)
-    {
-        // Get Cache ID
-        $meta = $this->em->getClassMetadata($repo_name);
-        $class = new $meta->name;
-        $cache_id = $class::CACHE_ID;
-
-        // Check if there's cache
-        if ( ! $this->dcache->contains($cache_id) )
-        {
-            $repo = $this->em->getRepository($repo_name);
-            $entities = $repo->createQueryBuilder('e')
-                             ->getQuery()
-                             ->getResult(Query::HYDRATE_ARRAY)
-            ;
-
-            if ( $entities )
-            {
-                $this->dcache->save($cache_id, $entities, self::CACHE_TTL);
-            }
-        }
-
-        // Fetch from cache
-        return $this->dcache->fetch($cache_id);
-    }
-
-    /**
-     * Finds an Entity by type and id
-     *
-     * @param $repo_name
-     * @param $id
-     *
-     * @return mixed|object
-     * @throws InvalidEntityTypeException
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
-    public function findEntity ($repo_name, $id)
-    {
-        // Get Cache ID
-        $meta = $this->em->getClassMetadata($repo_name);
-        $class = new $meta->name;
-        $cache_id = $class::CACHE_ID . '_' . $id;
-
-        // Check if there's cache
-        if ( ! $this->dcache->contains($cache_id) )
-        {
-            $repo = $this->em->getRepository($repo_name);
-            $entity = $repo->find($id)
-            ;
-            if ( $entity )
-            {
-                $this->dcache->save($cache_id, $entity, self::CACHE_TTL);
-            }
-        }
-
-        // Fetch from cache
-        return $this->dcache->fetch($cache_id);
-    }
-
-    /**
-     * Finds thrown Exceptions
-     *
-     * @param $limit
-     *
-     * @return mixed
-     */
-    public function findExceptions ($limit)
-    {
-
-        return $this->em->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
-                        ->findLastExceptions($limit)
-            ;
-    }
-
-    /**
-     * Get Currently logged in user
-     * @return mixed
-     */
-    public function findUser ()
-    {
-        return $this->token_storage->getToken()
-                                   ->getUser()
-            ;
-    }
-
-    /**
-     * Generates a new form view
-     *
-     * @param      $type
-     * @param bool $view
-     * @param null $data
-     * @param      $action
-     *
-     * @return FormBuilderInterface|Form
-     */
-    public function generateForm ($type, $action = null, $data = null, $view = false)
-    {
-        $form = $this->form_factory->createBuilder($type, $data);
-        if ( $action )
-        {
-            $form->setAction($action);
-        }
-        if ( $view )
-        {
-            return $form->getForm()
-                        ->createView()
-                ;
-        }
-
-        return $form->getForm();
-    }
-
-    /**
-     * Gets a configuration
-     *
-     * @param $name
-     *
-     * @return mixed
-     */
-    public function getConfig ($name)
+    public function findConfig ($name)
     {
         $entities = $this->findEntities('ListBrokingAppBundle:Configuration');
         foreach ( $entities as $entity )
@@ -194,36 +66,94 @@ abstract class BaseService extends AbstractBaseService implements BaseServiceInt
         return null;
     }
 
-    /**
-     * Gets the App Root Dir
-     * @return mixed|string
-     */
-    public function getRootDir ()
+    public function findEntities ($repo_name)
     {
-        return $this->kernel->getRootDir();
+        // Get Cache ID
+        $meta = $this->entity_manager->getClassMetadata($repo_name);
+        $class = new $meta->name;
+        $cache_id = $class::CACHE_ID;
+
+        // Check if there's cache
+        if ( ! $this->doctrine_cache->contains($cache_id) )
+        {
+            $repo = $this->entity_manager->getRepository($repo_name);
+            $entities = $repo->createQueryBuilder('e')
+                             ->getQuery()
+                             ->getResult(Query::HYDRATE_ARRAY)
+            ;
+
+            if ( $entities )
+            {
+                $this->doctrine_cache->save($cache_id, $entities, self::CACHE_TTL);
+            }
+        }
+
+        // Fetch from cache
+        return $this->doctrine_cache->fetch($cache_id);
     }
 
-    /**
-     * Log an error to the channel
-     *
-     * @param $msg
-     */
+    public function findEntity ($repo_name, $id)
+    {
+        // Get Cache ID
+        $meta = $this->entity_manager->getClassMetadata($repo_name);
+        $class = new $meta->name;
+        $cache_id = $class::CACHE_ID . '_' . $id;
+
+        // Check if there's cache
+        if ( ! $this->doctrine_cache->contains($cache_id) )
+        {
+            $repo = $this->entity_manager->getRepository($repo_name);
+            $entity = $repo->find($id);
+            if ( $entity )
+            {
+                $this->doctrine_cache->save($cache_id, $entity, self::CACHE_TTL);
+            }
+        }
+
+        // Fetch from cache
+        return $this->doctrine_cache->fetch($cache_id);
+    }
+
+    public function findExceptions ($limit)
+    {
+
+        return $this->entity_manager->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
+                        ->findLastExceptions($limit)
+            ;
+    }
+
+    public function findUser ()
+    {
+        return $this->token_storage->getToken()
+                                   ->getUser()
+            ;
+    }
+
+    public function flushAll ()
+    {
+        $this->entity_manager->flush();
+    }
+
     public function logError ($msg)
     {
         $msg = '[' . date('Y-m-d h:d:s') . '] ' . $msg;
         $this->logger->error($msg);
     }
 
-    /**
-     * Log an info to the channel
-     *
-     * @param $msg
-     */
     public function logInfo ($msg)
     {
 
         $msg = '[' . date('Y-m-d h:d:s') . '] ' . $msg;
         $this->logger->info($msg);
+    }
+
+    public function updateEntity ($entity)
+    {
+        if ( $entity )
+        {
+            $this->attachToEntityManager($entity);
+            $this->entity_manager->flush();
+        }
     }
 
     /**
@@ -236,11 +166,51 @@ abstract class BaseService extends AbstractBaseService implements BaseServiceInt
      */
     private function attachToEntityManager (&$entity)
     {
-        if ( $this->em->getUnitOfWork()
+        if ( $this->entity_manager->getUnitOfWork()
                       ->getEntityState($entity) == UnitOfWork::STATE_DETACHED
         )
         {
-            $entity = $this->em->merge($entity);
+            $entity = $this->entity_manager->merge($entity);
         }
+    }
+
+    /**
+     * @param Cache $doctrine_cache
+     */
+    public function setDoctrineCache ($doctrine_cache)
+    {
+        $this->doctrine_cache = $doctrine_cache;
+    }
+
+    /**
+     * @param EntityManager $entity_manager
+     */
+    public function setEntityManager ($entity_manager)
+    {
+        $this->entity_manager = $entity_manager;
+    }
+
+    /**
+     * @param FormFactory $form_factory
+     */
+    public function setFormFactory ($form_factory)
+    {
+        $this->form_factory = $form_factory;
+    }
+
+    /**
+     * @param Logger $logger
+     */
+    public function setLogger ($logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @param TokenStorageInterface $token_storage
+     */
+    public function setTokenStorage ($token_storage)
+    {
+        $this->token_storage = $token_storage;
     }
 }

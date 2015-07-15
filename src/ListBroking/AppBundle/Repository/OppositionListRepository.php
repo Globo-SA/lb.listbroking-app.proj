@@ -21,11 +21,11 @@ class OppositionListRepository extends EntityRepository  {
      * Imports an Opposition list file by type, clears old values by default
      * @param $type
      * @param $config
-     * @param $filename
+     * @param $file
      * @param bool $clear_old
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function importOppositionListFile($type, $config, $filename, $clear_old = true){
+    public function importOppositionListFile($type, $config, $file, $clear_old = true){
 
         $conn = $this->getEntityManager()->getConnection();
 
@@ -42,9 +42,7 @@ SQL;
                 ->execute($clear_sql_params);
         }
 
-        $file_handler = new FileHandler();
-        $obj = $file_handler->import($filename);
-        $row_iterator = $obj->getWorksheetIterator()->current()->getRowIterator();
+        $row_iterator = $file->getWorksheetIterator()->current()->getRowIterator();
 
         $em = $this->getEntityManager();
 

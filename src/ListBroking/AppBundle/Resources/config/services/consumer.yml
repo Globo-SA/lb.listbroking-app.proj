@@ -13,4 +13,8 @@ services:
 
   app.consumer.deliver_extraction:
     class: ListBroking\AppBundle\Consumer\DeliverExtractionConsumer
-    arguments: [@extraction]
+    arguments: [@app, @extraction, @file_handler]
+
+  app.consumer.opposition_list_import:
+    class: ListBroking\AppBundle\Consumer\OppositionListImportConsumer
+    arguments: [@staging, @file_handler]

@@ -82,6 +82,7 @@ class ExtractionAdminController extends CRUDController
         ;
 
         // Services
+        $a_service = $this->get('app');
         $e_service = $this->get('extraction');
         $m_service = $this->get('messaging');
 
@@ -112,16 +113,16 @@ class ExtractionAdminController extends CRUDController
         }
 
         // Forms
-        $extraction_deduplication = $e_service->generateForm('extraction_deduplication');
-        $extraction_locking = $e_service->generateForm('extraction_locking');
+        $extraction_deduplication = $a_service->generateForm('extraction_deduplication');
+        $extraction_locking = $a_service->generateForm('extraction_locking');
 
-        $filters_form = $e_service->generateForm('filters', $this->generateUrl('admin_listbroking_app_extraction_filtering', array('id' => $extraction_id)), $extraction->getFilters());
+        $filters_form = $a_service->generateForm('filters', $this->generateUrl('admin_listbroking_app_extraction_filtering', array('id' => $extraction_id)), $extraction->getFilters());
 
         // Render Response
         return $this->render('@ListBrokingApp/Extraction/filtering.html.twig', array(
             'action'        => 'filtering',
-            'lock_time'     => $e_service->getConfig('lock.time'),
-            'preview_limit' => $e_service->getConfig('extraction.contact.show_limit'),
+            'lock_time'     => $e_service->findConfig('lock.time'),
+            'preview_limit' => $e_service->findConfig('extraction.contact.show_limit'),
             'extraction'    => $extraction,
             'forms'         => array(
                 'filters'                  => $filters_form->createView(),

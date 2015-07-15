@@ -27,10 +27,10 @@ interface StagingServiceInterface {
 
     /**
      * Imports contacts from a file to the staging area
-     * @param $filename
+     * @param $file
      * @return mixed
      */
-    public function importStagingContacts($filename);
+    public function importStagingContacts($file);
 
     /**
      * Gets contacts that need validation and lock them
@@ -63,14 +63,6 @@ interface StagingServiceInterface {
     public function loadValidatedContact(StagingContact $contact);
 
     /**
-     * Handle the uploaded file and adds it to the queue
-     * @param Form $form
-     * @throws \Exception
-     * @return Queue
-     */
-    public function addOppositionListFileToQueue(Form $form);
-
-    /**
      * Handle the uploaded StagingContacts file and adds it to the queue
      * @param Form $form
      * @throws \Exception
@@ -81,10 +73,10 @@ interface StagingServiceInterface {
     /**
      * Imports an Opposition list by file
      * @param $type
-     * @param $filename
+     * @param $file
      * @param $clear_old
      */
-    public function importOppostionList($type, $filename, $clear_old);
+    public function importOppostionList($type, $file, $clear_old);
 
     /**
      * Syncs the Opposition table with the Leads

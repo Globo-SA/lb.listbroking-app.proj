@@ -30,11 +30,7 @@ class OppositionListAdminController extends Controller
         }
 
         $a_service = $this->get('app');
-        $t_service = $this->get('task');
 
-        //Check for Queues
-        /** @var Queue[] $queues */
-        $queues = $t_service->findQueuesByType(AppService::OPPOSITION_LIST_QUEUE_TYPE);
         $import_form = $a_service->generateForm('opposition_list_import', null, null, true);
 
         $datagrid = $this->admin->getDatagrid();
@@ -49,7 +45,6 @@ class OppositionListAdminController extends Controller
 
         return $this->render($this->admin->getTemplate('list'), array(
             'import_form' => $import_form,
-            'has_queues'  => (count($queues) > 0),
             'action'      => 'list',
             'form'        => $formView,
             'datagrid'    => $datagrid,

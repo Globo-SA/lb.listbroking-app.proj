@@ -42,10 +42,10 @@ class RunExtractionConsumer implements ConsumerInterface
             $this->e_service->logInfo(sprintf("Starting 'runExtraction' for extraction_id: %s", $msg_body['object_id']));
 
             /** @var Extraction $extraction */
-            $extraction = $this->e_service->em->getRepository('ListBrokingAppBundle:Extraction')
-                                              ->findOneBy(array(
-                                                  'id' => $msg_body['object_id']
-                                              ))
+            $extraction = $this->e_service->entity_manager->getRepository('ListBrokingAppBundle:Extraction')
+                                                          ->findOneBy(array(
+                                                              'id' => $msg_body['object_id']
+                                                          ))
             ;
 
             // Run Extraction

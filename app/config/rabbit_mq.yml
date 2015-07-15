@@ -28,6 +28,9 @@ old_sound_rabbit_mq:
         deliver_extraction:
             connection: default
             exchange_options: {name: 'deliver-extraction', type: direct}
+        opposition_list_import:
+            connection: default
+            exchange_options: {name: 'opposition-list-import', type: direct}
     consumers:
         run_extraction:
             connection:       default
@@ -49,3 +52,8 @@ old_sound_rabbit_mq:
             exchange_options: {name: 'deliver-extraction', type: direct}
             queue_options:    {name: 'deliver-extraction'}
             callback:         app.consumer.deliver_extraction
+        opposition_list_import:
+            connection:       default
+            exchange_options: {name: 'opposition-list-import', type: direct}
+            queue_options:    {name: 'opposition-list-import'}
+            callback:         app.consumer.opposition_list_import

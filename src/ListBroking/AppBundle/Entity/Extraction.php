@@ -11,7 +11,12 @@ namespace ListBroking\AppBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
 use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
-
+use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+/**
+ * @ExclusionPolicy("none")
+ * @package ListBroking\AppBundle\Entity
+ */
 class Extraction
 {
 
@@ -58,11 +63,13 @@ class Extraction
     private $quantity;
 
     /**
+     * @Exclude
      * @var array
      */
     private $filters;
 
     /**
+     * @Exclude
      * @var array
      */
     private $readable_filters;
@@ -103,16 +110,19 @@ class Extraction
     private $query;
 
     /**
+     * @Exclude
      * @var ArrayCollection
      */
     private $extraction_deduplications;
 
     /**
+     * @Exclude
      * @var ArrayCollection
      */
     private $extraction_contacts;
 
     /**
+     * @Exclude
      * @var Campaign
      */
     private $campaign;
@@ -238,6 +248,16 @@ class Extraction
     }
 
     /**
+     * Get readable_filters
+     *
+     * @return array
+     */
+    public function getReadableFilters()
+    {
+        return $this->readable_filters;
+    }
+
+    /**
      * Set readable_filters
      *
      * @param array $readableFilters
@@ -248,16 +268,6 @@ class Extraction
         $this->readable_filters = $readableFilters;
 
         return $this;
-    }
-
-    /**
-     * Get readable_filters
-     *
-     * @return array
-     */
-    public function getReadableFilters()
-    {
-        return $this->readable_filters;
     }
 
     /**
