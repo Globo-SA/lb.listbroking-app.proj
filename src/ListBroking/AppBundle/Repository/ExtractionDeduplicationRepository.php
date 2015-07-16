@@ -109,35 +109,6 @@ SQL;
         ;
     }
 
-    /**
-     * Removes Deduplicated Leads from an Extraction
-     *
-     * @param Extraction $extraction
-     */
-    public function deduplicateExtraction (Extraction $extraction)
-    {
-        $conn = $this->getEntityManager()
-                     ->getConnection()
-        ;
-
-        //TODO: Make the JOIN a bit more performant
-        $dedup_sql = <<<SQL
-            DELETE extractions_contacts
-            FROM extractions_contacts
-            JOIN contact ON contact.id = extractions_contacts.contact_id
-            JOIN lead ON contact.lead_id = lead.id
-            JOIN extraction_deduplication ON extraction_deduplication.phone = lead.phone
-            WHERE extractions_contacts.extraction_id
-SQL;
-        $params = array(
-            'extraction' => $extraction->getId(),
-        );
-
-        $conn->prepare($dedup_sql)
-             ->execute($params)
-        ;
-    }
-
     public function generateLocks (Extraction $extraction, $lock_types, $lock_time)
     {
         $em = $this->getEntityManager();

@@ -53,6 +53,8 @@ class OppositionListImportConsumer implements ConsumerInterface
 
             $this->s_service->syncContactsWithOppositionLists();
 
+            $this->s_service->endOppositionListImporting();
+
             $this->s_service->logInfo(sprintf("Ending 'importOppostionList' for opposition_list: %s, clear_old: %s, filename: %s", $msg_body['opposition_list'], $msg_body['clear_old'], $msg_body['filename']));
 
             return true;

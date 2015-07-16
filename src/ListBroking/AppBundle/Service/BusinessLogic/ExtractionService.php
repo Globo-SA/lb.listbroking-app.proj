@@ -77,22 +77,6 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         ;
     }
 
-    //    /**
-    //     * Used to import a file with Leads
-    //     *
-    //     * @param $filename
-    //     *
-    //     * @internal param $filename
-    //     * @return mixed
-    //     */
-    //    public function importExtraction ($filename)
-    //    {
-    //        $file_handler = new FileHandler();
-    //        $obj = $file_handler->import($filename);
-    //
-    //        return $file_handler->convertToArray($obj, false);
-    //    }
-
     public function getExtractionContactsQuery (Extraction $extraction)
     {
         return $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')

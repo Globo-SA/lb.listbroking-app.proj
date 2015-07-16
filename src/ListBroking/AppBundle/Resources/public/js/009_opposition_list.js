@@ -6,6 +6,7 @@
         "use strict";
 
         var $opposition_list_import_form = $("[name=opposition_list_import]");
+        var $opposition_list_import_trigger = $("#opposition_list_import_trigger");
         var $opposition_list_import_btn = $("#opposition_list_import_submit");
 
         //Stop submitting because it will never be used
@@ -71,11 +72,42 @@
             );
         })
         .on('fileuploaddone', function (e, data) {
-            $('#opposition_list_import_trigger').toggleLoading();
+            checkIsImporting();
 
             //Close modal
             $('#opposition_list_import_modal').modal('hide');
         })
         ;
+
+        checkIsImporting();
+        setInterval(function(){
+            checkIsImporting();
+        }, App.variables.intervalTimeout);
+
+        function checkIsImporting(){
+            $.ajax({
+                type: "GET",
+                url: App.routing.generate('ajax_opposition_list_import_check'),
+                dataType: 'json',
+                success: function (data) {
+                    var response = data.response;
+                    if(!response.importing){
+                        $opposition_list_import_trigger
+                            .removeAttr('disabled')
+                            .html('Import List');
+
+                        // Loading Widget, stop when everything is loaded
+                        $('#loading_widget').fadeOut();
+
+                        return;
+                    }
+
+                    $opposition_list_import_trigger
+                        .attr('disabled', 'disabled')
+                        .html("<i class='icon icon-large ion-loading-c'></i>&nbsp;Importing lists...");
+
+                }
+            });
+        }
     });
 })(jQuery, ListBroking);

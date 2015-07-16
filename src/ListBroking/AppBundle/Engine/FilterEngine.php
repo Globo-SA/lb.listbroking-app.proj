@@ -27,14 +27,6 @@ use ListBroking\AppBundle\Entity\Lock;
 use ListBroking\AppBundle\Exception\InvalidFilterObjectException;
 use ListBroking\AppBundle\Form\FiltersType;
 
-// Interfaces
-
-// Contact Filters
-
-// Lead Filters
-
-// Lock Filters
-
 class FilterEngine
 {
 
@@ -65,10 +57,12 @@ class FilterEngine
             LockFilterInterface::CATEGORY_LOCK_TYPE     => new CategoryLockFilter(Lock::TYPE_CATEGORY),
             LockFilterInterface::SUB_CATEGORY_LOCK_TYPE => new SubCategoryLockFilter(Lock::TYPE_SUB_CATEGORY, Lock::TYPE_CATEGORY)
         );
+
         $this->contact_filter_types = array(
-            ContactFilterInterface::BASIC_TYPE => new BasicContactFilter(),
+            ContactFilterInterface::BASIC_TYPE    => new BasicContactFilter(),
             ContactFilterInterface::REQUIRED_TYPE => new RequiredContactFilter(),
         );
+
         $this->lead_filter_types = array(
             LeadFilterInterface::BASIC_TYPE => new BasicLeadFilter()
         );
@@ -92,12 +86,14 @@ class FilterEngine
         /**
          * This system may seem a bit complex at first sight, but
          * the main idea is to filter:
-         *  . Leads by it's Phone and Locks (the Lead availability)
+         *  . Leads by it's Phone, OppositionList and Locks (the Lead availability)
          *  . Contacts by it's demographic and location information
+         *
          * The QueryBuilder is amazing for dynamic SQL generation,
          * but can be daunting to understand, so good luck xD
          *                                        - Samuel Castro
          */
+
         $filters = FiltersType::prepareFilters($extraction->getFilters());
         $limit = $extraction->getQuantity();
 
@@ -143,6 +139,8 @@ class FilterEngine
             $locksOrX = $lead_qb->expr()
                                 ->orX()
             ;
+
+            // Iterate over Lock Filter Types
             foreach ( $filters['lock'] as $type => $lock_filters )
             {
                 /** @var LockFilterInterface $lock_filter_type */
@@ -162,6 +160,8 @@ class FilterEngine
             $contactsAndX = $lead_qb->expr()
                                     ->andX()
             ;
+
+            // Iterate over Contact Filter Types
             foreach ( $filters['contact'] as $type => $contact_filters )
             {
                 /** @var ContactFilterInterface $contact_filter_type */
@@ -186,6 +186,7 @@ class FilterEngine
                                  ->andX()
             ;
 
+            // Iterate over Lead Filter Types
             foreach ( $filters['lead'] as $type => $lead_filters )
             {
                 /** @var leadFilterInterface $lead_filter_type */

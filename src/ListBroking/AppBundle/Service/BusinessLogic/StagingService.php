@@ -186,6 +186,19 @@ class StagingService extends BaseService implements StagingServiceInterface
         ;
     }
 
+    public function isOppositionListImporting()
+    {
+        return $this->doctrine_cache->contains('importing_opposition_list');
+    }
+
+    public function startOppostionListImporting(){
+        $this->doctrine_cache->save('importing_opposition_list', true);
+    }
+
+    public function endOppositionListImporting(){
+        $this->doctrine_cache->delete('importing_opposition_list');
+    }
+
     /**
      * Imports contacts from a file to the staging area
      *

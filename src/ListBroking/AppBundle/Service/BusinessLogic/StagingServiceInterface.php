@@ -79,6 +79,23 @@ interface StagingServiceInterface {
     public function importOppostionList($type, $file, $clear_old);
 
     /**
+     * Checks if an OppositionList is being Imported
+     * @return mixed
+     */
+    public function isOppositionListImporting();
+
+    /**
+     * Start OppositionListImporting
+     * @return mixed
+     */
+    public function startOppostionListImporting();
+
+    /**
+     * End OppositionListImporting
+     * @return mixed
+     */
+    public function endOppositionListImporting();
+    /**
      * Syncs the Opposition table with the Leads
      */
     public function syncContactsWithOppositionLists();

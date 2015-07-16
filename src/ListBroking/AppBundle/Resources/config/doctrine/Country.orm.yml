@@ -1,7 +1,6 @@
 ListBroking\AppBundle\Entity\Country:
     type: entity
     table: country
-    repositoryClass: ListBroking\AppBundle\Repository\CountryRepository
     id:
         id:
             type: bigint

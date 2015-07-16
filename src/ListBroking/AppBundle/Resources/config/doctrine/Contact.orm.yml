@@ -1,7 +1,6 @@
 ListBroking\AppBundle\Entity\Contact:
     type:   entity
     table:  contact
-    repositoryClass: ListBroking\AppBundle\Repository\ContactRepository
     id:
         id:
             type: bigint

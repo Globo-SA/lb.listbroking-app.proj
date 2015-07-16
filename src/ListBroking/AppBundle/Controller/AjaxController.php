@@ -116,6 +116,8 @@ class AjaxController extends Controller
             // Services
             $m_service = $this->get('messaging');
             $f_service = $this->get('file_handler');
+            $s_service = $this->get('staging');
+
 
             // Save Opposition File
             $form = $a_service->generateForm('opposition_list_import');
@@ -132,8 +134,32 @@ class AjaxController extends Controller
             ))
             ;
 
+            $s_service->startOppostionListImporting();
+
             return $a_service->createJsonResponse(array(
                 "response" => "Opposition is being uploaded",
+            ))
+                ;
+        }
+        catch ( \Exception $e )
+        {
+            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function oppositionListImportCheckAction(Request $request)
+    {
+        $a_service = $this->get('app');
+        try
+        {
+            $a_service->validateAjaxRequest($request);
+
+            // Services
+            $s_service = $this->get('staging');
+
+
+            return $a_service->createJsonResponse(array(
+                    'importing' => $s_service->isOppositionListImporting()
             ))
                 ;
         }

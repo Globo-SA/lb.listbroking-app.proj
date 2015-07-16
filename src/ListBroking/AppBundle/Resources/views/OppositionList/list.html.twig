@@ -23,7 +23,7 @@
                 </div>
 
                 {% if _actions|replace({ '<li>': '', '</li>': '' })|trim is not empty %}
-                    <button id="opposition_list_import_trigger" type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#opposition_list_import_modal">Import List</button>
+                    <button id="opposition_list_import_trigger" type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#opposition_list_import_modal" disabled="disabled">Import List</button>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown sonata-actions">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ 'link_actions'|trans({}, 'SonataAdminBundle') }} <b class="caret"></b></a>

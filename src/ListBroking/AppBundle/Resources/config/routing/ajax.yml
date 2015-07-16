@@ -34,6 +34,12 @@ ajax_opposition_list_import:
     options:
         expose: true
 
+ajax_opposition_list_import_check:
+    path: /ajax/oppositionlist/import/check
+    defaults: { _controller: ListBrokingAppBundle:Ajax:oppositionListImportCheck }
+    options:
+        expose: true
+
 ajax_staging_contact_import_template:
     path: /ajax/stagingcontact/import/template
     defaults: { _controller: ListBrokingAppBundle:Ajax:stagingContactImportTemplate }
