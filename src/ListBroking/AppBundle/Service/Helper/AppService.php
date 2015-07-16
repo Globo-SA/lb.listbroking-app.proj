@@ -10,8 +10,10 @@ namespace ListBroking\AppBundle\Service\Helper;
 
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Service\Base\BaseService;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class AppService extends BaseService implements AppServiceInterface
 {
@@ -46,6 +48,29 @@ class AppService extends BaseService implements AppServiceInterface
         ), $code);
     }
 
+    public function createAttachmentResponse($filename, $with_cookie = true){
+
+        // Generate response
+        $response = new Response();
+
+        // Set headers for file attachment
+        $response->headers->set('Cache-Control', 'private');
+        $response->headers->set('Content-type', mime_content_type($filename));
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . basename($filename) . '";');
+        $response->headers->set('Content-length', filesize($filename));
+
+        // Send headers before outputting anything
+        $response->sendHeaders();
+        $response->setContent(readfile($filename));
+
+        // Sends a "file was downloaded" cookie
+        if($with_cookie){
+            $cookie = new Cookie('fileDownload', 'true', new \DateTime('+1 minute'), '/', null, false, false);
+            $response->headers->setCookie($cookie);
+        }
+
+        return $response;
+    }
     public function deliverEmail ($template, $parameters, $subject, $emails, $filename = null)
     {
         $message = $this->mailer->createMessage()

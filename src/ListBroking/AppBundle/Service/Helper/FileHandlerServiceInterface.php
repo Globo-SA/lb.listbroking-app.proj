@@ -53,4 +53,16 @@ interface FileHandlerServiceInterface
      */
     public function generateFileFromQuery($name, $extension, Query $query, $headers, $zipped = true);
 
+    /**
+     * Generates a file using an Array
+     *
+     * @param      $name
+     * @param      $extension
+     * @param      $array
+     * @param bool $zipped
+     *
+     * @return mixed
+     */
+    public function generateFileFromArray ($name, $extension, $array, $zipped = true);
+
 }

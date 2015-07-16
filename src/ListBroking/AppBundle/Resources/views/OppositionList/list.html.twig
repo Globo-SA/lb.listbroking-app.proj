@@ -2,6 +2,7 @@
 
 {% block list_table %}
     {{ parent() }}
+    <script type="text/javascript" src="{{ asset('bundles/listbrokingapp/js/009_opposition_list.js') }}"></script>
     {% include '@ListBrokingApp/OppositionList/import_modal.html.twig' %}
 {% endblock list_table %}
 

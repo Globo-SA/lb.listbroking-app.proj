@@ -8,6 +8,7 @@
 
 namespace ListBroking\AppBundle\Command;
 
+use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\TaskControllerBundle\Service\TaskService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -43,7 +44,6 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
         {
             if ( $this->service->start($this, $input, $output, self::MAX_RUNNING) )
             {
-
                 $s_service = $this->getContainer()
                                   ->get('staging')
                 ;
@@ -51,7 +51,16 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
                 $limit = $input->getOption('limit');
 
                 $this->service->write('Selecting contacts');
-                $contacts = $s_service->findContactsToValidateAndLock($limit);
+
+                /** @var StagingContact[] $contacts */
+                $contacts = $s_service->findAndLockContactsToValidate($limit);
+
+                if(!$contacts)
+                {
+                    $this->service->write('No contacts to process');
+                    $this->service->finish();
+                    return;
+                }
 
                 // Iterate staging contacts
                 $this->service->createProgressBar('STARTING CONTACT VALIDATION', count($contacts));

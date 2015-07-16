@@ -20,3 +20,8 @@ services:
     arguments: [@app]
     tags:
       - { name: form.type, alias: opposition_list_import }
+
+  listbroking.appbundle.staging_contact_import.form.type:
+    class: ListBroking\AppBundle\Form\StagingContactImportType
+    tags:
+      - { name: form.type, alias: staging_contact_import }

@@ -87,7 +87,7 @@
         function checkIsImporting(){
             $.ajax({
                 type: "GET",
-                url: App.routing.generate('ajax_opposition_list_import_check'),
+                url: App.routing.generate('ajax_check_producer_availability', {producer_id: 'opposition_list_import'}),
                 dataType: 'json',
                 success: function (data) {
                     var response = data.response;

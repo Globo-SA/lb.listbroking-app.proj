@@ -7,7 +7,8 @@
 
         var $staging_contact_import_form = $("[name=staging_contact_import]");
         var $staging_contact_import_btn = $("#staging_contact_import_submit");
-
+        var $staging_contact_import_trigger = $('#staging_contact_import_trigger');
+        var $staging_contact_import_upload_file = $('#staging_contact_import_upload_file')
         //Stop submitting because it will never be used
         $staging_contact_import_form.submit(function(e){
             e.preventDefault();
@@ -26,18 +27,18 @@
             }
         });
 
-        $('#staging_contact_import_upload_file').fileupload({
+        $staging_contact_import_upload_file.fileupload({
             url: ListBroking.routing.generate('ajax_staging_contact_import'),
             dataType: 'json',
             autoUpload: false,
             removeAfterUpload: false,
             add: function(e, data) {
-                var acceptFileTypes = /\.(xls|xlsx)/i;
+                var acceptFileTypes = /\.(csv)/i;
                 var $errors = $('#fileuploaderror');
 
                 if(data.originalFiles[0]['name'].length && !acceptFileTypes.test(data.originalFiles[0]['name'])) {
                     $errors
-                        .html('Only excel files are accepted')
+                        .html('Only CSV files are accepted')
                         .fadeIn()
                     ;
                     $staging_contact_import_btn.attr('disabled', 'disabled');
@@ -71,11 +72,42 @@
                 );
             })
             .on('fileuploaddone', function (e, data) {
-                $('#staging_contact_import_trigger').toggleLoading();
+                checkIsImporting();
 
                 //Close modal
                 $('#staging_contact_import_modal').modal('hide');
             })
         ;
+
+        checkIsImporting();
+        setInterval(function(){
+            checkIsImporting();
+        }, App.variables.intervalTimeout);
+
+        function checkIsImporting(){
+            $.ajax({
+                type: "GET",
+                url: App.routing.generate('ajax_check_producer_availability', {producer_id: 'staging_contact_import'}),
+                dataType: 'json',
+                success: function (data) {
+                    var response = data.response;
+                    if(!response.importing){
+                        $staging_contact_import_trigger
+                            .removeAttr('disabled')
+                            .html('Import Database');
+
+                        // Loading Widget, stop when everything is loaded
+                        $('#loading_widget').fadeOut();
+
+                        return;
+                    }
+
+                    $staging_contact_import_trigger
+                        .attr('disabled', 'disabled')
+                        .html("<i class='icon icon-large ion-loading-c'></i>&nbsp;Importing Database...");
+
+                }
+            });
+        }
     });
 })(jQuery, ListBroking);

@@ -2,6 +2,7 @@
 
 {% block list_table %}
     {{ parent() }}
+    <script type="text/javascript" src="{{ asset('bundles/listbrokingapp/js/010_staging_contact.js') }}"></script>
     {% include '@ListBrokingApp/StagingContact/import_modal.html.twig' %}
 {% endblock list_table %}
 
@@ -22,18 +23,9 @@
                     {% endif %}
                 </div>
 
-                {% if has_queues %}
-                    {% set text = "<i class='icon icon-large ion-loading-c'></i>&nbsp;Importing databases..." %}
-                    {% set alt_text = "Import Database" %}
-                {% else %}
-                    {% set text = "Import database" %}
-                    {% set alt_text = "<i class='icon icon-large ion-loading-c'></i>&nbsp;Importing databses..." %}
-                {% endif %}
                 {% if _actions|replace({ '<li>': '', '</li>': '' })|trim is not empty %}
-                    <button id="staging_contact_import_trigger" type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#staging_contact_import_modal" data-alt="{{ alt_text }}"
-                            {% if has_queues %}disabled="disabled"{% endif %}
-                            >
-                        {{ text|raw }}</button>
+                    <button id="staging_contact_import_trigger" type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#staging_contact_import_modal"
+                            disabled="disabled">Import Database</button>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown sonata-actions">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ 'link_actions'|trans({}, 'SonataAdminBundle') }} <b class="caret"></b></a>

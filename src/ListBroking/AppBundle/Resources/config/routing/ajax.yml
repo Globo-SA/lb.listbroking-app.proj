@@ -4,12 +4,6 @@ ajax_last_exceptions:
     options:
         expose: true
 
-#ajax_publish_message:
-#    path: /ajax/message/publish
-#    defaults: { _controller: ListBrokingAppBundle:Ajax:publishMessage }
-#    options:
-#        expose: true
-
 ajax_operational_email_deliver:
     path: /ajax/operational_email/deliver
     defaults: { _controller: ListBrokingAppBundle:Ajax:operationalEmailDeliver }
@@ -34,9 +28,9 @@ ajax_opposition_list_import:
     options:
         expose: true
 
-ajax_opposition_list_import_check:
-    path: /ajax/oppositionlist/import/check
-    defaults: { _controller: ListBrokingAppBundle:Ajax:oppositionListImportCheck }
+ajax_check_producer_availability:
+    path: /ajax/producer/availability/check
+    defaults: { _controller: ListBrokingAppBundle:Ajax:checkProducerAvailability }
     options:
         expose: true
 

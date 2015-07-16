@@ -37,6 +37,8 @@ class APIController extends Controller
                 throw new LeadValidationException('Lead is empty');
             }
             $s_service->addStagingContact($lead);
+            $s_service->flushAll();
+            $s_service->clearEntityManager();
 
             return $this->createJsonResponse('Lead added');
         } catch (\Exception $e)

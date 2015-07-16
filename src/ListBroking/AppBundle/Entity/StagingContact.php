@@ -1,10 +1,8 @@
 <?php
 /**
- * 
  * @author     Pedro Tentugal <pedro.tentugal@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
@@ -19,7 +17,36 @@ use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
  * Class StagingContact
  * @package ListBroking\AppBundle\Entity
  */
-class StagingContact {
+class StagingContact
+{
+
+    const IMPORT_TEMPLATE_FILE_EXTENSION = 'Excel';
+
+    const IMPORT_TEMPLATE_FILENAME       = 'staging_contact_import_template';
+
+    public static $import_template = array(
+        'external_id'        => '',
+        'phone'              => '',
+        'email'              => '',
+        'firstname'          => '',
+        'lastname'           => '',
+        'birthdate'          => '',
+        'address'            => '',
+        'postalcode1'        => '',
+        'postalcode2'        => '',
+        'ipaddress'          => '',
+        'gender'             => '',
+        'district'           => '',
+        'county'             => '',
+        'parish'             => '',
+        'country'            => '',
+        'owner'              => '',
+        'source_name'        => '',
+        'source_external_id' => '',
+        'source_country'     => '',
+        'sub_category'       => '',
+        'date'               => ''
+    );
 
     use TimestampableEntityBehavior;
 
@@ -29,16 +56,16 @@ class StagingContact {
 
     protected $processed = 0;
 
-    protected $valid = 0;
+    protected $valid     = 0;
 
-    protected $running = 0;
+    protected $running   = 0;
 
     /**
      * Contact Information
      */
     protected $phone;
 
-    protected $is_mobile = 0;
+    protected $is_mobile     = 0;
 
     protected $in_opposition = 0;
 
@@ -93,7 +120,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId ()
     {
         return $this->id;
     }
@@ -101,7 +128,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getExternalId()
+    public function getExternalId ()
     {
         return $this->external_id;
     }
@@ -109,7 +136,7 @@ class StagingContact {
     /**
      * @param mixed $external_id
      */
-    public function setExternalId($external_id)
+    public function setExternalId ($external_id)
     {
         $this->external_id = $external_id;
     }
@@ -117,7 +144,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getProcessed()
+    public function getProcessed ()
     {
         return $this->processed;
     }
@@ -125,7 +152,7 @@ class StagingContact {
     /**
      * @param mixed $processed
      */
-    public function setProcessed($processed)
+    public function setProcessed ($processed)
     {
         $this->processed = $processed;
     }
@@ -133,7 +160,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getValid()
+    public function getValid ()
     {
         return $this->valid;
     }
@@ -141,7 +168,7 @@ class StagingContact {
     /**
      * @param mixed $valid
      */
-    public function setValid($valid)
+    public function setValid ($valid)
     {
         $this->valid = $valid;
     }
@@ -149,7 +176,7 @@ class StagingContact {
     /**
      * @return int
      */
-    public function getRunning()
+    public function getRunning ()
     {
         return $this->running;
     }
@@ -157,7 +184,7 @@ class StagingContact {
     /**
      * @param int $running
      */
-    public function setRunning($running)
+    public function setRunning ($running)
     {
         $this->running = $running;
     }
@@ -165,7 +192,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getAddress()
+    public function getAddress ()
     {
         return $this->address;
     }
@@ -173,7 +200,7 @@ class StagingContact {
     /**
      * @param mixed $address
      */
-    public function setAddress($address)
+    public function setAddress ($address)
     {
         $this->address = $address;
     }
@@ -181,7 +208,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getBirthdate()
+    public function getBirthdate ()
     {
         return $this->birthdate;
     }
@@ -189,7 +216,7 @@ class StagingContact {
     /**
      * @param mixed $birthdate
      */
-    public function setBirthdate($birthdate)
+    public function setBirthdate ($birthdate)
     {
         $this->birthdate = $birthdate;
     }
@@ -197,7 +224,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getCountry()
+    public function getCountry ()
     {
         return $this->country;
     }
@@ -205,7 +232,7 @@ class StagingContact {
     /**
      * @param mixed $country
      */
-    public function setCountry($country)
+    public function setCountry ($country)
     {
         $this->country = $country;
     }
@@ -213,7 +240,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getCounty()
+    public function getCounty ()
     {
         return $this->county;
     }
@@ -221,7 +248,7 @@ class StagingContact {
     /**
      * @param mixed $county
      */
-    public function setCounty($county)
+    public function setCounty ($county)
     {
         $this->county = $county;
     }
@@ -229,7 +256,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getDistrict()
+    public function getDistrict ()
     {
         return $this->district;
     }
@@ -237,7 +264,7 @@ class StagingContact {
     /**
      * @param mixed $district
      */
-    public function setDistrict($district)
+    public function setDistrict ($district)
     {
         $this->district = $district;
     }
@@ -245,7 +272,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getEmail()
+    public function getEmail ()
     {
         return $this->email;
     }
@@ -253,7 +280,7 @@ class StagingContact {
     /**
      * @param mixed $email
      */
-    public function setEmail($email)
+    public function setEmail ($email)
     {
         $this->email = $email;
     }
@@ -261,7 +288,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getFirstname()
+    public function getFirstname ()
     {
         return $this->firstname;
     }
@@ -269,7 +296,7 @@ class StagingContact {
     /**
      * @param mixed $firstname
      */
-    public function setFirstname($firstname)
+    public function setFirstname ($firstname)
     {
         $this->firstname = $firstname;
     }
@@ -277,7 +304,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getGender()
+    public function getGender ()
     {
         return $this->gender;
     }
@@ -285,7 +312,7 @@ class StagingContact {
     /**
      * @param mixed $gender
      */
-    public function setGender($gender)
+    public function setGender ($gender)
     {
         $this->gender = $gender;
     }
@@ -293,7 +320,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getInOpposition()
+    public function getInOpposition ()
     {
         return $this->in_opposition;
     }
@@ -301,7 +328,7 @@ class StagingContact {
     /**
      * @param mixed $in_opposition
      */
-    public function setInOpposition($in_opposition)
+    public function setInOpposition ($in_opposition)
     {
         $this->in_opposition = $in_opposition;
     }
@@ -309,7 +336,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getContactId()
+    public function getContactId ()
     {
         return $this->contact_id;
     }
@@ -317,7 +344,7 @@ class StagingContact {
     /**
      * @param mixed $contact_id
      */
-    public function setContactId($contact_id)
+    public function setContactId ($contact_id)
     {
         $this->contact_id = $contact_id;
     }
@@ -325,7 +352,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getLeadId()
+    public function getLeadId ()
     {
         return $this->lead_id;
     }
@@ -333,7 +360,7 @@ class StagingContact {
     /**
      * @param mixed $lead_id
      */
-    public function setLeadId($lead_id)
+    public function setLeadId ($lead_id)
     {
         $this->lead_id = $lead_id;
     }
@@ -341,7 +368,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getIpaddress()
+    public function getIpaddress ()
     {
         return $this->ipaddress;
     }
@@ -349,7 +376,7 @@ class StagingContact {
     /**
      * @param mixed $ipaddress
      */
-    public function setIpaddress($ipaddress)
+    public function setIpaddress ($ipaddress)
     {
         $this->ipaddress = $ipaddress;
     }
@@ -357,7 +384,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getIsMobile()
+    public function getIsMobile ()
     {
         return $this->is_mobile;
     }
@@ -365,7 +392,7 @@ class StagingContact {
     /**
      * @param mixed $is_mobile
      */
-    public function setIsMobile($is_mobile)
+    public function setIsMobile ($is_mobile)
     {
         $this->is_mobile = $is_mobile;
     }
@@ -373,7 +400,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getLastname()
+    public function getLastname ()
     {
         return $this->lastname;
     }
@@ -381,7 +408,7 @@ class StagingContact {
     /**
      * @param mixed $lastname
      */
-    public function setLastname($lastname)
+    public function setLastname ($lastname)
     {
         $this->lastname = $lastname;
     }
@@ -389,7 +416,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getOwner()
+    public function getOwner ()
     {
         return $this->owner;
     }
@@ -397,7 +424,7 @@ class StagingContact {
     /**
      * @param mixed $owner
      */
-    public function setOwner($owner)
+    public function setOwner ($owner)
     {
         $this->owner = $owner;
     }
@@ -405,7 +432,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getParish()
+    public function getParish ()
     {
         return $this->parish;
     }
@@ -413,7 +440,7 @@ class StagingContact {
     /**
      * @param mixed $parish
      */
-    public function setParish($parish)
+    public function setParish ($parish)
     {
         $this->parish = $parish;
     }
@@ -421,7 +448,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getPhone()
+    public function getPhone ()
     {
         return $this->phone;
     }
@@ -429,7 +456,7 @@ class StagingContact {
     /**
      * @param mixed $phone
      */
-    public function setPhone($phone)
+    public function setPhone ($phone)
     {
         $this->phone = $phone;
     }
@@ -437,7 +464,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getPostRequest()
+    public function getPostRequest ()
     {
         return $this->post_request;
     }
@@ -445,7 +472,7 @@ class StagingContact {
     /**
      * @param mixed $post_request
      */
-    public function setPostRequest($post_request)
+    public function setPostRequest ($post_request)
     {
         $this->post_request = $post_request;
     }
@@ -453,7 +480,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getPostalcode1()
+    public function getPostalcode1 ()
     {
         return $this->postalcode1;
     }
@@ -461,7 +488,7 @@ class StagingContact {
     /**
      * @param mixed $postalcode1
      */
-    public function setPostalcode1($postalcode1)
+    public function setPostalcode1 ($postalcode1)
     {
         $this->postalcode1 = $postalcode1;
     }
@@ -469,7 +496,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getPostalcode2()
+    public function getPostalcode2 ()
     {
         return $this->postalcode2;
     }
@@ -477,7 +504,7 @@ class StagingContact {
     /**
      * @param mixed $postalcode2
      */
-    public function setPostalcode2($postalcode2)
+    public function setPostalcode2 ($postalcode2)
     {
         $this->postalcode2 = $postalcode2;
     }
@@ -485,7 +512,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getSourceCountry()
+    public function getSourceCountry ()
     {
         return $this->source_country;
     }
@@ -493,7 +520,7 @@ class StagingContact {
     /**
      * @param mixed $source_country
      */
-    public function setSourceCountry($source_country)
+    public function setSourceCountry ($source_country)
     {
         $this->source_country = $source_country;
     }
@@ -501,7 +528,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getSourceExternalId()
+    public function getSourceExternalId ()
     {
         return $this->source_external_id;
     }
@@ -509,7 +536,7 @@ class StagingContact {
     /**
      * @param mixed $source_external_id
      */
-    public function setSourceExternalId($source_external_id)
+    public function setSourceExternalId ($source_external_id)
     {
         $this->source_external_id = $source_external_id;
     }
@@ -517,7 +544,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getSourceName()
+    public function getSourceName ()
     {
         return $this->source_name;
     }
@@ -525,7 +552,7 @@ class StagingContact {
     /**
      * @param mixed $source_name
      */
-    public function setSourceName($source_name)
+    public function setSourceName ($source_name)
     {
         $this->source_name = $source_name;
     }
@@ -533,7 +560,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getSubCategory()
+    public function getSubCategory ()
     {
         return $this->sub_category;
     }
@@ -541,7 +568,7 @@ class StagingContact {
     /**
      * @param mixed $sub_category
      */
-    public function setSubCategory($sub_category)
+    public function setSubCategory ($sub_category)
     {
         $this->sub_category = $sub_category;
     }
@@ -549,7 +576,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getDate()
+    public function getDate ()
     {
         return $this->date;
     }
@@ -557,15 +584,18 @@ class StagingContact {
     /**
      * @param mixed $date
      */
-    public function setDate($date)
+    public function setDate ($date)
     {
+        if(!is_object($date)){
+            $date = new \DateTime($date);
+        }
         $this->date = $date;
     }
 
     /**
      * @return mixed
      */
-    public function getInitialLockExpirationDate()
+    public function getInitialLockExpirationDate ()
     {
         return $this->initial_lock_expiration_date;
     }
@@ -573,7 +603,7 @@ class StagingContact {
     /**
      * @param mixed $initial_lock_expiration_date
      */
-    public function setInitialLockExpirationDate($initial_lock_expiration_date)
+    public function setInitialLockExpirationDate ($initial_lock_expiration_date)
     {
         $this->initial_lock_expiration_date = $initial_lock_expiration_date;
     }
@@ -581,7 +611,7 @@ class StagingContact {
     /**
      * @return mixed
      */
-    public function getValidations()
+    public function getValidations ()
     {
         return $this->validations;
     }
@@ -589,9 +619,8 @@ class StagingContact {
     /**
      * @param mixed $validations
      */
-    public function setValidations($validations)
+    public function setValidations ($validations)
     {
         $this->validations = $validations;
     }
-
 }

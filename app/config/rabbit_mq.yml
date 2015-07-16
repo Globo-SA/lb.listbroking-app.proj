@@ -31,6 +31,9 @@ old_sound_rabbit_mq:
         opposition_list_import:
             connection: default
             exchange_options: {name: 'opposition-list-import', type: direct}
+        staging_contact_import:
+            connection: default
+            exchange_options: {name: 'staging-contact-import', type: direct}
     consumers:
         run_extraction:
             connection:       default
@@ -57,3 +60,8 @@ old_sound_rabbit_mq:
             exchange_options: {name: 'opposition-list-import', type: direct}
             queue_options:    {name: 'opposition-list-import'}
             callback:         app.consumer.opposition_list_import
+        staging_contact_import:
+            connection:       default
+            exchange_options: {name: 'staging-contact-import', type: direct}
+            queue_options:    {name: 'staging-contact-import'}
+            callback:         app.consumer.staging_contact_import

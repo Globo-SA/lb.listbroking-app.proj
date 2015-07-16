@@ -10,6 +10,7 @@ namespace ListBroking\AppBundle\Service\Helper;
 
 use Doctrine\ORM\Query;
 use Exporter\Handler;
+use Exporter\Source\ArraySourceIterator;
 use Exporter\Source\DoctrineORMQuerySourceIterator;
 use Exporter\Writer\CsvWriter;
 use Exporter\Writer\JsonWriter;
@@ -87,24 +88,27 @@ class FileHandlerService implements FileHandlerServiceInterface
 
     public function generateFileFromQuery ($name, $extension, Query $query, $headers, $zipped = true)
     {
-        // Make sure the file is unique
-        $name = uniqid() . $name;
-
         // Generate File
         $filename = $this->generateFilename($name, $extension, true, '/../web/exports/');
-        $this->exportByQuery($filename, $headers, $extension, $query);
+        $this->exportByQuery($filename, $extension, $headers, $query);
 
         if ( $zipped )
         {
-            // Generate Zip File and add Password
-            $password = $this->generatePassword();
-            $zipped_filename = $this->generateFilename($name, 'zip', true, '/../web/exports/');
-            exec(sprintf("zip -j --password %s %s %s", $password, $zipped_filename, $filename));
+            return $this->zipFile($filename, true);
+        }
 
-            // Remove the original File
-            unlink($filename);
+        return array($filename, null);
+    }
 
-            return array($zipped_filename, $password);
+    public function generateFileFromArray ($name, $extension, $array, $zipped = true)
+    {
+        // Generate File
+        $filename = $this->generateFilename($name, $extension, true, '/../web/exports/');
+        $this->exportByArray($filename, $extension, $array);
+
+        if ( $zipped )
+        {
+            return $this->zipFile($filename, true);
         }
 
         return array($filename, null);
@@ -148,10 +152,12 @@ class FileHandlerService implements FileHandlerServiceInterface
      */
     private function generateFilename ($name, $extension, $absolute = false, $dir = '/')
     {
-        $name = str_replace(' ', '-', $name);
+        // Make sure the file is unique
+        $name = uniqid() . str_replace(' ', '-', $name);
 
-        $filename = strtolower(preg_replace('/\s/i', '-', $dir . $name . date('Y-m-d')));
-        if($extension){
+        $filename = strtolower(preg_replace('/\s/i', '-', $dir . date('Y-m-d'))) . $name ;
+        if ( $extension )
+        {
             $filename = $filename . '.' . $extension;
         }
 
@@ -167,15 +173,49 @@ class FileHandlerService implements FileHandlerServiceInterface
      * Used to export a file using a Query
      *
      * @param string $filename
+     * @param        $extension
      * @param array  $headers
-     * @param string $type
      * @param Query  $query
+     *
+     * @internal param string $type
      */
-    private function exportByQuery ($filename, $headers, $type, Query $query)
+    private function exportByQuery ($filename, $extension, $headers, Query $query)
     {
 
         $source = new DoctrineORMQuerySourceIterator($query, $headers, 'Y-m-d');
-        switch ( $type )
+        $writer = $this->writerSelection($extension, $filename);
+
+        Handler::create($source, $writer)
+               ->export()
+        ;
+    }
+
+    /**
+     * Used to export a file using an Array
+     *
+     * @param $filename
+     * @param $extension
+     * @param $array
+     */
+    private function exportByArray($filename, $extension, $array)
+    {
+        $source = new ArraySourceIterator($array);
+        $writer = $this->writerSelection($extension, $filename);
+
+        Handler::create($source, $writer)
+               ->export()
+        ;
+    }
+
+    /**
+     * Selects a file writer by type
+     * @param $extension
+     * @param $filename
+     *
+     * @return CsvWriter|JsonWriter|XlsWriter|XmlExcelWriter
+     */
+    private function writerSelection($extension, $filename){
+        switch ( $extension )
         {
             case 'CSV':
                 $writer = new CsvWriter($filename);
@@ -194,9 +234,7 @@ class FileHandlerService implements FileHandlerServiceInterface
                 break;
         }
 
-        Handler::create($source, $writer)
-               ->export()
-        ;
+        return $writer;
     }
 
     /**
@@ -218,5 +256,34 @@ class FileHandlerService implements FileHandlerServiceInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Zips a given file with optional password protection
+     * @param      $filename
+     * @param      $zip_name
+     * @param bool $with_password
+     *
+     * @return array
+     */
+    private function zipFile ($filename, $zip_name, $with_password = true)
+    {
+        $zipped_filename = $this->generateFilename($zip_name, 'zip', true, '/../web/exports/');
+
+        if($with_password){
+            $password = $this->generatePassword();
+            exec(sprintf("zip -j --password %s %s %s", $password, $zipped_filename, $filename));
+
+            // Remove the original File
+            unlink($filename);
+
+            return array($zip_name, $password);
+        }
+        exec(sprintf("zip -j %s %s", $zipped_filename, $filename));
+
+        // Remove the original File
+        unlink($filename);
+
+        return array($zip_name, null);
     }
 } 

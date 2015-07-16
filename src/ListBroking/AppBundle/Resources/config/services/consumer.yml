@@ -17,4 +17,8 @@ services:
 
   app.consumer.opposition_list_import:
     class: ListBroking\AppBundle\Consumer\OppositionListImportConsumer
-    arguments: [@staging, @file_handler]
+    arguments: [@messaging, @staging, @file_handler]
+
+  app.consumer.staging_contact_import:
+    class: ListBroking\AppBundle\Consumer\StagingContactImportConsumer
+    arguments: [@messaging, @staging, @file_handler]

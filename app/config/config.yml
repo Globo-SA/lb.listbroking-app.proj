@@ -231,6 +231,4 @@ sonata_admin:
         - bundles/listbrokingapp/js/006_deduplication.js
         - bundles/listbrokingapp/js/007_confirm_extraction.js
         - bundles/listbrokingapp/js/008_deliver_extraction.js
-        - bundles/listbrokingapp/js/009_opposition_list.js
-        - bundles/listbrokingapp/js/010_staging_contact.js
         - bundles/listbrokingapp/js/999_lastJs.js

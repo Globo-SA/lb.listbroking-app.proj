@@ -61,6 +61,16 @@ interface AppServiceInterface
     public function createJsonResponse ($response, $code = 200);
 
     /**
+     * Generates a Response with File Attachment Headers and optional cookie
+     *
+     * @param      $filename
+     * @param bool $with_cookie
+     *
+     * @return mixed
+     */
+    public function createAttachmentResponse($filename, $with_cookie = true);
+
+    /**
      * Validates the Ajax Request
      *
      * @param $request Request

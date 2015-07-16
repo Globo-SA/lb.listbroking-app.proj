@@ -10,10 +10,8 @@ namespace ListBroking\AppBundle\Controller;
 
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
-use ListBroking\AppBundle\Entity\ExtractionDeduplication;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
 use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
-use ListBroking\AppBundle\PHPExcel\FileHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -37,7 +35,7 @@ class AjaxExtractionController extends Controller
         $a_service = $this->get('app');
         try
         {
-            //            $a_service->validateAjaxRequest($request);
+            $a_service->validateAjaxRequest($request);
 
             // Service
             $e_service = $this->get('extraction');
@@ -91,8 +89,7 @@ class AjaxExtractionController extends Controller
             $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
 
             // Preview limit
-            $preview_limit = $e_service->findConfig('extraction.contact.show_limit')
-            ;
+            $preview_limit = $e_service->findConfig('extraction.contact.show_limit');
 
             // Get all contacts in one Query (Better then using $extraction->getContacts())
             $extraction_contacts_preview = $e_service->findExtractionContacts($extraction, $preview_limit);
@@ -181,34 +178,18 @@ class AjaxExtractionController extends Controller
         //Service
         $e_service = $this->get('extraction');
         $f_service = $this->get('file_handler');
+        $a_service = $this->get('app');
 
         // Current Extraction
         $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
 
         // Generate the Extraction File
         $template = json_decode($e_service->findEntity('ListBrokingAppBundle:ExtractionTemplate', $extraction_template_id)
-                                                ->getTemplate(), 1);
+                                          ->getTemplate(), 1);
         $query = $e_service->getExtractionContactsQuery($extraction);
         list($filename, $password) = $f_service->generateFileFromQuery($extraction->getName(), $template['extension'], $query, $template['headers'], false);
 
-        // Generate response
-        $response = new Response();
-
-        // Set headers for file attachment
-        $response->headers->set('Cache-Control', 'private');
-        $response->headers->set('Content-type', mime_content_type($filename));
-        $response->headers->set('Content-Disposition', 'attachment; filename="' . basename($filename) . '";');
-        $response->headers->set('Content-length', filesize($filename));
-
-        // Sends a "file was downloaded" cookie
-        $cookie = new Cookie('fileDownload', 'true', new \DateTime('+1 minute'), '/', null, false, false);
-        $response->headers->setCookie($cookie);
-
-        // Send headers before outputting anything
-        $response->sendHeaders();
-        $response->setContent(readfile($filename));
-
-        return $response;
+        return $a_service->createAttachmentResponse($filename);
     }
 
     /**
@@ -241,7 +222,6 @@ class AjaxExtractionController extends Controller
             $form = $a_service->generateForm(new ExtractionDeduplicationType());
             $form->handleRequest($request);
             $data = $form->getData();
-
 
             /** @var UploadedFile $file */
             $file = $f_service->saveFormFile($form);

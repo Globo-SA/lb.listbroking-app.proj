@@ -9,9 +9,10 @@
 namespace ListBroking\AppBundle\Controller;
 
 use Doctrine\ORM\Query;
+use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
-use ListBroking\AppBundle\Form\StagingContactImportType;
 use ListBroking\AppBundle\Service\Helper\AppService;
+use ListBroking\AppBundle\Service\Helper\MessagingService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,36 +39,6 @@ class AjaxController extends Controller
             $last = $a_service->findExceptions(5);
 
             return $a_service->createJsonResponse($last);
-        }
-        catch ( \Exception $e )
-        {
-            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
-        }
-    }
-
-    /**
-     * Publishes a new message to the Queue System
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function publishMessageAction (Request $request)
-    {
-        $a_service = $this->get('app');
-        try
-        {
-            $a_service->validateAjaxRequest($request);
-
-            $m_service = $this->get('messaging');
-
-            $producer_id = $request->get('producer');
-            $msg = $request->get('message');
-
-            // Publish it !
-            $m_service->publishMessage($producer_id, $msg);
-
-            return $a_service->createJsonResponse(array());
         }
         catch ( \Exception $e )
         {
@@ -106,6 +77,44 @@ class AjaxController extends Controller
         }
     }
 
+    /**
+     * Checks if a producer is Locked from receiving new items
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function checkProducerAvailabilityAction (Request $request)
+    {
+        $a_service = $this->get('app');
+        try
+        {
+            $a_service->validateAjaxRequest($request);
+
+            // Services
+            $m_service = $this->get('messaging');
+
+            $producer_id = $request->get('producer_id');
+
+            return $a_service->createJsonResponse(array(
+                'importing' => $m_service->isProducerLocked($producer_id)
+            ))
+                ;
+        }
+        catch ( \Exception $e )
+        {
+            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * Saves an OppositionList File and adds it to the
+     * messaging system to be processed
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
     public function oppositionListImportAction (Request $request)
     {
         $a_service = $this->get('app');
@@ -116,8 +125,8 @@ class AjaxController extends Controller
             // Services
             $m_service = $this->get('messaging');
             $f_service = $this->get('file_handler');
-            $s_service = $this->get('staging');
 
+            $producer_id = MessagingService::OPPOSITION_LIST_IMPORT_PRODUCER;
 
             // Save Opposition File
             $form = $a_service->generateForm('opposition_list_import');
@@ -127,39 +136,17 @@ class AjaxController extends Controller
             $data = $form->getData();
 
             // Publish Extraction to the Queue
-            $m_service->publishMessage('opposition_list_import', array(
+            $m_service->publishMessage($producer_id, array(
                 'filename'        => $file->getRealPath(),
                 'opposition_list' => $data['type'],
                 'clear_old'       => $data['clear_old']
             ))
             ;
 
-            $s_service->startOppostionListImporting();
+            $m_service->lockProducer($producer_id);
 
             return $a_service->createJsonResponse(array(
-                "response" => "Opposition is being uploaded",
-            ))
-                ;
-        }
-        catch ( \Exception $e )
-        {
-            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
-        }
-    }
-
-    public function oppositionListImportCheckAction(Request $request)
-    {
-        $a_service = $this->get('app');
-        try
-        {
-            $a_service->validateAjaxRequest($request);
-
-            // Services
-            $s_service = $this->get('staging');
-
-
-            return $a_service->createJsonResponse(array(
-                    'importing' => $s_service->isOppositionListImporting()
+                "response" => "Opposition is being imported",
             ))
                 ;
         }
@@ -179,26 +166,23 @@ class AjaxController extends Controller
     public function stagingContactImportTemplateAction ()
     {
         //Service
-        $s_service = $this->get('staging');
+        $a_service = $this->get('app');
+        $f_service = $this->get('file_handler');
 
-        $filename = $s_service->getStagingContactImportTemplate();
+        list($filename, $password) = $f_service->generateFileFromArray(StagingContact::IMPORT_TEMPLATE_FILENAME, StagingContact::IMPORT_TEMPLATE_FILE_EXTENSION,
+            array(StagingContact::$import_template), false);
 
-        // Generate response
-        $response = new Response();
-
-        // Set headers for file attachment
-        $response->headers->set('Cache-Control', 'private');
-        $response->headers->set('Content-type', mime_content_type($filename));
-        $response->headers->set('Content-Disposition', 'attachment; filename="' . basename($filename) . '";');
-        $response->headers->set('Content-length', filesize($filename));
-
-        // Send headers before outputting anything
-        $response->sendHeaders();
-        $response->setContent(readfile($filename));
-
-        return $response;
+        return $a_service->createAttachmentResponse($filename);
     }
 
+    /**
+     * Saves an database File and adds it to the
+     * messaging system to be processed
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
     public function stagingContactImportAction (Request $request)
     {
         $a_service = $this->get('app');
@@ -206,19 +190,27 @@ class AjaxController extends Controller
         {
             $a_service->validateAjaxRequest($request);
 
-            $s_service = $this->get('staging');
+            // Services
+            $m_service = $this->get('messaging');
+            $f_service = $this->get('file_handler');
 
-            $form = $a_service->generateForm(new StagingContactImportType());
+            $producer_id = MessagingService::STAGING_CONTACT_IMPORT_PRODUCER;
+
+            // Save Opposition File
+            $form = $a_service->generateForm('staging_contact_import');
             $form->handleRequest($request);
+            $file = $f_service->saveFormFile($form);
 
-            $queue = $s_service->addStagingContactsFileToQueue($form);
+            // Publish Extraction to the Queue
+            $m_service->publishMessage($producer_id, array(
+                'filename' => $file->getRealPath(),
+            ))
+            ;
+
+            $m_service->lockProducer($producer_id);
 
             return $a_service->createJsonResponse(array(
-                "response"  => "List added to the queue",
-                "type"      => $queue->getValue1(),
-                "filename"  => $queue->getValue2(),
-                "clear_old" => $queue->getValue3(),
-                "queue_id"  => $queue->getId()
+                "response" => "Database is being imported",
             ))
                 ;
         }
