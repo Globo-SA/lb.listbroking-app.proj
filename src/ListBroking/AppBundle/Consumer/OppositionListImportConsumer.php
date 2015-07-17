@@ -6,9 +6,9 @@
 
 namespace ListBroking\AppBundle\Consumer;
 
-use ListBroking\AppBundle\Service\BusinessLogic\StagingService;
-use ListBroking\AppBundle\Service\Helper\FileHandlerService;
-use ListBroking\AppBundle\Service\Helper\MessagingService;
+use ListBroking\AppBundle\Service\BusinessLogic\StagingServiceInterface;
+use ListBroking\AppBundle\Service\Helper\FileHandlerServiceInterface;
+use ListBroking\AppBundle\Service\Helper\MessagingServiceInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -16,21 +16,26 @@ class OppositionListImportConsumer implements ConsumerInterface
 {
 
     /**
-     * @var MessagingService
+     * @var MessagingServiceInterface
      */
     private $m_system;
 
     /**
-     * @var StagingService
+     * @var StagingServiceInterface
      */
     private $s_service;
 
     /**
-     * @var FileHandlerService
+     * @var FileHandlerServiceInterface
      */
     private $f_service;
 
-    function __construct (MessagingService $m_service, StagingService $s_service, FileHandlerService $f_service)
+    /**
+     * @param MessagingServiceInterface   $m_service
+     * @param StagingServiceInterface     $s_service
+     * @param FileHandlerServiceInterface $f_service
+     */
+    function __construct (MessagingServiceInterface $m_service, StagingServiceInterface $s_service, FileHandlerServiceInterface $f_service)
     {
         $this->m_system = $m_service;
         $this->s_service = $s_service;
@@ -50,7 +55,7 @@ class OppositionListImportConsumer implements ConsumerInterface
             // Clear the entity manager before running
             $this->s_service->clearEntityManager();
 
-            $producer_id = MessagingService::OPPOSITION_LIST_IMPORT_PRODUCER;
+            $producer_id = MessagingServiceInterface::OPPOSITION_LIST_IMPORT_PRODUCER;
 
             $msg_body = unserialize($msg->body);
 

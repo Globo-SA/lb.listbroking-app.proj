@@ -38,10 +38,6 @@ app_bundle:
     prefix:   /admin
     resource: "@ListBrokingAppBundle/Resources/config/routing.yml"
 
-taskcontroller_bundle:
-    prefix:   /admin
-    resource: "@ListBrokingTaskControllerBundle/Resources/config/routing.yml"
-
 #list_broking_api:
 #    prefix:   /api
 #    resource: "@ListBrokingAPIBundle/Resources/config/routing.yml"

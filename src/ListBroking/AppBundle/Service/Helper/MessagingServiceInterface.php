@@ -7,6 +7,11 @@ namespace ListBroking\AppBundle\Service\Helper;
 
 interface MessagingServiceInterface
 {
+    const SERVICE_BASE_NAME = 'old_sound_rabbit_mq.%s_producer';
+
+    const OPPOSITION_LIST_IMPORT_PRODUCER = 'opposition_list_import';
+
+    const STAGING_CONTACT_IMPORT_PRODUCER = 'staging_contact_import';
 
     /**
      * Publishes a new message to the Queue System

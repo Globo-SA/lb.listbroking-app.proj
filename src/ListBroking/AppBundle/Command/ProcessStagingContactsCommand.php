@@ -9,7 +9,7 @@
 namespace ListBroking\AppBundle\Command;
 
 use ListBroking\AppBundle\Entity\StagingContact;
-use ListBroking\TaskControllerBundle\Service\TaskService;
+use ListBroking\TaskControllerBundle\Service\TaskServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,7 +21,7 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
     const MAX_RUNNING = 90;
 
     /**
-     * @var TaskService
+     * @var TaskServiceInterface
      */
     private $service;
 
@@ -36,7 +36,7 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
     protected function execute (InputInterface $input, OutputInterface $output)
     {
 
-        /** @var TaskService $service */
+        /** @var TaskServiceInterface $service */
         $this->service = $this->getContainer()
                               ->get('task')
         ;

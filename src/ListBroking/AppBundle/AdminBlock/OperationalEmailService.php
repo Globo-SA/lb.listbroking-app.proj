@@ -13,7 +13,6 @@ namespace ListBroking\AppBundle\AdminBlock;
 use Doctrine\ORM\EntityManagerInterface;
 use Sonata\BlockBundle\Block\BaseBlockService;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Sonata\BlockBundle\Block\BlockContextInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;

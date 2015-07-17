@@ -2,7 +2,7 @@
 
 namespace ListBroking\AppBundle\Form;
 
-use ListBroking\AppBundle\Service\Helper\AppService;
+use ListBroking\AppBundle\Service\Helper\AppServiceInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -10,11 +10,11 @@ class OppositionListImportType extends AbstractType
 {
 
     /**
-     * @var AppService
+     * @var AppServiceInterface
      */
     private $service;
 
-    function __construct(AppService $service)
+    function __construct(AppServiceInterface $service)
     {
         $this->service = $service;
     }

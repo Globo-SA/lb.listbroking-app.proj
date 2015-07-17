@@ -6,8 +6,9 @@
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 use ListBroking\AppBundle\Entity\Extraction;
+use ListBroking\AppBundle\Service\Base\BaseServiceInterface;
 
-interface ExtractionServiceInterface
+interface ExtractionServiceInterface extends BaseServiceInterface
 {
 
     /**

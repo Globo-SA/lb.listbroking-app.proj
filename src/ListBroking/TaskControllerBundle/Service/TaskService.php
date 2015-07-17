@@ -12,7 +12,6 @@ namespace ListBroking\TaskControllerBundle\Service;
 
 
 use Doctrine\ORM\EntityManager;
-use ListBroking\TaskControllerBundle\Entity\Queue;
 use ListBroking\TaskControllerBundle\Entity\Task;
 use ListBroking\TaskControllerBundle\Exception\TaskControllerException;
 use Symfony\Component\Console\Command\Command;
@@ -61,55 +60,6 @@ class TaskService implements TaskServiceInterface
         $this->em = $em;
     }
 
-    /**
-     * Finds queues by type
-     * @param $type
-     * @return mixed
-     */
-    public function findQueuesByType($type){
-
-        return $this->em->getRepository('ListBrokingTaskControllerBundle:Queue')->findBy(array(
-            'type' => $type
-        ));
-    }
-
-    /**
-     * Created a new entry on the queue
-     * @param $type
-     * @param null $value1
-     * @param null $value2
-     * @param null $value3
-     * @param null $value4
-     * @throws \Exception
-     * @internal param Form $form
-     * @return Queue
-     */
-    public function addToQueue($type, $value1 = null, $value2 = null, $value3 = null, $value4 = null){
-
-        if(empty($type)){
-            throw new \Exception('Invalid or empty type');
-        }
-
-        $queue = new Queue();
-        $queue->setType($value1);
-        $queue->setValue1($value2);
-        $queue->setValue2($value3);
-        $queue->setValue3($value4);
-
-        $this->em->persist($queue);
-        $this->em->flush();
-
-        return $queue;
-    }
-
-    /**
-     * Stats a new task if possible
-     * @param Command $command
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @param $max_running
-     * @return mixed
-     */
     public function start(Command $command, InputInterface $input, OutputInterface $output, $max_running)
     {
         $this->command = $command;
@@ -136,11 +86,6 @@ class TaskService implements TaskServiceInterface
         return false;
     }
 
-    /**
-     * Check if the task is already at the limit
-     * of iterations running
-     * @return mixed
-     */
     public function isRunning()
     {
         $this->isStarted();
@@ -152,11 +97,6 @@ class TaskService implements TaskServiceInterface
         return count($running) >= $this->max_running;
     }
 
-    /**
-     * Throws an error on the current task
-     * @param \Exception $exception
-     * @return mixed
-     */
     public function throwError(\Exception $exception)
     {
         $this->write('ENDING WITH ERROR - ' . $exception->getMessage());
@@ -168,10 +108,6 @@ class TaskService implements TaskServiceInterface
 
     }
 
-    /**
-     * Ends the task
-     * @return mixed
-     */
     public function finish()
     {
         $this->isStarted();
@@ -181,21 +117,10 @@ class TaskService implements TaskServiceInterface
         $this->write('END');
     }
 
-    /**
-     * Writes a new line to the output
-     * @param $comment
-     * @return mixed
-     */
     public function write($comment){
         $this->output->writeln('[' . date('Y-m-d h:i:s') . "] <info>{$this->command->getName()}</info> <comment>{$comment}</comment>\n");
     }
 
-    /**
-     * Creates a ProgressBar
-     * @param $msg
-     * @param $max
-     * @return mixed
-     */
     public function createProgressBar($msg, $max){
         $this->write($msg);
         $this->progress = new ProgressBar($this->output, $max);
@@ -203,28 +128,15 @@ class TaskService implements TaskServiceInterface
         $this->progress->setFormat("%current%/%max% [<comment>%bar%</comment>] %percent%%\n<fg=white;bg=blue> %message% </>");
     }
 
-    /**
-     * Advances the ProgressBar
-     * @param $msg
-     * @return mixed
-     */
     public function advanceProgressBar($msg){
         $this->progress->setMessage($msg);
         $this->progress->advance();
     }
 
-    /**
-     * Changes the ProgressBar message
-     * @param $msg
-     */
     public function setProgressBarMessage($msg){
         $this->progress->setMessage($msg);
     }
 
-    /**
-     * Finishes the ProgressBar
-     * @return mixed
-     */
     public function finishProgressBar(){
         $this->progress->setMessage("FINISHED");
         $this->progress->clear();

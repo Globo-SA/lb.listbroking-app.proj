@@ -1,15 +1,12 @@
 <?php
 /**
- * 
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
 namespace ListBroking\ExceptionHandlerBundle\EventListener;
-
 
 use Doctrine\ORM\EntityManager;
 use ListBroking\ExceptionHandlerBundle\Entity\ExceptionLog;
@@ -17,14 +14,18 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\Routing\Router;
 
-class ExceptionListener {
+class ExceptionListener
+{
 
     protected $em;
+
     protected $mailer;
+
     protected $twig;
+
     protected $router;
 
-    function __construct(
+    function __construct (
         EntityManager $entityManager,
         \Swift_Mailer $mailer,
         \Twig_Environment $twig,
@@ -36,10 +37,10 @@ class ExceptionListener {
         $this->router = $router;
     }
 
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException (GetResponseForExceptionEvent $event)
     {
         /** @var \Exception $exception */
-        $exception =  $event->getException();
+        $exception = $event->getException();
         $error = new ExceptionLog();
         $error->setCode($exception->getCode());
         $error->setMsg($exception->getMessage());
@@ -55,18 +56,21 @@ class ExceptionListener {
 
         //TODO: Fix mail_info
         $mail_info['is_active'] = false;
-        if($mail_info['is_active']){
-            $message = \Swift_Message::newInstance()
-                ->setSubject($mail_info['subject'])
-                ->setFrom($mail_info['from'])
-                ->setTo($mail_info['to'])
-                ->setBody($this->twig->render('ListBrokingExceptionHandlerBundle::exception_template.html.twig', array('error' => $error_array)))
-                ->setContentType('text/html');
+        if ( $mail_info['is_active'] )
+        {
+            $message = \Swift_Message::newInstance(
+                            $mail_info['subject'],
+                            $this->twig->render('ListBrokingExceptionHandlerBundle::exception_template.html.twig', array('error' => $error_array)),
+                            'text/html')
+                                     ->setFrom($mail_info['from'])
+                                     ->setTo($mail_info['to'])
+            ;
             $this->mailer->send($message);
         }
 
         $event->setResponse(new RedirectResponse($this->router->generate('admin_listbroking_exceptionhandler_exceptionlog_exception', array(
-            'id' => $error->getId()))));
+            'id' => $error->getId()
+        ))))
+        ;
     }
-
-} 
+}

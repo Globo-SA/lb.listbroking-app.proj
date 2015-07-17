@@ -7,7 +7,7 @@
 namespace ListBroking\AppBundle\Consumer;
 
 use ListBroking\AppBundle\Entity\Extraction;
-use ListBroking\AppBundle\Service\BusinessLogic\ExtractionService;
+use ListBroking\AppBundle\Service\BusinessLogic\ExtractionServiceInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -15,11 +15,11 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
 {
 
     /**
-     * @var ExtractionService
+     * @var ExtractionServiceInterface
      */
     private $e_service;
 
-    function __construct (ExtractionService $e_service)
+    function __construct (ExtractionServiceInterface $e_service)
     {
         $this->e_service = $e_service;
     }

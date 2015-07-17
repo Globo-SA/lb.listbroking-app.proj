@@ -8,7 +8,7 @@
 
 namespace ListBroking\AppBundle\Engine;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use ListBroking\AppBundle\Engine\Filter\ContactFilter\BasicContactFilter;
 use ListBroking\AppBundle\Engine\Filter\ContactFilter\RequiredContactFilter;
@@ -45,7 +45,7 @@ class FilterEngine
      */
     private $lead_filter_types;
 
-    function __construct (EntityManager $entityManager)
+    function __construct (EntityManagerInterface $entityManager)
     {
         $this->em = $entityManager;
 

@@ -5,10 +5,11 @@
  */
 namespace ListBroking\AppBundle\Service\Helper;
 
+use ListBroking\AppBundle\Service\Base\BaseServiceInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-interface AppServiceInterface
+interface AppServiceInterface extends BaseServiceInterface
 {
 
     /**

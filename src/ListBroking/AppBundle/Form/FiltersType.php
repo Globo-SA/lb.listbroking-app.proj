@@ -14,7 +14,7 @@ use ListBroking\AppBundle\Engine\Filter\LeadFilterInterface;
 use ListBroking\AppBundle\Engine\Filter\LockFilterInterface;
 use ListBroking\AppBundle\Exception\InvalidFilterObjectException;
 use ListBroking\AppBundle\Form\Type\RangeType;
-use ListBroking\AppBundle\Service\Helper\AppService;
+use ListBroking\AppBundle\Service\Helper\AppServiceInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -43,11 +43,11 @@ class FiltersType extends AbstractType
     private $filters;
 
     /**
-     * @var AppService
+     * @var AppServiceInterface
      */
     private $a_service;
 
-    function __construct (AppService $appService)
+    function __construct (AppServiceInterface $appService)
     {
         $this->a_service = $appService;
 

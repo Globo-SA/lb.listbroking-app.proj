@@ -12,7 +12,6 @@ namespace ListBroking\AppBundle\Command\Temporary;
 
 
 use Doctrine\DBAL\Driver\Mysqli\MysqliException;
-use ListBroking\APIBundle\Exception\APIException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Input\InputInterface;

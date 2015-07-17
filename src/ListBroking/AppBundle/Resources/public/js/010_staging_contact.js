@@ -8,7 +8,7 @@
         var $staging_contact_import_form = $("[name=staging_contact_import]");
         var $staging_contact_import_btn = $("#staging_contact_import_submit");
         var $staging_contact_import_trigger = $('#staging_contact_import_trigger');
-        var $staging_contact_import_upload_file = $('#staging_contact_import_upload_file')
+        var $staging_contact_import_upload_file = $('#staging_contact_import_upload_file');
         //Stop submitting because it will never be used
         $staging_contact_import_form.submit(function(e){
             e.preventDefault();

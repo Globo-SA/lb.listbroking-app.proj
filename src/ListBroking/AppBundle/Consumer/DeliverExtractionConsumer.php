@@ -7,9 +7,9 @@
 namespace ListBroking\AppBundle\Consumer;
 
 use ListBroking\AppBundle\Entity\Extraction;
-use ListBroking\AppBundle\Service\BusinessLogic\ExtractionService;
-use ListBroking\AppBundle\Service\Helper\AppService;
-use ListBroking\AppBundle\Service\Helper\FileHandlerService;
+use ListBroking\AppBundle\Service\BusinessLogic\ExtractionServiceInterface;
+use ListBroking\AppBundle\Service\Helper\AppServiceInterface;
+use ListBroking\AppBundle\Service\Helper\FileHandlerServiceInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -17,21 +17,21 @@ class DeliverExtractionConsumer implements ConsumerInterface
 {
 
     /**
-     * @var AppService
+     * @var AppServiceInterface
      */
     private $a_service;
 
     /**
-     * @var ExtractionService
+     * @var ExtractionServiceInterface
      */
     private $e_service;
 
     /**
-     * @var FileHandlerService
+     * @var FileHandlerServiceInterface
      */
     private $f_service;
 
-    function __construct (AppService $a_service, ExtractionService $e_service, FileHandlerService $f_service)
+    function __construct (AppServiceInterface $a_service, ExtractionServiceInterface $e_service, FileHandlerServiceInterface $f_service)
     {
         $this->a_service = $a_service;
         $this->e_service = $e_service;

@@ -6,8 +6,9 @@
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 use ListBroking\AppBundle\Entity\StagingContact;
+use ListBroking\AppBundle\Service\Base\BaseServiceInterface;
 
-interface StagingServiceInterface
+interface StagingServiceInterface extends BaseServiceInterface
 {
 
     /**

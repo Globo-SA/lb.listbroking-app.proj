@@ -6,11 +6,11 @@
 namespace ListBroking\AppBundle\Service\Base;
 
 use ListBroking\AppBundle\Exception\InvalidEntityTypeException;
-use Symfony\Component\Form\Form;
-use Symfony\Component\Form\FormBuilderInterface;
 
 interface BaseServiceInterface
 {
+    // Cache TTL of 12h
+    const CACHE_TTL = 43200;
 
     /**
      * Flushes all database changes

@@ -18,10 +18,6 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 abstract class BaseService implements BaseServiceInterface
 {
-
-    // Cache TTL of 12h
-    const CACHE_TTL = 43200;
-
     /**
      * @var EntityManager
      */

@@ -11,8 +11,7 @@ namespace ListBroking\AppBundle\Controller;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
-use ListBroking\AppBundle\Service\Helper\AppService;
-use ListBroking\AppBundle\Service\Helper\MessagingService;
+use ListBroking\AppBundle\Service\Helper\MessagingServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -126,7 +125,7 @@ class AjaxController extends Controller
             $m_service = $this->get('messaging');
             $f_service = $this->get('file_handler');
 
-            $producer_id = MessagingService::OPPOSITION_LIST_IMPORT_PRODUCER;
+            $producer_id = MessagingServiceInterface::OPPOSITION_LIST_IMPORT_PRODUCER;
 
             // Save Opposition File
             $form = $a_service->generateForm('opposition_list_import');
@@ -194,7 +193,7 @@ class AjaxController extends Controller
             $m_service = $this->get('messaging');
             $f_service = $this->get('file_handler');
 
-            $producer_id = MessagingService::STAGING_CONTACT_IMPORT_PRODUCER;
+            $producer_id = MessagingServiceInterface::STAGING_CONTACT_IMPORT_PRODUCER;
 
             // Save Opposition File
             $form = $a_service->generateForm('staging_contact_import');
@@ -227,7 +226,6 @@ class AjaxController extends Controller
         {
             $a_service->validateAjaxRequest($request);
 
-            /** @var AppService $a_service */
             $a_service = $this->get('app');
 
             $subject = $request->get('subject');

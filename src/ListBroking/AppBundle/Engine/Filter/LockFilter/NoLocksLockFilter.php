@@ -13,7 +13,6 @@ use Doctrine\ORM\QueryBuilder;
 use ListBroking\AppBundle\Engine\Filter\LockFilterInterface;
 use ListBroking\AppBundle\Exception\InvalidFilterObjectException;
 use ListBroking\AppBundle\Exception\InvalidFilterTypeException;
-use ListBroking\AppBundle\Form\FiltersType;
 
 class NoLocksLockFilter implements LockFilterInterface
 {

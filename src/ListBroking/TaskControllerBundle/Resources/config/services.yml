@@ -8,9 +8,3 @@ services:
     arguments: [~, ListBroking\TaskControllerBundle\Entity\Task, SonataAdminBundle:CRUD]
     tags:
       - {name: sonata.admin, manager_type: orm, group: Task Controller, label: Task}
-
-  listbroking.admin.queue:
-    class: ListBroking\TaskControllerBundle\Admin\QueueAdmin
-    arguments: [~, ListBroking\TaskControllerBundle\Entity\Queue, SonataAdminBundle:CRUD]
-    tags:
-      - {name: sonata.admin, manager_type: orm, group: Task Controller, label: Queue}

@@ -40,7 +40,6 @@ class LoadTestData implements FixtureInterface {
         foreach($clients_names as $client_name){
             $client = new Client();
             $client->setName($client_name);
-            $client->setIsActive(1);
             $client->setAccountName('Account ' . $client_name);
             $client->setEmailAddress($client_name . '@' . $client_name . '.com');
             $client->setPhone(rand(900000000,999999999));
@@ -48,7 +47,6 @@ class LoadTestData implements FixtureInterface {
             for($i=0; $i < 2; $i++){
                 $campaign = new Campaign();
                 $campaign->setName($client_name . ' Campaign ' . $i);
-                $campaign->setIsActive(1);
                 $campaign->setClient($client);
                 $campaign->setDescription('coiso');
 
@@ -67,7 +65,6 @@ class LoadTestData implements FixtureInterface {
         $countries_names = array('PT', 'ES', 'FR');
         foreach($countries_names as $iso_id){
             $country = new Country();
-            $country->setIsActive(1);
             $country->setName($iso_id);
 
             $manager->persist($country);
@@ -81,7 +78,6 @@ class LoadTestData implements FixtureInterface {
         foreach($owners_names as $owner_name){
             $owner = new Owner();
             $owner->setName($owner_name);
-            $owner->setIsActive(1);
             $owner->setEmail($owner_name . '@' . $owner_name . '.com');
             $owner->setPhone(rand(900000000,999999999));
             $owner->setCountry($countries[array_rand($countries,1)]);
@@ -97,7 +93,6 @@ class LoadTestData implements FixtureInterface {
         foreach($sources_names as $source_name){
             $source = new Source();
             $source->setName($source_name);
-            $source->setIsActive(1);
             $source->setCountry($countries[array_rand($countries,1)]);
             $source->setOwner($owners[array_rand($owners,1)]);
 
@@ -122,11 +117,9 @@ class LoadTestData implements FixtureInterface {
         foreach($categories_names as $category_name => $sub_categories_names){
             $category = new Category();
             $category->setName($category_name);
-            $category->setIsActive(1);
 
             foreach($sub_categories_names as $sub_category_name){
                 $sub_category = new SubCategory();
-                $sub_category->setIsActive(1);
                 $sub_category->setName($sub_category_name);
                 $sub_category->setCategory($category);
 

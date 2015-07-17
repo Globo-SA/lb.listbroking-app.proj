@@ -11,8 +11,6 @@
 namespace ListBroking\AppBundle\Controller;
 
 use ListBroking\AppBundle\Form\StagingContactImportType;
-use ListBroking\AppBundle\Service\Helper\AppService;
-use ListBroking\TaskControllerBundle\Entity\Queue;
 use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;

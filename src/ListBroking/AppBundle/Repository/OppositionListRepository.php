@@ -13,7 +13,6 @@ namespace ListBroking\AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use ListBroking\AppBundle\Entity\OppositionList;
-use ListBroking\AppBundle\PHPExcel\FileHandler;
 
 class OppositionListRepository extends EntityRepository  {
 

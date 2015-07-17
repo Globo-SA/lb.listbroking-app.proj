@@ -15,7 +15,6 @@ use Sonata\BlockBundle\Block\BaseBlockService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Sonata\BlockBundle\Block\BlockContextInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class StatisticsBlockService extends BaseBlockService {
 

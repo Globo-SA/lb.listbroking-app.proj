@@ -14,25 +14,24 @@ namespace ListBroking\AppBundle\Engine;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityManager;
 use Guzzle\Service\Client;
-use ListBroking\AppBundle\Engine\Validator\Dimension\CountryValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\CategoryValidator;
+use ListBroking\AppBundle\Engine\Validator\Dimension\CountryValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\CountyValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\DistrictValidator;
+use ListBroking\AppBundle\Engine\Validator\Dimension\GenderValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\OwnerValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\ParishValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\SourceValidator;
-use ListBroking\AppBundle\Engine\Validator\Dimension\GenderValidator;
-
 use ListBroking\AppBundle\Engine\Validator\Fact\BirthdateValidator;
 use ListBroking\AppBundle\Engine\Validator\Fact\EmailValidator;
 use ListBroking\AppBundle\Engine\Validator\Fact\NameValidator;
-use ListBroking\AppBundle\Engine\Validator\Fact\PhoneValidator;
-use ListBroking\AppBundle\Engine\Validator\Fact\RepeatedValidator;
 use ListBroking\AppBundle\Engine\Validator\Fact\OppositionListValidator;
+use ListBroking\AppBundle\Engine\Validator\Fact\PhoneValidator;
 use ListBroking\AppBundle\Engine\Validator\Fact\PostalCodeValidator;
-
+use ListBroking\AppBundle\Engine\Validator\Fact\RepeatedValidator;
 use ListBroking\AppBundle\Engine\Validator\ValidatorInterface;
 use ListBroking\AppBundle\Entity\StagingContact;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class ValidatorEngine
 {
@@ -56,7 +55,7 @@ class ValidatorEngine
      */
     protected $validators;
 
-    function __construct(Registry $doctrine, Client $guzzle)
+    function __construct(RegistryInterface $doctrine, Client $guzzle)
     {
         $this->doctrine = $doctrine;
         $this->em = $doctrine->getManager();
