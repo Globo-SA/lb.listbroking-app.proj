@@ -55,6 +55,10 @@ abstract class BaseService implements BaseServiceInterface
         {
             if ( $entity['name'] == $name )
             {
+                if($entity['type'] == 'json'){
+                    $entity['value'] = json_decode($entity['value'], 1);
+                }
+
                 return $entity['value'];
             }
         }

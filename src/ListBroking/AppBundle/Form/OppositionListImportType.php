@@ -26,7 +26,7 @@ class OppositionListImportType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
 
-        $choices = json_decode($this->service->findConfig('opposition_list.types'), 1);
+        $choices = $this->service->findConfig('opposition_list.types');
         $builder
             ->add('type', 'choice', array(
                     'label' => 'List type',

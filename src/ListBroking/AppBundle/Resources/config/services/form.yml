@@ -25,3 +25,8 @@ services:
     class: ListBroking\AppBundle\Form\StagingContactImportType
     tags:
       - { name: form.type, alias: staging_contact_import }
+
+  listbroking.appbundle.data_card_filter.form.type:
+    class: ListBroking\AppBundle\Form\DataCardFilterType
+    tags:
+      - { name: form.type, alias: data_card_filter }

@@ -42,7 +42,7 @@ class StagingService extends BaseService implements StagingServiceInterface
 
     public function importOppositionList ($type, $file, $clear_old)
     {
-        $config = json_decode($this->findConfig('opposition_list.config'), true);
+        $config = $this->findConfig('opposition_list.config');
 
         $this->entity_manager->getRepository('ListBrokingAppBundle:OppositionList')
                              ->importOppositionListFile($type, $config[$type], $file, $clear_old)

@@ -1,77 +1,72 @@
 <?php
 /**
- * 
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [JOBENGINE_URL_LICENSE_HERE]
- *
  * [JOBENGINE_DISCLAIMER]
  */
 
 namespace ListBroking\AppBundle\AdminBlock;
 
-use Doctrine\ORM\EntityManagerInterface;
+use ListBroking\AppBundle\Service\Helper\AppServiceInterface;
+use ListBroking\AppBundle\Service\Helper\StatisticsServiceInterface;
 use Sonata\BlockBundle\Block\BaseBlockService;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Sonata\BlockBundle\Block\BlockContextInterface;
+use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Symfony\Component\Form\Form;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 
-class StatisticsBlockService extends BaseBlockService {
+class StatisticsBlockService extends BaseBlockService
+{
 
     /**
-     * @var EntityManagerInterface
+     * @var RequestStack
      */
-    private $em;
+    private $request_stack;
 
-    public function __construct($name, EngineInterface $templating, EntityManagerInterface $entity_manager)
+    /**
+     * @var AppServiceInterface
+     */
+    private $a_service;
+
+    /**
+     * @var StatisticsServiceInterface
+     */
+    private $s_service;
+
+    public function __construct ($name, RequestStack $request_stack, AppServiceInterface $a_service, StatisticsServiceInterface $s_service, EngineInterface $templating)
     {
         parent::__construct($name, $templating);
-        $this->entity_manager = $entity_manager;
+        $this->request_stack = $request_stack;
+        $this->a_service = $a_service;
+        $this->s_service = $s_service;
     }
 
-    public function execute(BlockContextInterface $blockContext, Response $response = null)
+    public function execute (BlockContextInterface $blockContext, Response $response = null)
     {
         $settings = $blockContext->getSettings();
 
-        $statistics = array(
-          array(
-              'label' => 'Leads by Country',
-              'attr' => 'col-md-6',
-              'headers' => array('Country', 'Total'),
-              'results' => array(
-                  array(
-                      'country' => 'PT',
-                      'total' => 1000
-                  ),
-                  array(
-                      'country' => 'ES',
-                      'total' => 5000
-                  ),
-              ),
-              'totals' => array(null, 6000)
-          ),
-          array(
-              'label' => 'Leads by Lock',
-              'attr' => 'col-md-6',
-              'headers' => array('Country', 'Total'),
-              'results' => array(
-                  array(
-                      'country' => 'Locked',
-                      'total' => 6540
-                  ),
-                  array(
-                      'country' => 'Unlocked',
-                      'total' => 3000
-                  ),
-              ),
-              'totals' => array(null, 9540)
-          ),
-        );
+        $request = $this->request_stack->getCurrentRequest();
+
+        /** @var Form $form */
+        $form = $this->a_service->generateForm('data_card_filter');
+        $form->handleRequest($request);
+        $data = $form->getData();
+        if ( ! $data )
+        {
+            $data = $this->a_service->findConfig('default_datacard');
+        }
+
+        $stats = $this->s_service->generateStatisticsQuery($data);
 
         return $this->renderResponse('ListBrokingAppBundle:AdminBlock:statistics_block.html.twig', array(
+            'settings' => $settings,
             'block'    => $blockContext->getBlock(),
-            'title' => 'Lead Statistics',
-            'statistics' => $statistics
-        ), $response);
+            'title'    => 'Lead Statistics',
+            'form'     => $form->createView(),
+            'stats'    => $stats
+        ), $response)
+            ;
     }
 } 

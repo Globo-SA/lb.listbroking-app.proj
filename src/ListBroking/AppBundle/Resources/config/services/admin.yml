@@ -15,6 +15,9 @@ services:
           - { name: sonata.block }
         arguments:
           - "sonata.block.service.statistics"
+          - @request_stack
+          - @app
+          - @statistics
           - @templating
           - @doctrine.orm.default_entity_manager
 

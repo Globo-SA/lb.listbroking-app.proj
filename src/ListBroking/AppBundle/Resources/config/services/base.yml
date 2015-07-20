@@ -24,6 +24,10 @@ services:
     parent: base
     arguments: [@mailer, @twig]
 
+  statistics:
+    class: ListBroking\AppBundle\Service\Helper\StatisticsService
+    parent: base
+
   extraction:
     class: ListBroking\AppBundle\Service\BusinessLogic\ExtractionService
     parent: base

@@ -87,3 +87,7 @@ blockquote.small-label label{
     z-index: 2;
     opacity: 0.25;
 }
+
+.navbar-btn{
+    color:white !important;
+}
