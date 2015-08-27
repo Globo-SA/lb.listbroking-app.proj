@@ -5,3 +5,6 @@
 
 ### 2.0
 * Migrated all the architecture to RabbitMQ
+
+### 2.1
+* Fixed ignorecase on git.:wq
