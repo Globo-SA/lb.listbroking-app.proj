@@ -54,13 +54,13 @@ class StatisticsService extends BaseService implements StatisticsServiceInterfac
                 case DataCardFilterType::AGGREGATION_TYPE:
                     if ( $values )
                     {
-                        if ( $field == 'is_mobile' )
+                        if ( $field === 'is_mobile' )
                         {
-                            $qb->addSelect("CASE WHEN(lead.is_mobile = 1) THEN 'YES' ELSE 'NO' as is_mobile");
+                            $qb->addSelect('CASE WHEN(lead.is_mobile = 1) THEN \'YES\' ELSE \'NO\' as is_mobile');
                             $qb->join('c.lead', 'lead');
                             $qb->addGroupBy('is_mobile');
 
-                            continue;
+                            break;
                         }
 
                         // JOIN the aggregation association

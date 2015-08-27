@@ -19,7 +19,7 @@ class LockExtractionConsumer implements ConsumerInterface
      */
     private $e_service;
 
-    function __construct (ExtractionServiceInterface $e_service)
+    public function __construct (ExtractionServiceInterface $e_service)
     {
         $this->e_service = $e_service;
     }
@@ -39,14 +39,10 @@ class LockExtractionConsumer implements ConsumerInterface
 
             $msg_body = unserialize($msg->body);
 
-            $this->e_service->logInfo(sprintf("Starting 'generateLocks' for extraction_id: %s", $msg_body['object_id']));
+            $this->e_service->logInfo(sprintf('Starting \'generateLocks\' for extraction_id: %s', $msg_body['object_id']));
 
-            /** @var Extraction $extraction */
-            $extraction = $this->e_service->entity_manager->getRepository('ListBrokingAppBundle:Extraction')
-                                                          ->findOneBy(array(
-                                                              'id' => $msg_body['object_id']
-                                                          ))
-            ;
+            $extraction = $this->e_service->findExtraction($msg_body['object_id']);
+
             // Generate locks
             $this->e_service->generateLocks($extraction, $msg_body['lock_types']);
 
@@ -57,7 +53,7 @@ class LockExtractionConsumer implements ConsumerInterface
             // Save changes
             $this->e_service->updateEntity($extraction);
 
-            $this->e_service->logInfo(sprintf("Ending 'generateLocks' for extraction_id: %s, result: Locks created", $msg_body['object_id']));
+            $this->e_service->logInfo(sprintf('Ending \'generateLocks\' for extraction_id: %s, result: Locks created', $msg_body['object_id']));
 
             return true;
         }

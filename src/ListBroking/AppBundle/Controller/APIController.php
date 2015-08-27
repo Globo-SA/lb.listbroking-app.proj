@@ -71,8 +71,8 @@ class APIController extends Controller
     private function createJsonResponse($response, $code = 200)
     {
         return new JsonResponse(array(
-            "code" => $code,
-            "response" => $response
+            'code' => $code,
+            'response' => $response
         ), $code);
     }
 }

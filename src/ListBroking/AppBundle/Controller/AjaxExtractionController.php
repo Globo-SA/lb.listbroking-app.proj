@@ -53,8 +53,8 @@ class AjaxExtractionController extends Controller
             $extraction['query']['dql'] = \SqlFormatter::format($query['dql']);
 
             return $a_service->createJsonResponse(array(
-                "code"     => 200,
-                "response" => $extraction,
+                'code'     => 200,
+                'response' => $extraction,
             ))
                 ;
         }
@@ -92,7 +92,7 @@ class AjaxExtractionController extends Controller
 
             // Get all contacts in one Query (Better then using $extraction->getContacts())
             $extraction_contacts_preview = $e_service->findExtractionContacts($extraction, $preview_limit);
-            if ( $format == 'html' )
+            if ( $format === 'html' )
             {
                 // Render Response
                 return $this->render('@ListBrokingApp/Extraction/_partials/contacts_table.html.twig', array(
@@ -104,7 +104,7 @@ class AjaxExtractionController extends Controller
             }
 
             return $a_service->createJsonResponse(array(
-                "code"                        => 200,
+                'code'                        => 200,
                 'extraction_contacts_preview' => $extraction_contacts_preview
             ))
                 ;
@@ -141,7 +141,7 @@ class AjaxExtractionController extends Controller
             // Extraction Summary
             $extraction_summary = $e_service->findExtractionSummary($extraction);
 
-            if ( $format == 'html' )
+            if ( $format === 'html' )
             {
                 // Render Response
                 return $this->render('@ListBrokingApp/Extraction/_partials/extraction_summary.html.twig', array(
@@ -152,8 +152,8 @@ class AjaxExtractionController extends Controller
             }
 
             return $a_service->createJsonResponse(array(
-                "code"     => 200,
-                "response" => $extraction_summary,
+                'code'     => 200,
+                'response' => $extraction_summary,
             ))
                 ;
         }
@@ -286,7 +286,7 @@ class AjaxExtractionController extends Controller
             }
 
             return $a_service->createJsonResponse(array(
-                "response" => "Locks being generated",
+                'response' => 'Locks being generated',
             ))
                 ;
         }
@@ -330,7 +330,7 @@ class AjaxExtractionController extends Controller
             ;
 
             return $a_service->createJsonResponse(array(
-                "response" => "Email being generated",
+                'response' => 'Email being generated',
             ))
                 ;
         }

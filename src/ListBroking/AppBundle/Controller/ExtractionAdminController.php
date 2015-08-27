@@ -50,7 +50,7 @@ class ExtractionAdminController extends CRUDController
      */
     public function createAction ()
     {
-        if ( $this->getRestMethod() == 'POST' )
+        if ( $this->getRestMethod() === 'POST' )
         {
             parent::createAction();
 
@@ -93,7 +93,7 @@ class ExtractionAdminController extends CRUDController
         /** @var Extraction $extraction */
         $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
 
-        if($this->getUser() != $extraction->getCreatedBy() && !$this->admin->isGranted('SUPER_ADMIN')){
+        if(!$this->admin->isGranted('SUPER_ADMIN') && $this->getUser() !== $extraction->getCreatedBy()){
             throw new AccessDeniedException('You can only edit extractions created by you ');
         }
 

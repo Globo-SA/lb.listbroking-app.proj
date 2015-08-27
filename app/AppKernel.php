@@ -27,6 +27,7 @@ class AppKernel extends Kernel
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new Misd\GuzzleBundle\MisdGuzzleBundle(),
             new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
+            new Adclick\TaskControllerBundle\TaskControllerBundle(),
 
             //Security
             new FOS\UserBundle\FOSUserBundle(),
@@ -40,12 +41,10 @@ class AppKernel extends Kernel
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),
             new Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle(),
             new Sonata\AdminBundle\SonataAdminBundle(),
-//            new CoopTilleuls\Bundle\AclSonataAdminExtensionBundle\CoopTilleulsAclSonataAdminExtensionBundle(),
 
             // ListBroking Bundles
             new ListBroking\ExceptionHandlerBundle\ListBrokingExceptionHandlerBundle(),
             new ListBroking\AppBundle\ListBrokingAppBundle(),
-            new ListBroking\TaskControllerBundle\ListBrokingTaskControllerBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

@@ -7,12 +7,21 @@
         "psr-0": { "": "src/", "SymfonyStandard": "app/" }
     },
     "repositories": [
-        { "type": "git", "url": "git@git.adclick.pt:bundles/cache-bundle.git" },
-        { "type": "git", "url": "git@git.adclick.pt:bundles/advanced-configuration-bundle.git" },
-        { "type": "git", "url": "git@git.adclick.pt:bundles/doctrine-behavior-bundle.git" }
+        {
+            "url": "git@git.adclick.pt:bundles/api-abstraction-bundle.git",
+            "type": "git"
+        },
+        {
+            "url": "git@git.adclick.pt:bundles/task-controller-bundle.git",
+            "type": "git"
+        },
+        {
+            "url": "git@git.adclick.pt:bundles/authorization-client-bundle.git",
+            "type": "git"
+        }
     ],
     "require": {
-        "php": ">=5.3.9",
+        "php": ">=5.4.9",
         "symfony/symfony": "2.7.*",
         "doctrine/orm": "~2.2,>=2.2.3,<2.5",
         "doctrine/dbal": "<2.5",
@@ -31,11 +40,9 @@
         "doctrine/doctrine-fixtures-bundle": "~2.2",
         "stof/doctrine-extensions-bundle": "~1.1",
 
-        "tedivm/fetch": "~0.5",
-
         "oldsound/rabbitmq-bundle": "~1.0",
 
-        "jms/serializer-bundle": "~0.13",
+        "jms/serializer-bundle": "~1.0",
         "phpoffice/phpexcel": "~1.8",
         "misd/guzzle-bundle": "~1.0",
 
@@ -47,7 +54,10 @@
         "sonata-project/admin-bundle": "~2.3",
         "sonata-project/doctrine-orm-admin-bundle": "~2.3",
         "sonata-project/user-bundle": "~2.2",
-        "tilleuls/acl-sonata-admin-extension-bundle": "~1.1"
+
+        "adclick/authorization-client-bundle": "1.*",
+        "adclick/api-abstraction-bundle": "1.*",
+        "adclick/task-controller-bundle": "1.*"
 
     },
     "require-dev": {

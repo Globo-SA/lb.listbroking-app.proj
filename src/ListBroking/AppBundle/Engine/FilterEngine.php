@@ -45,7 +45,7 @@ class FilterEngine
      */
     private $lead_filter_types;
 
-    function __construct (EntityManagerInterface $entityManager)
+    public function __construct (EntityManagerInterface $entityManager)
     {
         $this->em = $entityManager;
 

@@ -30,7 +30,7 @@ class StagingContactImportConsumer implements ConsumerInterface
      */
     private $f_service;
 
-    function __construct (MessagingServiceInterface $m_service, StagingServiceInterface $s_service, FileHandlerServiceInterface $f_service)
+    public function __construct (MessagingServiceInterface $m_service, StagingServiceInterface $s_service, FileHandlerServiceInterface $f_service)
     {
         $this->m_system = $m_service;
         $this->s_service = $s_service;
@@ -54,7 +54,7 @@ class StagingContactImportConsumer implements ConsumerInterface
 
             $msg_body = unserialize($msg->body);
 
-            $this->s_service->logInfo(sprintf("Starting 'importStagingContacts', filename: %s", $msg_body['filename']));
+            $this->s_service->logInfo(sprintf('Starting \'importStagingContacts\', filename: %s', $msg_body['filename']));
 
             $file = $this->f_service->import($msg_body['filename']);
 
@@ -62,7 +62,7 @@ class StagingContactImportConsumer implements ConsumerInterface
 
             $this->m_system->unlockProducer($producer_id);
 
-            $this->s_service->logInfo("Ending 'importStagingContacts'");
+            $this->s_service->logInfo('Ending \'importStagingContacts\'');
 
             return true;
         }

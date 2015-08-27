@@ -8,8 +8,8 @@
 
 namespace ListBroking\AppBundle\Command;
 
+use Adclick\TaskControllerBundle\Service\TaskServiceInterface;
 use ListBroking\AppBundle\Entity\StagingContact;
-use ListBroking\TaskControllerBundle\Service\TaskServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

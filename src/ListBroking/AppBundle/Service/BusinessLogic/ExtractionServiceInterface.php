@@ -12,6 +12,14 @@ interface ExtractionServiceInterface extends BaseServiceInterface
 {
 
     /**
+     * Find Extraction by id
+     * @param $id
+     *
+     * @return Extraction|null
+     */
+    public function findExtraction($id);
+
+    /**
      * Clones a given extraction and resets it's status
      *
      * @param Extraction $extraction

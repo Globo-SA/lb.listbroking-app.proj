@@ -39,19 +39,14 @@ class RunExtractionConsumer implements ConsumerInterface
 
             $msg_body = unserialize($msg->body);
 
-            $this->e_service->logInfo(sprintf("Starting 'runExtraction' for extraction_id: %s", $msg_body['object_id']));
+            $this->e_service->logInfo(sprintf('Starting \'runExtraction\' for extraction_id: %s', $msg_body['object_id']));
 
-            /** @var Extraction $extraction */
-            $extraction = $this->e_service->entity_manager->getRepository('ListBrokingAppBundle:Extraction')
-                                                          ->findOneBy(array(
-                                                              'id' => $msg_body['object_id']
-                                                          ))
-            ;
+            $extraction = $this->e_service->findExtraction($msg_body['object_id']);
 
             // Run Extraction
             $result = $this->e_service->runExtraction($extraction) ? 'EXTRACTED' : 'NOT EXTRACTED!';
 
-            $this->e_service->logInfo(sprintf("Ending 'runExtraction' for extraction_id: %s, result: %s", $msg_body['object_id'], $result));
+            $this->e_service->logInfo(sprintf('Ending \'runExtraction\' for extraction_id: %s, result: %s', $msg_body['object_id'], $result));
 
             return true;
         }

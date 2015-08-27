@@ -52,14 +52,9 @@ class DeliverExtractionConsumer implements ConsumerInterface
             $this->e_service->clearEntityManager();
 
             $msg_body = unserialize($msg->body);
-            $this->e_service->logInfo(sprintf("Starting 'deliverExtraction' for extraction_id: %s", $msg_body['object_id']));
+            $this->e_service->logInfo(sprintf('Starting \'deliverExtraction\' for extraction_id: %s', $msg_body['object_id']));
 
-            /** @var Extraction $extraction */
-            $extraction = $this->e_service->entity_manager->getRepository('ListBrokingAppBundle:Extraction')
-                                                          ->findOneBy(array(
-                                                              'id' => $msg_body['object_id']
-                                                          ))
-            ;
+            $extraction = $this->e_service->findExtraction($msg_body['object_id']);
 
             // Generate the Extraction File
             $template = json_decode($this->e_service->findEntity('ListBrokingAppBundle:ExtractionTemplate', $msg_body['extraction_template_id'])
@@ -69,7 +64,7 @@ class DeliverExtractionConsumer implements ConsumerInterface
 
             // Send the Extraction by Email
             $email_template = '@ListBrokingApp/KitEmail/deliver_extraction.html.twig';
-            $email_subject = sprintf("LB Extraction - %s", $extraction->getName());
+            $email_subject = sprintf('LB Extraction - %s', $extraction->getName());
             $result = $this->a_service->deliverEmail($email_template, array('password' => $password), $email_subject, $msg_body['email'], $filename, $password);
 
             // Set the Extraction as delivered
@@ -78,7 +73,8 @@ class DeliverExtractionConsumer implements ConsumerInterface
             // Save changes
             $this->e_service->updateEntity($extraction);
 
-            $this->e_service->logInfo(sprintf("Ending 'deliverExtraction' for extraction_id: %s, email deliver result: %s to %s with the filename: %s and password: %s", $msg_body['object_id'], $result, $msg_body['email'], $filename, $password));
+            $this->e_service->logInfo(sprintf('Ending \'deliverExtraction\' for extraction_id: %s, email deliver result: %s to %s with the filename: %s and password: %s', $msg_body['object_id'],
+            $result, $msg_body['email'], $filename, $password));
 
             return true;
         }

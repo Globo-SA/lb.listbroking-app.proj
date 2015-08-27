@@ -35,7 +35,7 @@ class OppositionListImportConsumer implements ConsumerInterface
      * @param StagingServiceInterface     $s_service
      * @param FileHandlerServiceInterface $f_service
      */
-    function __construct (MessagingServiceInterface $m_service, StagingServiceInterface $s_service, FileHandlerServiceInterface $f_service)
+    public function __construct (MessagingServiceInterface $m_service, StagingServiceInterface $s_service, FileHandlerServiceInterface $f_service)
     {
         $this->m_system = $m_service;
         $this->s_service = $s_service;
@@ -59,7 +59,7 @@ class OppositionListImportConsumer implements ConsumerInterface
 
             $msg_body = unserialize($msg->body);
 
-            $this->s_service->logInfo(sprintf("Starting 'importOppostionList' for opposition_list: %s", $msg_body['opposition_list']));
+            $this->s_service->logInfo(sprintf('Starting \'importOppostionList\' for opposition_list: %s', $msg_body['opposition_list']));
 
             $file = $this->f_service->import($msg_body['filename']);
 
@@ -69,7 +69,8 @@ class OppositionListImportConsumer implements ConsumerInterface
 
             $this->m_system->unlockProducer($producer_id);
 
-            $this->s_service->logInfo(sprintf("Ending 'importOppostionList' for opposition_list: %s, clear_old: %s, filename: %s", $msg_body['opposition_list'], $msg_body['clear_old'], $msg_body['filename']));
+            $this->s_service->logInfo(sprintf('Ending \'importOppostionList\' for opposition_list: %s, clear_old: %s, filename: %s', $msg_body['opposition_list'], $msg_body['clear_old'],
+            $msg_body['filename']));
 
             return true;
         }

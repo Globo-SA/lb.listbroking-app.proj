@@ -145,7 +145,7 @@ class AjaxController extends Controller
             $m_service->lockProducer($producer_id);
 
             return $a_service->createJsonResponse(array(
-                "response" => "Opposition is being imported",
+                'response' => 'Opposition is being imported',
             ))
                 ;
         }
@@ -168,8 +168,7 @@ class AjaxController extends Controller
         $a_service = $this->get('app');
         $f_service = $this->get('file_handler');
 
-        list($filename, $password) = $f_service->generateFileFromArray(StagingContact::IMPORT_TEMPLATE_FILENAME, StagingContact::IMPORT_TEMPLATE_FILE_EXTENSION,
-            array(StagingContact::$import_template), false);
+        list($filename, $password) = $f_service->generateFileFromArray(StagingContact::IMPORT_TEMPLATE_FILENAME, StagingContact::IMPORT_TEMPLATE_FILE_EXTENSION, array(StagingContact::$import_template), false);
 
         return $a_service->createAttachmentResponse($filename);
     }
@@ -209,7 +208,7 @@ class AjaxController extends Controller
             $m_service->lockProducer($producer_id);
 
             return $a_service->createJsonResponse(array(
-                "response" => "Database is being imported",
+                'response' => 'Database is being imported',
             ))
                 ;
         }
@@ -237,16 +236,16 @@ class AjaxController extends Controller
             ), $subject, $emails)
             ;
 
-            if ( $response != 1 )
+            if ( $response !== 1 )
             {
                 return $a_service->createJsonResponse(array(
-                    "response" => "Emails could not be delivered"
+                    'response' => 'Emails could not be delivered'
                 ), 500)
                     ;
             }
 
             return $a_service->createJsonResponse(array(
-                "response" => "Emails delivered"
+                'response' => 'Emails delivered'
             ))
                 ;
         }

@@ -6,7 +6,7 @@
                 Loading...
             </a>
         </li>
-        {% if not(app.request.attributes.get('_route') matches '/admin_listbroking_app_extraction_/i') %}
+        {% if app.user and is_granted('IS_AUTHENTICATED_FULLY') and not(app.request.attributes.get('_route') matches '/admin_listbroking_app_extraction_/i') %}
             <li class="dropdown">
                 <div class="dropdown-toggle">
                     <a href="{{ path('admin_listbroking_app_extraction_list') }}" class="btn btn-primary btn-sm navbar-btn">

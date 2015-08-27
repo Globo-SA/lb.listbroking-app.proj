@@ -19,7 +19,7 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
      */
     private $e_service;
 
-    function __construct (ExtractionServiceInterface $e_service)
+    public function __construct (ExtractionServiceInterface $e_service)
     {
         $this->e_service = $e_service;
     }
@@ -39,14 +39,9 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
 
             $msg_body = unserialize($msg->body);
 
-            $this->e_service->logInfo(sprintf("Starting 'deduplication' for extraction_id: %s with field: %s and file: %s", $msg_body['object_id'], $msg_body['field'], $msg_body['filename']));
+            $this->e_service->logInfo(sprintf('Starting \'deduplication\' for extraction_id: %s with field: %s and file: %s', $msg_body['object_id'], $msg_body['field'], $msg_body['filename']));
 
-            /** @var Extraction $extraction */
-            $extraction = $this->e_service->entity_manager->getRepository('ListBrokingAppBundle:Extraction')
-                                                          ->findOneBy(array(
-                                                              'id' => $msg_body['object_id']
-                                                          ))
-            ;
+            $extraction = $this->e_service->findExtraction($msg_body['object_id']);
 
             $filename = $msg_body['filename'];
 
@@ -64,7 +59,7 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
             // Delete file
             unlink($filename);
 
-            $this->e_service->logInfo(sprintf("Ending 'deduplication' for extraction_id: %s, result: DONE", $msg_body['object_id']));
+            $this->e_service->logInfo(sprintf('Ending \'deduplication\' for extraction_id: %s, result: DONE', $msg_body['object_id']));
 
             return true;
         }
