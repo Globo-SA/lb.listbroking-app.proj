@@ -19,6 +19,10 @@ class ExtractionAdminController extends CRUDController
      */
     public function cloneAction ()
     {
+        if (false === $this->admin->isGranted('EDIT')) {
+            throw new AccessDeniedException();
+        }
+
         // Services
         $e_service = $this->get('extraction');
 
@@ -93,7 +97,10 @@ class ExtractionAdminController extends CRUDController
         /** @var Extraction $extraction */
         $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
 
-        if(!$this->admin->isGranted('SUPER_ADMIN') && $this->getUser() !== $extraction->getCreatedBy()){
+        $current_usr =  $this->getUser();
+        $user = $extraction->getCreatedBy();
+
+        if(!$this->admin->isGranted('SUPER_ADMIN') && $this->getUser()->getId() !== $extraction->getCreatedBy()->getId()){
             throw new AccessDeniedException('You can only edit extractions created by you ');
         }
 
