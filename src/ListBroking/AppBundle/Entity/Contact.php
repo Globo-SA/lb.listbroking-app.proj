@@ -23,6 +23,11 @@ class Contact
     private $id;
 
     /**
+     * @var boolean
+     */
+    private $is_clean
+    ;
+    /**
      * @var string
      */
     private $external_id;
@@ -151,6 +156,22 @@ class Contact
     public function getId ()
     {
         return $this->id;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isIsClean ()
+    {
+        return $this->is_clean;
+    }
+
+    /**
+     * @param boolean $is_clean
+     */
+    public function setIsClean ($is_clean)
+    {
+        $this->is_clean = $is_clean;
     }
 
     /**

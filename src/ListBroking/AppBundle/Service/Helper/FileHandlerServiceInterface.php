@@ -22,17 +22,6 @@ interface FileHandlerServiceInterface
     public function import ($filename);
 
     /**
-     * Converts a PHPExcel Object to an array
-     *
-     * @param \PHPExcel $obj
-     * @param           $with_headers
-     * @param string    $endColumn
-     *
-     * @return array
-     */
-    public function convertToArray (\PHPExcel $obj, $with_headers = true, $endColumn = 'all');
-
-    /**
      * Saves a file on a form
      *
      * @param Form $form

@@ -109,6 +109,13 @@ SQL;
         ;
     }
 
+    /**
+     * Generates the necessary locks for a given Extraction
+     *
+     * @param Extraction $extraction
+     * @param            $lock_types
+     * @param            $lock_time
+     */
     public function generateLocks (Extraction $extraction, $lock_types, $lock_time)
     {
         $em = $this->getEntityManager();

@@ -19,12 +19,15 @@ class MessagingService implements MessagingServiceInterface
      */
     private $container;
 
-    function __construct (ContainerInterface $container)
+    public function __construct (ContainerInterface $container)
     {
         $this->container = $container;
         $this->doctrine_cache = $container->get('doctrine_cache.providers.memcached_query_cache');
     }
 
+    /**
+     * @inheritdoc
+     */
     public function publishMessage ($producer_id, $msg)
     {
         $msg['type'] = $producer_id;
@@ -35,35 +38,25 @@ class MessagingService implements MessagingServiceInterface
     }
 
     /**
-     * Check if a RabbitMQ Producer is Locked
-     *
-     * @param $name
-     *
-     * @return mixed
+     * @inheritdoc
      */
-    public function isProducerLocked($name)
+    public function isProducerLocked ($name)
     {
         return $this->doctrine_cache->contains($name);
     }
 
     /**
-     * Lock Producer from getting new items
-     * @param $name
-     *
-     * @return mixed
+     * @inheritdoc
      */
-    public function lockProducer($name)
+    public function lockProducer ($name)
     {
         $this->doctrine_cache->save($name, true);
     }
 
     /**
-     * Unlock Producer
-     * @param $name
-     *
-     * @return mixed
+     * @inheritdoc
      */
-    public function unlockProducer($name)
+    public function unlockProducer ($name)
     {
         $this->doctrine_cache->delete($name);
     }

@@ -14,6 +14,22 @@
                     <a href="{{ path('ajax_staging_contact_import_template') }}" class="btn btn-primary">Download</a>
                     <small>Please make sure to use this template before importing the database</small>
                     <br>
+                    <hr>
+                    <label>Import information</label>
+
+                    <div class="row">
+                        <div class="col-md-6">{{ form_row(import_form.owner) }}</div>
+                    </div>
+                    <br>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            {{ form_widget(import_form.update) }}
+                            {{ form_label(import_form.update) }}
+                            <small>For the update to work, the contacts <b>contact_id</b> must be present</small>
+                        </div>
+                    </div>
+                    <br>
                     <span class="btn btn-flat btn-primary fileinput-button form-control">
                         <i class="glyphicon glyphicon-plus"></i>
                         <span>Select file...</span>
@@ -21,7 +37,7 @@
                         {{ form_widget(import_form.upload_file) }}
                     </span>
                     <small><strong id="files">No file chosen</strong></small>
-                    <small>Only CSV files allowed</small>
+                    <small>Only Excel files allowed</small>
                     <small id="fileuploaderror" class="text-danger" style="display: none;"></small>
 
                     <div class="progress hidden">
@@ -38,5 +54,6 @@
             {{ form_end(import_form) }}
         </div>
         <!-- /.modal-content -->
-    </div> <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal-dialog -->
 </div><!-- /.modal -->

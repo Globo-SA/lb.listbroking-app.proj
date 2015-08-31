@@ -19,11 +19,6 @@ class StagingContactAdmin extends Admin
      */
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
-        $datagridMapper
-            ->add('id')
-            ->add('valid')
-            ->add('processed')
-        ;
     }
 
     /**
@@ -32,17 +27,17 @@ class StagingContactAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->add('id')
             ->add('valid')
             ->add('processed')
             ->add('in_opposition')
+            ->add('update')
+            ->add('contact_id')
+            ->add('lead_id')
+            ->add('owner')
             ->add('phone')
-            ->add('created_at')
             ->add('updated_at')
             ->add('_action', 'actions', array(
                 'actions' => array(
-                    'show' => array(),
-                    'edit' => array(),
                     'delete' => array(),
                 )
             ))
