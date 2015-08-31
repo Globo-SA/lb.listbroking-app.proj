@@ -27,6 +27,12 @@ ListBroking\AppBundle\Entity\StagingContactDQP:
             column: running
             options:
                 default: 0
+        update:
+            type:   boolean
+            column: for_update
+            nullable: true
+            options:
+                default: 0
         phone:
             type:   string
             column: phone

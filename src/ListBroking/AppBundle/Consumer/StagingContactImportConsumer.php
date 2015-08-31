@@ -58,7 +58,7 @@ class StagingContactImportConsumer implements ConsumerInterface
 
             $file = $this->f_service->import($msg_body['filename']);
 
-            $this->s_service->importStagingContacts($file);
+            $this->s_service->importStagingContacts($file, array('owner' => $msg_body['owner'], 'update' => $msg_body['update']));
 
             $this->m_system->unlockProducer($producer_id);
 

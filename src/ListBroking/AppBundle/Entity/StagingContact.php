@@ -60,6 +60,8 @@ class StagingContact
 
     protected $running   = 0;
 
+    protected $update   = 0;
+
     /**
      * Contact Information
      */
@@ -187,6 +189,22 @@ class StagingContact
     public function setRunning ($running)
     {
         $this->running = $running;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUpdate ()
+    {
+        return $this->update;
+    }
+
+    /**
+     * @param int $update
+     */
+    public function setUpdate ($update)
+    {
+        $this->update = $update;
     }
 
     /**

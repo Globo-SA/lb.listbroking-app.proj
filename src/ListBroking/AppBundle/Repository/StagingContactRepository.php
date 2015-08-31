@@ -13,9 +13,17 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Contact;
+use ListBroking\AppBundle\Entity\Country;
+use ListBroking\AppBundle\Entity\County;
+use ListBroking\AppBundle\Entity\District;
+use ListBroking\AppBundle\Entity\Gender;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\Lock;
+use ListBroking\AppBundle\Entity\Owner;
+use ListBroking\AppBundle\Entity\Parish;
+use ListBroking\AppBundle\Entity\Source;
 use ListBroking\AppBundle\Entity\StagingContact;
+use ListBroking\AppBundle\Entity\SubCategory;
 
 class StagingContactRepository extends EntityRepository
 {
@@ -23,11 +31,10 @@ class StagingContactRepository extends EntityRepository
     /**
      * Imports an Database file
      *
-     * @param $file
-     *
-     * @throws \Doctrine\DBAL\DBALException
+     * @param \PHPExcel $file
+     * @param array     $default_info
      */
-    public function importStagingContactsFile (\PHPExcel $file)
+    public function importStagingContactsFile (\PHPExcel $file, array $default_info)
     {
         $row_iterator = $file->getWorksheetIterator()
                              ->current()
@@ -68,6 +75,7 @@ class StagingContactRepository extends EntityRepository
 
             if ( ! empty($array_data) && $row->getRowIndex() != 1 )
             {
+                $array_data = array_replace($array_data, $default_info);
                 $this->addStagingContact($array_data);
             }
 
@@ -237,34 +245,7 @@ SQL;
             $contact = new Contact();
         }
 
-        $contact->setEmail($s_contact->getEmail());
-
-        if ( $s_contact->getFirstname() )
-        {
-        }
-
-        $contact->setExternalId($s_contact->getExternalId());
-        $contact->setFirstname($s_contact->getFirstname());
-        $contact->setLastname($s_contact->getLastname());
-        $contact->setBirthdate(new \DateTime($s_contact->getBirthdate()));
-        $contact->setAddress($s_contact->getAddress());
-        $contact->setPostalcode1($s_contact->getPostalcode1());
-        $contact->setPostalcode2($s_contact->getPostalcode2());
-        $contact->setIpaddress($s_contact->getIpaddress());
-        $contact->setDate($s_contact->getDate());
-
-        $contact->setLead($lead);
-        $contact->setSource($source);
-        $contact->setOwner($owner);
-        $contact->setSubCategory($sub_category);
-        $contact->setGender($gender);
-        $contact->setDistrict($district);
-        $contact->setCounty($county);
-        $contact->setParish($parish);
-        $contact->setCountry($country);
-
-        $contact->setValidations($s_contact->getValidations());
-        $contact->setPostRequest($s_contact->getPostRequest());
+        $this->updateContact($s_contact, $contact, $lead, $source, $owner, $sub_category, $gender, $district, $county, $parish, $country);
 
         $now = new \DateTime();
         $initial_lock_expiration_date = $s_contact->getInitialLockExpirationDate();
@@ -276,16 +257,47 @@ SQL;
             $lead->addLock($lock);
         }
 
+        // Persist contact
         $em->persist($contact);
 
+        // Remove StagingContact
         $em->remove($s_contact);
 
         $em->flush();
     }
 
     /**
+     * Loads Updated StagingContacts to the
+     * Contact table
+     *
+     * @param StagingContact $s_contact
+     */
+    public function loadUpdatedContact (StagingContact $s_contact)
+    {
+        $em = $this->getEntityManager();
+        $contact_id = $s_contact->getContactId();
+        if ( ! empty($contact_id) )
+        {
+
+            $contact = $em->getRepository('ListBrokingAppBundle:Contact')
+                          ->find($s_contact->getContactId())
+            ;
+
+            $this->updateContact($s_contact, $contact);
+
+            $contact->setIsClean(true);
+
+            // Remove StagingContact
+            $em->remove($s_contact);
+
+            $em->flush();
+        }
+    }
+
+    /**
      * Finds contacts that need validation and lock them
      * to the current process
+     *
      * @param int $limit
      *
      * @return StagingContact[]
@@ -322,5 +334,164 @@ SQL;
         $em->commit();
 
         return $contacts;
+    }
+
+    /**
+     * Updates a contact with non-empty data
+     *
+     * @param StagingContact $s_contact
+     * @param Contact        $contact
+     * @param Lead           $lead
+     * @param Source         $source
+     * @param Owner          $owner
+     * @param SubCategory    $sub_category
+     * @param Gender         $gender
+     * @param District       $district
+     * @param County         $county
+     * @param Parish         $parish
+     * @param Country        $country
+     */
+    private function updateContact (
+        StagingContact $s_contact,
+        Contact $contact,
+        Lead $lead = null,
+        Source $source = null,
+        Owner $owner = null,
+        SubCategory $sub_category = null,
+        Gender $gender = null,
+        District $district = null,
+        County $county = null,
+        Parish $parish = null,
+        Country $country = null)
+    {
+        $this->validateField($s_contact->getEmail(), function ($field) use ($contact)
+        {
+            $contact->setEmail($field);
+        })
+        ;
+        $this->validateField($s_contact->getExternalId(), function ($field) use ($contact)
+        {
+            $contact->setExternalId($field);
+        })
+        ;
+        $this->validateField($s_contact->getFirstname(), function ($field) use ($contact)
+        {
+            $contact->setFirstname($field);
+        })
+        ;
+        $this->validateField($s_contact->getLastname(), function ($field) use ($contact)
+        {
+            $contact->setLastname($field);
+        })
+        ;
+        $this->validateField(new \DateTime($s_contact->getBirthdate()), function ($field) use ($contact)
+        {
+            $contact->setBirthdate($field);
+        })
+        ;
+        $this->validateField($s_contact->getAddress(), function ($field) use ($contact)
+        {
+            $contact->setAddress($field);
+        })
+        ;
+        $this->validateField($s_contact->getPostalcode1(), function ($field) use ($contact)
+        {
+            $contact->setPostalcode1($field);
+        })
+        ;
+        $this->validateField($s_contact->getPostalcode2(), function ($field) use ($contact)
+        {
+            $contact->setPostalcode2($field);
+        })
+        ;
+        $this->validateField($s_contact->getIpaddress(), function ($field) use ($contact)
+        {
+            $contact->setIpaddress($field);
+        })
+        ;
+        $this->validateField($s_contact->getDate(), function ($field) use ($contact)
+        {
+            $contact->setDate($field);
+        })
+        ;
+        $this->validateField($s_contact->getValidations(), function ($field) use ($contact)
+        {
+            $contact->setValidations($field);
+        })
+        ;
+        $this->validateField($s_contact->getPostRequest(), function ($field) use ($contact)
+        {
+            $contact->setPostRequest($field);
+        })
+        ;
+
+        $this->validateField($lead, function ($field) use ($contact)
+        {
+            $contact->setLead($field);
+        })
+        ;
+
+        $this->validateField($source, function ($field) use ($contact)
+        {
+            $contact->setSource($field);
+        })
+        ;
+
+        $this->validateField($owner, function ($field) use ($contact)
+        {
+            $contact->setOwner($field);
+        })
+        ;
+
+        $this->validateField($sub_category, function ($field) use ($contact)
+        {
+            $contact->setSubCategory($field);
+        })
+        ;
+
+        $this->validateField($gender, function ($field) use ($contact)
+        {
+            $contact->setGender($field);
+        })
+        ;
+
+        $this->validateField($district, function ($field) use ($contact)
+        {
+            $contact->setDistrict($field);
+        })
+        ;
+
+        $this->validateField($county, function ($field) use ($contact)
+        {
+            $contact->setCounty($field);
+        })
+        ;
+
+        $this->validateField($parish, function ($field) use ($contact)
+        {
+            $contact->setParish($field);
+        })
+        ;
+
+        $this->validateField($country, function ($field) use ($contact)
+        {
+            $contact->setCountry($field);
+        })
+        ;
+    }
+
+    /**
+     * Validates if a given field isn't empty and runs a callable function
+     * if not empty
+     *
+     * @param          $field
+     * @param callable $callback
+     */
+    private function validateField ($field, callable $callback)
+    {
+        if ( ! empty($field) )
+        {
+            $callback($field);
+        }
     }
 } 

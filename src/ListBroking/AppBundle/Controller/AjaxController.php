@@ -199,9 +199,13 @@ class AjaxController extends Controller
             $form->handleRequest($request);
             $file = $f_service->saveFormFile($form);
 
+            $data = $form->getData();
+
             // Publish Extraction to the Queue
             $m_service->publishMessage($producer_id, array(
                 'filename' => $file->getRealPath(),
+                'owner'    => $data['owner']->getName(),
+                'update'   => $data['update']
             ))
             ;
 

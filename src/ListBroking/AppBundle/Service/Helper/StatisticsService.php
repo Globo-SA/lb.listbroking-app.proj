@@ -14,6 +14,9 @@ use ListBroking\AppBundle\Service\Base\BaseServiceInterface;
 class StatisticsService extends BaseService implements StatisticsServiceInterface
 {
 
+    /**
+     * @inheritdoc
+     */
     public function generateStatisticsQuery ($data)
     {
         $qb = $this->entity_manager->getRepository('ListBrokingAppBundle:Contact')

@@ -33,12 +33,12 @@
             autoUpload: false,
             removeAfterUpload: false,
             add: function(e, data) {
-                var acceptFileTypes = /\.(csv)/i;
+                var acceptFileTypes = /\.(xls|xlsx)/i;
                 var $errors = $('#fileuploaderror');
 
                 if(data.originalFiles[0]['name'].length && !acceptFileTypes.test(data.originalFiles[0]['name'])) {
                     $errors
-                        .html('Only CSV files are accepted')
+                        .html('Only Excel files are accepted')
                         .fadeIn()
                     ;
                     $staging_contact_import_btn.attr('disabled', 'disabled');
@@ -72,7 +72,7 @@
                 );
             })
             .on('fileuploaddone', function (e, data) {
-                checkIsImporting();
+                //checkIsImporting(true);
 
                 //Close modal
                 $('#staging_contact_import_modal').modal('hide');

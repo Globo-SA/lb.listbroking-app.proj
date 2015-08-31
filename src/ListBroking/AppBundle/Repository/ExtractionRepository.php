@@ -17,6 +17,32 @@ class ExtractionRepository extends EntityRepository
 {
 
     /**
+     * Clones a given extraction and resets it's status
+     *
+     * @param Extraction $extraction
+     *
+     * @return Extraction
+     */
+    public function cloneExtraction (Extraction $extraction)
+    {
+        $clonedObject = clone $extraction;
+
+        $clonedObject->setName($extraction->getName() . ' (duplicate)');
+        $clonedObject->setStatus(Extraction::STATUS_FILTRATION);
+        $clonedObject->getExtractionContacts()
+                     ->clear()
+        ;
+        $clonedObject->getExtractionDeduplications()
+                     ->clear()
+        ;
+        $clonedObject->setDeduplicationType(null);
+        $clonedObject->setQuery(null);
+        $clonedObject->setIsAlreadyExtracted(false);
+
+        return $clonedObject;
+    }
+
+    /**
      * Associates multiple contacts to an extraction
      *
      * @param $extraction Extraction

@@ -37,7 +37,7 @@ class FileHandlerService implements FileHandlerServiceInterface
      */
     private $kernel;
 
-    function __construct (KernelInterface $kernel)
+    public function __construct (KernelInterface $kernel)
     {
         $this->kernel = $kernel;
 
@@ -46,46 +46,9 @@ class FileHandlerService implements FileHandlerServiceInterface
         \PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
     }
 
-    public function convertToArray (\PHPExcel $obj, $with_headers = true, $endColumn = 'all')
-    {
-
-        $headers = array();
-        $array_data = array();
-        $row_iterator = $obj->getActiveSheet()
-                            ->getRowIterator()
-        ;
-
-        foreach ( $row_iterator as $row )
-        {
-            foreach ( $row->getCellIterator() as $cell )
-            {
-                if ( $row->getRowIndex() == 1 )
-                {
-                    $headers[] = $cell->getValue();
-                }
-                else
-                {
-                    if ( $with_headers )
-                    {
-                        $array_data[][$headers[$cell->getXfIndex()]] = $cell->getValue();
-                    }
-                    else
-                    {
-                        $array_data[] = $cell->getValue();
-                    }
-                }
-
-                // If if the final column stop the foreach
-                if ( $endColumn != 'all' && $cell->getColumn() == $endColumn )
-                {
-                    break;
-                }
-            }
-        }
-
-        return $array_data;
-    }
-
+    /**
+     * @inheritdoc
+     */
     public function generateFileFromQuery ($name, $extension, Query $query, $headers, $zipped = true)
     {
         // Generate File
@@ -100,6 +63,9 @@ class FileHandlerService implements FileHandlerServiceInterface
         return array($filename, null);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function generateFileFromArray ($name, $extension, $array, $zipped = true)
     {
         // Generate File
@@ -114,6 +80,9 @@ class FileHandlerService implements FileHandlerServiceInterface
         return array($filename, null);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function import ($filename)
     {
         /** @var \PHPExcel_Reader_Abstract $reader */
@@ -125,15 +94,13 @@ class FileHandlerService implements FileHandlerServiceInterface
     }
 
     /**
-     * @param Form $form
-     *
-     * @return \Symfony\Component\HttpFoundation\File\File
+     * @inheritdoc
      */
     public function saveFormFile (Form $form)
     {
         // Handle Form
         $data = $form->getData();
-        /** @var UploadedFile $file */
+        /** @var UploadedFile $uploaded_file */
         $uploaded_file = $data['upload_file'];
         $filename = $this->generateFilename($uploaded_file->getClientOriginalName(), null, 'imports/');
 
@@ -153,9 +120,9 @@ class FileHandlerService implements FileHandlerServiceInterface
     private function generateFilename ($name, $extension, $absolute = false, $dir = '/')
     {
         // Make sure the file is unique
-        $name = uniqid() . str_replace(' ', '-', $name);
+        $name = uniqid('listbroking', true) . str_replace(' ', '-', $name);
 
-        $filename = strtolower(preg_replace('/\s/i', '-', $dir . date('Y-m-d'))) . $name ;
+        $filename = strtolower(preg_replace('/\s/i', '-', $dir . date('Y-m-d'))) . $name;
         if ( $extension )
         {
             $filename = $filename . '.' . $extension;
@@ -197,7 +164,7 @@ class FileHandlerService implements FileHandlerServiceInterface
      * @param $extension
      * @param $array
      */
-    private function exportByArray($filename, $extension, $array)
+    private function exportByArray ($filename, $extension, $array)
     {
         $source = new ArraySourceIterator($array);
         $writer = $this->writerSelection($extension, $filename);
@@ -209,12 +176,14 @@ class FileHandlerService implements FileHandlerServiceInterface
 
     /**
      * Selects a file writer by type
+     *
      * @param $extension
      * @param $filename
      *
      * @return CsvWriter|JsonWriter|XlsWriter|XmlExcelWriter
      */
-    private function writerSelection($extension, $filename){
+    private function writerSelection ($extension, $filename)
+    {
         switch ( $extension )
         {
             case 'CSV':
@@ -260,6 +229,7 @@ class FileHandlerService implements FileHandlerServiceInterface
 
     /**
      * Zips a given file with optional password protection
+     *
      * @param      $filename
      * @param      $zip_name
      * @param bool $with_password
@@ -270,7 +240,8 @@ class FileHandlerService implements FileHandlerServiceInterface
     {
         $zipped_filename = $this->generateFilename($zip_name, 'zip', true, '/../web/exports/');
 
-        if($with_password){
+        if ( $with_password )
+        {
             $password = $this->generatePassword();
             exec(sprintf("zip -j --password %s %s %s", $password, $zipped_filename, $filename));
 

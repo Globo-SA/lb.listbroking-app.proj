@@ -42,12 +42,14 @@ interface StagingServiceInterface extends BaseServiceInterface
 
     /**
      * Imports contacts from a file to the staging area
+     * with optional default contact information
      *
      * @param $file
+     * @param $default_info
      *
      * @return mixed
      */
-    public function importStagingContacts ($file);
+    public function importStagingContacts ($file, array $default_info = []);
 
     /**
      * Loads validated contacts from the staging area

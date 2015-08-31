@@ -28,27 +28,34 @@ class AppService extends BaseService implements AppServiceInterface
      */
     private $twig;
 
-    function __construct (\Swift_Mailer $mailer, \Twig_Environment $twig)
+    public function __construct (\Swift_Mailer $mailer, \Twig_Environment $twig)
     {
         $this->mailer = $mailer;
         $this->twig = $twig;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function createJsonResponse ($response, $code = 200)
     {
         // Handle exceptions that don't have a valid http code
-        if ( ! is_int($code) || $code == '0' )
+        if ( ! is_int($code) || $code === '0' )
         {
             $code = 500;
         }
 
         return new JsonResponse(array(
-            "code"     => $code,
-            "response" => $response
+            'code'     => $code,
+            'response' => $response
         ), $code);
     }
 
-    public function createAttachmentResponse($filename, $with_cookie = true){
+    /**
+     * @inheritdoc
+     */
+    public function createAttachmentResponse ($filename, $with_cookie = true)
+    {
 
         // Generate response
         $response = new Response();
@@ -64,13 +71,18 @@ class AppService extends BaseService implements AppServiceInterface
         $response->setContent(readfile($filename));
 
         // Sends a "file was downloaded" cookie
-        if($with_cookie){
+        if ( $with_cookie )
+        {
             $cookie = new Cookie('fileDownload', 'true', new \DateTime('+1 minute'), '/', null, false, false);
             $response->headers->setCookie($cookie);
         }
 
         return $response;
     }
+
+    /**
+     * @inheritdoc
+     */
     public function deliverEmail ($template, $parameters, $subject, $emails, $filename = null)
     {
         $message = $this->mailer->createMessage()
@@ -89,6 +101,9 @@ class AppService extends BaseService implements AppServiceInterface
         return $this->mailer->send($message);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function generateForm ($type, $action = null, $data = null, $view = false)
     {
         $form = $this->form_factory->createBuilder($type, $data);
@@ -106,11 +121,14 @@ class AppService extends BaseService implements AppServiceInterface
         return $form->getForm();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getEntityList ($type, $ids, $query, $bundle)
     {
         if ( empty($type) )
         {
-            throw new \Exception("Type can not be empty", 400);
+            throw new \Exception('Type can not be empty', 400);
         }
 
         $qb = $this->entity_manager->getRepository("{$bundle}:{$type}")
@@ -138,11 +156,14 @@ class AppService extends BaseService implements AppServiceInterface
         return $list;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function validateAjaxRequest (Request $request)
     {
         if ( ! $request->isXmlHttpRequest() )
         {
-            throw new \Exception("Only Xml Http Requests allowed", 400);
+            throw new \Exception('Only Xml Http Requests allowed', 400);
         }
     }
 }

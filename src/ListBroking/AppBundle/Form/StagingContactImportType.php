@@ -14,7 +14,13 @@ class StagingContactImportType extends AbstractType
      */
     public function buildForm (FormBuilderInterface $builder, array $options)
     {
-        $builder->add('upload_file', 'file', array(
+        $builder
+            ->add('owner', 'entity', array(
+                'class' => 'ListBroking\AppBundle\Entity\Owner',
+                'property' => 'name'
+            ))
+            ->add('update', 'checkbox', array('required' => false, 'data' => true, 'label' => 'Update existing contacts ?'))
+            ->add('upload_file', 'file', array(
             'attr' => array('class' => 'form-control fileinput')
         ))
         ;
