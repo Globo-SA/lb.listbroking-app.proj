@@ -15,9 +15,11 @@ use Doctrine\ORM\UnitOfWork;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 abstract class BaseService implements BaseServiceInterface
 {
+
     /**
      * @var EntityManager
      */
@@ -43,11 +45,22 @@ abstract class BaseService implements BaseServiceInterface
      */
     protected $token_storage;
 
+    /**
+     * @var Stopwatch
+     */
+    private $stopwatch;
+
+    /**
+     * @inheritdoc
+     */
     public function clearEntityManager ()
     {
         $this->entity_manager->clear();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function findConfig ($name)
     {
         $entities = $this->findEntities('ListBrokingAppBundle:Configuration');
@@ -55,7 +68,8 @@ abstract class BaseService implements BaseServiceInterface
         {
             if ( $entity['name'] == $name )
             {
-                if($entity['type'] == 'json'){
+                if ( $entity['type'] == 'json' )
+                {
                     $entity['value'] = json_decode($entity['value'], 1);
                 }
 
@@ -66,6 +80,9 @@ abstract class BaseService implements BaseServiceInterface
         return null;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function findEntities ($repo_name)
     {
         // Get Cache ID
@@ -92,6 +109,9 @@ abstract class BaseService implements BaseServiceInterface
         return $this->doctrine_cache->fetch($cache_id);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function findEntity ($repo_name, $id)
     {
         // Get Cache ID
@@ -114,14 +134,20 @@ abstract class BaseService implements BaseServiceInterface
         return $this->doctrine_cache->fetch($cache_id);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function findExceptions ($limit)
     {
 
         return $this->entity_manager->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
-                        ->findLastExceptions($limit)
+                                    ->findLastExceptions($limit)
             ;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function findUser ()
     {
         return $this->token_storage->getToken()
@@ -129,17 +155,35 @@ abstract class BaseService implements BaseServiceInterface
             ;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function flushAll ()
     {
         $this->entity_manager->flush();
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function lapStopWatch ($event_name)
+    {
+        $periods = $this->stopwatch->lap($event_name)->getPeriods();
+        return end($periods)->getDuration();
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function logError ($msg)
     {
         $msg = '[' . date('Y-m-d h:d:s') . '] ' . $msg;
         $this->logger->error($msg);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function logInfo ($msg)
     {
 
@@ -147,6 +191,59 @@ abstract class BaseService implements BaseServiceInterface
         $this->logger->info($msg);
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function setDoctrineCache ($doctrine_cache)
+    {
+        $this->doctrine_cache = $doctrine_cache;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setEntityManager ($entity_manager)
+    {
+        $this->entity_manager = $entity_manager;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setFormFactory ($form_factory)
+    {
+        $this->form_factory = $form_factory;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLogger ($logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setTokenStorage ($token_storage)
+    {
+        $this->token_storage = $token_storage;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function startStopWatch ($event_name)
+    {
+        $this->stopwatch = new Stopwatch();
+
+        return $this->stopwatch->start($event_name);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function updateEntity ($entity)
     {
         if ( $entity )
@@ -167,50 +264,10 @@ abstract class BaseService implements BaseServiceInterface
     private function attachToEntityManager (&$entity)
     {
         if ( $this->entity_manager->getUnitOfWork()
-                      ->getEntityState($entity) == UnitOfWork::STATE_DETACHED
+                                  ->getEntityState($entity) == UnitOfWork::STATE_DETACHED
         )
         {
             $entity = $this->entity_manager->merge($entity);
         }
-    }
-
-    /**
-     * @param Cache $doctrine_cache
-     */
-    public function setDoctrineCache ($doctrine_cache)
-    {
-        $this->doctrine_cache = $doctrine_cache;
-    }
-
-    /**
-     * @param EntityManager $entity_manager
-     */
-    public function setEntityManager ($entity_manager)
-    {
-        $this->entity_manager = $entity_manager;
-    }
-
-    /**
-     * @param FormFactory $form_factory
-     */
-    public function setFormFactory ($form_factory)
-    {
-        $this->form_factory = $form_factory;
-    }
-
-    /**
-     * @param Logger $logger
-     */
-    public function setLogger ($logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * @param TokenStorageInterface $token_storage
-     */
-    public function setTokenStorage ($token_storage)
-    {
-        $this->token_storage = $token_storage;
     }
 }

@@ -166,17 +166,25 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     private function executeFilterEngine (Extraction $extraction)
     {
+        $stopwatch = $this->startStopWatch('filter_engine');
+
         // Runs the Filter compilation and generates the QueryBuilder
+        $this->logInfo(sprintf("\t ↳ Compiling filters for extraction_id: %s",$extraction->getId()));
         $qb = $this->f_engine->compileFilters($extraction);
+        $this->logInfo(sprintf("\t ↳ Compiled filters in %s milliseconds for extraction_id: %s",$this->lapStopWatch('filter_engine'), $extraction->getId()));
 
         $query = $qb->getQuery();
 
         // Add Contacts to the Extraction
+        $this->logInfo(sprintf("\t ↳ Executing Query for extraction_id: %s",$extraction->getId()));
         $contacts = $query->execute();
+        $this->logInfo(sprintf("\t ↳ Finished Query in %s milliseconds for extraction_id: %s",$this->lapStopWatch('filter_engine'), $extraction->getId()));
 
+        $this->logInfo(sprintf("\t ↳ Creating contacts for extraction_id: %s",$extraction->getId()));
         $this->entity_manager->getRepository('ListBrokingAppBundle:Extraction')
                              ->addContacts($extraction, $contacts, false)
         ;
+        $this->logInfo(sprintf("\t ↳ Finished creating contacts in %s milliseconds for extraction_id: %s",$this->lapStopWatch('filter_engine'), $extraction->getId()));
 
         $query = array(
             'dql' => $query->getDQL(),
