@@ -21,3 +21,6 @@
 ### 2.5
 * Fixed is_mobile and in_opposition filters
 * ExtractionContact entities are now added using raw query
+
+### 2.6
+* ExtractionContact entities are now added using raw query with configurable batches

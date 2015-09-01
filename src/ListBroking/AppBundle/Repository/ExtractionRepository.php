@@ -8,7 +8,6 @@
 
 namespace ListBroking\AppBundle\Repository;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityRepository;
 use ListBroking\AppBundle\Entity\Extraction;
 
@@ -44,12 +43,13 @@ class ExtractionRepository extends EntityRepository
     /**
      * Associates multiple contacts to an extraction
      *
-     * @param $extraction Extraction
-     * @param $contacts
+     * @param     $extraction Extraction
+     * @param     $contacts
+     * @param int $batch_size
      *
      * @return mixed
      */
-    public function addContacts (Extraction $extraction, $contacts)
+    public function addContacts (Extraction $extraction, $contacts, $batch_size = 1000)
     {
         $extraction_id = $extraction->getId();
 
@@ -59,21 +59,39 @@ class ExtractionRepository extends EntityRepository
         // Remove old ExtractionContacts of current Extraction
         $connection->delete('extraction_contact', array('extraction_id' => $extraction_id));
 
+        $batch = 1;
 
         // Add the new Contacts
+        $batch_values = array();
         foreach ( $contacts as $contact )
         {
             $contact_id = $contact['contact_id'];
 
-            $connection->transactional(function (Connection $connection) use ($extraction_id, $contact_id)
+            $batch_values[] = sprintf('(%s,%s)', $extraction_id, $contact_id);
+
+            if ( ($batch % $batch_size) === 0 )
             {
-                $connection->insert('extraction_contact', array(
-                    'extraction_id' => $extraction_id,
-                    'contact_id'    => $contact_id
-                ))
-                ;
-            })
-            ;
+                $this->insertBatch($batch_values);
+
+                // Reset Batch
+                $batch_values = array();
+                $batch = 1;
+            }
+            $batch++;
         }
+        $this->insertBatch($batch_values);
+    }
+
+    private function insertBatch ($batch_values)
+    {
+        $batch_string = implode(',', $batch_values);
+        $sql = <<<SQL
+                INSERT INTO extraction_contact (extraction_id, contact_id)
+                VALUES $batch_string
+SQL;
+        $this->getEntityManager()
+             ->getConnection()
+             ->exec($sql)
+        ;
     }
 } 
