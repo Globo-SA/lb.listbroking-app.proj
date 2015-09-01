@@ -14,9 +14,9 @@
             </span>
         </div>
         <div class="container-fluid">
-            <button class="btn btn-flat btn-default navbar-right navbar-btn" data-toggle="modal" data-target="#edit_extraction_modal">EDIT</button>
+            <button class="btn btn-flat btn-primary navbar-right navbar-btn" data-toggle="modal" data-target="#edit_extraction_modal">EDIT</button>
             {% if is_granted('ROLE_SUPER_ADMIN') %}
-                <button class="btn btn-flat btn-default navbar-right navbar-btn" data-toggle="modal" data-target="#sql-modal">SQL</button>
+                <button class="btn btn-flat btn-primary navbar-right navbar-btn" data-toggle="modal" data-target="#sql-modal">SQL</button>
                 {% include '@ListBrokingApp/Extraction/_partials/modal_sql.html.twig' %}
             {% endif %}
         </div>

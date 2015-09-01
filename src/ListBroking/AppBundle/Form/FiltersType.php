@@ -78,562 +78,549 @@ class FiltersType extends AbstractType
 
         // Filter Schema
         $this->filters = array(
-            "required"                            => array(
-                "label"  => "Required Fields",
-                "attr"   => array("class" => "in"),
-                "fields" => array(
+            'required'                            => array(
+                'label'  => 'Required Fields',
+                'attr'   => array('class' => 'in'),
+                'fields' => array(
                     array(
-                        "filter_type"          => ContactFilterInterface::REQUIRED_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "contact",
-                        "field"                => "gender",
-                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
-                        "type"                 => "checkbox",
-                        "options"              => array(
-                            "required" => false,
-                            "data"     => true,
-                            "attr"     => array(
-                                "class" => "form-control"
+                        'filter_type'          => ContactFilterInterface::REQUIRED_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'contact',
+                        'field'                => 'gender',
+                        'field_type'           => self::FIELD_TYPE_BOOLEAN,
+                        'type'                 => 'checkbox',
+                        'options'              => array(
+                            'required' => false,
+                            'data'     => true,
+                            'attr'     => array(
+                                'class' => 'form-control'
                             ),
-                            "label"    => "Has Gender"
+                            'label'    => 'Has Gender'
                         )
                     ),
                     array(
-                        "filter_type"          => ContactFilterInterface::REQUIRED_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "contact",
-                        "field"                => "firstname",
-                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
-                        "type"                 => "checkbox",
-                        "options"              => array(
-                            "required" => false,
-                            "data"     => true,
-                            "attr"     => array(
-                                "class" => "form-control"
+                        'filter_type'          => ContactFilterInterface::REQUIRED_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'contact',
+                        'field'                => 'firstname',
+                        'field_type'           => self::FIELD_TYPE_BOOLEAN,
+                        'type'                 => 'checkbox',
+                        'options'              => array(
+                            'required' => false,
+                            'data'     => true,
+                            'attr'     => array(
+                                'class' => 'form-control'
                             ),
-                            "label"    => "Has Firstname"
+                            'label'    => 'Has Firstname'
                         )
                     ),
                     array(
-                        "filter_type"          => ContactFilterInterface::REQUIRED_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "contact",
-                        "field"                => "lastname",
-                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
-                        "type"                 => "checkbox",
-                        "options"              => array(
-                            "required" => false,
-                            "data"     => true,
-                            "attr"     => array(
-                                "class" => "form-control"
+                        'filter_type'          => ContactFilterInterface::REQUIRED_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'contact',
+                        'field'                => 'lastname',
+                        'field_type'           => self::FIELD_TYPE_BOOLEAN,
+                        'type'                 => 'checkbox',
+                        'options'              => array(
+                            'required' => false,
+                            'data'     => true,
+                            'attr'     => array(
+                                'class' => 'form-control'
                             ),
-                            "label"    => "Has Lastname"
+                            'label'    => 'Has Lastname'
                         )
                     ),
                     array(
-                        "filter_type"          => ContactFilterInterface::REQUIRED_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "contact",
-                        "field"                => "birthdate",
-                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
-                        "type"                 => "checkbox",
-                        "options"              => array(
-                            "required" => false,
-                            "attr"     => array(
-                                "class" => "form-control"
+                        'filter_type'          => ContactFilterInterface::REQUIRED_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'contact',
+                        'field'                => 'birthdate',
+                        'field_type'           => self::FIELD_TYPE_BOOLEAN,
+                        'type'                 => 'checkbox',
+                        'options'              => array(
+                            'required' => false,
+                            'attr'     => array(
+                                'class' => 'form-control'
                             ),
-                            "label"    => "Has Birthdate"
+                            'label'    => 'Has Birthdate'
                         )
                     ),
                     array(
-                        "filter_type"          => ContactFilterInterface::REQUIRED_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "contact",
-                        "field"                => "address",
-                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
-                        "type"                 => "checkbox",
-                        "options"              => array(
-                            "required" => false,
-                            "attr"     => array(
-                                "class" => "form-control"
+                        'filter_type'          => ContactFilterInterface::REQUIRED_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'contact',
+                        'field'                => 'address',
+                        'field_type'           => self::FIELD_TYPE_BOOLEAN,
+                        'type'                 => 'checkbox',
+                        'options'              => array(
+                            'required' => false,
+                            'attr'     => array(
+                                'class' => 'form-control'
                             ),
-                            "label"    => "Has address"
+                            'label'    => 'Has address'
                         )
                     ),
                     array(
-                        "filter_type"          => ContactFilterInterface::REQUIRED_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "contact",
-                        "field"                => "postalcode1",
-                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
-                        "type"                 => "checkbox",
-                        "options"              => array(
-                            "required" => false,
-                            "attr"     => array(
-                                "class" => "form-control"
+                        'filter_type'          => ContactFilterInterface::REQUIRED_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'contact',
+                        'field'                => 'postalcode1',
+                        'field_type'           => self::FIELD_TYPE_BOOLEAN,
+                        'type'                 => 'checkbox',
+                        'options'              => array(
+                            'required' => false,
+                            'attr'     => array(
+                                'class' => 'form-control'
                             ),
-                            "label"    => "Has Postalcode1"
+                            'label'    => 'Has Postalcode1'
                         )
                     ),
                     array(
-                        "filter_type"          => ContactFilterInterface::REQUIRED_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "contact",
-                        "field"                => "postalcode2",
-                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
-                        "type"                 => "checkbox",
-                        "options"              => array(
-                            "required" => false,
-                            "attr"     => array(
-                                "class" => "form-control"
+                        'filter_type'          => ContactFilterInterface::REQUIRED_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'contact',
+                        'field'                => 'postalcode2',
+                        'field_type'           => self::FIELD_TYPE_BOOLEAN,
+                        'type'                 => 'checkbox',
+                        'options'              => array(
+                            'required' => false,
+                            'attr'     => array(
+                                'class' => 'form-control'
                             ),
-                            "label"    => "Has Postalcode2"
+                            'label'    => 'Has Postalcode2'
                         )
                     )
                 )
             ),
-            "contact"                             => array(
-                "label"  => "Contact Details",
-                "attr"   => array("class" => "in"),
-                "fields" => array(
+            'contact'                             => array(
+                'label'  => 'Contact Details',
+                'attr'   => array('class' => 'in'),
+                'fields' => array(
                     array(
-                        "filter_type"          => ContactFilterInterface::BASIC_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "contact",
-                        "field"                => "gender",
-                        "field_type"           => self::FIELD_TYPE_ARRAY,
-                        "type"                 => "choice",
-                        "options"              => array(
-                            "multiple"          => true,
-                            "required"          => false,
-                            "attr"              => array(
-                                "data-select-mode" => "local",
-                                "placeholder"      => "Select one or more...",
-                                "class"            => "form-control"
+                        'filter_type'          => ContactFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'contact',
+                        'field'                => 'gender',
+                        'field_type'           => self::FIELD_TYPE_ARRAY,
+                        'type'                 => 'choice',
+                        'options'              => array(
+                            'multiple'          => true,
+                            'required'          => false,
+                            'attr'              => array(
+                                'data-select-mode' => 'local',
+                                'placeholder'      => 'Select one or more...',
+                                'class'            => 'form-control'
                             ),
-                            "label"             => "Genders",
-                            "choices"           => $this->getChoicesArray($genders),
-                            "choices_as_values" => true,
+                            'label'             => 'Genders',
+                            'choices'           => $this->getChoicesArray($genders),
+                            'choices_as_values' => true,
                         )
                     ),
                     array(
-                        "filter_type"          => ContactFilterInterface::BASIC_TYPE,
-                        "has_exclusion_filter" => true,
-                        "table"                => "contact",
-                        "field"                => "birthdate",
-                        "field_type"           => self::FIELD_TYPE_RANGE,
-                        "type"                 => "collection",
-                        "options"              => array(
-                            "required"     => false,
-                            "attr"         => array(
-                                "data-collection" => "true",
-                                "class"           => "col-md-12"
+                        'filter_type'          => ContactFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => true,
+                        'table'                => 'contact',
+                        'field'                => 'birthdate',
+                        'field_type'           => self::FIELD_TYPE_RANGE,
+                        'type'                 => 'collection',
+                        'options'              => array(
+                            'required'     => false,
+                            'attr'         => array(
+                                'data-collection' => 'true',
+                                'class'           => 'col-md-12'
                             ),
-                            "type"         => new RangeType("birthdate", "birthdaterangepicker", "Birthdate Range"),
-                            "allow_add"    => true,
-                            "allow_delete" => true,
-                            "label"        => "Birthdates",
+                            'type'         => new RangeType('birthdate', 'birthdaterangepicker', 'Birthdate Range'),
+                            'allow_add'    => true,
+                            'allow_delete' => true,
+                            'label'        => 'Birthdates',
                         )
                     ),
                     array(
-                        "filter_type"          => ContactFilterInterface::BASIC_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "contact",
-                        "field"                => "date",
-                        "field_type"           => self::FIELD_TYPE_RANGE,
-                        "type"                 => "collection",
-                        "options"              => array(
-                            "required"     => false,
-                            "attr"         => array(
-                                "data-collection" => "true",
-                                "class"           => "col-md-12"
+                        'filter_type'          => ContactFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'contact',
+                        'field'                => 'date',
+                        'field_type'           => self::FIELD_TYPE_RANGE,
+                        'type'                 => 'collection',
+                        'options'              => array(
+                            'required'     => false,
+                            'attr'         => array(
+                                'data-collection' => 'true',
+                                'class'           => 'col-md-12'
                             ),
-                            "type"         => new RangeType("date", "daterangepicker", "Date Range", $default_date_range),
-                            "allow_add"    => true,
-                            "allow_delete" => true,
-                            "label"        => "Contact dates"
+                            'type'         => new RangeType('date', 'daterangepicker', 'Date Range', $default_date_range),
+                            'allow_add'    => true,
+                            'allow_delete' => true,
+                            'label'        => 'Contact dates'
                         )
                     ),
                 )
             ),
-            "lead"                                => array(
-                "label"  => "Lead Details",
-                "attr"   => array("class" => "in"),
-                "fields" => array(
+            'lead'                                => array(
+                'label'  => 'Lead Details',
+                'attr'   => array('class' => 'in'),
+                'fields' => array(
                     array(
-                        "filter_type"          => LeadFilterInterface::BASIC_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "lead",
-                        "field"                => "is_mobile",
-                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
-                        "type"                 => "checkbox",
-                        "options"              => array(
-                            "required" => false,
-                            "attr"     => array(
-                                "class" => "form-control"
+                        'filter_type'          => LeadFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'lead',
+                        'field'                => 'is_mobile',
+                        'field_type'           => self::FIELD_TYPE_BOOLEAN,
+                        'type'                 => 'choice',
+                        'options'              => array(
+                            'placeholder' => false,
+                            'choices' => array(
+                                'Both' => null,
+                                'Yes' => true,
+                                'No' => false
                             ),
-                            "label"    => "Only mobile numbers"
+                            'data' => null,
+                            'choices_as_values' => true,
+                            'attr'     => array(
+                                'class' => 'form-control'
+                            ),
+                            'label'    => 'Mobile numbers'
                         ),
                     ),
                     array(
-                        "filter_type"          => LeadFilterInterface::BASIC_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "lead",
-                        "field"                => "in_opposition",
-                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
-                        "type"                 => "choice",
-                        "options"              => array(
-                            "data"    => false,
-                            "choices"  => array(
-                                "Yes" => true,
-                                "NO" => false,
+                        'filter_type'          => LeadFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'lead',
+                        'field'                => 'in_opposition',
+                        'field_type'           => self::FIELD_TYPE_BOOLEAN,
+                        'type'                 => 'choice',
+                        'options'              => array(
+                            'placeholder' => false,
+                            'choices' => array(
+                                'Both' => null,
+                                'Yes' => true,
+                                'No' => false
                             ),
-                            "choices_as_values" => true,
-                            'empty_value' => false,
-                            "attr"     => array(
-                                "class" => "form-control"
+                            'data' => false,
+                            'choices_as_values' => true,
+                            'attr'     => array(
+                                'class' => 'form-control'
                             ),
-                            "label"    => "In Opposition Lists"
+                            'label'    => 'In Opposition Lists'
                         )
                     ),
                 )
             ),
-            "location"                            => array(
-                "label"  => "Location",
-                "attr"   => array("class" => "in"),
-                "fields" => array(
+            'location'                            => array(
+                'label'  => 'Location',
+                'attr'   => array('class' => 'in'),
+                'fields' => array(
                     array(
-                        "filter_type"          => ContactFilterInterface::BASIC_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "contact",
-                        "field"                => "country",
-                        "field_type"           => self::FIELD_TYPE_ARRAY,
-                        "type"                 => "hidden",
-                        "options"              => array(
-                            "required" => false,
-                            "attr"     => array(
-                                "data-select-mode"          => "ajax",
-                                "data-select-minimum-input" => 2,
-                                "data-select-multiple"      => true,
-                                "data-select-type"          => "Country",
-                                "placeholder"               => "Select one or more...",
-                                "class"                     => "form-control"
+                        'filter_type'          => ContactFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'contact',
+                        'field'                => 'country',
+                        'field_type'           => self::FIELD_TYPE_ARRAY,
+                        'type'                 => 'hidden',
+                        'options'              => array(
+                            'required' => false,
+                            'attr'     => array(
+                                'data-select-mode'          => 'ajax',
+                                'data-select-minimum-input' => 2,
+                                'data-select-multiple'      => true,
+                                'data-select-type'          => 'Country',
+                                'placeholder'               => 'Select one or more...',
+                                'class'                     => 'form-control'
                             ),
-                            "label"    => "Countries",
+                            'label'    => 'Countries',
                         )
                     ),
                     array(
-                        "filter_type"          => ContactFilterInterface::BASIC_TYPE,
-                        "has_exclusion_filter" => true,
-                        "table"                => "contact",
-                        "field"                => "district",
-                        "field_type"           => self::FIELD_TYPE_ARRAY,
-                        "type"                 => "hidden",
-                        "has_exclusion"        => true,
-                        "options"              => array(
-                            "required" => false,
-                            "attr"     => array(
-                                "data-select-mode"          => "ajax",
-                                "data-select-minimum-input" => 2,
-                                "data-select-multiple"      => true,
-                                "data-select-type"          => "District",
-                                "placeholder"               => "Select one or more...",
-                                "class"                     => "form-control"
+                        'filter_type'          => ContactFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => true,
+                        'table'                => 'contact',
+                        'field'                => 'district',
+                        'field_type'           => self::FIELD_TYPE_ARRAY,
+                        'type'                 => 'hidden',
+                        'has_exclusion'        => true,
+                        'options'              => array(
+                            'required' => false,
+                            'attr'     => array(
+                                'data-select-mode'          => 'ajax',
+                                'data-select-minimum-input' => 2,
+                                'data-select-multiple'      => true,
+                                'data-select-type'          => 'District',
+                                'placeholder'               => 'Select one or more...',
+                                'class'                     => 'form-control'
                             ),
-                            "label"    => "Districts",
+                            'label'    => 'Districts',
                         )
                     ),
                     array(
-                        "filter_type"          => ContactFilterInterface::BASIC_TYPE,
-                        "has_exclusion_filter" => true,
-                        "table"                => "contact",
-                        "field"                => "county",
-                        "field_type"           => self::FIELD_TYPE_ARRAY,
-                        "type"                 => "hidden",
-                        "has_exclusion"        => true,
-                        "options"              => array(
-                            "required" => false,
-                            "attr"     => array(
-                                "data-select-mode"          => "ajax",
-                                "data-select-minimum-input" => 2,
-                                "data-select-multiple"      => true,
-                                "data-select-type"          => "County",
-                                "placeholder"               => "Select one or more...",
-                                "class"                     => "form-control"
+                        'filter_type'          => ContactFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => true,
+                        'table'                => 'contact',
+                        'field'                => 'county',
+                        'field_type'           => self::FIELD_TYPE_ARRAY,
+                        'type'                 => 'hidden',
+                        'has_exclusion'        => true,
+                        'options'              => array(
+                            'required' => false,
+                            'attr'     => array(
+                                'data-select-mode'          => 'ajax',
+                                'data-select-minimum-input' => 2,
+                                'data-select-multiple'      => true,
+                                'data-select-type'          => 'County',
+                                'placeholder'               => 'Select one or more...',
+                                'class'                     => 'form-control'
                             ),
-                            "label"    => "Counties",
+                            'label'    => 'Counties',
                         )
                     ),
                     array(
-                        "filter_type"          => ContactFilterInterface::BASIC_TYPE,
-                        "has_exclusion_filter" => true,
-                        "table"                => "contact",
-                        "field"                => "parish",
-                        "field_type"           => self::FIELD_TYPE_ARRAY,
-                        "type"                 => "hidden",
-                        "has_exclusion"        => true,
-                        "options"              => array(
-                            "required" => false,
-                            "attr"     => array(
-                                "data-select-mode"          => "ajax",
-                                "data-select-minimum-input" => 2,
-                                "data-select-multiple"      => true,
-                                "data-select-type"          => "Parish",
-                                "placeholder"               => "Select one or more...",
-                                "class"                     => "form-control"
+                        'filter_type'          => ContactFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => true,
+                        'table'                => 'contact',
+                        'field'                => 'parish',
+                        'field_type'           => self::FIELD_TYPE_ARRAY,
+                        'type'                 => 'hidden',
+                        'has_exclusion'        => true,
+                        'options'              => array(
+                            'required' => false,
+                            'attr'     => array(
+                                'data-select-mode'          => 'ajax',
+                                'data-select-minimum-input' => 2,
+                                'data-select-multiple'      => true,
+                                'data-select-type'          => 'Parish',
+                                'placeholder'               => 'Select one or more...',
+                                'class'                     => 'form-control'
                             ),
-                            "label"    => "Parish",
+                            'label'    => 'Parish',
                         )
                     ),
                     array(
-                        "filter_type"          => ContactFilterInterface::BASIC_TYPE,
-                        "has_exclusion_filter" => true,
-                        "table"                => "contact",
-                        "field"                => "postalcode1",
-                        "field_type"           => self::FIELD_TYPE_INTEGER,
-                        "type"                 => "hidden",
-                        "has_exclusion"        => true,
-                        "options"              => array(
-                            "required" => false,
-                            "attr"     => array(
-                                "data-select-mode" => "open",
-                                "placeholder"      => "Write and press enter...",
-                                "class"            => "form-control"
+                        'filter_type'          => ContactFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => true,
+                        'table'                => 'contact',
+                        'field'                => 'postalcode1',
+                        'field_type'           => self::FIELD_TYPE_INTEGER,
+                        'type'                 => 'hidden',
+                        'has_exclusion'        => true,
+                        'options'              => array(
+                            'required' => false,
+                            'attr'     => array(
+                                'data-select-mode' => 'open',
+                                'placeholder'      => 'Write and press enter...',
+                                'class'            => 'form-control'
                             ),
-                            "label"    => "Postalcode1 (ex: 4000-5000, 4000)",
+                            'label'    => 'Postalcode1 (ex: 4000-5000, 4000)',
                         )
                     ),
                     array(
-                        "filter_type"          => ContactFilterInterface::BASIC_TYPE,
-                        "has_exclusion_filter" => true,
-                        "table"                => "contact",
-                        "field"                => "postalcode2",
-                        "field_type"           => self::FIELD_TYPE_INTEGER,
-                        "type"                 => "hidden",
-                        "has_exclusion"        => true,
-                        "options"              => array(
-                            "required" => false,
-                            "attr"     => array(
-                                "data-select-mode" => "open",
-                                "placeholder"      => "Write and press enter...",
-                                "class"            => "form-control"
+                        'filter_type'          => ContactFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => true,
+                        'table'                => 'contact',
+                        'field'                => 'postalcode2',
+                        'field_type'           => self::FIELD_TYPE_INTEGER,
+                        'type'                 => 'hidden',
+                        'has_exclusion'        => true,
+                        'options'              => array(
+                            'required' => false,
+                            'attr'     => array(
+                                'data-select-mode' => 'open',
+                                'placeholder'      => 'Write and press enter...',
+                                'class'            => 'form-control'
                             ),
-                            "label"    => "Postalcode2",
-                        )
-                    ),
-                ),
-            ),
-            "ownership_source_and_categorization" => array(
-                "label"  => "Ownership, Source and Categorization",
-                "attr"   => array("class" => "in"),
-                "fields" => array(
-                    array(
-                        "filter_type"          => ContactFilterInterface::BASIC_TYPE,
-                        "has_exclusion_filter" => true,
-                        "table"                => "contact",
-                        "field"                => "owner",
-                        "field_type"           => self::FIELD_TYPE_ARRAY,
-                        "type"                 => "choice",
-                        "options"              => array(
-                            "required"          => false,
-                            "multiple"          => "multiple",
-                            "attr"              => array(
-                                "data-select-mode" => "local",
-                                "placeholder"      => "Select one or more...",
-                                "class"            => "form-control"
-                            ),
-                            "label"             => "Owners",
-                            "choices"           => $this->getChoicesArray($owners),
-                            "choices_as_values" => true,
-                        )
-                    ),
-                    array(
-                        "filter_type"          => ContactFilterInterface::BASIC_TYPE,
-                        "has_exclusion_filter" => true,
-                        "table"                => "contact",
-                        "field"                => "source",
-                        "field_type"           => self::FIELD_TYPE_ARRAY,
-                        "type"                 => "choice",
-                        "options"              => array(
-                            "required"          => false,
-                            "multiple"          => "multiple",
-                            "attr"              => array(
-                                "data-select-mode" => "local",
-                                "placeholder"      => "Select one or more...",
-                                "class"            => "form-control"
-                            ),
-                            "label"             => "Sources",
-                            "choices"           => $this->getChoicesArray($sources),
-                            "choices_as_values" => true,
-                        )
-                    ),
-                    array(
-                        "filter_type"          => ContactFilterInterface::BASIC_TYPE,
-                        "has_exclusion_filter" => true,
-                        "table"                => "contact",
-                        "field"                => "sub_category",
-                        "field_type"           => self::FIELD_TYPE_ARRAY,
-                        "type"                 => "choice",
-                        "options"              => array(
-                            "required"          => false,
-                            "multiple"          => "multiple",
-                            "attr"              => array(
-                                "data-select-mode" => "local",
-                                "placeholder"      => "Select one or more...",
-                                "class"            => "form-control"
-                            ),
-                            "label"             => "SubCategories",
-                            "choices"           => $this->getChoicesArray($sub_categories),
-                            "choices_as_values" => true,
+                            'label'    => 'Postalcode2',
                         )
                     ),
                 ),
             ),
-            "basic_locks"                         => array(
-                "label"  => "Basic Lead Locks",
-                "attr"   => array("class" => "in"),
-                "fields" => array(
+            'ownership_source_and_categorization' => array(
+                'label'  => 'Ownership, Source and Categorization',
+                'attr'   => array('class' => 'in'),
+                'fields' => array(
                     array(
-                        "filter_type"          => LockFilterInterface::NO_LOCKS_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "lock",
-                        "field"                => "no_locks_lock_filter",
-                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
-                        "type"                 => "checkbox",
-                        "options"              => array(
-                            "value"    => 1, //NoLocksFilter
-                            "data"     => true,
-                            "required" => false,
-                            "attr"     => array(
-                                "data-toggle"    => "tooltip",
-                                "data-trigger"   => "hover",
-                                "data-placement" => "top",
-                                "title"          => "Only select leads without active locks, this should always be checked!",
-                                "class"          => "form-control"
+                        'filter_type'          => ContactFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => true,
+                        'table'                => 'contact',
+                        'field'                => 'owner',
+                        'field_type'           => self::FIELD_TYPE_ARRAY,
+                        'type'                 => 'choice',
+                        'options'              => array(
+                            'required'          => false,
+                            'multiple'          => 'multiple',
+                            'attr'              => array(
+                                'data-select-mode' => 'local',
+                                'placeholder'      => 'Select one or more...',
+                                'class'            => 'form-control'
                             ),
-                            "label"    => "Only unlocked Leads"
+                            'label'             => 'Owners',
+                            'choices'           => $this->getChoicesArray($owners),
+                            'choices_as_values' => true,
                         )
                     ),
-                    //                    // This filter may never be needed
-                    //                    array(
-                    //                        "filter_type"          => LockFilterInterface::RESERVED_LOCK_TYPE,
-                    //                        "has_exclusion_filter" => false,
-                    //                        "table"                => "lock",
-                    //                        "field"                => "reserved_lock_filter",
-                    //                        "field_type"           => self::FIELD_TYPE_BOOLEAN,
-                    //                        "type"                 => "checkbox",
-                    //                        "options"              => array(
-                    //                            "value"    => 2, //ReservedLockType
-                    //                            "required" => false,
-                    //                            "attr"     => array(
-                    //                                "data-toggle"    => "tooltip",
-                    //                                "data-trigger"   => "hover",
-                    //                                "data-placement" => "top",
-                    //                                "title"          => "Only Select leads that aren\"t reserved on an other extraction",
-                    //                                "class"          => "form-control"
-                    //                            ),
-                    //                            "label"    => "Only free Leads"
-                    //                        )
-                    //                    ),
+                    array(
+                        'filter_type'          => ContactFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => true,
+                        'table'                => 'contact',
+                        'field'                => 'source',
+                        'field_type'           => self::FIELD_TYPE_ARRAY,
+                        'type'                 => 'choice',
+                        'options'              => array(
+                            'required'          => false,
+                            'multiple'          => 'multiple',
+                            'attr'              => array(
+                                'data-select-mode' => 'local',
+                                'placeholder'      => 'Select one or more...',
+                                'class'            => 'form-control'
+                            ),
+                            'label'             => 'Sources',
+                            'choices'           => $this->getChoicesArray($sources),
+                            'choices_as_values' => true,
+                        )
+                    ),
+                    array(
+                        'filter_type'          => ContactFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => true,
+                        'table'                => 'contact',
+                        'field'                => 'sub_category',
+                        'field_type'           => self::FIELD_TYPE_ARRAY,
+                        'type'                 => 'choice',
+                        'options'              => array(
+                            'required'          => false,
+                            'multiple'          => 'multiple',
+                            'attr'              => array(
+                                'data-select-mode' => 'local',
+                                'placeholder'      => 'Select one or more...',
+                                'class'            => 'form-control'
+                            ),
+                            'label'             => 'SubCategories',
+                            'choices'           => $this->getChoicesArray($sub_categories),
+                            'choices_as_values' => true,
+                        )
+                    ),
+                ),
+            ),
+            'basic_locks'                         => array(
+                'label'  => 'Basic Lead Locks',
+                'attr'   => array('class' => 'in'),
+                'fields' => array(
+                    array(
+                        'filter_type'          => LockFilterInterface::NO_LOCKS_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'lock',
+                        'field'                => 'no_locks_lock_filter',
+                        'field_type'           => self::FIELD_TYPE_BOOLEAN,
+                        'type'                 => 'checkbox',
+                        'options'              => array(
+                            'value'    => 1, //NoLocksFilter
+                            'data'     => true,
+                            'required' => false,
+                            'attr'     => array(
+                                'data-toggle'    => 'tooltip',
+                                'data-trigger'   => 'hover',
+                                'data-placement' => 'top',
+                                'title'          => 'Only select leads without active locks, this should always be checked!',
+                                'class'          => 'form-control'
+                            ),
+                            'label'    => 'Only unlocked Leads'
+                        )
+                    )
                 )
             ),
-            "client_locks"                        => array(
-                "label"  => "Client Locks",
-                "attr"   => array(),
-                "fields" => array(
+            'client_locks'                        => array(
+                'label'  => 'Client Locks',
+                'attr'   => array(),
+                'fields' => array(
                     array(
-                        "filter_type"          => LockFilterInterface::CLIENT_LOCK_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "lock",
-                        "field"                => "client_lock_filter",
-                        "field_type"           => self::FIELD_TYPE_ARRAY,
-                        "type"                 => "collection",
-                        "options"              => array(
-                            "required"     => false,
-                            "attr"         => array(
-                                "data-collection" => "true",
-                                "class"           => "col-md-12"
+                        'filter_type'          => LockFilterInterface::CLIENT_LOCK_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'lock',
+                        'field'                => 'client_lock_filter',
+                        'field_type'           => self::FIELD_TYPE_ARRAY,
+                        'type'                 => 'collection',
+                        'options'              => array(
+                            'required'     => false,
+                            'attr'         => array(
+                                'data-collection' => 'true',
+                                'class'           => 'col-md-12'
                             ),
-                            "type"         => new LockType("client", "Client", $this->getChoicesArray($clients), $expiration_choices),
-                            "allow_add"    => true,
-                            "allow_delete" => true,
-                            "label"        => "Client"
+                            'type'         => new LockType('client', 'Client', $this->getChoicesArray($clients), $expiration_choices),
+                            'allow_add'    => true,
+                            'allow_delete' => true,
+                            'label'        => 'Client'
                         )
                     ),
                 ),
             ),
-            "campaign_locks"                      => array(
-                "label"  => "Campaign Locks",
-                "attr"   => array(),
-                "fields" => array(
+            'campaign_locks'                      => array(
+                'label'  => 'Campaign Locks',
+                'attr'   => array(),
+                'fields' => array(
                     array(
 
-                        "filter_type"          => LockFilterInterface::CAMPAIGN_LOCK_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "lock",
-                        "field"                => "campaign_lock_filter",
-                        "field_type"           => self::FIELD_TYPE_ARRAY,
-                        "type"                 => "collection",
-                        "options"              => array(
-                            "required"     => false,
-                            "attr"         => array(
-                                "data-collection" => "true",
-                                "class"           => "col-md-12"
+                        'filter_type'          => LockFilterInterface::CAMPAIGN_LOCK_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'lock',
+                        'field'                => 'campaign_lock_filter',
+                        'field_type'           => self::FIELD_TYPE_ARRAY,
+                        'type'                 => 'collection',
+                        'options'              => array(
+                            'required'     => false,
+                            'attr'         => array(
+                                'data-collection' => 'true',
+                                'class'           => 'col-md-12'
                             ),
-                            "type"         => new LockType("campaign", "Campaign", $this->getChoicesArray($campaigns), $expiration_choices),
-                            "allow_add"    => true,
-                            "allow_delete" => true,
-                            "label"        => "Client"
+                            'type'         => new LockType('campaign', 'Campaign', $this->getChoicesArray($campaigns), $expiration_choices),
+                            'allow_add'    => true,
+                            'allow_delete' => true,
+                            'label'        => 'Client'
                         )
                     ),
                 ),
             ),
-            "category_locks"                      => array(
-                "label"  => "Category Locks",
-                "attr"   => array(),
-                "fields" => array(
+            'category_locks'                      => array(
+                'label'  => 'Category Locks',
+                'attr'   => array(),
+                'fields' => array(
                     array(
-                        "filter_type"          => LockFilterInterface::CATEGORY_LOCK_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "lock",
-                        "field"                => "category_lock_filter",
-                        "field_type"           => self::FIELD_TYPE_ARRAY,
-                        "type"                 => "collection",
-                        "required"             => false,
-                        "options"              => array(
-                            "attr"         => array(
-                                "data-collection" => "true",
-                                "class"           => "col-md-12"
+                        'filter_type'          => LockFilterInterface::CATEGORY_LOCK_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'lock',
+                        'field'                => 'category_lock_filter',
+                        'field_type'           => self::FIELD_TYPE_ARRAY,
+                        'type'                 => 'collection',
+                        'required'             => false,
+                        'options'              => array(
+                            'attr'         => array(
+                                'data-collection' => 'true',
+                                'class'           => 'col-md-12'
                             ),
-                            "type"         => new LockType("category", "Category", $this->getChoicesArray($categories), $expiration_choices),
-                            "allow_add"    => true,
-                            "allow_delete" => true,
-                            "label"        => "Category"
+                            'type'         => new LockType('category', 'Category', $this->getChoicesArray($categories), $expiration_choices),
+                            'allow_add'    => true,
+                            'allow_delete' => true,
+                            'label'        => 'Category'
                         )
                     ),
                 ),
             ),
-            "sub_category_locks"                  => array(
-                "label"  => "SubCategory Locks",
-                "attr"   => array(),
-                "fields" => array(
+            'sub_category_locks'                  => array(
+                'label'  => 'SubCategory Locks',
+                'attr'   => array(),
+                'fields' => array(
                     array(
-                        "filter_type"          => LockFilterInterface::SUB_CATEGORY_LOCK_TYPE,
-                        "has_exclusion_filter" => false,
-                        "table"                => "lock",
-                        "field"                => "sub_category_lock_filter",
-                        "field_type"           => self::FIELD_TYPE_ARRAY,
-                        "type"                 => "collection",
-                        "required"             => false,
-                        "options"              => array(
-                            "attr"         => array(
-                                "data-collection" => "true",
-                                "class"           => "col-md-12"
+                        'filter_type'          => LockFilterInterface::SUB_CATEGORY_LOCK_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'lock',
+                        'field'                => 'sub_category_lock_filter',
+                        'field_type'           => self::FIELD_TYPE_ARRAY,
+                        'type'                 => 'collection',
+                        'required'             => false,
+                        'options'              => array(
+                            'attr'         => array(
+                                'data-collection' => 'true',
+                                'class'           => 'col-md-12'
                             ),
-                            "type"         => new LockType("sub_category", "SubCategory", $this->getChoicesArray($sub_categories), $expiration_choices),
-                            "allow_add"    => true,
-                            "allow_delete" => true,
-                            "label"        => "SubCategory"
+                            'type'         => new LockType('sub_category', 'SubCategory', $this->getChoicesArray($sub_categories), $expiration_choices),
+                            'allow_add'    => true,
+                            'allow_delete' => true,
+                            'label'        => 'SubCategory'
                         )
                     ),
                 ),
@@ -862,6 +849,11 @@ class FiltersType extends AbstractType
             case FiltersType::FIELD_TYPE_ARRAY:
             case FiltersType::FIELD_TYPE_BOOLEAN:
 
+                if(empty($values))
+                {
+                    break;
+                }
+
                 // Convert values to array
                 if ( ! is_array($values) )
                 {
@@ -952,7 +944,7 @@ class FiltersType extends AbstractType
             foreach ( $group['fields'] as $filter )
             {
                 // Name Generator - FIELD_TABLE:FIELD_NAME:FIELD_TYPE:FILTER_TYPE:FILTER_OPERATION
-                $name = sprintf("%s:%s:%s:%s:", $filter["table"]/*FIELD_TABLE*/, $filter["field"]/*FIELD_NAME*/, $filter["field_type"]/*FIELD_TYPE*/, $filter["filter_type"]/*FILTER_TYPE*/);
+                $name = sprintf('%s:%s:%s:%s:', $filter['table']/*FIELD_TABLE*/, $filter['field']/*FIELD_NAME*/, $filter['field_type']/*FIELD_TYPE*/, $filter['filter_type']/*FILTER_TYPE*/);
                 $inclusion_name = $name . self::INCLUSION_FILTER/*FILTER_OPERATION*/
                 ;
                 $exclusion_name = $name . self::EXCLUSION_FILTER/*FILTER_OPERATION*/

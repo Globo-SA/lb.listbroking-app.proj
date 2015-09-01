@@ -25,8 +25,7 @@ class Contact
     /**
      * @var boolean
      */
-    private $is_clean
-    ;
+    private $is_clean = 0;
     /**
      * @var string
      */

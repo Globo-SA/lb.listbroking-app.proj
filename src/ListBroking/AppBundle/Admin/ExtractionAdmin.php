@@ -104,7 +104,9 @@ class ExtractionAdmin extends Admin
             ;
         }
 
-        $formMapper->add('payout');
+        $formMapper->add('payout')
+            ->add('quantity')
+        ;
     }
 
     /**

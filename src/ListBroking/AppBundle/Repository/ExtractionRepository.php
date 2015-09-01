@@ -8,10 +8,9 @@
 
 namespace ListBroking\AppBundle\Repository;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityRepository;
-use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Extraction;
-use ListBroking\AppBundle\Entity\ExtractionContact;
 
 class ExtractionRepository extends EntityRepository
 {
@@ -55,37 +54,26 @@ class ExtractionRepository extends EntityRepository
         $extraction_id = $extraction->getId();
 
         $em = $this->getEntityManager();
-        $batch = 1;
-        $batchSize = 500;
+        $connection = $em->getConnection();
 
         // Remove old ExtractionContacts of current Extraction
-        $dq = $em->createQuery('delete from ListBroking\AppBundle\Entity\ExtractionContact ec where ec.extraction = :extraction_id');
-        $dq->setParameter('extraction_id', $extraction->getId());
-        $dq->execute();
+        $connection->delete('extraction_contact', array('extraction_id' => $extraction_id));
+
 
         // Add the new Contacts
         foreach ( $contacts as $contact )
         {
-            /** @var Contact $contact */
-            $contact = $em->getPartialReference('ListBrokingAppBundle:Contact', $contact['contact_id']);
+            $contact_id = $contact['contact_id'];
 
-            $extraction_contact = new ExtractionContact();
-            $extraction_contact->setContact($contact);
-            $extraction_contact->setExtraction($extraction);
-            $em->persist($extraction_contact);
-
-            if ( ($batch % $batchSize) === 0 )
+            $connection->transactional(function (Connection $connection) use ($extraction_id, $contact_id)
             {
-                $batch = 1;
-                $em->flush();
-                $em->clear();
-
-                // Add Extraction to the EntityManager after it's cleared
-                $extraction = $em->getPartialReference('ListBrokingAppBundle:Extraction', $extraction_id);
-            }
-            $batch++;
+                $connection->insert('extraction_contact', array(
+                    'extraction_id' => $extraction_id,
+                    'contact_id'    => $contact_id
+                ))
+                ;
+            })
+            ;
         }
-        $em->flush();
-        $em->clear();
     }
 } 
