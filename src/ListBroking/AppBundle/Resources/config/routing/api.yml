@@ -1,0 +1,3 @@
+api_create_staging_lead:
+    path: /v1/create/staging_lead
+    defaults: { _controller: ListBrokingAppBundle:API:createStagingLead }
