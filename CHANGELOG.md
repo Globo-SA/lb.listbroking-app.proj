@@ -24,3 +24,8 @@
 
 ### 2.6
 * ExtractionContact entities are now added using raw query with configurable batches
+
+### 2.7
+* Changed delivery system to use file spool
+* Extended ORM Extractor to fix memory problems
+* Removed old code

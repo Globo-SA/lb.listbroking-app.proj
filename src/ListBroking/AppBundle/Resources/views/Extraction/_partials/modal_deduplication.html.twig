@@ -8,15 +8,16 @@
                 <h4 class="modal-title"><i class="fa fa-times"></i>&nbsp;Lead Deduplication</h4>
             </div>
             <div class="modal-body">
+                <p>As a security measure, the extraction can only be sent to the <b>its Creator</b> and the file will be <b>zipped</b> with a password.</p>
                 <blockquote class="small-label">
                     <div class="form-group">
-                        <label>Download file</label>
+                        <label>Download file <small>(Excel file with contact information for deduplication)</small></label>
                         <input type="hidden" data-select-mode="ajax" data-select-minimum-input="0" data-select-type="ExtractionTemplate" data-placeholder="Select a template..." class="form-control
                         row-margin" value="1" disabled="disabled">
                         <button type="button" id="deduplication-download" data-extraction="{{ extraction.id }}" class="btn btn-flat btn-primary space"><i class="icon icon-large ion-loading-c" style="display: none;
                         "></i>&nbsp;Extract Leads List</button>
                     </div>
-                    <small>Excel file with contact information for deduplication</small>
+                    <small>Extraction will be sent to: <b>{{ app.user.email }}</b></small>
                 </blockquote>
                 </div>
             {{ form_start(forms.extraction_deduplication, {attr: {'data-extraction': extraction.id}}) }}

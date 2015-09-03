@@ -16,7 +16,6 @@ interface FileHandlerServiceInterface
      *
      * @param $filename
      *
-     * @internal param $filename
      * @return \PHPExcel
      */
     public function import ($filename);

@@ -1,6 +1,7 @@
 ListBroking\AppBundle\Entity\Lock:
     type: entity
     table: lb_lock
+    repositoryClass: ListBroking\AppBundle\Repository\LockRepository
     id:
         id:
             type: bigint

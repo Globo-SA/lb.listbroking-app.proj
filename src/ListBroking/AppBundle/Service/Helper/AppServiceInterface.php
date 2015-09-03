@@ -46,7 +46,6 @@ interface AppServiceInterface extends BaseServiceInterface
      * @param      $emails
      * @param null $filename
      *
-     * @internal param $body
      * @return int
      */
     public function deliverEmail ($template, $parameters, $subject, $emails, $filename = null);

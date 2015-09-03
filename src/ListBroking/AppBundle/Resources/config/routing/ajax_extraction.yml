@@ -31,11 +31,11 @@ ajax_extraction_summary:
 #          extraction_id: \d+
 #          lead_id: \d+
 
-ajax_extraction_download:
-    path: /ajax/extraction/{extraction_id}/download/{extraction_template_id}
-    defaults: { _controller: ListBrokingAppBundle:AjaxExtraction:extractionDownload }
-    options:
-        expose: true
+#ajax_extraction_download:
+#    path: /ajax/extraction/{extraction_id}/download/{extraction_template_id}
+#    defaults: { _controller: ListBrokingAppBundle:AjaxExtraction:extractionDownload }
+#    options:
+#        expose: true
 
 ajax_extraction_locks:
     path: /ajax/extraction/{extraction_id}/locks

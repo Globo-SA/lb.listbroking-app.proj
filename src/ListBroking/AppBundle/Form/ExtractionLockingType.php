@@ -16,17 +16,16 @@ class ExtractionLockingType extends AbstractType
     public function buildForm (FormBuilderInterface $builder, array $options)
     {
         $builder->add('lock_type', 'choice', array(
-                "multiple"          => true,
-                "expanded"          => true,
-                "label"             => "List of items:",
-                "choices"           => array(
-                    'CLIENT'      => Lock::TYPE_CLIENT,
-                    'CAMPAIGN'    => Lock::TYPE_CAMPAIGN,
-                    'CATEGORY'    => Lock::TYPE_CATEGORY,
-                    'SUBCATEGORY' => Lock::TYPE_SUB_CATEGORY
-                ),
-                'choices_as_values' => true,
-            ))
+            "multiple" => true,
+            "expanded" => true,
+            "label"    => "List of items:",
+            "choices"  => array(
+                Lock::TYPE_CLIENT       => 'CLIENT',
+                Lock::TYPE_CAMPAIGN     => 'CAMPAIGN',
+                Lock::TYPE_CATEGORY     => 'CATEGORY',
+                Lock::TYPE_SUB_CATEGORY => 'SUBCATEGORY'
+            ),
+        ))
         ;
     }
 

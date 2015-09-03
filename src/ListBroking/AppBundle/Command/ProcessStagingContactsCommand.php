@@ -10,6 +10,7 @@ namespace ListBroking\AppBundle\Command;
 
 use Adclick\TaskControllerBundle\Service\TaskServiceInterface;
 use ListBroking\AppBundle\Entity\StagingContact;
+use ListBroking\AppBundle\Service\BusinessLogic\StagingService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -44,6 +45,7 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
         {
             if ( $this->service->start($this, $input, $output, self::MAX_RUNNING) )
             {
+                /** @var StagingService $s_service */
                 $s_service = $this->getContainer()
                                   ->get('staging')
                 ;

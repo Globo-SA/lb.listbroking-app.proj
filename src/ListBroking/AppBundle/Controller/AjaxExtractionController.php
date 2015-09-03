@@ -55,8 +55,7 @@ class AjaxExtractionController extends Controller
             return $a_service->createJsonResponse(array(
                 'code'     => 200,
                 'response' => $extraction,
-            ))
-                ;
+            ));
         }
         catch ( \Exception $e )
         {
@@ -99,15 +98,13 @@ class AjaxExtractionController extends Controller
                     'preview_limit'               => '',
                     'extraction'                  => $extraction,
                     'extraction_contacts_preview' => $extraction_contacts_preview
-                ))
-                    ;
+                ));
             }
 
             return $a_service->createJsonResponse(array(
                 'code'                        => 200,
                 'extraction_contacts_preview' => $extraction_contacts_preview
-            ))
-                ;
+            ));
         }
         catch ( \Exception $e )
         {
@@ -147,15 +144,13 @@ class AjaxExtractionController extends Controller
                 return $this->render('@ListBrokingApp/Extraction/_partials/extraction_summary.html.twig', array(
                     'extraction_summary' => $extraction_summary,
 
-                ))
-                    ;
+                ));
             }
 
             return $a_service->createJsonResponse(array(
                 'code'     => 200,
                 'response' => $extraction_summary,
-            ))
-                ;
+            ));
         }
         catch ( \Exception $e )
         {
@@ -163,33 +158,40 @@ class AjaxExtractionController extends Controller
         }
     }
 
-    /**
-     * Downloads the Extraction for deduplication or finalization
-     *
-     * @param $extraction_id
-     * @param $extraction_template_id
-     *
-     * @return Response
-     * @throws InvalidExtractionException
-     */
-    public function extractionDownloadAction ($extraction_id, $extraction_template_id)
-    {
-        //Service
-        $e_service = $this->get('extraction');
-        $f_service = $this->get('file_handler');
-        $a_service = $this->get('app');
-
-        // Current Extraction
-        $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
-
-        // Generate the Extraction File
-        $template = json_decode($e_service->findEntity('ListBrokingAppBundle:ExtractionTemplate', $extraction_template_id)
-                                          ->getTemplate(), 1);
-        $query = $e_service->getExtractionContactsQuery($extraction);
-        list($filename, $password) = $f_service->generateFileFromQuery($extraction->getName(), $template['extension'], $query, $template['headers'], false);
-
-        return $a_service->createAttachmentResponse($filename);
-    }
+//    /**
+//     * Downloads the Extraction for deduplication
+//     *
+//     * @param $extraction_id
+//     * @param $extraction_template_id
+//     *
+//     * @return Response
+//     * @throws InvalidExtractionException
+//     */
+//    public function extractionDownloadAction ($extraction_id, $extraction_template_id)
+//    {
+//        $a_service = $this->get('app');
+//        try
+//        {
+//            //Service
+//            $e_service = $this->get('extraction');
+//            $f_service = $this->get('file_handler');
+//
+//            // Current Extraction
+//            $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
+//
+//            // Generate the Extraction File
+//            $template = json_decode($e_service->findEntity('ListBrokingAppBundle:ExtractionTemplate', $extraction_template_id)
+//                                              ->getTemplate(), 1);
+//            $query = $e_service->getExtractionContactsQuery($extraction);
+//            list($filename, $password) = $f_service->generateFileFromQuery($extraction->getName(), $template['extension'], $query, $template['headers'], false);
+//
+//            return $a_service->createAttachmentResponse($filename);
+//        }
+//        catch ( \Exception $e )
+//        {
+//            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+//        }
+//    }
 
     /**
      * Publishes the extraction for deduplication
@@ -235,8 +237,7 @@ class AjaxExtractionController extends Controller
                 'filename'           => $file->getRealPath(),
                 'deduplication_type' => $deduplication_type,
                 'field'              => $field
-            ))
-            ;
+            ));
 
             return $a_service->createJsonResponse(array(), 200);
         }
@@ -247,7 +248,7 @@ class AjaxExtractionController extends Controller
     }
 
     /**
-     * Generates the requested locks on a given extraction
+     * Publishes the extraction for locking
      *
      * @param Request $request
      * @param         $extraction_id
@@ -281,14 +282,12 @@ class AjaxExtractionController extends Controller
                 $m_service->publishMessage('lock_extraction', array(
                     'object_id'  => $extraction_id,
                     'lock_types' => $lock_types
-                ))
-                ;
+                ));
             }
 
             return $a_service->createJsonResponse(array(
                 'response' => 'Locks being generated',
-            ))
-                ;
+            ));
         }
         catch ( \Exception $e )
         {
@@ -297,6 +296,8 @@ class AjaxExtractionController extends Controller
     }
 
     /**
+     * Publishes the extraction for delivery
+     *
      * @param Request $request
      * @param         $extraction_id
      * @param         $extraction_template_id
@@ -326,13 +327,11 @@ class AjaxExtractionController extends Controller
                 'extraction_template_id' => $extraction_template_id,
                 'email'                  => $a_service->findUser()
                                                       ->getEmail()
-            ))
-            ;
+            ));
 
             return $a_service->createJsonResponse(array(
                 'response' => 'Email being generated',
-            ))
-                ;
+            ));
         }
         catch ( \Exception $e )
         {

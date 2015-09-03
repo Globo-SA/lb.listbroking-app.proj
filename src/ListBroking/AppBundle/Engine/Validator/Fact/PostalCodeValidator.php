@@ -41,8 +41,6 @@ class PostalCodeValidator implements ValidatorInterface {
      * @param bool $is_required
      * @param Client $guzzle
      * @throws \Exception
-     * @internal param $is_requred
-     * @internal param EntityManager $service
      */
     function __construct(EntityManager $em, $is_required, Client $guzzle = null){
         $this->em = $em;

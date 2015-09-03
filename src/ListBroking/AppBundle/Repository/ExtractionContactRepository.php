@@ -6,6 +6,7 @@
 
 namespace ListBroking\AppBundle\Repository;
 
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
@@ -41,14 +42,15 @@ class ExtractionContactRepository extends EntityRepository
      *
      * @param Extraction $extraction
      * @param null       $limit
+     * @param            $hydrationMethod
      *
      * @return mixed
      */
-    public function getExtractionContacts (Extraction $extraction, $limit = null)
+    public function getExtractionContacts (Extraction $extraction, $limit = null, $hydrationMethod = AbstractQuery::HYDRATE_OBJECT)
     {
 
         return $this->getExtractionContactsQuery($extraction, $limit)
-                    ->execute(null, Query::HYDRATE_OBJECT)
+                    ->execute(null, $hydrationMethod)
             ;
     }
 

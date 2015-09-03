@@ -52,7 +52,7 @@ SQL;
 
         // Inserts the new deduplications from the file
         $insert_sql = <<<SQL
-            LOAD DATA LOCAL INFILE :filename
+            LOAD DATA INFILE :filename
             INTO TABLE extraction_deduplication
             FIELDS TERMINATED BY '{$file_control[0]}'
             ENCLOSED BY '{$file_control[1]}'
@@ -107,74 +107,5 @@ SQL;
         $conn->prepare($find_leads_sql)
              ->execute($find_leads_sql_params)
         ;
-    }
-
-    /**
-     * Generates the necessary locks for a given Extraction
-     *
-     * @param Extraction $extraction
-     * @param            $lock_types
-     * @param            $lock_time
-     */
-    public function generateLocks (Extraction $extraction, $lock_types, $lock_time)
-    {
-        $em = $this->getEntityManager();
-        $extraction_contacts = $extraction->getExtractionContacts();
-        $extraction_id = $extraction->getId();
-
-        $batch = 1;
-        $batchSize = 500;
-        foreach ( $lock_types as $lock_type )
-        {
-            /** @var ExtractionContact $extraction_contact */
-            foreach ( $extraction_contacts as $extraction_contact )
-            {
-                $contact = $extraction_contact->getContact();
-
-                $lock = new Lock();
-                $lock->setType($lock_type);
-                $lock->setExtraction($extraction);
-                $lock->setLead($contact->getLead());
-                $lock->setExpirationDate(new \DateTime($lock_time));
-                switch ( $lock_type )
-                {
-                    case Lock::TYPE_CLIENT:
-                        $lock->setClient($extraction->getCampaign()
-                                                    ->getClient())
-                        ;
-                        break;
-                    case Lock::TYPE_CAMPAIGN:
-                        $lock->setCampaign($extraction->getCampaign());
-                        break;
-                    case Lock::TYPE_CATEGORY:
-                        $lock->setCategory($contact->getSubCategory()
-                                                   ->getCategory())
-                        ;
-                        break;
-                    case Lock::TYPE_SUB_CATEGORY:
-                        $lock->setSubCategory($contact->getSubCategory());
-                        break;
-                    default:
-                        break;
-                }
-                $em->persist($lock);
-
-                if ( ($batch % $batchSize) === 0 )
-                {
-                    $batch = 1;
-                    $em->flush();
-
-                    // Add Extraction to the EntityManager after it's cleared
-                    $extraction = $em->getPartialReference('ListBrokingAppBundle:Extraction', $extraction_id);
-                }
-                $batch++;
-            }
-            $em->flush();
-            $em->clear();
-
-            $extraction = $em->getPartialReference('ListBrokingAppBundle:Extraction', $extraction_id);
-        }
-        $em->flush();
-        $em->clear();
     }
 }

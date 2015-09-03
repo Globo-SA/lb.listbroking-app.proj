@@ -9,21 +9,45 @@
         var $deduplication_btn = $('#deduplication-download');
         var $extraction_deduplication_upload_button = $("#extraction_deduplication_upload_button");
 
-        // Downloads the extraction for deduplication
+        //// Downloads the extraction for deduplication
+        //$deduplication_btn.on('click', function (e) {
+        //    e.preventDefault();
+        //
+        //    var extraction_template = $(this).prev('input').select2('val');
+        //    if (extraction_template) {
+        //        var url = Routing.generate('ajax_extraction_download', {extraction_id: $(this).data('extraction'), extraction_template_id: extraction_template});
+        //        $deduplication_btn.find('i').fadeIn();
+        //
+        //        $.fileDownload(url, {
+        //            successCallback: function (url) {
+        //                $deduplication_btn.find('i').fadeOut();
+        //            }
+        //        });
+        //    }
+        //});
+
+        // Publishes the extraction for delivering
         $deduplication_btn.on('click', function (e) {
-            e.preventDefault();
-
+            $deduplication_btn.attr('disabled', 'disabled').find('i').fadeIn();
             var extraction_template = $(this).prev('input').select2('val');
-            if (extraction_template) {
-                var url = Routing.generate('ajax_extraction_download', {extraction_id: $(this).data('extraction'), extraction_template_id: extraction_template});
-                $deduplication_btn.find('i').fadeIn();
+            $.ajax({
+                type: "POST",
+                url: App.routing.generate('ajax_extraction_deliver', {extraction_id: App.variables.extractionId, extraction_template_id: extraction_template}),
+                dataType: 'json',
+                success: function (data) {
 
-                $.fileDownload(url, {
-                    successCallback: function (url) {
-                        $deduplication_btn.find('i').fadeOut();
-                    }
-                });
-            }
+                    //$('#delivery_modal_send').find('i.loading').fadeOut();
+                    //
+                    ////Close modal
+                    //$('#delivery_modal').modal('hide');
+                    //
+                    //// Set loading on trigger
+                    //$('#deliver_extraction_trigger')
+                    //    .attr('disabled', 'disabled')
+                    //    .find('i.loading').fadeIn()
+                    //;
+                }
+            });
         });
 
         //Stop submitting because it will never be used
@@ -104,7 +128,7 @@
                     .attr('disabled', 'disabled')
                     .find('i.loading').fadeIn();
 
-                $.listenToExtractionChanges(function(extraction){
+                $.listenToExtractionChanges(function (extraction) {
 
                 });
             })

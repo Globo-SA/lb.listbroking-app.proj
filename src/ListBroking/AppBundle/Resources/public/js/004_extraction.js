@@ -184,13 +184,13 @@
         $('.footer-button:not(#confirm_extraction_btn)').removeAttr('disabled');
         $('.footer-button[type=checkbox]').iCheck('enable').iCheck('update');
         if (extraction.is_delivering) {
-            $('#deliver_extraction_trigger')
+            $('#deliver_extraction_trigger, #deduplication-download')
                 .attr('disabled', 'disabled')
-                .find('i.loading').fadeIn();
+                .find('i.loading, i.ion-loading-c').fadeIn();
         } else {
-            $('#deliver_extraction_trigger')
+            $('#deliver_extraction_trigger, #deduplication-download')
                 .removeAttr('disabled')
-                .find('i.loading').fadeOut();
+                .find('i.loading, i.ion-loading-c').fadeOut();
         }
         callback();
     }

@@ -8,6 +8,7 @@
 
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Engine\FilterEngine;
 use ListBroking\AppBundle\Entity\Extraction;
@@ -81,7 +82,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     public function generateLocks (Extraction $extraction, $lock_types)
     {
-        $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
+        $this->entity_manager->getRepository('ListBrokingAppBundle:Lock')
                              ->generateLocks($extraction, $lock_types, $this->findConfig('lock.time'))
         ;
     }
