@@ -11,7 +11,29 @@ namespace ListBroking\AppBundle\Parser;
 class DateTimeParser
 {
 
-    public static function stringToDateTime ($string)
+    /**
+     * Converts date to a valid datetime object
+     * @param $date
+     *
+     * @return \DateTime
+     */
+    public static function getValidDateObject ($date)
+    {
+        if ( ! $date || is_string($date) )
+        {
+            return DateTimeParser::stringToDateTime($date);
+        }
+
+        return $date;
+    }
+
+    /**
+     * Convert string to datetime object
+     * @param $string
+     *
+     * @return \DateTime
+     */
+    private static function stringToDateTime ($string)
     {
         $datetime_object = \DateTime::createFromFormat('Y-m-d', $string);
 

@@ -106,10 +106,10 @@ class StagingContactRepository extends EntityRepository
         // IF date and/or initial_lock_expiration_date are NULL
         // values today's date is used
 
-        $date = $this->getValidDateObject($contact->getDate());
+        $date = DateTimeParser::getValidDateObject($contact->getDate());
         $contact->setDate($date);
 
-        $initial_lock_expiration_date = $this->getValidDateObject($contact->getInitialLockExpirationDate());
+        $initial_lock_expiration_date = DateTimeParser::getValidDateObject($contact->getInitialLockExpirationDate());
         $contact->setInitialLockExpirationDate($initial_lock_expiration_date);
 
         $this->getEntityManager()
@@ -320,20 +320,4 @@ SQL;
 
         return $contacts;
     }
-
-    /**
-     * Converts date to a valid datetime object
-     * @param $date
-     *
-     * @return \DateTime
-     */
-    private function getValidDateObject ($date)
-    {
-        if ( ! $date || is_string($date) )
-        {
-            return DateTimeParser::stringToDateTime($date);
-        }
-
-        return $date;
-    }
-} 
+}
