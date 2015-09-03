@@ -24,13 +24,24 @@ class AppService extends BaseService implements AppServiceInterface
     private $mailer;
 
     /**
+     * @var \Swift_FileSpool
+     */
+    private $mailer_spool;
+    /**
+     * @var \Swift_Transport_EsmtpTransport
+     */
+    private $mailer_transport_real;
+
+    /**
      * @var \Twig_Environment
      */
     private $twig;
 
-    public function __construct (\Swift_Mailer $mailer, \Twig_Environment $twig)
+    public function __construct (\Swift_Mailer $mailer, \Swift_FileSpool $mailer_spool, \Swift_Transport_EsmtpTransport $mailer_transport_real, \Twig_Environment $twig)
     {
         $this->mailer = $mailer;
+        $this->mailer_spool = $mailer_spool;
+        $this->mailer_transport_real = $mailer_transport_real;
         $this->twig = $twig;
     }
 
@@ -99,6 +110,11 @@ class AppService extends BaseService implements AppServiceInterface
         }
 
         return $this->mailer->send($message);
+    }
+
+    public function flushSpool ()
+    {
+        $this->mailer_spool->flushQueue($this->mailer_transport_real);
     }
 
     /**

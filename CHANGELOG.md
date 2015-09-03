@@ -29,3 +29,9 @@
 * Changed delivery system to use file spool
 * Extended ORM Extractor to fix memory problems
 * Removed old code
+
+### 2.8
+ * Added auto spool flush when the deliver consumer adds an email to it
+ 
+### 2.9
+ * Added a new logout warning and ajax login system

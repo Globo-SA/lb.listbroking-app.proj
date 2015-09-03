@@ -62,6 +62,9 @@
             url: App.routing.generate('ajax_find_extraction', {extraction_id: App.variables.extractionId}),
             success: function (data) {
                 callback(data.response.response);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr);
             }
         });
     };

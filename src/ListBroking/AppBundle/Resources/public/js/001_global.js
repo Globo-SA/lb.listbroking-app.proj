@@ -6,6 +6,76 @@
     $(function () {
         "use strict";
 
+        // Ping the system for errors
+        var $ping_modal = $('#ping_modal');
+        setInterval(function () {
+            $.ajax({
+                type: "GET",
+                url: App.routing.generate('ajax_ping'),
+                dataType: 'json',
+                statusCode: {
+                    200: function () {
+                        $ping_modal.modal('hide');
+                    },
+                    500: function () {
+                        if (!$ping_modal.is(':visible')) {
+                            $('#ping_modal_login_error').fadeIn();
+                            $('#ping_modal_login_form').fadeOut();
+
+                            $ping_modal.modal();
+                        }
+                    },
+                    403: function () {
+                        if (!$ping_modal.is(':visible')) {
+                            $('#ping_modal_login_form').fadeIn();
+                            $('#ping_modal_login_error').fadeOut();
+
+                            $ping_modal.modal();
+                        }
+                    }
+                }
+            });
+        }, App.variables.intervalTimeout);
+
+        // Ajax Login system
+        var $ajax_login_form = $('#ajax_login_form');
+        var $ajax_login_form_error = $('#ajax_login_form_error');
+        $ajax_login_form.submit(function (e) {
+            e.preventDefault();
+
+            $ajax_login_form.find('button')
+                .attr('disabled', 'disabled')
+                .find('i.loading').fadeIn();
+            $.ajax({
+                type: $ajax_login_form.attr('method'),
+                url: $ajax_login_form.attr('action'),
+                data: $ajax_login_form.serialize(),
+                dataType: "json",
+                success: function (data, status, object) {
+                    // Fadeout and enable the button
+                    $ajax_login_form.find('button')
+                        .removeAttr('disabled')
+                        .find('i.loading').fadeOut();
+                    $('#loading_widget').fadeOut();
+
+                    if (!data.success) {
+                        $ajax_login_form_error.html(data.message);
+                        return
+                    }
+
+                    $ajax_login_form_error.html('Login successful, you can continue playing!');
+                    // Close the modal
+
+                    setTimeout(function(){
+                        $ping_modal.modal('hide');
+                    }, 2000);
+                },
+                error: function (data, status, object) {
+                    console.log(data.message);
+                }
+            });
+        });
+
         // If a tab is disabled dont activate it
         $('a[data-toggle="tab"]').on('click', function (e) {
             if ($(this).parent('li').hasClass('disabled')) {

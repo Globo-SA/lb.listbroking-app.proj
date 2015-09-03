@@ -1,0 +1,26 @@
+{% if app.user %}
+    <div id="ping_modal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="fa fa-exclamation-triangle text-danger"></i>&nbsp;Oops this is embarrassing</h4>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="ping_modal_login_error" style="display: none;">
+                        <i class="fa fa-6 fa-times" style="font-size: 6em;color: rgb(245, 105, 84);"></i>
+                        <h3>The server returned an error, please inform the IT department !</h3>
+                    </div>
+                    <div id="ping_modal_login_form" style="display: none;">
+                        {% include '@ListBrokingApp/_partials/ajax_login_form.html.twig' %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+{% endif %}

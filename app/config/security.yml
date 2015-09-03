@@ -30,14 +30,22 @@ security:
             pattern:            /admin(.*)
             context:            user
             form_login:
-                provider:       fos_userbundle
-                login_path:     /admin/login
-                use_forward:    false
-                check_path:     /admin/login_check
-                failure_path:   null
+                provider:        fos_userbundle
+                login_path:      /admin/login
+                use_forward:     false
+                check_path:      /admin/login_check
+                failure_path:    null
+                success_handler: listbroking.ajax_authentication_handler_listener
+                failure_handler: listbroking.ajax_authentication_handler_listener
             logout:
                 path:           /admin/logout
             anonymous:          true
+            remember_me:
+                always_remember_me: true
+                key:                "%secret%"
+                lifetime:           31536000 # 365 days in seconds
+                path:                /
+                domain:              ~ # Defaults to the current domain from $_SERVER
             switch_user: true
 
         default:

@@ -1,0 +1,42 @@
+<h3>Something made you logout, please login again to continue!</h3>
+<div class="row ">
+    <div class="center-block">
+        <div class="col-md-12">
+            <div class="box box-info" style="text-align: center">
+                <div class="box-body">
+                    <form id="ajax_login_form" action="{{ path("sonata_user_admin_security_check") }}" method="post">
+                            <div id="ajax_login_form_error" class="alert alert-error"></div>
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}"/>
+                            <div class="control-group">
+                                <label for="username">{{ 'security.login.username'|trans({}, 'FOSUserBundle') }}</label>
+
+                                <div class="controls">
+                                    <input type="text" id="username" name="_username" value="" class="big sonata-medium"/>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="password">{{ 'security.login.password'|trans({}, 'FOSUserBundle') }}</label>
+
+                                <div class="controls">
+                                    <input type="password" id="password" name="_password" class="big sonata-medium"/>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="remember_me">
+                                    <input type="checkbox" id="remember_me" name="_remember_me" value="on"/>
+                                    {{ 'security.login.remember_me'|trans({}, 'FOSUserBundle') }}
+                                </label>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary"><i class="loading ion-loading-c" style="display: none;"></i>&nbsp;{{ 'security.login.submit'|trans({}, 'FOSUserBundle') }}</button>
+                            </div>
+                        </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

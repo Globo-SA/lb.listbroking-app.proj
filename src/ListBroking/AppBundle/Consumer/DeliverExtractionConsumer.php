@@ -66,6 +66,8 @@ class DeliverExtractionConsumer implements ConsumerInterface
             $email_subject = sprintf('LB Extraction - %s', $extraction->getName());
             $result = $this->a_service->deliverEmail($email_template, array('password' => $password), $email_subject, $msg_body['email'], $filename);
 
+            $this->a_service->flushSpool();
+
             // Set the Extraction as delivered
             $extraction->setIsDelivering(false);
 

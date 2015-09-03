@@ -8,6 +8,6 @@ var ListBroking = {
     },
     variables: {
         extractionIntervalId: 0,
-        intervalTimeout: 10000
+        intervalTimeout: 10000,
     }
 };

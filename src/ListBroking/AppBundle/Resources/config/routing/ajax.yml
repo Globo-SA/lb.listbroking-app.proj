@@ -1,3 +1,9 @@
+ajax_ping:
+    path: /ajax/ping
+    defaults: { _controller: ListBrokingAppBundle:Ajax:Ping }
+    options:
+        expose: true
+
 ajax_last_exceptions:
     path: /ajax/exception/last
     defaults: { _controller: ListBrokingAppBundle:Ajax:lastExceptions }

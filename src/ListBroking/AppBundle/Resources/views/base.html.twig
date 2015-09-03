@@ -27,6 +27,7 @@
 {% endblock %}
 
 {% block sonata_wrapper %}
+    {% include '@ListBrokingApp/_partials/ping_exception_modal.html.twig' %}
     {# Removes unnecessary layout stuff for iframes #}
     {% if app.request.query.get("iframe") == 'true'  %}
         <div style="padding: 0 1px 0 17px">

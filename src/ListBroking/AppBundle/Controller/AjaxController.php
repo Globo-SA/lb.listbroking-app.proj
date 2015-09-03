@@ -19,6 +19,21 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AjaxController extends Controller
 {
+    public function pingAction(Request $request)
+    {
+        $a_service = $this->get('app');
+        try
+        {
+            $a_service->validateAjaxRequest($request);
+
+
+            return $a_service->createJsonResponse(array());
+        }
+        catch ( \Exception $e )
+        {
+            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+        }
+    }
 
     /**
      * Gets the last exceptions thrown by the system

@@ -22,7 +22,7 @@ services:
   app:
     class: ListBroking\AppBundle\Service\Helper\AppService
     parent: base
-    arguments: [@mailer, @twig]
+    arguments: [@mailer, @swiftmailer.spool, @swiftmailer.transport.real, @twig]
 
   statistics:
     class: ListBroking\AppBundle\Service\Helper\StatisticsService
