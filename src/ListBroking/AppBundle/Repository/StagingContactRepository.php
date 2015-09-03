@@ -16,6 +16,7 @@ use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\Lock;
 use ListBroking\AppBundle\Entity\StagingContact;
+use ListBroking\AppBundle\Parser\DateTimeParser;
 
 class StagingContactRepository extends EntityRepository
 {
@@ -105,15 +106,11 @@ class StagingContactRepository extends EntityRepository
         // IF date and/or initial_lock_expiration_date are NULL
         // values today's date is used
 
-        if ( ! $contact->getDate() )
-        {
-            $contact->setDate(new \DateTime());
-        }
+        $date = $this->getValidDateObject($contact->getDate());
+        $contact->setDate($date);
 
-        if ( ! $contact->getInitialLockExpirationDate() )
-        {
-            $contact->setInitialLockExpirationDate(new \DateTime());
-        }
+        $initial_lock_expiration_date = $this->getValidDateObject($contact->getInitialLockExpirationDate());
+        $contact->setInitialLockExpirationDate($initial_lock_expiration_date);
 
         $this->getEntityManager()
              ->persist($contact)
@@ -322,5 +319,21 @@ SQL;
         $em->commit();
 
         return $contacts;
+    }
+
+    /**
+     * Converts date to a valid datetime object
+     * @param $date
+     *
+     * @return \DateTime
+     */
+    private function getValidDateObject ($date)
+    {
+        if ( ! $date || is_string($date) )
+        {
+            return DateTimeParser::stringToDateTime($date);
+        }
+
+        return $date;
     }
 } 
