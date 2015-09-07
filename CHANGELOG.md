@@ -35,3 +35,8 @@
  
 ### 2.9
  * Added a new logout warning and ajax login system
+ 
+### 2.10
+ * Fixed dashboard statistics
+ * Added an extraction activity log 
+ * Finished the staging contact import API

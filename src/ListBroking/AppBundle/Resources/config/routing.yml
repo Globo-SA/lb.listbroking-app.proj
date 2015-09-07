@@ -1,8 +1,15 @@
 base_routes:
+    prefix:   /admin
     resource: "routing/base.yml"
 
 ajax_routes:
+    prefix:   /admin
     resource: "routing/ajax.yml"
 
 ajax_extraction_routes:
+    prefix:   /admin
     resource: "routing/ajax_extraction.yml"
+
+api_routes:
+    prefix:   /api
+    resource: "routing/api.yml"

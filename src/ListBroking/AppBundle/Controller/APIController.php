@@ -1,10 +1,8 @@
 <?php
 /**
- * 
  * @author     Pedro Tentugal <pedro.tentugal@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
@@ -18,60 +16,75 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class APIController extends Controller
 {
+
     /**
      * Dumb Action that just saves the lead for the ETL process
+     *
      * @param Request $request
+     *
      * @throws LeadValidationException
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function createStagingLeadAction(Request $request)
+    public function createStagingLeadAction (Request $request)
     {
+        $a_service = $this->get('app');
         try
         {
-            $this->authenticate($request->get('username'), $request->get('token'));
+            $is_authenticated = $this->authenticate($request->get('username'), $request->get('token'));
 
-            $s_service = $this->get('staging');
+            if ( ! $is_authenticated )
+            {
+                throw new AccessDeniedException();
+            }
+
             $lead = $request->get('lead');
-            if (!$lead)
+
+            if ( ! $lead )
             {
                 throw new LeadValidationException('Lead is empty');
             }
+
+            $s_service = $this->get('staging');
             $s_service->addStagingContact($lead);
             $s_service->flushAll();
             $s_service->clearEntityManager();
 
             return $this->createJsonResponse('Lead added');
-        } catch (\Exception $e)
+        }
+        catch ( \Exception $e )
         {
-            return $this->createJsonResponse($e->getMessage(), 400);
+            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
         }
     }
 
     /**
      * Simple API user authentication by username, token
      * and role ROLE_API_USER
+     *
      * @param $username
      * @param $token
+     *
+     * @return bool
      */
-    private function authenticate($username, $token)
+    private function authenticate ($username, $token)
     {
         $user = $this->get('fos_user.user_manager')->findUserBy(array('username' => $username, 'token' => $token));
-        if (!$user || !$user->hasRole('ROLE_API_USER'))
-        {
-            throw new AccessDeniedException();
-        }
+
+        return $user && $user->hasRole('ROLE_API_USER');
     }
 
     /**
      * Generates a Json Response
-     * @param $response
+     *
+     * @param     $response
      * @param int $code
+     *
      * @return JsonResponse
      */
-    private function createJsonResponse($response, $code = 200)
+    private function createJsonResponse ($response, $code = 200)
     {
         return new JsonResponse(array(
-            'code' => $code,
+            'code'     => $code,
             'response' => $response
         ), $code);
     }

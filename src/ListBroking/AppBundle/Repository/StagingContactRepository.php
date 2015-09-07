@@ -24,6 +24,7 @@ use ListBroking\AppBundle\Entity\Parish;
 use ListBroking\AppBundle\Entity\Source;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Entity\SubCategory;
+use ListBroking\AppBundle\Parser\DateTimeParser;
 
 class StagingContactRepository extends EntityRepository
 {
@@ -113,15 +114,11 @@ class StagingContactRepository extends EntityRepository
         // IF date and/or initial_lock_expiration_date are NULL
         // values today's date is used
 
-        if ( ! $contact->getDate() )
-        {
-            $contact->setDate(new \DateTime());
-        }
+        $date = DateTimeParser::getValidDateObject($contact->getDate());
+        $contact->setDate($date);
 
-        if ( ! $contact->getInitialLockExpirationDate() )
-        {
-            $contact->setInitialLockExpirationDate(new \DateTime());
-        }
+        $initial_lock_expiration_date = DateTimeParser::getValidDateObject($contact->getInitialLockExpirationDate());
+        $contact->setInitialLockExpirationDate($initial_lock_expiration_date);
 
         $this->getEntityManager()
              ->persist($contact)
@@ -367,117 +364,96 @@ SQL;
         $this->validateField($s_contact->getEmail(), function ($field) use ($contact)
         {
             $contact->setEmail($field);
-        })
-        ;
+        });
         $this->validateField($s_contact->getExternalId(), function ($field) use ($contact)
         {
             $contact->setExternalId($field);
-        })
-        ;
+        });
         $this->validateField($s_contact->getFirstname(), function ($field) use ($contact)
         {
             $contact->setFirstname($field);
-        })
-        ;
+        });
         $this->validateField($s_contact->getLastname(), function ($field) use ($contact)
         {
             $contact->setLastname($field);
-        })
-        ;
+        });
         $this->validateField(new \DateTime($s_contact->getBirthdate()), function ($field) use ($contact)
         {
             $contact->setBirthdate($field);
-        })
-        ;
+        });
         $this->validateField($s_contact->getAddress(), function ($field) use ($contact)
         {
             $contact->setAddress($field);
-        })
-        ;
+        });
         $this->validateField($s_contact->getPostalcode1(), function ($field) use ($contact)
         {
             $contact->setPostalcode1($field);
-        })
-        ;
+        });
         $this->validateField($s_contact->getPostalcode2(), function ($field) use ($contact)
         {
             $contact->setPostalcode2($field);
-        })
-        ;
+        });
         $this->validateField($s_contact->getIpaddress(), function ($field) use ($contact)
         {
             $contact->setIpaddress($field);
-        })
-        ;
+        });
         $this->validateField($s_contact->getDate(), function ($field) use ($contact)
         {
             $contact->setDate($field);
-        })
-        ;
+        });
         $this->validateField($s_contact->getValidations(), function ($field) use ($contact)
         {
             $contact->setValidations($field);
-        })
-        ;
+        });
         $this->validateField($s_contact->getPostRequest(), function ($field) use ($contact)
         {
             $contact->setPostRequest($field);
-        })
-        ;
+        });
 
         $this->validateField($lead, function ($field) use ($contact)
         {
             $contact->setLead($field);
-        })
-        ;
+        });
 
         $this->validateField($source, function ($field) use ($contact)
         {
             $contact->setSource($field);
-        })
-        ;
+        });
 
         $this->validateField($owner, function ($field) use ($contact)
         {
             $contact->setOwner($field);
-        })
-        ;
+        });
 
         $this->validateField($sub_category, function ($field) use ($contact)
         {
             $contact->setSubCategory($field);
-        })
-        ;
+        });
 
         $this->validateField($gender, function ($field) use ($contact)
         {
             $contact->setGender($field);
-        })
-        ;
+        });
 
         $this->validateField($district, function ($field) use ($contact)
         {
             $contact->setDistrict($field);
-        })
-        ;
+        });
 
         $this->validateField($county, function ($field) use ($contact)
         {
             $contact->setCounty($field);
-        })
-        ;
+        });
 
         $this->validateField($parish, function ($field) use ($contact)
         {
             $contact->setParish($field);
-        })
-        ;
+        });
 
         $this->validateField($country, function ($field) use ($contact)
         {
             $contact->setCountry($field);
-        })
-        ;
+        });
     }
 
     /**
@@ -495,3 +471,4 @@ SQL;
         }
     }
 } 
+
