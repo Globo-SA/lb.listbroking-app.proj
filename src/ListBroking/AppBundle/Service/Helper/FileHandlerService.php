@@ -138,8 +138,7 @@ class FileHandlerService implements FileHandlerServiceInterface
     {
         $name = preg_replace('/\s/i', '-', $name);
         $name = preg_replace('/\(duplicate\)/i', '', $name);
-        $name = preg_replace('/(\(|\))/i', '', $name);
-        $name = preg_replace('/(-$|^-)/i', '', $name);
+        $name = preg_replace("/[^[:alnum:]]/ui", '', $name);
 
         return strtolower(sprintf('%s-%s-%s', $this->remove_accents($name), uniqid(), date('Y-m-d')));
     }

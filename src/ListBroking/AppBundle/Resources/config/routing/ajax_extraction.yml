@@ -1,3 +1,11 @@
+ajax_lastest_extraction_log:
+    path: /ajax/extraction/{extraction_id}/log
+    defaults: { _controller: ListBrokingAppBundle:AjaxExtraction:findLatestExtractionLog }
+    options:
+        expose: true
+    requirements:
+          extraction_id: \d+
+
 ajax_find_extraction:
     path: /ajax/extraction/{extraction_id}/find
     defaults: { _controller: ListBrokingAppBundle:AjaxExtraction:findExtraction }

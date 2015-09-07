@@ -24,7 +24,6 @@ class ExtractionDeduplicationRepository extends EntityRepository
      * @param      $field
      *
      * @throws \Doctrine\DBAL\DBALException
-     * @internal param $contacts
      * @return mixed
      */
     public function uploadDeduplicationsByFile ($filename, Extraction $extraction, $field)

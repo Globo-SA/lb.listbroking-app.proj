@@ -1,6 +1,7 @@
 /web/*_dev.php
 
 # Cache and logs
+/app/spool/*
 /app/cache/*
 /app/logs/*
 !app/cache/.gitkeep

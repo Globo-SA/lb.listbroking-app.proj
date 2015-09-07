@@ -74,10 +74,7 @@ class FilterEngine
      * @param Extraction $extraction
      *
      * @throws InvalidFilterObjectException
-     * @internal param array $filters
-     * @internal param $limit
-     * @internal param $lock_filters
-     * @internal param $contact_filters
+     *
      * @return QueryBuilder
      */
     public function compileFilters (Extraction $extraction)

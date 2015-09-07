@@ -1,25 +1,27 @@
 # Used to expose routing to the client-side code
 fos_js_routing:
     resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
+    prefix: /admin
 
 sonata_user_security:
     resource: "@SonataUserBundle/Resources/config/routing/sonata_security_1.xml"
+    prefix: /admin
 
 sonata_user_resetting:
     resource: "@SonataUserBundle/Resources/config/routing/sonata_resetting_1.xml"
-    prefix: /resetting
+    prefix: /admin
 
 sonata_user_profile:
     resource: "@SonataUserBundle/Resources/config/routing/sonata_profile_1.xml"
-    prefix: /profile
+    prefix: /admin/profile
 
 sonata_user_register:
     resource: "@SonataUserBundle/Resources/config/routing/sonata_registration_1.xml"
-    prefix: /register
+    prefix: /admin/register
 
 sonata_user_change_password:
     resource: "@SonataUserBundle/Resources/config/routing/sonata_change_password_1.xml"
-    prefix: /profile
+    prefix: /admin/profile
 
 sonata_user:
     resource: '@SonataUserBundle/Resources/config/routing/admin_security.xml'

@@ -32,8 +32,6 @@
 
 ### 2.8
  * Added auto spool flush when the deliver consumer adds an email to it
- 
-### 2.9
  * Added a new logout warning and ajax login system
  
 ### 2.10

@@ -96,7 +96,13 @@ class ExtractionAdmin extends Admin
      */
     protected function configureFormFields (FormMapper $formMapper)
     {
-        if ( ! $this->getSubject()->getId() )
+        $formMapper->tab('Global')
+                   ->with('Extraction')
+        ;
+
+        if ( ! $this->getSubject()
+                    ->getId()
+        )
         {
             $formMapper->add('name')
                        ->add('campaign', null, array('required' => true))
@@ -105,8 +111,23 @@ class ExtractionAdmin extends Admin
         }
 
         $formMapper->add('payout')
-            ->add('quantity')
+                   ->add('quantity')
+                   ->end()
+                   ->end()
         ;
+
+        // Admins are allowed to view all
+        if ( $this->isGranted('ROLE_SUPER_ADMIN') )
+        {
+            $formMapper->tab('ADMIN')//
+                       ->add('is_already_extracted', null, array('required' => false))
+                       ->add('is_deduplicating', null, array('required' => false))
+                       ->add('is_locking', null, array('required' => false))
+                       ->add('is_delivering', null, array('required' => false))
+                       ->add('deduplication_type', null, array('required' => false))
+                       ->end()
+            ;
+        }
     }
 
     /**

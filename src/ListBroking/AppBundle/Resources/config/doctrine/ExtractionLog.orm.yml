@@ -1,0 +1,33 @@
+ListBroking\AppBundle\Entity\ExtractionLog:
+    type: entity
+    table: extraction_log
+    repositoryClass: ListBroking\AppBundle\Repository\ExtractionLogRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        log:
+            type: text
+# Timestampable
+        created_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: create } }
+
+        updated_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: update } }
+# End of Timestampable
+    manyToOne:
+        extraction:
+            targetEntity:             ListBroking\AppBundle\Entity\Extraction
+            inversedBy:               extraction_deduplications
+            joinColumn:
+                name:                 extraction_id
+                referencedColumnName: id
+                onDelete:             restrict
+    lifecycleCallbacks: {  }

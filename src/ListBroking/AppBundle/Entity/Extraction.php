@@ -127,10 +127,16 @@ class Extraction
      */
     private $campaign;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $extraction_log;
+
     function __construct ()
     {
         $this->extraction_contacts = new ArrayCollection();
         $this->extraction_deduplications = new ArrayCollection();
+        $this->extraction_log = new ArrayCollection();
     }
 
     function __toString ()
@@ -417,6 +423,7 @@ class Extraction
      */
     public function addExtractionDeduplication (ExtractionDeduplication $extractionDeduplication)
     {
+        $extractionDeduplication->setExtraction($this);
         $this->extraction_deduplications[] = $extractionDeduplication;
 
         return $this;
@@ -450,6 +457,7 @@ class Extraction
      */
     public function addExtractionContact (ExtractionContact $extractionContact)
     {
+        $extractionContact->setExtraction($this);
         $this->extraction_contacts[] = $extractionContact;
 
         return $this;
@@ -518,5 +526,39 @@ class Extraction
         $this->is_delivering = $isDelivering;
 
         return $this;
+    }
+
+    /**
+     * Add extraction_log
+     *
+     * @param \ListBroking\AppBundle\Entity\ExtractionLog $extractionLog
+     * @return Extraction
+     */
+    public function addExtractionLog(\ListBroking\AppBundle\Entity\ExtractionLog $extractionLog)
+    {
+        $extractionLog->setExtraction($this);
+        $this->extraction_log[] = $extractionLog;
+
+        return $this;
+    }
+
+    /**
+     * Remove extraction_log
+     *
+     * @param \ListBroking\AppBundle\Entity\ExtractionLog $extractionLog
+     */
+    public function removeExtractionLog(\ListBroking\AppBundle\Entity\ExtractionLog $extractionLog)
+    {
+        $this->extraction_log->removeElement($extractionLog);
+    }
+
+    /**
+     * Get extraction_log
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getExtractionLog()
+    {
+        return $this->extraction_log;
     }
 }
