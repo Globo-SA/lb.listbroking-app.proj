@@ -6,7 +6,6 @@
 
 namespace ListBroking\AppBundle\Consumer;
 
-use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Service\BusinessLogic\ExtractionServiceInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -39,14 +38,13 @@ class RunExtractionConsumer implements ConsumerInterface
 
             $msg_body = unserialize($msg->body);
 
-            $this->e_service->logInfo(sprintf('Starting \'runExtraction\' for extraction_id: %s', $msg_body['object_id']));
-
             $extraction = $this->e_service->findExtraction($msg_body['object_id']);
+            $this->e_service->logExtractionAction($extraction, 'Starting \'runExtraction\'');
 
             // Run Extraction
             $result = $this->e_service->runExtraction($extraction) ? 'EXTRACTED' : 'NOT EXTRACTED!';
 
-            $this->e_service->logInfo(sprintf('Ending \'runExtraction\' for extraction_id: %s, result: %s', $msg_body['object_id'], $result));
+            $this->e_service->logExtractionAction($extraction, sprintf('Ending \'runExtraction\', result: %s', $result));
 
             return true;
         }

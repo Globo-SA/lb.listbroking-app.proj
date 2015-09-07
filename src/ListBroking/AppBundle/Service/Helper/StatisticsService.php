@@ -81,7 +81,7 @@ class StatisticsService extends BaseService implements StatisticsServiceInterfac
                     if ( $values )
                     {
                         $new_field = "has_{$field}";
-                        $qb->addSelect("CASE WHEN(c.{$field} IS NULL) THEN 'YES' ELSE 'NO' as {$new_field}");
+                        $qb->addSelect("CASE WHEN(c.{$field} > '') THEN 'YES' ELSE 'NO' as {$new_field}");
                         $qb->addGroupBy($new_field);
                     }
                     break;

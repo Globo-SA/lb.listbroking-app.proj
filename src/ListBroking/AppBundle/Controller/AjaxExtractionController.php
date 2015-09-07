@@ -10,7 +10,6 @@ namespace ListBroking\AppBundle\Controller;
 
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
-use ListBroking\AppBundle\Exception\InvalidExtractionException;
 use ListBroking\AppBundle\Form\ExtractionDeduplicationType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -20,6 +19,35 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AjaxExtractionController extends Controller
 {
+
+    /**
+     * Gets the last exceptions thrown by the system
+     *
+     * @param Request $request
+     * @param         $extraction_id
+     *
+     * @return JsonResponse
+     */
+    public function findLatestExtractionLogAction (Request $request, $extraction_id)
+    {
+        $a_service = $this->get('app');
+        try
+        {
+//            $a_service->validateAjaxRequest($request);
+
+            $e_service = $this->get('extraction');
+
+            $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
+
+            $last = $e_service->findLastExtractionLog($extraction, 3);
+
+            return $a_service->createJsonResponse($last);
+        }
+        catch ( \Exception $e )
+        {
+            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+        }
+    }
 
     /**
      * Finds an Extraction by it's id and returns it as a json
@@ -158,40 +186,40 @@ class AjaxExtractionController extends Controller
         }
     }
 
-//    /**
-//     * Downloads the Extraction for deduplication
-//     *
-//     * @param $extraction_id
-//     * @param $extraction_template_id
-//     *
-//     * @return Response
-//     * @throws InvalidExtractionException
-//     */
-//    public function extractionDownloadAction ($extraction_id, $extraction_template_id)
-//    {
-//        $a_service = $this->get('app');
-//        try
-//        {
-//            //Service
-//            $e_service = $this->get('extraction');
-//            $f_service = $this->get('file_handler');
-//
-//            // Current Extraction
-//            $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
-//
-//            // Generate the Extraction File
-//            $template = json_decode($e_service->findEntity('ListBrokingAppBundle:ExtractionTemplate', $extraction_template_id)
-//                                              ->getTemplate(), 1);
-//            $query = $e_service->getExtractionContactsQuery($extraction);
-//            list($filename, $password) = $f_service->generateFileFromQuery($extraction->getName(), $template['extension'], $query, $template['headers'], false);
-//
-//            return $a_service->createAttachmentResponse($filename);
-//        }
-//        catch ( \Exception $e )
-//        {
-//            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
-//        }
-//    }
+    //    /**
+    //     * Downloads the Extraction for deduplication
+    //     *
+    //     * @param $extraction_id
+    //     * @param $extraction_template_id
+    //     *
+    //     * @return Response
+    //     * @throws InvalidExtractionException
+    //     */
+    //    public function extractionDownloadAction ($extraction_id, $extraction_template_id)
+    //    {
+    //        $a_service = $this->get('app');
+    //        try
+    //        {
+    //            //Service
+    //            $e_service = $this->get('extraction');
+    //            $f_service = $this->get('file_handler');
+    //
+    //            // Current Extraction
+    //            $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
+    //
+    //            // Generate the Extraction File
+    //            $template = json_decode($e_service->findEntity('ListBrokingAppBundle:ExtractionTemplate', $extraction_template_id)
+    //                                              ->getTemplate(), 1);
+    //            $query = $e_service->getExtractionContactsQuery($extraction);
+    //            list($filename, $password) = $f_service->generateFileFromQuery($extraction->getName(), $template['extension'], $query, $template['headers'], false);
+    //
+    //            return $a_service->createAttachmentResponse($filename);
+    //        }
+    //        catch ( \Exception $e )
+    //        {
+    //            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+    //        }
+    //    }
 
     /**
      * Publishes the extraction for deduplication

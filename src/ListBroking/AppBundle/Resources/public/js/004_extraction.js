@@ -5,6 +5,73 @@
 (function ($, App) {
     $(function () {
         "use strict";
+
+        var has_new_logs = false;
+        var extraction_log_rows = [];
+
+        var prev_id = 0;
+        if (App.variables.extractionId) {
+            // Extraction Log Actions
+            setInterval(function () {
+                $('#loading_widget').fadeIn();
+                $.ajax({
+                    type: "GET",
+                    url: App.routing.generate('ajax_lastest_extraction_log', {extraction_id: App.variables.extractionId}),
+                    dataType: 'json',
+                    success: function (data) {
+                        var response = data.response;
+                        var $table = $('#extraction_log_list');
+                        var row = $table.data('prototype');
+
+                        $.each(response, function (index, value) {
+                            if (extraction_log_rows[value['id']] == undefined) {
+
+                                // Add new row
+                                extraction_log_rows[value['id']] = $.replaceVariables(row, {
+                                    id: value['id'],
+                                    log: value['log'],
+                                    created_at: value['created_at'].date.replace('.000000', '')
+                                });
+
+
+                                // Insert it to the DOM and Make it visible
+                                var selector = 'li:first';
+                                if (prev_id > value['id']) {
+                                    selector = 'li:last';
+                                }
+
+                                $table.find(selector).after(extraction_log_rows[value['id']]).fadeIn('slow');
+                                prev_id = value['id'];
+                                has_new_logs = true;
+
+                            }
+
+                            // Don't show more than 4 rows
+                            if ($table.find('li:visible').length > 4) {
+                                $table.find('li:visible:last').remove();
+                            }
+                        });
+
+                        if (extraction_log_rows.length > 0 && has_new_logs) {
+                            $('.extraction_log_menu').parent('li').addClass('open');
+                            has_new_logs = false;
+                        }
+
+                        // Loading Widget, stop when everything is loaded
+                        $('#loading_widget').fadeOut();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        var response = jqXHR.responseJSON.response;
+                        console.log(response);
+
+                        // Loading Widget, stop when everything is loaded
+                        $('#loading_widget').fadeOut();
+                    }
+                });
+
+            }, App.variables.intervalTimeout);
+        }
+
         // Only if the Extraction Status is STATUS_CONFIRMATION = 2 or STATUS_FINAL = 3
         if (ListBroking.variables.extractionStatus >= 2) {
             $.listenToExtractionChanges(function (extraction) {
@@ -196,5 +263,13 @@
                 .find('i.loading, i.ion-loading-c').fadeOut();
         }
         callback();
+    };
+
+    $.replaceVariables = function (row, variables) {
+        $.each(variables, function (k, v) {
+           row = row.replace('%%' + k + '%%', v);
+        });
+
+        return row;
     }
 })(jQuery, ListBroking);

@@ -49,7 +49,6 @@ class AjaxController extends Controller
         {
             $a_service->validateAjaxRequest($request);
 
-            $a_service = $this->get('app');
             $last = $a_service->findExceptions(5);
 
             return $a_service->createJsonResponse($last);

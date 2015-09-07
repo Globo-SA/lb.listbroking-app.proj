@@ -8,11 +8,11 @@
 
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Engine\FilterEngine;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionDeduplication;
+use ListBroking\AppBundle\Entity\ExtractionLog;
 use ListBroking\AppBundle\Form\FiltersType;
 use ListBroking\AppBundle\Service\Base\BaseService;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,6 +35,16 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     {
         $this->request = $requestStack->getCurrentRequest();
         $this->f_engine = $filterEngine;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findLastExtractionLog (Extraction $extraction, $limit)
+    {
+        return $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionLog')
+                                    ->findLastExtractionLog($extraction, $limit)
+            ;
     }
 
     /**
@@ -157,6 +167,23 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     }
 
     /**
+     * @inheritDoc
+     */
+    public function logExtractionAction (Extraction $extraction, $message)
+    {
+
+        $extraction_log = new ExtractionLog();
+        $extraction_log->setLog($message);
+
+        $extraction->addExtractionLog($extraction_log);
+        $this->entity_manager->persist($extraction_log);
+
+        $this->updateEntity($extraction);
+
+        return $extraction_log;
+    }
+
+    /**
      * Executes the filtering engine and adds the contacts
      * to the Extraction
      *
@@ -169,25 +196,26 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     {
         $batch_sizes = $this->findConfig('batch_sizes');
 
-        $stopwatch = $this->startStopWatch('filter_engine');
+        $this->startStopWatch('filter_engine');
 
         // Runs the Filter compilation and generates the QueryBuilder
-        $this->logInfo(sprintf("\t ↳ Compiling filters for extraction_id: %s", $extraction->getId()));
+        $this->logExtractionAction($extraction, "\t ↳ Compiling filters");
         $qb = $this->f_engine->compileFilters($extraction);
-        $this->logInfo(sprintf("\t ↳ Compiled filters in %s milliseconds for extraction_id: %s", $this->lapStopWatch('filter_engine'), $extraction->getId()));
+        $this->logExtractionAction($extraction, sprintf("\t ↳ Compiled filters in %s milliseconds", $this->lapStopWatch('filter_engine')));
 
         $query = $qb->getQuery();
 
-        // Add Contacts to the Extraction
-        $this->logInfo(sprintf("\t ↳ Executing Query for extraction_id: %s", $extraction->getId()));
+        // Execute Query
+        $this->logExtractionAction($extraction, "\t ↳ Executing Query");
         $contacts = $query->execute();
-        $this->logInfo(sprintf("\t ↳ Finished Query in %s milliseconds for extraction_id: %s", $this->lapStopWatch('filter_engine'), $extraction->getId()));
+        $this->logExtractionAction($extraction, sprintf("\t ↳ Finished Query in %s milliseconds", $this->lapStopWatch('filter_engine')));
 
-        $this->logInfo(sprintf("\t ↳ Creating contacts with batch_size: %s, for extraction_id: %s", $batch_sizes['filter_engine'], $extraction->getId()));
+        // Add Contacts to the Extraction
+        $this->logExtractionAction($extraction, sprintf("\t ↳ Creating contacts with batch_size: %s", $batch_sizes['filter_engine']));
         $this->entity_manager->getRepository('ListBrokingAppBundle:Extraction')
                              ->addContacts($extraction, $contacts, $batch_sizes['filter_engine'])
         ;
-        $this->logInfo(sprintf("\t ↳ Finished creating contacts in %s milliseconds for extraction_id: %s", $this->lapStopWatch('filter_engine'), $extraction->getId()));
+        $this->logExtractionAction($extraction, sprintf("\t ↳ Finished creating contacts in %s milliseconds", $this->lapStopWatch('filter_engine')));
 
         $query = array(
             'dql' => $query->getDQL(),

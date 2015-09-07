@@ -53,8 +53,10 @@ class FiltersType extends AbstractType
 
         // Default Values
         $default_date_range = date('Y/m/01 - Y/m/t'); // Current month
+        $default_country_id = $this->a_service->findConfig('default_country_id');
 
         // Arrays for Choices
+        $countries = $this->a_service->findEntities('ListBrokingAppBundle:Country');
         $genders = $this->a_service->findEntities('ListBrokingAppBundle:Gender');
         $owners = $this->a_service->findEntities('ListBrokingAppBundle:Owner');
         $sources = $this->a_service->findEntities('ListBrokingAppBundle:Source');
@@ -229,10 +231,9 @@ class FiltersType extends AbstractType
                                 'data-collection' => 'true',
                                 'class'           => 'col-md-12'
                             ),
-                            'type'         => new RangeType('birthdate', 'birthdaterangepicker', 'Birthdate Range'),
+                            'type'         => new RangeType('birthdate', 'birthdaterangepicker', 'Birthdate (range)'),
                             'allow_add'    => true,
                             'allow_delete' => true,
-                            'label'        => 'Birthdates',
                         )
                     ),
                     array(
@@ -248,10 +249,9 @@ class FiltersType extends AbstractType
                                 'data-collection' => 'true',
                                 'class'           => 'col-md-12'
                             ),
-                            'type'         => new RangeType('date', 'daterangepicker', 'Date Range', $default_date_range),
+                            'type'         => new RangeType('date', 'daterangepicker', 'Contact acquisition dates (ranges)', $default_date_range),
                             'allow_add'    => true,
                             'allow_delete' => true,
-                            'label'        => 'Contact dates'
                         )
                     ),
                 )
@@ -268,18 +268,18 @@ class FiltersType extends AbstractType
                         'field_type'           => self::FIELD_TYPE_BOOLEAN,
                         'type'                 => 'choice',
                         'options'              => array(
-                            'placeholder' => false,
-                            'choices' => array(
+                            'placeholder'       => false,
+                            'choices'           => array(
                                 'Both' => null,
-                                'Yes' => true,
-                                'No' => false
+                                'Yes'  => true,
+                                'No'   => false
                             ),
-                            'data' => null,
+                            'data'              => null,
                             'choices_as_values' => true,
-                            'attr'     => array(
+                            'attr'              => array(
                                 'class' => 'form-control'
                             ),
-                            'label'    => 'Mobile numbers'
+                            'label'             => 'Mobile numbers'
                         ),
                     ),
                     array(
@@ -290,18 +290,20 @@ class FiltersType extends AbstractType
                         'field_type'           => self::FIELD_TYPE_BOOLEAN,
                         'type'                 => 'choice',
                         'options'              => array(
-                            'placeholder' => false,
-                            'choices' => array(
+                            'placeholder'       => false,
+                            'choices'           => array(
                                 'Both' => null,
-                                'Yes' => true,
-                                'No' => false
+                                'Yes'  => true,
+                                'No'   => false
                             ),
-                            'data' => false,
+                            'data'              => false,
                             'choices_as_values' => true,
-                            'attr'     => array(
+                            'read_only'         => true,
+                            'disabled'          => true,
+                            'attr'              => array(
                                 'class' => 'form-control'
                             ),
-                            'label'    => 'In Opposition Lists'
+                            'label'             => 'In Opposition Lists'
                         )
                     ),
                 )
@@ -315,20 +317,18 @@ class FiltersType extends AbstractType
                         'has_exclusion_filter' => false,
                         'table'                => 'contact',
                         'field'                => 'country',
-                        'field_type'           => self::FIELD_TYPE_ARRAY,
-                        'type'                 => 'hidden',
+                        'field_type'           => self::FIELD_TYPE_INTEGER,
+                        'type'                 => 'choice',
                         'options'              => array(
-                            'required' => false,
-                            'attr'     => array(
-                                'data-select-mode'          => 'ajax',
-                                'data-select-minimum-input' => 2,
-                                'data-select-multiple'      => true,
-                                'data-select-type'          => 'Country',
-                                'placeholder'               => 'Select one or more...',
-                                'class'                     => 'form-control'
+                            'placeholder'       => false,
+                            'choices'           => $this->getChoicesArray($countries),
+                            'data'              => null,
+                            'choices_as_values' => true,
+                            'attr'              => array(
+                                'class' => 'form-control'
                             ),
-                            'label'    => 'Countries',
-                        )
+                            'label'             => 'Country'
+                        ),
                     ),
                     array(
                         'filter_type'          => ContactFilterInterface::BASIC_TYPE,
@@ -337,7 +337,6 @@ class FiltersType extends AbstractType
                         'field'                => 'district',
                         'field_type'           => self::FIELD_TYPE_ARRAY,
                         'type'                 => 'hidden',
-                        'has_exclusion'        => true,
                         'options'              => array(
                             'required' => false,
                             'attr'     => array(
@@ -358,7 +357,6 @@ class FiltersType extends AbstractType
                         'field'                => 'county',
                         'field_type'           => self::FIELD_TYPE_ARRAY,
                         'type'                 => 'hidden',
-                        'has_exclusion'        => true,
                         'options'              => array(
                             'required' => false,
                             'attr'     => array(
@@ -379,7 +377,6 @@ class FiltersType extends AbstractType
                         'field'                => 'parish',
                         'field_type'           => self::FIELD_TYPE_ARRAY,
                         'type'                 => 'hidden',
-                        'has_exclusion'        => true,
                         'options'              => array(
                             'required' => false,
                             'attr'     => array(
@@ -400,7 +397,6 @@ class FiltersType extends AbstractType
                         'field'                => 'postalcode1',
                         'field_type'           => self::FIELD_TYPE_INTEGER,
                         'type'                 => 'hidden',
-                        'has_exclusion'        => true,
                         'options'              => array(
                             'required' => false,
                             'attr'     => array(
@@ -418,7 +414,6 @@ class FiltersType extends AbstractType
                         'field'                => 'postalcode2',
                         'field_type'           => self::FIELD_TYPE_INTEGER,
                         'type'                 => 'hidden',
-                        'has_exclusion'        => true,
                         'options'              => array(
                             'required' => false,
                             'attr'     => array(
@@ -849,7 +844,7 @@ class FiltersType extends AbstractType
             case FiltersType::FIELD_TYPE_ARRAY:
             case FiltersType::FIELD_TYPE_BOOLEAN:
 
-                if(empty($values))
+                if ( empty($values) )
                 {
                     break;
                 }
@@ -868,7 +863,7 @@ class FiltersType extends AbstractType
                         $value = array_filter($value);
                     }
 
-                    if ( empty($value) && !is_bool($value))
+                    if ( empty($value) && ! is_bool($value) )
                     {
                         unset($values[$key]);
                     }
@@ -939,8 +934,7 @@ class FiltersType extends AbstractType
                 'virtual'    => true,
                 'label_attr' => array('class' => 'text-blue'),
                 'attr'       => $group['attr'],
-            ))
-            ;
+            ));
             foreach ( $group['fields'] as $filter )
             {
                 // Name Generator - FIELD_TABLE:FIELD_NAME:FIELD_TYPE:FILTER_TYPE:FILTER_OPERATION
@@ -962,7 +956,18 @@ class FiltersType extends AbstractType
                 // Add EXCLUSION Filter
                 if ( $filter['has_exclusion_filter'] )
                 {
-                    $filter['options']['label'] = 'Exclude ' . $filter['options']['label'];
+
+                    if ( array_key_exists('type', $filter['options']) && is_object($filter['options']['type']) )
+                    {
+                        // In PHP Objects are passed as reference, so a clone is needed to change parameters
+                        $filter['options']['type'] = clone $filter['options']['type'];
+                        $filter['options']['type']->setLabel('Exclude ' . $filter['options']['type']->getLabel());
+                    }
+                    else
+                    {
+                        $filter['options']['label'] = 'Exclude ' . $filter['options']['label'];
+                    }
+
                     $virtual_form->add($exclusion_name, $filter['type'], $filter['options']);
                 }
             }

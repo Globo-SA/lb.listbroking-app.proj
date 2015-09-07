@@ -88,6 +88,27 @@ blockquote.small-label label{
     opacity: 0.25;
 }
 
+.skin-black .navbar .nav a.btn {
+    color:white !important;
+}
 .navbar-btn{
     color:white !important;
+}
+
+.navbar-login
+{
+    padding: 10px;
+    padding-bottom: 0px;
+}
+
+.navbar-login-session
+{
+    padding: 10px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
+.icon-size
+{
+    font-size: 87px;
 }

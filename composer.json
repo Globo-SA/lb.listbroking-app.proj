@@ -49,6 +49,8 @@
         "commerceguys/addressing": "~0.6",
         "giggsey/libphonenumber-for-php": "~7.0",
 
+        "knplabs/knp-menu": "~1.1",
+        "knplabs/knp-menu-bundle": "~1.1",
         "friendsofsymfony/jsrouting-bundle": "~1.5",
         "sonata-project/easy-extends-bundle": "~2.1",
         "sonata-project/admin-bundle": "~2.3",
@@ -57,7 +59,8 @@
 
         "adclick/authorization-client-bundle": "1.*",
         "adclick/api-abstraction-bundle": "1.*",
-        "adclick/task-controller-bundle": "1.*"
+        "adclick/task-controller-bundle": "1.*",
+        "mopa/bootstrap-bundle": "^2.3"
 
     },
     "require-dev": {

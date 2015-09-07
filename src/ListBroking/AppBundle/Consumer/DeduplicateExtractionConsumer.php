@@ -39,9 +39,9 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
 
             $msg_body = unserialize($msg->body);
 
-            $this->e_service->logInfo(sprintf('Starting \'deduplication\' for extraction_id: %s with field: %s and file: %s', $msg_body['object_id'], $msg_body['field'], $msg_body['filename']));
-
             $extraction = $this->e_service->findExtraction($msg_body['object_id']);
+            $this->e_service->logExtractionAction($extraction, sprintf('Starting \'deduplication\' with field: %s', $msg_body['field']));
+
 
             $filename = $msg_body['filename'];
 
@@ -59,7 +59,7 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
             // Delete file
             unlink($filename);
 
-            $this->e_service->logInfo(sprintf('Ending \'deduplication\' for extraction_id: %s, result: DONE', $msg_body['object_id']));
+            $this->e_service->logExtractionAction($extraction, 'Ending \'deduplication\', result: DONE');
 
             return true;
         }
