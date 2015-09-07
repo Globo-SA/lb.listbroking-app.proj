@@ -92,6 +92,8 @@ services:
       arguments: [~, ListBroking\AppBundle\Entity\Extraction, ListBrokingAppBundle:ExtractionAdmin]
       tags:
           - {name: sonata.admin, manager_type: orm, group: Extraction, label: Extraction}
+      calls:
+          - [ setTemplate, [edit, ListBrokingAppBundle:Extraction:edit.html.twig]]
   listbroking.admin.extraction_template:
       class: ListBroking\AppBundle\Admin\ExtractionTemplateAdmin
       arguments: [~, ListBroking\AppBundle\Entity\ExtractionTemplate, SonataAdminBundle:CRUD]

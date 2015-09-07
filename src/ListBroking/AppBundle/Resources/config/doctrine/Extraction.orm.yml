@@ -69,6 +69,10 @@ ListBroking\AppBundle\Entity\Extraction:
             targetEntity: ListBroking\AppBundle\Entity\ExtractionContact
             mappedBy:     extraction
             cascade:      [all]
+        extraction_log:
+            targetEntity: ListBroking\AppBundle\Entity\ExtractionLog
+            mappedBy:     extraction
+            cascade:      [all]
 # Blameable
     manyToOne:
         created_by:

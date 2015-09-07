@@ -74,4 +74,55 @@ class RangeType extends AbstractType
     {
         return 'filter';
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultValue ()
+    {
+        return $this->default_value;
+    }
+
+    /**
+     * @param mixed $default_value
+     */
+    public function setDefaultValue ($default_value)
+    {
+        $this->default_value = $default_value;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLabel ()
+    {
+        return $this->label;
+    }
+
+    /**
+     * @param mixed $label
+     */
+    public function setLabel ($label)
+    {
+        $this->label = $label;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getType ()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param mixed $type
+     */
+    public function setType ($type)
+    {
+        $this->type = $type;
+    }
+
+
+
 } 

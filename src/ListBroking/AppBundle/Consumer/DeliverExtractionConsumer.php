@@ -6,7 +6,6 @@
 
 namespace ListBroking\AppBundle\Consumer;
 
-use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Service\BusinessLogic\ExtractionServiceInterface;
 use ListBroking\AppBundle\Service\Helper\AppServiceInterface;
 use ListBroking\AppBundle\Service\Helper\FileHandlerServiceInterface;
@@ -52,11 +51,12 @@ class DeliverExtractionConsumer implements ConsumerInterface
             $this->e_service->clearEntityManager();
 
             $msg_body = unserialize($msg->body);
-            $this->e_service->logInfo(sprintf('Starting \'deliverExtraction\' for extraction_id: %s', $msg_body['object_id']));
 
             $extraction = $this->e_service->findExtraction($msg_body['object_id']);
+            $this->e_service->logExtractionAction($extraction, 'Starting \'deliverExtraction\'');
 
-            $template = json_decode($this->e_service->findEntity('ListBrokingAppBundle:ExtractionTemplate', $msg_body['extraction_template_id'])->getTemplate(),1);
+            $template = json_decode($this->e_service->findEntity('ListBrokingAppBundle:ExtractionTemplate', $msg_body['extraction_template_id'])
+                                                    ->getTemplate(), 1);
 
             $query = $this->e_service->getExtractionContactsQuery($extraction);
             list($filename, $password) = $this->f_service->generateFileFromQuery($extraction->getName(), $template['extension'], $query, $template['headers']);
@@ -74,8 +74,7 @@ class DeliverExtractionConsumer implements ConsumerInterface
             // Save changes
             $this->e_service->updateEntity($extraction);
 
-            $this->e_service->logInfo(sprintf('Ending \'deliverExtraction\' for extraction_id: %s, email deliver result: %s to %s with the filename: %s and password: %s', $msg_body['object_id'],
-            $result, $msg_body['email'], $filename, $password));
+            $this->e_service->logExtractionAction($extraction, sprintf('Ending \'deliverExtraction\', email deliver result: %s to %s', $result ? 'YES' : 'NO', $msg_body['email']));
 
             return true;
         }

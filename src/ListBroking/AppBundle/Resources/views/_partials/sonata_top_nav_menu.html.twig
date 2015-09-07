@@ -6,14 +6,13 @@
                 Loading...
             </a>
         </li>
-        {% if app.user and is_granted('IS_AUTHENTICATED_FULLY') and not(app.request.attributes.get('_route') matches '/admin_listbroking_app_extraction_/i') %}
+        {% if not(app.request.attributes.get('_route') matches '/(admin_listbroking_app_extraction_|sonata_user_admin_security_login)/i') %}
             <li class="dropdown">
                 <div class="dropdown-toggle">
-                    <a href="{{ path('admin_listbroking_app_extraction_list') }}" class="btn btn-primary btn-sm navbar-btn">
+                    <a href="{{ path('admin_listbroking_app_extraction_list') }}" class="btn btn-primary btn-sm navbar-btn btn-flat">
                         <i class="fa fa-filter"></i>&nbsp;START EXTRACTING
                     </a>
                 </div>
-
             </li>
         {% endif %}
         <li class="dropdown">
@@ -23,39 +22,59 @@
             {% include admin_pool.getTemplate('add_block') %}
         </li>
         {% if app.user and is_granted('ROLE_SUPER_ADMIN') %}
-            <li class="dropdown">
-                <a class="exceptions_menu dropdown-toggle" data-toggle="dropdown" href="#">
-                    <i class="fa fa-exclamation-triangle fa-fw text-danger"></i> <i class="fa fa-caret-down"></i>
+            {% include '@ListBrokingApp/_partials/exceptions_dropdown.html.twig' %}
+        {% endif %}
+        {% if extraction is defined %}
+            {% include '@ListBrokingApp/_partials/extraction_log_dropdown.html.twig' %}
+        {% endif %}
+        {% if app.user %}
+            {% set fullname = app.user.firstname ~ ' ' ~app.user.lastname %}
+            <li class="dropdown user-menu">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <span class="glyphicon glyphicon-user"></span> 
+                    <strong>{{ fullname }}</strong>
+                    <i class="fa fa-caret-down"></i>
                 </a>
-                <ul class="dropdown-menu" role="menu" style="width: 1000px;">
-                    <li class="small_row row">
-                        <div class="col-md-12">
-                            &nbsp;<h4 class="text-danger"><i class="fa fa-exclamation-triangle fa-fw"></i>&nbsp;Exceptions</h4>
-                            <table id="exceptions_table" class="table table-hover table-condensed" width="100%" data-prototype="<tr><td>%%code%%</td><td>%%msg%%</td><td class='col-md-3'>%%created_at%%</td></tr>">
-                                <thead>
-                                <tr>
-                                    <th>Code</th>
-                                    <th>Error</th>
-                                    <th>Created</th>
-                                </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
+                <ul class="dropdown-menu dropdown-user">
+                    <li>
+                        <div class="navbar-login">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <p class="text-center">
+                                        <span class="glyphicon glyphicon-user icon-size"></span>
+                                    </p>
+                                </div>
+                                <div class="col-lg-8">
+                                    <p class="text-left"><strong>{{ fullname }}</strong></p>
+
+                                    <p class="text-left small">{{ app.user.email }}</p>
+
+                                    <p class="text-left">
+                                        {% if is_granted('ROLE_PREVIOUS_ADMIN') and sonata_user.impersonating %}
+                                            <a href="{{ url(sonata_user.impersonating.route, sonata_user.impersonating.parameters| merge({'_switch_user': '_exit'})) }}" class="btn btn-primary
+                                            btn-block btn-sm">
+                                                Stop impersonating</a>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </li>
-                    <li style="margin:10px">
-                        <a href="{{ path('admin_listbroking_exceptionhandler_exceptionlog_list') }}" class="btn btn-default">Show more</a>
+                    <li class="divider"></li>
+                    <li>
+                        <div class="navbar-login navbar-login-session">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <p>
+                                        <a href="{{ url('sonata_user_admin_security_logout') }}" class="btn btn-danger btn-block">{{ 'user_block_logout'|trans({}, 'SonataUserBundle') }}</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </li>
                 </ul>
             </li>
         {% endif %}
-        <li class="dropdown user-menu">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-user">
-                {% include admin_pool.getTemplate('user_block') %}
-            </ul>
-        </li>
+
     </ul>
 </div>

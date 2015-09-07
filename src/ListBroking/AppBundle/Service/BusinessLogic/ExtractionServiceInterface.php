@@ -6,18 +6,30 @@
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 use ListBroking\AppBundle\Entity\Extraction;
+use ListBroking\AppBundle\Entity\ExtractionLog;
 use ListBroking\AppBundle\Service\Base\BaseServiceInterface;
 
 interface ExtractionServiceInterface extends BaseServiceInterface
 {
 
     /**
+     * Finds the last ExtractionLog for a given Extraction
+     *
+     * @param Extraction $extraction
+     * @param            $limit
+     *
+     * @return ExtractionLog[]
+     */
+    public function findLastExtractionLog(Extraction $extraction, $limit);
+
+    /**
      * Find Extraction by id
+     *
      * @param $id
      *
      * @return Extraction|null
      */
-    public function findExtraction($id);
+    public function findExtraction ($id);
 
     /**
      * Clones a given extraction and resets it's status
@@ -100,4 +112,14 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      * @return void
      */
     public function generateLocks (Extraction $extraction, $lock_types);
+
+    /**
+     * Logs an occurred action of a given Extraction
+     *
+     * @param Extraction $extraction
+     * @param            $message
+     *
+     * @return ExtractionLog
+     */
+    public function logExtractionAction (Extraction $extraction, $message);
 }
