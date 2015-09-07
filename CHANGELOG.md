@@ -38,3 +38,6 @@
  * Fixed dashboard statistics
  * Added an extraction activity log 
  * Finished the staging contact import API
+
+### 2.10
+ * Fixed login page
