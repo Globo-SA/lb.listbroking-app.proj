@@ -41,7 +41,6 @@ class AppKernel extends Kernel
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),
             new Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle(),
             new Sonata\AdminBundle\SonataAdminBundle(),
-            new \Mopa\Bundle\BootstrapBundle\MopaBootstrapBundle(),
 
             // ListBroking Bundles
             new ListBroking\ExceptionHandlerBundle\ListBrokingExceptionHandlerBundle(),

@@ -6,23 +6,23 @@
     $(function () {
         "use strict";
 
-        //// Init collections
-        //$('[data-collection]').each(function () {
-        //
-        //    var $collectionHolder = $(this);
-        //    var $collections = $collectionHolder.find('.collection');
-        //
-        //    // If no widget was added add one
-        //    var index = $collections.length;
-        //    $collectionHolder.data('index', index);
-        //    if (index == 0) {
-        //        addCollection($collectionHolder);
-        //    }else{
-        //
-        //        addControls($collectionHolder);
-        //    }
-        //});
-        //initDateRangePickers($('form'));
+        // Init collections
+        $('[data-collection]').each(function () {
+
+            var $collectionHolder = $(this);
+            var $collections = $collectionHolder.find('.collection');
+
+            // If no widget was added add one
+            var index = $collections.length;
+            $collectionHolder.data('index', index);
+            if (index == 0) {
+                addCollection($collectionHolder);
+            }else{
+
+                addControls($collectionHolder);
+            }
+        });
+        initDateRangePickers($('form'));
 
         /**
          * Adds a new collection

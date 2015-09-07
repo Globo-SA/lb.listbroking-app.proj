@@ -59,9 +59,7 @@
 
         "adclick/authorization-client-bundle": "1.*",
         "adclick/api-abstraction-bundle": "1.*",
-        "adclick/task-controller-bundle": "1.*",
-        "mopa/bootstrap-bundle": "^2.3"
-
+        "adclick/task-controller-bundle": "1.*"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

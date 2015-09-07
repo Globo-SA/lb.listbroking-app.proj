@@ -93,7 +93,6 @@ class FiltersType extends AbstractType
                         'type'                 => 'checkbox',
                         'options'              => array(
                             'required' => false,
-                            'data'     => true,
                             'attr'     => array(
                                 'class' => 'form-control'
                             ),
@@ -109,7 +108,6 @@ class FiltersType extends AbstractType
                         'type'                 => 'checkbox',
                         'options'              => array(
                             'required' => false,
-                            'data'     => true,
                             'attr'     => array(
                                 'class' => 'form-control'
                             ),
@@ -125,7 +123,6 @@ class FiltersType extends AbstractType
                         'type'                 => 'checkbox',
                         'options'              => array(
                             'required' => false,
-                            'data'     => true,
                             'attr'     => array(
                                 'class' => 'form-control'
                             ),
