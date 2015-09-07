@@ -34,7 +34,7 @@
  * Added auto spool flush when the deliver consumer adds an email to it
  * Added a new logout warning and ajax login system
  
-### 2.10
+### 2.9
  * Fixed dashboard statistics
  * Added an extraction activity log 
  * Finished the staging contact import API
