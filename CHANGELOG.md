@@ -41,3 +41,6 @@
 
 ### 2.10
  * Fixed login page
+
+### 2.10.02
+ * Added FETCH_EAGER to Extraction Exporting

@@ -5,6 +5,8 @@
  */
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionLog;
 use ListBroking\AppBundle\Service\Base\BaseServiceInterface;
@@ -45,10 +47,11 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      * all the dimensions eagerly loaded
      *
      * @param Extraction $extraction
+     * @param null       $fetch_mode
      *
-     * @return mixed
+     * @return Query
      */
-    public function getExtractionContactsQuery (Extraction $extraction);
+    public function getExtractionContactsQuery (Extraction $extraction, $fetch_mode = null);
 
     /**
      * Finds all the contacts of a given Extraction with

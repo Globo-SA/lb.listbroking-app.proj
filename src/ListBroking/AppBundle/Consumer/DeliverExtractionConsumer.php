@@ -6,6 +6,7 @@
 
 namespace ListBroking\AppBundle\Consumer;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use ListBroking\AppBundle\Service\BusinessLogic\ExtractionServiceInterface;
 use ListBroking\AppBundle\Service\Helper\AppServiceInterface;
 use ListBroking\AppBundle\Service\Helper\FileHandlerServiceInterface;
@@ -58,7 +59,8 @@ class DeliverExtractionConsumer implements ConsumerInterface
             $template = json_decode($this->e_service->findEntity('ListBrokingAppBundle:ExtractionTemplate', $msg_body['extraction_template_id'])
                                                     ->getTemplate(), 1);
 
-            $query = $this->e_service->getExtractionContactsQuery($extraction);
+            $query = $this->e_service->getExtractionContactsQuery($extraction, ClassMetadata::FETCH_EAGER);
+
             list($filename, $password) = $this->f_service->generateFileFromQuery($extraction->getName(), $template['extension'], $query, $template['headers']);
 
             // Send the Extraction by Email

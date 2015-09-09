@@ -73,7 +73,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     public function findExtractionContacts (Extraction $extraction, $limit = null)
     {
         return $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')
-                                    ->getExtractionContacts($extraction, $limit)
+                                    ->findExtractionContacts($extraction, $limit)
             ;
     }
 
@@ -83,7 +83,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     public function findExtractionSummary (Extraction $extraction)
     {
         return $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')
-                                    ->getExtractionSummary($extraction)
+                                    ->findExtractionSummary($extraction)
             ;
     }
 
@@ -100,10 +100,10 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     /**
      * @inheritdoc
      */
-    public function getExtractionContactsQuery (Extraction $extraction)
+    public function getExtractionContactsQuery (Extraction $extraction, $fetch_mode = null)
     {
         return $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')
-                                    ->getExtractionContactsQuery($extraction)
+                                    ->findExtractionContactsQuery($extraction, null, $fetch_mode)
             ;
     }
 

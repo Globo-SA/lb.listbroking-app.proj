@@ -8,6 +8,7 @@ namespace ListBroking\AppBundle\Repository;
 
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
 
@@ -21,7 +22,7 @@ class ExtractionContactRepository extends EntityRepository
      *
      * @return mixed
      */
-    public function getExtractionSummary (Extraction $extraction)
+    public function findExtractionSummary (Extraction $extraction)
     {
         $qb = $this->createQueryBuilder('ec')
                    ->select('o.name, count(o.name) as total')
@@ -46,10 +47,10 @@ class ExtractionContactRepository extends EntityRepository
      *
      * @return mixed
      */
-    public function getExtractionContacts (Extraction $extraction, $limit = null, $hydrationMethod = AbstractQuery::HYDRATE_OBJECT)
+    public function findExtractionContacts (Extraction $extraction, $limit = null, $hydrationMethod = AbstractQuery::HYDRATE_OBJECT)
     {
 
-        return $this->getExtractionContactsQuery($extraction, $limit)
+        return $this->findExtractionContactsQuery($extraction, $limit)
                     ->execute(null, $hydrationMethod)
             ;
     }
@@ -59,10 +60,11 @@ class ExtractionContactRepository extends EntityRepository
      *
      * @param Extraction $extraction
      * @param null       $limit
+     * @param null       $fetch_mode
      *
      * @return Query
      */
-    public function getExtractionContactsQuery (Extraction $extraction, $limit = null)
+    public function findExtractionContactsQuery (Extraction $extraction, $limit = null, $fetch_mode = null)
     {
         $qb = $this->createQueryBuilder('ec')
                    ->join('ec.contact', 'c')
@@ -75,7 +77,23 @@ class ExtractionContactRepository extends EntityRepository
         {
             $qb->setMaxResults($limit);
         }
+        $query = $qb->getQuery();
 
-        return $qb->getQuery();
+        switch ($fetch_mode)
+        {
+            case ClassMetadata::FETCH_EAGER:
+
+                foreach ( $this->getClassMetadata()->getAssociationMappings() as $mapping )
+                {
+                    $query->setFetchMode($this->getClassName(), $mapping['fieldName'], ClassMetadata::FETCH_EAGER);
+                }
+                break;
+            default:
+                break;
+        }
+
+        return $query;
     }
+
+
 }
