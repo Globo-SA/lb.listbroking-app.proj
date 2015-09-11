@@ -19,13 +19,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AjaxController extends Controller
 {
-    public function pingAction(Request $request)
+
+    public function pingAction (Request $request)
     {
         $a_service = $this->get('app');
         try
         {
             $a_service->validateAjaxRequest($request);
-
 
             return $a_service->createJsonResponse(array());
         }
@@ -111,8 +111,7 @@ class AjaxController extends Controller
 
             return $a_service->createJsonResponse(array(
                 'importing' => $m_service->isProducerLocked($producer_id)
-            ))
-                ;
+            ));
         }
         catch ( \Exception $e )
         {
@@ -153,15 +152,13 @@ class AjaxController extends Controller
                 'filename'        => $file->getRealPath(),
                 'opposition_list' => $data['type'],
                 'clear_old'       => $data['clear_old']
-            ))
-            ;
+            ));
 
             $m_service->lockProducer($producer_id);
 
             return $a_service->createJsonResponse(array(
                 'response' => 'Opposition is being imported',
-            ))
-                ;
+            ));
         }
         catch ( \Exception $e )
         {
@@ -182,7 +179,11 @@ class AjaxController extends Controller
         $a_service = $this->get('app');
         $f_service = $this->get('file_handler');
 
-        list($filename, $password) = $f_service->generateFileFromArray(StagingContact::IMPORT_TEMPLATE_FILENAME, StagingContact::IMPORT_TEMPLATE_FILE_EXTENSION, array(StagingContact::$import_template), false);
+        list($filename, $password) = $f_service->generateFileFromArray(
+            StagingContact::IMPORT_TEMPLATE_FILENAME,
+            StagingContact::IMPORT_TEMPLATE_FILE_EXTENSION,
+            array(StagingContact::$import_template),
+            false);
 
         return $a_service->createAttachmentResponse($filename);
     }
@@ -220,15 +221,13 @@ class AjaxController extends Controller
                 'filename' => $file->getRealPath(),
                 'owner'    => $data['owner']->getName(),
                 'update'   => $data['update']
-            ))
-            ;
+            ));
 
             $m_service->lockProducer($producer_id);
 
             return $a_service->createJsonResponse(array(
                 'response' => 'Database is being imported',
-            ))
-                ;
+            ));
         }
         catch ( \Exception $e )
         {
@@ -251,21 +250,18 @@ class AjaxController extends Controller
 
             $response = $a_service->deliverEmail('ListBrokingAppBundle:KitEmail:operational_email.html.twig', array(
                 'body' => $body
-            ), $subject, $emails)
-            ;
+            ), $subject, $emails);
 
             if ( $response !== 1 )
             {
                 return $a_service->createJsonResponse(array(
                     'response' => 'Emails could not be delivered'
-                ), 500)
-                    ;
+                ), 500);
             }
 
             return $a_service->createJsonResponse(array(
                 'response' => 'Emails delivered'
-            ))
-                ;
+            ));
         }
         catch ( \Exception $e )
         {
@@ -284,8 +280,7 @@ class AjaxController extends Controller
 
             return $this->render('ListBrokingAppBundle:KitEmail:operational_email.html.twig', array(
                 'body' => $body
-            ))
-                ;
+            ));
         }
         catch ( \Exception $e )
         {

@@ -33,12 +33,12 @@
             autoUpload: false,
             removeAfterUpload: false,
             add: function(e, data) {
-                var acceptFileTypes = /\.(xls|xlsx)/i;
+                var acceptFileTypes = /\.csv/i;
                 var $errors = $('#fileuploaderror');
 
                 if(data.originalFiles[0]['name'].length && !acceptFileTypes.test(data.originalFiles[0]['name'])) {
                     $errors
-                        .html('Only Excel files are accepted')
+                        .html('Only CSV files are accepted')
                         .fadeIn()
                     ;
                     $staging_contact_import_btn.attr('disabled', 'disabled');

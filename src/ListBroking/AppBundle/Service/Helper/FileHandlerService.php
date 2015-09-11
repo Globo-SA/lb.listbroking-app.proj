@@ -53,9 +53,6 @@ class FileHandlerService implements FileHandlerServiceInterface
     {
         // Generate File
         $path = $this->generateFilename($name, $extension, true, '/../web/exports/');
-
-
-//        $this->exportByArray($path, $extension, $query->execute(null, Query::HYDRATE_ARRAY));
         $this->exportByQuery($path, $extension, $headers, $query);
 
         if ( $zipped )
