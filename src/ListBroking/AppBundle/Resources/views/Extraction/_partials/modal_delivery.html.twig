@@ -8,23 +8,24 @@
                 <h4 class="modal-title"><i class="fa fa-share"></i>&nbsp;Extraction Delivery</h4>
             </div>
             <div class="modal-body">
-                <p>As a security measure, the extraction can only be sent to the <b>its Creator</b> and the file will be <b>zipped</b> with a password.
-                </p>
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <input type="hidden" data-select-mode="ajax" data-select-type="ExtractionTemplate" id="delivery_extraction_template"
-                                       data-placeholder="Select a template..." class="form-control row-margin ">
-                            </div>
+                <blockquote class="small-label">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Extraction template</label>
+                            <input type="hidden" data-select-mode="ajax" data-select-type="ExtractionTemplate" id="delivery_extraction_template"
+                                   data-placeholder="Select a template..." class="form-control row-margin ">
                         </div>
-                        <blockquote>
-                            <small id="delivery_error" class="text-danger" style="display: none;">Please select an Extraction Template</small>
-                            <small>Extraction will be sent to: <b>{{ app.user.email }}</b></small>
-                        </blockquote>
                     </div>
-                </div>
+                    <small id="delivery_error" class="text-danger" style="display: none;">Please select an Extraction Template</small>
+                    <div class="alert alert-info bigger-space" role="alert">
+                        <i class="fa fa-info text-primary"></i>
+                        <ul class="smaller-text">
+                            <li>This is the last step of the wizard, the receive file should be considered as final</li>
+                            <li>As a security measure, lists can only be sent to <u>it's creator</u> in a zipped file with password</li>
+                            <li>This list will be sent to: <u>{{ app.user.email }}</u></li>
+                        </ul>
+                    </div>
+                </blockquote>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-flat btn-primary" id="delivery_modal_send">

@@ -12,10 +12,6 @@
                 <blockquote class="small-label">
                     <label>Database template:&nbsp;</label>
                     <a href="{{ path('ajax_staging_contact_import_template') }}" class="btn btn-primary">Download</a>
-                    <small>Please make sure to use this template before importing the database</small>
-                    <br>
-                    <hr>
-                    <label>Import information</label>
 
                     <div class="row">
                         <div class="col-md-6">{{ form_row(import_form.owner) }}</div>
@@ -26,7 +22,7 @@
                         <div class="col-md-8">
                             {{ form_widget(import_form.update) }}
                             {{ form_label(import_form.update) }}
-                            <small>For the update to work, the contacts <b>contact_id</b> must be present</small>
+                            <small>For the update to work, the leads <b>contact_id</b> must be present</small>
                         </div>
                     </div>
                     <br>
@@ -37,11 +33,27 @@
                         {{ form_widget(import_form.upload_file) }}
                     </span>
                     <small><strong id="files">No file chosen</strong></small>
-                    <small>Only Excel files allowed</small>
+                    <small>Only xls files allowed</small>
                     <small id="fileuploaderror" class="text-danger" style="display: none;"></small>
 
                     <div class="progress hidden">
                         <div class="progress-bar progress-bar-success"></div>
+                    </div>
+
+
+                    <div class="alert alert-info bigger-space" role="alert">
+                        <i class="fa fa-info text-primary"></i>
+                        <ul class="smaller-text">
+                            <li>Imports must follow a <u>strict</u> column format, please download the template before importing a file</li>
+                            <li>
+                                If <em>"Update existing leads"</em> is checked the system will only import leads that have a <b>contact_id</b>
+                                <ul>
+                                    <li>This is used to clean leads externally</li>
+                                    <li>This <u>must not</u> be used for new database Imports</li>
+                                </ul>
+                            </li>
+                            <li>For new database importing please first create the <u>Owner</u></li>
+                        </ul>
                     </div>
                 </blockquote>
             </div>

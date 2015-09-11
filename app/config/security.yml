@@ -2,14 +2,10 @@ security:
     encoders:
         "FOS\UserBundle\Model\UserInterface": sha512
     role_hierarchy:
-
-
-    role_hierarchy:
         ROLE_API_USER: ROLE_API_USER
         ROLE_LISTBROKER:
             - ROLE_USER
             - ROLE_ADMIN
-
         ROLE_ADMIN:
             - ROLE_USER
             - ROLE_SONATA_ADMIN

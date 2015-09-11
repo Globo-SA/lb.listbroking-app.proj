@@ -157,6 +157,10 @@ sonata_admin:
               class: col-md-12
             -
               position: top
+              type: sonata.admin.block.admin_list
+              class: col-md-12
+            -
+              position: top
               type: app.admin.operational_email
               class: col-md-12
     assets:

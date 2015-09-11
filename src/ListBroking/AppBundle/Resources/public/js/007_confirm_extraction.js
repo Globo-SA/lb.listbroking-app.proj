@@ -42,7 +42,7 @@
                 return parseInt($(this).val());
             }).get();
 
-            if (lock_types.length == 0 && !confirm('Do you really want to continue without locking the contacts ?')) {
+            if (lock_types.length == 0 && !confirm('Do you really want to continue without locking the leads ?')) {
                 return false;
             }
 

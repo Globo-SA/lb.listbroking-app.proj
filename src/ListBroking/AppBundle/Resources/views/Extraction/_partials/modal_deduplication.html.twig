@@ -8,18 +8,26 @@
                 <h4 class="modal-title"><i class="fa fa-times"></i>&nbsp;Lead Deduplication</h4>
             </div>
             <div class="modal-body">
-                <p>As a security measure, the extraction can only be sent to the <b>its Creator</b> and the file will be <b>zipped</b> with a password.</p>
                 <blockquote class="small-label">
                     <div class="form-group">
-                        <label>Download file <small>(Excel file with contact information for deduplication)</small></label>
+                        <label>Download List for Deduplication</label>
                         <input type="hidden" data-select-mode="ajax" data-select-minimum-input="0" data-select-type="ExtractionTemplate" data-placeholder="Select a template..." class="form-control
                         row-margin" value="1" disabled="disabled">
-                        <button type="button" id="deduplication-download" data-extraction="{{ extraction.id }}" class="btn btn-flat btn-primary space"><i class="icon icon-large ion-loading-c" style="display: none;
-                        "></i>&nbsp;Extract Leads List</button>
+                        <button type="button" id="deduplication-download" data-extraction="{{ extraction.id }}" class="btn btn-flat btn-primary space">
+                            <i class="fa fa-envelope-o"></i>&nbsp;SEND&nbsp;
+                            <i class="loading ion-loading-c" style="display: none;"></i>
+                        </button>
                     </div>
-                    <small>Extraction will be sent to: <b>{{ app.user.email }}</b></small>
+                    <div class="alert alert-info bigger-space" role="alert">
+                        <i class="fa fa-info text-primary"></i>
+                        <ul class="smaller-text">
+                            <li>File with contact information for deduplication</li>
+                            <li>As a security measure, lists can only be sent to <u>it's creator</u> in a zipped file with password</li>
+                            <li>This list will be sent to: <u>{{ app.user.email }}</u></li>
+                        </ul>
+                    </div>
                 </blockquote>
-                </div>
+            </div>
             {{ form_start(forms.extraction_deduplication, {attr: {'data-extraction': extraction.id}}) }}
             <div class="modal-body">
                 <blockquote class="small-label">
@@ -33,11 +41,20 @@
                         {{ form_widget(forms.extraction_deduplication.upload_file) }}
                     </span>
                     <small><strong id="files">No file chosen</strong></small>
-                    <small>CSV file with duplicated contacts (one column <strong>only</strong>)</small>
+                    <small>CSV file with duplicated leads (one column <strong>only</strong>)</small>
                     <small id="fileuploaderror" class="text-danger" style="display: none;"></small>
 
                     <div class="progress hidden">
                         <div class="progress-bar progress-bar-success"></div>
+                    </div>
+                    <div class="alert alert-info bigger-space" role="alert">
+                        <i class="fa fa-info text-primary"></i>
+                        <ul class="smaller-text">
+                            <li>Deduplication files must follow a <u>strict</u> column format, please download the list to use as a guide</li>
+                            <li>Each upload will override the previous</li>
+                            <li><em>File with the leads to remove</em> - Removes leads from the extraction and reruns it</li>
+                            <li><em>File with the leads to keep</em> - Only Keeps the leads on the imported list, the extraction will <u>not</u> rerun</li>
+                        </ul>
                     </div>
                 </blockquote>
             </div>
@@ -53,5 +70,6 @@
             {{ form_end(forms.extraction_deduplication) }}
         </div>
         <!-- /.modal-content -->
-    </div> <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal-dialog -->
 </div><!-- /.modal -->

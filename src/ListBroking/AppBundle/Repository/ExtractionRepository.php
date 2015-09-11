@@ -51,6 +51,10 @@ class ExtractionRepository extends EntityRepository
      */
     public function addContacts (Extraction $extraction, $contacts, $batch_size = 1000)
     {
+        if(count($contacts) == 0)
+        {
+            return;
+        }
         $extraction_id = $extraction->getId();
 
         $em = $this->getEntityManager();
