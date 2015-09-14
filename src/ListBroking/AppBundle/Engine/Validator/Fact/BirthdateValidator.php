@@ -60,7 +60,7 @@ class BirthdateValidator implements ValidatorInterface {
         $birthdate = new \DateTime($birthdate);
 
         $age = $now->diff($birthdate)->y;
-        if($age <= self::MIN_AGE){
+        if($age < self::MIN_AGE){
             throw new DimensionValidationException('Birthdate it less than: ' . self::MIN_AGE . " (current: {$age})");
         }
         if($age > self::MAX_AGE){

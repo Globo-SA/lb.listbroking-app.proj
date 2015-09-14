@@ -57,3 +57,6 @@
 ### 2.11.02
  * Fixed updateContactDimensions trying to add empty Dimensions
  
+### 2.11.03
+ * Fixed Birthdate Validator removing leads with 18 years
+ 
