@@ -50,3 +50,7 @@
  * Added the possibility to Import or Update Leads
  * Refactored the StagingContactRepository
  * Better StagingContact Import Template
+ 
+### 2.11.01
+ * Uncommented necessary code
+ 
