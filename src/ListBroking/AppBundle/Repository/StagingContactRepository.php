@@ -133,7 +133,8 @@ class StagingContactRepository extends EntityRepository
      */
     public function moveInvalidContactsToDQP ()
     {
-
+        // Only remove StagingContacts processed more than 5 minutes ago
+        $from = (new \DateTime('- 5 minutes'))->format('Y-m-d H:t:s');
         $conn = $this->getEntityManager()
                      ->getConnection()
         ;
@@ -142,8 +143,10 @@ class StagingContactRepository extends EntityRepository
             SELECT *
             from staging_contact
             WHERE valid = 0 AND processed = 1
+            AND updated_at <= '{$from}'
 
 SQL;
+
         $conn->prepare($move_sql)
              ->execute()
         ;
@@ -152,6 +155,7 @@ SQL;
             DELETE
             FROM staging_contact
             WHERE valid = 0 AND processed = 1
+            AND updated_at <= '{$from}'
 SQL;
         $conn->prepare($del_sql)
              ->execute()

@@ -65,3 +65,6 @@
  
 ### 2.11.05
  * Removed progress bar from ProcessStagingContactsCommand for cleaner logs
+ 
+### 2.11.06
+ * Fixed concurrency problem when passing StagingContacts to the DQP table 
