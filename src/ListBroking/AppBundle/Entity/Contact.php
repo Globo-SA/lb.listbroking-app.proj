@@ -196,6 +196,13 @@ class Contact
             $getMethod = 'get' . $inflector->classify($field);
             $setMethod = 'set' . $inflector->classify($field);
 
+            // Don't update if the Staging
+            // Field is Empty
+            if(empty($value))
+            {
+                continue;
+            }
+
             if ( $s_contact->getUpdate() || empty($this->$getMethod()) )
             {
                 $this->$setMethod($value);
