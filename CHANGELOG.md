@@ -54,3 +54,6 @@
 ### 2.11.01
  * Uncommented necessary code
  
+### 2.11.02
+ * Fixed updateContactDimensions trying to add empty Dimensions
+ 

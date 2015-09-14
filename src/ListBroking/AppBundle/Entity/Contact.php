@@ -161,6 +161,10 @@ class Contact
 
         foreach ( $dimensions as $dimension )
         {
+            if(empty($dimension))
+            {
+                continue;
+            }
             $reflect = new \ReflectionClass($dimension);
             $set_method = 'set' . $reflect->getShortName();
             $this->$set_method($dimension);
