@@ -60,3 +60,5 @@
 ### 2.11.03
  * Fixed Birthdate Validator removing leads with 18 years
  
+### 2.11.04
+ * Moved moveInvalidContactsToDQP out of the ProcessStagingContactsCommand for better performance

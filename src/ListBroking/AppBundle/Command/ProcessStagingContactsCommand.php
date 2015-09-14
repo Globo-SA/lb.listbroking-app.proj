@@ -91,10 +91,6 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
                 }
                 $this->service->finishProgressBar();
 
-                // Send invalid contacts to the Data Quality Profile table (DQP)
-                $this->service->write('Sending invalid contacts to the Data Quality Profile table (DQP)');
-                $s_service->moveInvalidContactsToDQP();
-
                 // Save all changes
                 $this->service->write('Flushing to database');
                 $s_service->flushAll();
