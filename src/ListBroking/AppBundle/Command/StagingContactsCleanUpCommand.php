@@ -62,6 +62,7 @@ class StagingContactsCleanUpCommand extends ContainerAwareCommand
         catch ( \Exception $e )
         {
             $this->service->throwError($e);
+            $this->service->write($e->getTraceAsString());
         }
     }
 } 

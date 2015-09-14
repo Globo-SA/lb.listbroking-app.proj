@@ -56,9 +56,12 @@
  
 ### 2.11.02
  * Fixed updateContactDimensions trying to add empty Dimensions
- 
+
 ### 2.11.03
  * Fixed Birthdate Validator removing leads with 18 years
  
 ### 2.11.04
  * Moved moveInvalidContactsToDQP out of the ProcessStagingContactsCommand for better performance
+ 
+### 2.11.05
+ * Removed progress bar from ProcessStagingContactsCommand for cleaner logs

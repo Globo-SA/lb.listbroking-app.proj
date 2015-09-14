@@ -66,14 +66,13 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
                 }
 
                 // Iterate staging contacts
-                $this->service->createProgressBar('STARTING CONTACT VALIDATION', count($contacts));
+                $this->service->write('STARTING CONTACT VALIDATION', count($contacts));
                 foreach ( $contacts as $staging_contact )
                 {
-                    $this->service->advanceProgressBar("Validating StagingContact: {$staging_contact->getId()}");
 
                     if ( $staging_contact->getUpdate() )
                     {
-                        $this->service->setProgressBarMessage("Loading StagingContact: {$staging_contact->getId()}");
+                        $this->service->write("Loading StagingContact: {$staging_contact->getId()}");
                         $s_service->loadUpdatedContact($staging_contact);
                         continue;
                     }
@@ -84,12 +83,11 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
                     // Load validated contact
                     if ( $staging_contact->getValid() && $staging_contact->getProcessed() )
                     {
-                        $this->service->setProgressBarMessage("Loading StagingContact: {$staging_contact->getId()}");
+                        $this->service->write("Loading StagingContact: {$staging_contact->getId()}");
 
                         $s_service->loadValidatedContact($staging_contact);
                     }
                 }
-                $this->service->finishProgressBar();
 
                 // Save all changes
                 $this->service->write('Flushing to database');
@@ -105,6 +103,7 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
         catch ( \Exception $e )
         {
             $this->service->throwError($e);
+            $this->service->write($e->getTraceAsString());
         }
     }
 } 
