@@ -57,35 +57,43 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
                 /** @var StagingContact[] $contacts */
                 $contacts = $s_service->findAndLockContactsToValidate($limit);
 
-                if(!$contacts)
+                if ( ! $contacts )
                 {
                     $this->service->write('No contacts to process');
                     $this->service->finish();
+
                     return;
                 }
 
                 // Iterate staging contacts
                 $this->service->createProgressBar('STARTING CONTACT VALIDATION', count($contacts));
-                foreach ( $contacts as $contact )
+                foreach ( $contacts as $staging_contact )
                 {
-                    $this->service->advanceProgressBar("Validating StagingContact: {$contact->getId()}");
+                    $this->service->advanceProgressBar("Validating StagingContact: {$staging_contact->getId()}");
+
+                    if ( $staging_contact->getUpdate() )
+                    {
+                        $this->service->setProgressBarMessage("Loading StagingContact: {$staging_contact->getId()}");
+                        $s_service->loadUpdatedContact($staging_contact);
+                        continue;
+                    }
 
                     // Validate
-                    $s_service->validateStagingContact($contact);
+                    $s_service->validateStagingContact($staging_contact);
 
                     // Load validated contact
-                    if ( $contact->getValid() && $contact->getProcessed() )
+                    if ( $staging_contact->getValid() && $staging_contact->getProcessed() )
                     {
-                        $this->service->setProgressBarMessage("Loading StagingContact: {$contact->getId()}");
+                        $this->service->setProgressBarMessage("Loading StagingContact: {$staging_contact->getId()}");
 
-                        $s_service->loadValidatedContact($contact);
+                        $s_service->loadValidatedContact($staging_contact);
                     }
                 }
                 $this->service->finishProgressBar();
 
                 // Send invalid contacts to the Data Quality Profile table (DQP)
                 $this->service->write('Sending invalid contacts to the Data Quality Profile table (DQP)');
-                $s_service->moveInvalidContactsToDQP();
+//                $s_service->moveInvalidContactsToDQP();
 
                 // Save all changes
                 $this->service->write('Flushing to database');

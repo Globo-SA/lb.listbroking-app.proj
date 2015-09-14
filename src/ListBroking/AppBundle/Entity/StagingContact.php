@@ -20,11 +20,12 @@ use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 class StagingContact
 {
 
-    const IMPORT_TEMPLATE_FILE_EXTENSION = 'Excel';
+    const IMPORT_TEMPLATE_FILE_EXTENSION = 'csv';
 
     const IMPORT_TEMPLATE_FILENAME       = 'staging_contact_import_template';
 
     public static $import_template = array(
+        'contact_id'         => '',
         'external_id'        => '',
         'phone'              => '',
         'email'              => '',
@@ -60,7 +61,7 @@ class StagingContact
 
     protected $running   = 0;
 
-    protected $update   = 0;
+    protected $update    = 0;
 
     /**
      * Contact Information
@@ -604,7 +605,8 @@ class StagingContact
      */
     public function setDate ($date)
     {
-        if(!is_object($date)){
+        if ( ! is_object($date) )
+        {
             $date = new \DateTime($date);
         }
         $this->date = $date;

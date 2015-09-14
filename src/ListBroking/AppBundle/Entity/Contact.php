@@ -9,6 +9,7 @@
 namespace ListBroking\AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Util\Inflector;
 use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
 use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 
@@ -26,6 +27,7 @@ class Contact
      * @var boolean
      */
     private $is_clean = 0;
+
     /**
      * @var string
      */
@@ -146,6 +148,66 @@ class Contact
     function __toString ()
     {
         return $this->firstname . ' ' . $this->lastname;
+    }
+
+
+    /**
+     * Updates the dimensions of the Contact
+     *
+     * @param $dimensions
+     */
+    public function updateContactDimensions ($dimensions)
+    {
+
+        foreach ( $dimensions as $dimension )
+        {
+            $reflect = new \ReflectionClass($dimension);
+            $set_method = 'set' . $reflect->getShortName();
+            $this->$set_method($dimension);
+        }
+    }
+
+    /**
+     * Updates the Facts of the contact using a StagingContact
+     *
+     * @param StagingContact $s_contact
+     */
+    public function updateContactFacts (StagingContact $s_contact)
+    {
+        $fields = array(
+            'email'        => $s_contact->getEmail(),
+            'external_id'  => $s_contact->getExternalId(),
+            'firstname'    => $s_contact->getFirstname(),
+            'lastname'     => $s_contact->getLastname(),
+            'birthdate'    => new \DateTime($s_contact->getBirthdate()),
+            'address'      => $s_contact->getAddress(),
+            'postalcode1'  => $s_contact->getPostalcode1(),
+            'postalcode2'  => $s_contact->getPostalcode2(),
+            'ip_address'   => $s_contact->getIpaddress(),
+            'date'         => $s_contact->getDate(),
+            'validations'  => $s_contact->getValidations(),
+            'post_request' => $s_contact->getPostRequest(),
+
+        );
+
+        foreach ( $fields as $field => $value )
+        {
+            $inflector = new Inflector();
+            $getMethod = 'get' . $inflector->classify($field);
+            $setMethod = 'set' . $inflector->classify($field);
+
+            // Don't update if the Staging
+            // Field is Empty
+            if(empty($value))
+            {
+                continue;
+            }
+
+            if ( $s_contact->getUpdate() || empty($this->$getMethod()) )
+            {
+                $this->$setMethod($value);
+            }
+        }
     }
 
     /**

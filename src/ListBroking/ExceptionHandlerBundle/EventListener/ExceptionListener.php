@@ -58,19 +58,19 @@ class ExceptionListener
         $mail_info['is_active'] = false;
         if ( $mail_info['is_active'] )
         {
-            $message = \Swift_Message::newInstance(
-                            $mail_info['subject'],
-                            $this->twig->render('ListBrokingExceptionHandlerBundle::exception_template.html.twig', array('error' => $error_array)),
-                            'text/html')
+            $message = \Swift_Message::newInstance($mail_info['subject'], $this->twig->render('ListBrokingExceptionHandlerBundle::exception_template.html.twig', array('error' => $error_array)), 'text/html')
                                      ->setFrom($mail_info['from'])
                                      ->setTo($mail_info['to'])
             ;
             $this->mailer->send($message);
         }
 
-        $event->setResponse(new RedirectResponse($this->router->generate('admin_listbroking_exceptionhandler_exceptionlog_exception', array(
-            'id' => $error->getId()
-        ))))
-        ;
+        if ( ! $event->getRequest()->isXmlHttpRequest())
+        {
+
+            $event->setResponse(new RedirectResponse($this->router->generate('admin_listbroking_exceptionhandler_exceptionlog_exception', array(
+                'id' => $error->getId()
+            ))));
+        }
     }
 }

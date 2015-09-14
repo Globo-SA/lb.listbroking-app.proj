@@ -71,10 +71,10 @@ class StagingService extends BaseService implements StagingServiceInterface
     /**
      * @inheritdoc
      */
-    public function loadValidatedContact (StagingContact $contact)
+    public function loadValidatedContact (StagingContact $staging_contact)
     {
         $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                             ->loadValidatedContact($contact)
+                             ->loadValidatedContact($staging_contact)
         ;
     }
 
@@ -91,6 +91,16 @@ class StagingService extends BaseService implements StagingServiceInterface
     /**
      * @inheritdoc
      */
+    public function loadUpdatedContact (StagingContact $staging_contact)
+    {
+        $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
+                             ->loadUpdatedContact($staging_contact)
+        ;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function syncContactsWithOppositionLists ()
     {
         $this->entity_manager->getRepository('ListBrokingAppBundle:Lead')
@@ -101,8 +111,8 @@ class StagingService extends BaseService implements StagingServiceInterface
     /**
      * @inheritdoc
      */
-    public function validateStagingContact ($contact)
+    public function validateStagingContact (StagingContact $staging_contact)
     {
-        $this->v_engine->run($contact);
+        $this->v_engine->run($staging_contact);
     }
 }

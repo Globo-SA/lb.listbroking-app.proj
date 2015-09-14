@@ -66,6 +66,16 @@ interface StagingServiceInterface extends BaseServiceInterface
     public function moveInvalidContactsToDQP ();
 
     /**
+     * Loads an updated contact from the staging area
+     * to the Lead and Contact tables
+     *
+     * @param StagingContact $staging_contact
+     *
+     * @return mixed
+     */
+    public function loadUpdatedContact (StagingContact $staging_contact);
+
+    /**
      * Syncs the Opposition table with the Leads
      */
     public function syncContactsWithOppositionLists ();
@@ -74,10 +84,10 @@ interface StagingServiceInterface extends BaseServiceInterface
      * Validates a StagingContact using exceptions and
      * opposition lists
      *
-     * @param $contact
+     * @param StagingContact $contact
      *
      * @internal param $contacts
      * @return mixed
      */
-    public function validateStagingContact ($contact);
+    public function validateStagingContact (StagingContact $contact);
 }

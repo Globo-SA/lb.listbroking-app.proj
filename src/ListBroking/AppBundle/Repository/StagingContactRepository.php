@@ -100,31 +100,31 @@ class StagingContactRepository extends EntityRepository
      */
     public function addStagingContact ($data_array)
     {
-        $contact = new StagingContact();
+        $staging_contact = new StagingContact();
         foreach ( $data_array as $field => $value )
         {
             $method = 'set' . Inflector::camelize($field);
-            if ( method_exists($contact, $method) )
+            if ( method_exists($staging_contact, $method) )
             {
-                $contact->$method($value);
+                $staging_contact->$method($value);
             }
         }
-        $contact->setPostRequest(json_encode($data_array));
+        $staging_contact->setPostRequest(json_encode($data_array));
 
         // IF date and/or initial_lock_expiration_date are NULL
         // values today's date is used
 
-        $date = DateTimeParser::getValidDateObject($contact->getDate());
-        $contact->setDate($date);
+        $date = DateTimeParser::getValidDateObject($staging_contact->getDate());
+        $staging_contact->setDate($date);
 
-        $initial_lock_expiration_date = DateTimeParser::getValidDateObject($contact->getInitialLockExpirationDate());
-        $contact->setInitialLockExpirationDate($initial_lock_expiration_date);
+        $initial_lock_expiration_date = DateTimeParser::getValidDateObject($staging_contact->getInitialLockExpirationDate());
+        $staging_contact->setInitialLockExpirationDate($initial_lock_expiration_date);
 
         $this->getEntityManager()
-             ->persist($contact)
+             ->persist($staging_contact)
         ;
 
-        return $contact;
+        return $staging_contact;
     }
 
     /**
@@ -162,59 +162,26 @@ SQL;
      * Loads validated contacts from the staging area
      * to the Lead and Contact tables
      *
-     * @param StagingContact $s_contact
+     * @param StagingContact $staging_contact
      */
-    public function loadValidatedContact (StagingContact $s_contact)
+    public function loadValidatedContact (StagingContact $staging_contact)
     {
         $em = $this->getEntityManager();
 
-        /** @var StagingContact $s_contact */
-
         //Dimension Tables
-        $source = $em->getRepository('ListBrokingAppBundle:Source')
-                     ->findOneBy(array(
-                         'name' => $s_contact->getSourceName()
-                     ))
-        ;
-        $owner = $em->getRepository('ListBrokingAppBundle:Owner')
-                    ->findOneBy(array(
-                        'name' => $s_contact->getOwner()
-                    ))
-        ;
-        $sub_category = $em->getRepository('ListBrokingAppBundle:SubCategory')
-                           ->findOneBy(array(
-                               'name' => $s_contact->getSubCategory()
-                           ))
-        ;
-        $gender = $em->getRepository('ListBrokingAppBundle:Gender')
-                     ->findOneBy(array(
-                         'name' => $s_contact->getGender()
-                     ))
-        ;
-        $district = $em->getRepository('ListBrokingAppBundle:District')
-                       ->findOneBy(array(
-                           'name' => $s_contact->getDistrict()
-                       ))
-        ;
-        $county = $em->getRepository('ListBrokingAppBundle:County')
-                     ->findOneBy(array(
-                         'name' => $s_contact->getCounty()
-                     ))
-        ;
-        $parish = $em->getRepository('ListBrokingAppBundle:Parish')
-                     ->findOneBy(array(
-                         'name' => $s_contact->getParish()
-                     ))
-        ;
-        $country = $em->getRepository('ListBrokingAppBundle:Country')
-                      ->findOneBy(array(
-                          'name' => $s_contact->getCountry()
-                      ))
-        ;
+        $source = $this->findDimension('ListBrokingAppBundle:Source', $staging_contact->getSourceName());
+        $owner = $this->findDimension('ListBrokingAppBundle:Owner', $staging_contact->getOwner());
+        $sub_category = $this->findDimension('ListBrokingAppBundle:SubCategory', $staging_contact->getSubCategory());
+        $gender = $this->findDimension('ListBrokingAppBundle:Gender', $staging_contact->getGender());
+        $district = $this->findDimension('ListBrokingAppBundle:District', $staging_contact->getDistrict());
+        $county = $this->findDimension('ListBrokingAppBundle:County', $staging_contact->getCounty());
+        $parish = $this->findDimension('ListBrokingAppBundle:Parish', $staging_contact->getParish());
+        $country = $this->findDimension('ListBrokingAppBundle:Country', $staging_contact->getCountry());
 
+        // Fact Table
         $lead = $em->getRepository('ListBrokingAppBundle:Lead')
                    ->findOneBy(array(
-                       'id' => $s_contact->getLeadId()
+                       'id' => $staging_contact->getLeadId()
                    ))
         ;
 
@@ -224,15 +191,16 @@ SQL;
             $lead = new Lead();
         }
 
-        $lead->setPhone($s_contact->getPhone());
-        $lead->setIsMobile($s_contact->getIsMobile());
-        $lead->setInOpposition($s_contact->getInOpposition());
+        $lead->setPhone($staging_contact->getPhone());
+        $lead->setIsMobile($staging_contact->getIsMobile());
+        $lead->setInOpposition($staging_contact->getInOpposition());
         $lead->setCountry($country);
         $em->persist($lead);
 
         $contact = $em->getRepository('ListBrokingAppBundle:Contact')
                       ->findOneBy(array(
-                          'id' => $s_contact->getContactId()
+                          'id'   => $staging_contact->getContactId(),
+                          'lead' => $lead
                       ))
         ;
 
@@ -242,10 +210,21 @@ SQL;
             $contact = new Contact();
         }
 
-        $this->updateContact($s_contact, $contact, $lead, $source, $owner, $sub_category, $gender, $district, $county, $parish, $country);
+        $contact->updateContactFacts($staging_contact);
+        $contact->updateContactDimensions(array(
+            $lead,
+            $source,
+            $owner,
+            $sub_category,
+            $gender,
+            $district,
+            $county,
+            $parish,
+            $country
+        ));
 
         $now = new \DateTime();
-        $initial_lock_expiration_date = $s_contact->getInitialLockExpirationDate();
+        $initial_lock_expiration_date = $staging_contact->getInitialLockExpirationDate();
         if ( $initial_lock_expiration_date > $now )
         {
             $lock = new Lock();
@@ -258,7 +237,7 @@ SQL;
         $em->persist($contact);
 
         // Remove StagingContact
-        $em->remove($s_contact);
+        $em->remove($staging_contact);
 
         $em->flush();
     }
@@ -267,25 +246,32 @@ SQL;
      * Loads Updated StagingContacts to the
      * Contact table
      *
-     * @param StagingContact $s_contact
+     * @param StagingContact $staging_contact
      */
-    public function loadUpdatedContact (StagingContact $s_contact)
+    public function loadUpdatedContact (StagingContact $staging_contact)
     {
         $em = $this->getEntityManager();
-        $contact_id = $s_contact->getContactId();
+        $contact_id = $staging_contact->getContactId();
         if ( ! empty($contact_id) )
         {
 
             $contact = $em->getRepository('ListBrokingAppBundle:Contact')
-                          ->find($s_contact->getContactId())
+                          ->findOneBy(array(
+                              'id'       => $staging_contact->getContactId(),
+                              'is_clean' => 0
+                          ))
             ;
+            if ( ! $contact )
+            {
+                return;
+            }
 
-            $this->updateContact($s_contact, $contact);
+            $contact->updateContactFacts($staging_contact);
 
             $contact->setIsClean(true);
 
             // Remove StagingContact
-            $em->remove($s_contact);
+            $em->remove($staging_contact);
 
             $em->flush();
         }
@@ -306,22 +292,22 @@ SQL;
 
         // Get contacts and lock the rows
         $em->beginTransaction();
-        $contacts = $this->createQueryBuilder('s')
-                         ->where('s.valid = :valid')
-                         ->andWhere('s.running = :running')
-                         ->setParameter('valid', false)
-                         ->setParameter('running', false)
-                         ->setMaxResults($limit)
-                         ->getQuery()
-                         ->setLockMode(LockMode::PESSIMISTIC_WRITE)// Don't "READ" OR "WRITE" while the lock is active
-                         ->execute(null, Query::HYDRATE_OBJECT)
+        $staging_contacts = $this->createQueryBuilder('s')
+                                 ->where('s.valid = :valid')
+                                 ->andWhere('s.running = :running')
+                                 ->setParameter('valid', false)
+                                 ->setParameter('running', false)
+                                 ->setMaxResults($limit)
+                                 ->getQuery()
+                                 ->setLockMode(LockMode::PESSIMISTIC_WRITE)// Don't "READ" OR "WRITE" while the lock is active
+                                 ->execute(null, Query::HYDRATE_OBJECT)
         ;
 
         // Set the contacts as Running
-        /** @var StagingContact $contact */
-        foreach ( $contacts as $contact )
+        /** @var StagingContact $staging_contact */
+        foreach ( $staging_contacts as $staging_contact )
         {
-            $contact->setRunning(true);
+            $staging_contact->setRunning(true);
         }
 
         // Flush the changes
@@ -330,145 +316,26 @@ SQL;
         // Commit the transaction removing the lock
         $em->commit();
 
-        return $contacts;
+        return $staging_contacts;
     }
 
     /**
-     * Updates a contact with non-empty data
+     * Finds the facts table Dimensions by name
      *
-     * @param StagingContact $s_contact
-     * @param Contact        $contact
-     * @param Lead           $lead
-     * @param Source         $source
-     * @param Owner          $owner
-     * @param SubCategory    $sub_category
-     * @param Gender         $gender
-     * @param District       $district
-     * @param County         $county
-     * @param Parish         $parish
-     * @param Country        $country
+     * @param $repo_name
+     * @param $name
+     *
+     * @return null|object
      */
-    private function updateContact (
-        StagingContact $s_contact,
-        Contact $contact,
-        Lead $lead = null,
-        Source $source = null,
-        Owner $owner = null,
-        SubCategory $sub_category = null,
-        Gender $gender = null,
-        District $district = null,
-        County $county = null,
-        Parish $parish = null,
-        Country $country = null)
+    private function findDimension ($repo_name, $name)
     {
-        $this->validateField($s_contact->getEmail(), function ($field) use ($contact)
-        {
-            $contact->setEmail($field);
-        });
-        $this->validateField($s_contact->getExternalId(), function ($field) use ($contact)
-        {
-            $contact->setExternalId($field);
-        });
-        $this->validateField($s_contact->getFirstname(), function ($field) use ($contact)
-        {
-            $contact->setFirstname($field);
-        });
-        $this->validateField($s_contact->getLastname(), function ($field) use ($contact)
-        {
-            $contact->setLastname($field);
-        });
-        $this->validateField(new \DateTime($s_contact->getBirthdate()), function ($field) use ($contact)
-        {
-            $contact->setBirthdate($field);
-        });
-        $this->validateField($s_contact->getAddress(), function ($field) use ($contact)
-        {
-            $contact->setAddress($field);
-        });
-        $this->validateField($s_contact->getPostalcode1(), function ($field) use ($contact)
-        {
-            $contact->setPostalcode1($field);
-        });
-        $this->validateField($s_contact->getPostalcode2(), function ($field) use ($contact)
-        {
-            $contact->setPostalcode2($field);
-        });
-        $this->validateField($s_contact->getIpaddress(), function ($field) use ($contact)
-        {
-            $contact->setIpaddress($field);
-        });
-        $this->validateField($s_contact->getDate(), function ($field) use ($contact)
-        {
-            $contact->setDate($field);
-        });
-        $this->validateField($s_contact->getValidations(), function ($field) use ($contact)
-        {
-            $contact->setValidations($field);
-        });
-        $this->validateField($s_contact->getPostRequest(), function ($field) use ($contact)
-        {
-            $contact->setPostRequest($field);
-        });
-
-        $this->validateField($lead, function ($field) use ($contact)
-        {
-            $contact->setLead($field);
-        });
-
-        $this->validateField($source, function ($field) use ($contact)
-        {
-            $contact->setSource($field);
-        });
-
-        $this->validateField($owner, function ($field) use ($contact)
-        {
-            $contact->setOwner($field);
-        });
-
-        $this->validateField($sub_category, function ($field) use ($contact)
-        {
-            $contact->setSubCategory($field);
-        });
-
-        $this->validateField($gender, function ($field) use ($contact)
-        {
-            $contact->setGender($field);
-        });
-
-        $this->validateField($district, function ($field) use ($contact)
-        {
-            $contact->setDistrict($field);
-        });
-
-        $this->validateField($county, function ($field) use ($contact)
-        {
-            $contact->setCounty($field);
-        });
-
-        $this->validateField($parish, function ($field) use ($contact)
-        {
-            $contact->setParish($field);
-        });
-
-        $this->validateField($country, function ($field) use ($contact)
-        {
-            $contact->setCountry($field);
-        });
+        return $this->getEntityManager()
+                    ->getRepository($repo_name)
+                    ->findOneBy(array(
+                        'name' => $name
+                    ))
+            ;
     }
 
-    /**
-     * Validates if a given field isn't empty and runs a callable function
-     * if not empty
-     *
-     * @param          $field
-     * @param callable $callback
-     */
-    private function validateField ($field, callable $callback)
-    {
-        if ( ! empty($field) )
-        {
-            $callback($field);
-        }
-    }
 } 
 
