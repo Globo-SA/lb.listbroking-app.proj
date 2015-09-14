@@ -44,3 +44,9 @@
 
 ### 2.10.02
  * Added FETCH_EAGER to Extraction Exporting
+
+### 2.11.00
+ * Better UI for StagingContactAdmin
+ * Added the possibility to Import or Update Leads
+ * Refactored the StagingContactRepository
+ * Better StagingContact Import Template
