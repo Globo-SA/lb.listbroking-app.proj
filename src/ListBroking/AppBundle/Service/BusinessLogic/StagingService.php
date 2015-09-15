@@ -73,9 +73,12 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     public function loadValidatedContact (StagingContact $staging_contact)
     {
+        $this->startStopWatch('validator_engine');
         $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
                              ->loadValidatedContact($staging_contact)
         ;
+        $this->logInfo(sprintf('Stopwatch: loadValidatedContact, ran in %s milliseconds', $this->lapStopWatch('validator_engine')));
+
     }
 
     /**

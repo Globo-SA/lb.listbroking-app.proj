@@ -117,6 +117,33 @@ interface BaseServiceInterface
     public function lapStopWatch($event_name);
 
     /**
+     * Locks the Execution of a given module
+     *
+     * @param $module string
+     *
+     * @return void
+     */
+    public function lockExecution($module);
+
+    /**
+     * Releases the Lock on a given module
+     *
+     * @param $module string
+     *
+     * @return void
+     */
+    public function releaseExecution($module);
+
+    /**
+     * Checks if a module is locked
+     *
+     * @param $module string
+     *
+     * @return boolean
+     */
+    public function isExecutionLocked($module);
+
+    /**
      * @param Cache $doctrine_cache
      */
     public function setDoctrineCache ($doctrine_cache);

@@ -20,6 +20,8 @@ use Symfony\Component\Stopwatch\Stopwatch;
 abstract class BaseService implements BaseServiceInterface
 {
 
+    const MODULE_LOCK_TTL = 60;
+
     /**
      * @var EntityManager
      */
@@ -168,7 +170,10 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function lapStopWatch ($event_name)
     {
-        $periods = $this->stopwatch->lap($event_name)->getPeriods();
+        $periods = $this->stopwatch->lap($event_name)
+                                   ->getPeriods()
+        ;
+
         return end($periods)->getDuration();
     }
 
@@ -251,6 +256,57 @@ abstract class BaseService implements BaseServiceInterface
             $this->attachToEntityManager($entity);
             $this->entity_manager->flush();
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function lockExecution ($module)
+    {
+        $cache_id = $this->generateLockCacheId($module);
+        if ( ! $this->doctrine_cache->contains($cache_id) )
+        {
+            $this->doctrine_cache->save($cache_id, true, self::MODULE_LOCK_TTL);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function releaseExecution ($module)
+    {
+        $cache_id = $this->generateLockCacheId($module);
+        if ( $this->doctrine_cache->contains($cache_id) )
+        {
+            $this->doctrine_cache->delete($cache_id);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isExecutionLocked ($module)
+    {
+        $cache_id = $this->generateLockCacheId($module);
+        if ( $this->doctrine_cache->contains($cache_id) )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /*
+     * Generates a cache_id to be used in the
+     * module locking system
+     *
+     * @param $name
+     *
+     * @return string
+     */
+    private function generateLockCacheId ($name)
+    {
+        return sprintf("lock_cache_%s", $name);
     }
 
     /**

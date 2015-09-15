@@ -68,3 +68,6 @@
  
 ### 2.11.06
  * Fixed concurrency problem when passing StagingContacts to the DQP table 
+ 
+### 2.11.07
+ * Refactored ProcessStagingContactsCommand and added stopwatch to some processes

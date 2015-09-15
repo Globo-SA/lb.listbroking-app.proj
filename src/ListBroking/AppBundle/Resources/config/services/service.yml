@@ -11,4 +11,4 @@ services:
 
   validator_engine:
     class: ListBroking\AppBundle\Engine\ValidatorEngine
-    arguments: [@doctrine, @guzzle.client]
+    arguments: [@doctrine, @guzzle.client, @app]

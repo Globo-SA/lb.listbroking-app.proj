@@ -1,15 +1,12 @@
 <?php
 /**
- *
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
 namespace ListBroking\AppBundle\Engine;
-
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityManager;
@@ -31,10 +28,12 @@ use ListBroking\AppBundle\Engine\Validator\Fact\PostalCodeValidator;
 use ListBroking\AppBundle\Engine\Validator\Fact\RepeatedValidator;
 use ListBroking\AppBundle\Engine\Validator\ValidatorInterface;
 use ListBroking\AppBundle\Entity\StagingContact;
+use ListBroking\AppBundle\Service\Helper\AppServiceInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class ValidatorEngine
 {
+
     /**
      * @var Registry
      */
@@ -55,11 +54,17 @@ class ValidatorEngine
      */
     protected $validators;
 
-    function __construct(RegistryInterface $doctrine, Client $guzzle)
+    /**
+     * @var AppServiceInterface
+     */
+    protected $a_service;
+
+    function __construct (RegistryInterface $doctrine, Client $guzzle, AppServiceInterface $a_service)
     {
         $this->doctrine = $doctrine;
         $this->em = $doctrine->getManager();
         $this->guzzle = $guzzle;
+        $this->a_service = $a_service;
 
         $this->validators = array(
 
@@ -87,18 +92,22 @@ class ValidatorEngine
     /**
      * Runs Validators to an array of
      * StagingContacts
+     *
      * @param $contact StagingContact
      */
-    public function run($contact)
+    public function run ($contact)
     {
         $validations = array();
-        foreach ($this->validators as $validator)
+        foreach ( $this->validators as $validator )
         {
             try
             {
                 // Validate
+                $this->a_service->startStopWatch('validator_engine');
                 $validator->validate($contact, $validations);
-            } catch (\Exception $e)
+                $this->a_service->logInfo(sprintf('Stopwatch: validator %s, ran in %s milliseconds', $validator->getName(), $this->a_service->lapStopWatch('validator_engine')));
+            }
+            catch ( \Exception $e )
             {
                 $validations['errors'][$validator->getName()][] = $e->getMessage() . ', line:' . $e->getLine();
             }
@@ -106,13 +115,17 @@ class ValidatorEngine
 
         $contact->setProcessed(true);
         $contact->setValidations($validations);
-        if(!array_key_exists('errors', $validations)){
+        if ( ! array_key_exists('errors', $validations) )
+        {
             $contact->setValid(true);
         }
 
-        try{
+        try
+        {
             $this->em->flush();
-        }catch(\Exception $e){
+        }
+        catch ( \Exception $e )
+        {
             $validations = array('exceptions' => $e->getMessage());
             $contact->setValidations($validations);
             $contact->setValid(false);

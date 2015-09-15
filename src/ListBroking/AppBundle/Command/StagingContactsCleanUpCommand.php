@@ -9,11 +9,9 @@
 namespace ListBroking\AppBundle\Command;
 
 use Adclick\TaskControllerBundle\Service\TaskServiceInterface;
-use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Service\BusinessLogic\StagingService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class StagingContactsCleanUpCommand extends ContainerAwareCommand
@@ -35,29 +33,26 @@ class StagingContactsCleanUpCommand extends ContainerAwareCommand
 
     protected function execute (InputInterface $input, OutputInterface $output)
     {
-
         /** @var TaskServiceInterface $service */
         $this->service = $this->getContainer()
                               ->get('task')
         ;
         try
         {
-            if ( $this->service->start($this, $input, $output, self::MAX_RUNNING) )
-            {
-                /** @var StagingService $s_service */
-                $s_service = $this->getContainer()
-                                  ->get('staging')
-                ;
-
-                $this->service->write('Sending invalid contacts to the Data Quality Profile table (DQP)');
-                $s_service->moveInvalidContactsToDQP();
-
-                $this->service->finish();
-            }
-            else
+            if ( ! $this->service->start($this, $input, $output, self::MAX_RUNNING) )
             {
                 $this->service->write('Task is Already Running');
+
+                return;
             }
+
+            /** @var StagingService $s_service */
+            $s_service = $this->getContainer()->get('staging');
+
+            $this->service->write('Sending invalid contacts to the Data Quality Profile table (DQP)');
+            $s_service->moveInvalidContactsToDQP();
+
+            $this->service->finish();
         }
         catch ( \Exception $e )
         {
