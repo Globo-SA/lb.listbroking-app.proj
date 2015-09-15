@@ -71,3 +71,6 @@
  
 ### 2.11.07
  * Refactored ProcessStagingContactsCommand and added stopwatch to some processes
+ 
+### 2.11.08
+ * Added more waiting time before exiting ProcessStagingContactsCommand

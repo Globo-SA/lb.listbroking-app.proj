@@ -21,7 +21,7 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
 
     const MAX_RUNNING      = 10;
 
-    const MAX_WAITING_TIME = 3;
+    const MAX_WAITING_TIME = 30;
 
     const LOCK_MODULE      = 'find_and_lock_contacts';
 
