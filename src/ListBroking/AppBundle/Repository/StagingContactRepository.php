@@ -23,6 +23,7 @@ use ListBroking\AppBundle\Entity\Owner;
 use ListBroking\AppBundle\Entity\Parish;
 use ListBroking\AppBundle\Entity\Source;
 use ListBroking\AppBundle\Entity\StagingContact;
+use ListBroking\AppBundle\Entity\StagingContactDQP;
 use ListBroking\AppBundle\Entity\SubCategory;
 use ListBroking\AppBundle\Parser\DateTimeParser;
 
@@ -129,37 +130,53 @@ class StagingContactRepository extends EntityRepository
 
     /**
      * Moves invalid contacts to the DQP table
-     * @throws \Doctrine\DBAL\DBALException
+     *
+     * @param $limit
      */
-    public function moveInvalidContactsToDQP ()
+    public function moveInvalidContactsToDQP ($limit)
     {
         // Only remove StagingContacts processed more than 5 minutes ago
-        $from = (new \DateTime('- 5 minutes'))->format('Y-m-d H:t:s');
-        $conn = $this->getEntityManager()
-                     ->getConnection()
-        ;
-        $move_sql = <<<SQL
-            INSERT INTO staging_contact_dqp
-            SELECT *
-            from staging_contact
-            WHERE valid = 0 AND processed = 1
-            AND updated_at <= '{$from}'
+        $updated_before = (new \DateTime('- 5 minutes'))->format('Y-m-d H:t:s');
+        $entity_manager = $this->getEntityManager();
 
-SQL;
-
-        $conn->prepare($move_sql)
-             ->execute()
+        $staging_contacts_to_move = $this->createQueryBuilder('s')
+                                         ->andWhere('s.valid = :valid')
+                                         ->andWhere('s.processed = :processed')
+                                         ->andWhere('s.valid = :valid')
+                                         ->andWhere('s.updated_at <= :updated_before')
+                                         ->setParameters(array(
+                                             'valid'          => 0,
+                                             'processed'      => 1,
+                                             'updated_before' => $updated_before
+                                         ))
+                                         ->setMaxResults($limit)
+                                         ->getQuery()
+                                         ->iterate()
         ;
 
-        $del_sql = <<<SQL
-            DELETE
-            FROM staging_contact
-            WHERE valid = 0 AND processed = 1
-            AND updated_at <= '{$from}'
-SQL;
-        $conn->prepare($del_sql)
-             ->execute()
-        ;
+        while ( ($staging_contact = $staging_contacts_to_move->next()) !== false )
+        {
+            $staging_contact = $staging_contact[0];
+            $new_entity = new StagingContactDQP();
+            $old_reflection = new \ReflectionObject($staging_contact);
+            $new_reflection = new \ReflectionObject($new_entity);
+
+            $inflector = new Inflector();
+            foreach ( $old_reflection->getProperties() as $property )
+            {
+                $property_name = $property->getName();
+                if ( $new_reflection->hasProperty($property_name) && $property_name != 'updated_at' )
+                {
+                    $get_method = 'get' . $inflector->classify($property_name);
+                    $set_method = 'set' . $inflector->classify($property_name);
+
+                    $new_entity->$set_method($staging_contact->$get_method());
+                }
+            }
+            $entity_manager->persist($new_entity);
+            $entity_manager->remove($staging_contact);
+        }
+        $entity_manager->flush();
     }
 
     /**

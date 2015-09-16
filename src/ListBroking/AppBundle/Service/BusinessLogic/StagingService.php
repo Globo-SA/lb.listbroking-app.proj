@@ -84,10 +84,10 @@ class StagingService extends BaseService implements StagingServiceInterface
     /**
      * @inheritdoc
      */
-    public function moveInvalidContactsToDQP ()
+    public function moveInvalidContactsToDQP ($limit)
     {
         $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                             ->moveInvalidContactsToDQP()
+                             ->moveInvalidContactsToDQP($limit)
         ;
     }
 

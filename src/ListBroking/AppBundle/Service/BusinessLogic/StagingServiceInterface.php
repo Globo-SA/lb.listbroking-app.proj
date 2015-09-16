@@ -62,8 +62,12 @@ interface StagingServiceInterface extends BaseServiceInterface
     /**
      * Loads validated contacts from the staging area
      * to the Lead and Contact tables
+     *
+     * @param $limit
+     *
+     * @return
      */
-    public function moveInvalidContactsToDQP ();
+    public function moveInvalidContactsToDQP ($limit);
 
     /**
      * Loads an updated contact from the staging area

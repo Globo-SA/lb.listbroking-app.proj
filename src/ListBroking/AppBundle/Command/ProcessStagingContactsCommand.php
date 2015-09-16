@@ -105,7 +105,6 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
         $this->service->write('Trying to lock module');
         while ( $this->staging_service->isExecutionLocked(self::LOCK_MODULE) )
         {
-            $this->service->write('StagingContact Locked, waiting...');
             $now = time();
             if ( ($now - $start) > self::MAX_WAITING_TIME )
             {

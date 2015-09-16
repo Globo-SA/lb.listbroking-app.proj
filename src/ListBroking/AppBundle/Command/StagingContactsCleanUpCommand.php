@@ -12,12 +12,13 @@ use Adclick\TaskControllerBundle\Service\TaskServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\StagingService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class StagingContactsCleanUpCommand extends ContainerAwareCommand
 {
 
-    const MAX_RUNNING = 90;
+    const MAX_RUNNING = 1;
 
     /**
      * @var TaskServiceInterface
@@ -28,6 +29,7 @@ class StagingContactsCleanUpCommand extends ContainerAwareCommand
     {
         $this->setName('listbroking:staging:cleanup')
              ->setDescription('Cleans up the invalid contacts from the StagingContact table')
+            ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Max contacts to validate per task iteration', 100)
         ;
     }
 
@@ -46,11 +48,13 @@ class StagingContactsCleanUpCommand extends ContainerAwareCommand
                 return;
             }
 
+            $limit = $input->getOption('limit');
+
             /** @var StagingService $s_service */
             $s_service = $this->getContainer()->get('staging');
 
             $this->service->write('Sending invalid contacts to the Data Quality Profile table (DQP)');
-            $s_service->moveInvalidContactsToDQP();
+            $s_service->moveInvalidContactsToDQP($limit);
 
             $this->service->finish();
         }

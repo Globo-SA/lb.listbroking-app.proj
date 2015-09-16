@@ -74,3 +74,6 @@
  
 ### 2.11.08
  * Added more waiting time before exiting ProcessStagingContactsCommand
+ 
+### 2.11.09
+ * Refactored moveInvalidContactsToDQP to stop concurrency problems
