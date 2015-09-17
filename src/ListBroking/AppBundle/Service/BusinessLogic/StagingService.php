@@ -147,19 +147,10 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     private function findDimension ($repo_name, $name)
     {
-        $cache_id = md5($repo_name . $name);
-        if ( ! $this->doctrine_cache->contains($cache_id) )
-        {
-
-            $dimension = $this->entity_manager->getRepository($repo_name)
-                                              ->findOneBy(array(
-                                                  'name' => $name
-                                              ))
+        return $this->entity_manager->getRepository($repo_name)
+                                    ->findOneBy(array(
+                                        'name' => $name
+                                    ))
             ;
-
-            $this->doctrine_cache->save($cache_id, $dimension, BaseService::CACHE_TTL);
-        }
-
-        return $this->entity_manager->merge($this->doctrine_cache->fetch($cache_id));
     }
 }

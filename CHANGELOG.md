@@ -83,3 +83,6 @@
  
 ### 2.11.11
  * Added cache on loadStagingContactDimensions
+ 
+### 2.11.12
+ * Reverted cache on loadStagingContactDimensions
