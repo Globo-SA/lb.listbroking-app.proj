@@ -13,18 +13,10 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Contact;
-use ListBroking\AppBundle\Entity\Country;
-use ListBroking\AppBundle\Entity\County;
-use ListBroking\AppBundle\Entity\District;
-use ListBroking\AppBundle\Entity\Gender;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\Lock;
-use ListBroking\AppBundle\Entity\Owner;
-use ListBroking\AppBundle\Entity\Parish;
-use ListBroking\AppBundle\Entity\Source;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Entity\StagingContactDQP;
-use ListBroking\AppBundle\Entity\SubCategory;
 use ListBroking\AppBundle\Parser\DateTimeParser;
 
 class StagingContactRepository extends EntityRepository
@@ -184,20 +176,11 @@ class StagingContactRepository extends EntityRepository
      * to the Lead and Contact tables
      *
      * @param StagingContact $staging_contact
+     * @param array          $dimensions
      */
-    public function loadValidatedContact (StagingContact $staging_contact)
+    public function loadValidatedContact (StagingContact $staging_contact, array $dimensions)
     {
         $em = $this->getEntityManager();
-
-        //Dimension Tables
-        $source = $this->findDimension('ListBrokingAppBundle:Source', $staging_contact->getSourceName());
-        $owner = $this->findDimension('ListBrokingAppBundle:Owner', $staging_contact->getOwner());
-        $sub_category = $this->findDimension('ListBrokingAppBundle:SubCategory', $staging_contact->getSubCategory());
-        $gender = $this->findDimension('ListBrokingAppBundle:Gender', $staging_contact->getGender());
-        $district = $this->findDimension('ListBrokingAppBundle:District', $staging_contact->getDistrict());
-        $county = $this->findDimension('ListBrokingAppBundle:County', $staging_contact->getCounty());
-        $parish = $this->findDimension('ListBrokingAppBundle:Parish', $staging_contact->getParish());
-        $country = $this->findDimension('ListBrokingAppBundle:Country', $staging_contact->getCountry());
 
         // Fact Table
         $lead = $em->getRepository('ListBrokingAppBundle:Lead')
@@ -215,7 +198,7 @@ class StagingContactRepository extends EntityRepository
         $lead->setPhone($staging_contact->getPhone());
         $lead->setIsMobile($staging_contact->getIsMobile());
         $lead->setInOpposition($staging_contact->getInOpposition());
-        $lead->setCountry($country);
+        $lead->setCountry($dimensions['country']);
         $em->persist($lead);
 
         $contact = $em->getRepository('ListBrokingAppBundle:Contact')
@@ -231,18 +214,9 @@ class StagingContactRepository extends EntityRepository
             $contact = new Contact();
         }
 
+        $contact->setLead($lead);
         $contact->updateContactFacts($staging_contact);
-        $contact->updateContactDimensions(array(
-            $lead,
-            $source,
-            $owner,
-            $sub_category,
-            $gender,
-            $district,
-            $county,
-            $parish,
-            $country
-        ));
+        $contact->updateContactDimensions(array_values($dimensions));
 
         $now = new \DateTime();
         $initial_lock_expiration_date = $staging_contact->getInitialLockExpirationDate();
@@ -339,23 +313,5 @@ class StagingContactRepository extends EntityRepository
 
         return $staging_contacts;
     }
-
-    /**
-     * Finds the facts table Dimensions by name
-     *
-     * @param $repo_name
-     * @param $name
-     *
-     * @return null|object
-     */
-    private function findDimension ($repo_name, $name)
-    {
-        return $this->getEntityManager()
-                    ->getRepository($repo_name)
-                    ->findOneBy(array(
-                        'name' => $name
-                    ))
-            ;
-    }
-} 
+}
 

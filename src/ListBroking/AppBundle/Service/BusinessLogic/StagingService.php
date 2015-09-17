@@ -74,11 +74,14 @@ class StagingService extends BaseService implements StagingServiceInterface
     public function loadValidatedContact (StagingContact $staging_contact)
     {
         $this->startStopWatch('validator_engine');
+
+        $dimensions = $this->loadStagingContactDimensions($staging_contact);
+        $this->logInfo(sprintf('Stopwatch: loadStagingContactDimensions, ran in %s milliseconds', $this->lapStopWatch('validator_engine')));
+
         $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                             ->loadValidatedContact($staging_contact)
+                             ->loadValidatedContact($staging_contact, $dimensions)
         ;
         $this->logInfo(sprintf('Stopwatch: loadValidatedContact, ran in %s milliseconds', $this->lapStopWatch('validator_engine')));
-
     }
 
     /**
@@ -117,5 +120,46 @@ class StagingService extends BaseService implements StagingServiceInterface
     public function validateStagingContact (StagingContact $staging_contact)
     {
         $this->v_engine->run($staging_contact);
+    }
+
+    private function loadStagingContactDimensions (StagingContact $staging_contact)
+    {
+        //Dimension Tables
+        return array(
+            'source'       => $this->findDimension('ListBrokingAppBundle:Source', $staging_contact->getSourceName()),
+            'owner'        => $this->findDimension('ListBrokingAppBundle:Owner', $staging_contact->getOwner()),
+            'sub_category' => $this->findDimension('ListBrokingAppBundle:SubCategory', $staging_contact->getSubCategory()),
+            'gender'       => $this->findDimension('ListBrokingAppBundle:Gender', $staging_contact->getGender()),
+            'district'     => $this->findDimension('ListBrokingAppBundle:District', $staging_contact->getDistrict()),
+            'county'       => $this->findDimension('ListBrokingAppBundle:County', $staging_contact->getCounty()),
+            'parish'       => $this->findDimension('ListBrokingAppBundle:Parish', $staging_contact->getParish()),
+            'country'      => $this->findDimension('ListBrokingAppBundle:Country', $staging_contact->getCountry())
+        );
+    }
+
+    /**
+     * Finds the facts table Dimensions by name
+     *
+     * @param       $repo_name
+     * @param       $name
+     *
+     * @return null|object
+     */
+    private function findDimension ($repo_name, $name)
+    {
+        $cache_id = md5($repo_name . $name);
+        if ( ! $this->doctrine_cache->contains($cache_id) )
+        {
+
+            $dimension = $this->entity_manager->getRepository($repo_name)
+                                              ->findOneBy(array(
+                                                  'name' => $name
+                                              ))
+            ;
+
+            $this->doctrine_cache->save($cache_id, $dimension, BaseService::CACHE_TTL);
+        }
+
+        return $this->entity_manager->merge($this->doctrine_cache->fetch($cache_id));
     }
 }
