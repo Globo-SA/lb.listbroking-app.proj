@@ -86,3 +86,6 @@
  
 ### 2.11.12
  * Reverted cache on loadStagingContactDimensions
+ 
+### 2.11.13
+ * Changed MAX_RUNNING tasks to 80 for ProcessStagingContactsCommand
