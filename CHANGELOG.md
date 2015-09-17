@@ -77,3 +77,6 @@
  
 ### 2.11.09
  * Refactored moveInvalidContactsToDQP to stop concurrency problems
+ 
+### 2.11.10
+ * Changed MAX_RUNNING tasks to 20 for ProcessStagingContactsCommand
