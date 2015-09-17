@@ -21,7 +21,8 @@ class GenderValidator implements ValidatorInterface {
 
     protected $rules = array(
         Gender::MALE => '/^(M|H|MR|MALE|MAN|HOMEM|SR|SENHOR)$/i',
-        Gender::FEMALE => '/^(F|MRS|MISS|FEMALE|WOMAN|MULHER|SRA|SENHORA)$/i'
+        Gender::FEMALE => '/^(F|MRS|MISS|FEMALE|WOMAN|MULHER|SRA|SENHORA)$/i',
+        Gender::EMPTY_FIELD => '/(N\/A|\s)/i'
     );
 
     /**
@@ -57,7 +58,7 @@ class GenderValidator implements ValidatorInterface {
             if(!$this->is_required){
                 return;
             }
-            throw new DimensionValidationException('Empty gender field');
+            $field = Gender::EMPTY_FIELD;
         }
 
         // Match with a gender

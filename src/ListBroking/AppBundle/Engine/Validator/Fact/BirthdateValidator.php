@@ -18,7 +18,6 @@ use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 
 class BirthdateValidator implements ValidatorInterface {
 
-    const MIN_AGE = 18;
     const MAX_AGE = 90;
 
     /**
@@ -49,7 +48,7 @@ class BirthdateValidator implements ValidatorInterface {
      */
     public function validate(StagingContact $contact, &$validations)
     {
-        $birthdate = $contact->getBirthdate();
+        $birthdate = trim($contact->getBirthdate());
         if(empty($birthdate)){
             if(!$this->is_required){
                 return;
@@ -60,9 +59,6 @@ class BirthdateValidator implements ValidatorInterface {
         $birthdate = new \DateTime($birthdate);
 
         $age = $now->diff($birthdate)->y;
-        if($age < self::MIN_AGE){
-            throw new DimensionValidationException('Birthdate it less than: ' . self::MIN_AGE . " (current: {$age})");
-        }
         if($age > self::MAX_AGE){
             throw new DimensionValidationException('Birthdate it greater than: ' . self::MAX_AGE . " (current: {$age})");
         }

@@ -84,7 +84,7 @@ class ValidatorEngine
             new PhoneValidator($this->em, true),
             new OppositionListValidator($this->em, true),
             new NameValidator($this->em, true),
-            new BirthdateValidator($this->em, true),
+            new BirthdateValidator($this->em, false),
             new RepeatedValidator($this->em, true)
         );
     }

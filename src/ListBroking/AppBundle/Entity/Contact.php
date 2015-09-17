@@ -53,7 +53,7 @@ class Contact
     /**
      * @var \DateTime
      */
-    private $birthdate;
+    private $birthdate = NULL;
 
     /**
      * @var string
@@ -178,12 +178,13 @@ class Contact
      */
     public function updateContactFacts (StagingContact $s_contact)
     {
+        $birthdate = trim($s_contact->getBirthdate());
         $fields = array(
             'email'        => $s_contact->getEmail(),
             'external_id'  => $s_contact->getExternalId(),
             'firstname'    => $s_contact->getFirstname(),
             'lastname'     => $s_contact->getLastname(),
-            'birthdate'    => new \DateTime($s_contact->getBirthdate()),
+            'birthdate'    => empty($birthdate) ? NULL : new \DateTime($s_contact->getBirthdate()),
             'address'      => $s_contact->getAddress(),
             'postalcode1'  => $s_contact->getPostalcode1(),
             'postalcode2'  => $s_contact->getPostalcode2(),

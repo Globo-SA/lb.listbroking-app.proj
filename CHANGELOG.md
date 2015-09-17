@@ -89,3 +89,9 @@
  
 ### 2.11.13
  * Changed MAX_RUNNING tasks to 80 for ProcessStagingContactsCommand
+ 
+### 2.11.14
+ * Removed old validations
+    * Empty Gender and Birthdate and <18
+    * Empty Birthdate 
+    * Birthdate <18
