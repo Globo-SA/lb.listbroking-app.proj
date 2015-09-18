@@ -19,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ProcessStagingContactsCommand extends ContainerAwareCommand
 {
 
-    const MAX_RUNNING      = 80;
+    const MAX_RUNNING      = 10;
 
     const MAX_WAITING_TIME = 30;
 

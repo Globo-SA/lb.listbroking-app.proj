@@ -20,9 +20,9 @@ use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 class GenderValidator implements ValidatorInterface {
 
     protected $rules = array(
-        Gender::MALE => '/^(M|H|MR|MALE|MAN|HOMEM|SR|SENHOR)$/i',
-        Gender::FEMALE => '/^(F|MRS|MISS|FEMALE|WOMAN|MULHER|SRA|SENHORA)$/i',
-        Gender::EMPTY_FIELD => '/(N\/A|\s)/i'
+        Gender::MALE => '/^(M|H|MR|MALE|MAN|HOMEM|SR|SENHOR|MENINO)$/i',
+        Gender::FEMALE => '/^(F|MRS|MISS|FEMALE|WOMAN|MULHER|SRA|SENHORA|MENINA)$/i',
+        Gender::EMPTY_FIELD => '/(N\/A|\s|ON)/i'
     );
 
     /**
@@ -73,7 +73,8 @@ class GenderValidator implements ValidatorInterface {
         }
 
         if(!$gender_matched){
-            throw new DimensionValidationException('Invalid gender field: ' . $field);
+            $field = Gender::EMPTY_FIELD;
+            $contact->setGender($field);
         }
 
         $gender =  $this->em->getRepository('ListBrokingAppBundle:Gender')->findOneBy(array(

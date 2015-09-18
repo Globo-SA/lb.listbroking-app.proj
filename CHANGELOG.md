@@ -95,3 +95,9 @@
     * Empty Gender and Birthdate and <18
     * Empty Birthdate 
     * Birthdate <18
+ 
+### 2.11.14
+ * Removed all Gender validations
+    * M - All male contacts
+    * F - All female contacts
+    * N/a - All empty or invalid gender fields
