@@ -134,9 +134,6 @@ class ExtractionAdminController extends CRUDController
         /** @var Extraction $extraction */
         $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
 
-        $current_usr =  $this->getUser();
-        $user = $extraction->getCreatedBy();
-
         if(!$this->admin->isGranted('SUPER_ADMIN') && $this->getUser()->getId() !== $extraction->getCreatedBy()->getId()){
             throw new AccessDeniedException('You can only edit extractions created by you ');
         }

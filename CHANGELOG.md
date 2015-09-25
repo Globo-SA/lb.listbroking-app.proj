@@ -104,3 +104,6 @@
 
 ### 2.11.16
 * Changed way contacts are updated
+
+### 2.11.17
+* Removed old code 
