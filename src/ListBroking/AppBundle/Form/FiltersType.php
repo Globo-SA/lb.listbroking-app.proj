@@ -280,6 +280,28 @@ class FiltersType extends AbstractType
                         ),
                     ),
                     array(
+                        'filter_type'          => ContactFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'contact',
+                        'field'                => 'is_clean',
+                        'field_type'           => self::FIELD_TYPE_BOOLEAN,
+                        'type'                 => 'choice',
+                        'options'              => array(
+                            'placeholder'       => false,
+                            'choices'           => array(
+                                'Both' => null,
+                                'Yes'  => true,
+                                'No'   => false
+                            ),
+                            'data'              => true,
+                            'choices_as_values' => true,
+                            'attr'              => array(
+                                'class' => 'form-control'
+                            ),
+                            'label'             => 'Clean contacts'
+                        )
+                    ),
+                    array(
                         'filter_type'          => LeadFilterInterface::BASIC_TYPE,
                         'has_exclusion_filter' => false,
                         'table'                => 'lead',

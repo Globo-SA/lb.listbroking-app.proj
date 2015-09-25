@@ -14,6 +14,7 @@ namespace ListBroking\AppBundle\Engine\Validator\Fact;
 
 use Doctrine\ORM\EntityManager;
 use ListBroking\AppBundle\Engine\Validator\ValidatorInterface;
+use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
 
@@ -72,6 +73,7 @@ class RepeatedValidator implements ValidatorInterface {
             $info = 'Lead Repeated by: Phone';
             $contact->setLeadId($lead->getId());
 
+            /** @var Contact $owner_contact */
             $owner_contact = $this->em->getRepository('ListBrokingAppBundle:Contact')->createQueryBuilder('c')
                 ->join('c.owner', 'o')
                 ->where('c.lead = :lead')
@@ -91,6 +93,11 @@ class RepeatedValidator implements ValidatorInterface {
                 $info = 'Lead is fully repeated';
             }
             $validations['infos'][$this->getName()][] = $info;
+
+            if($owner_contact->isIsClean())
+            {
+                throw new DimensionValidationException('Contact already exists and cleaned');
+            }
         }
     }
 

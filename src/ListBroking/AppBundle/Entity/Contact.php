@@ -195,7 +195,7 @@ class Contact
 
         );
 
-        foreach ( $fields as $field => $value )
+        foreach ( $fields as $field => $new_value )
         {
             $inflector = new Inflector();
             $getMethod = 'get' . $inflector->classify($field);
@@ -203,14 +203,15 @@ class Contact
 
             // Don't update if the Staging
             // Field is Empty
-            if(empty($value))
+            if(empty($new_value))
             {
                 continue;
             }
 
-            if ( $s_contact->getUpdate() || empty($this->$getMethod()) )
+            $old_value = $this->$getMethod();
+            if ( $s_contact->getUpdate() || empty($old_value) )
             {
-                $this->$setMethod($value);
+                $this->$setMethod($new_value);
             }
         }
     }
