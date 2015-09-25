@@ -107,3 +107,6 @@
 
 ### 2.11.17
 * Removed old code 
+
+### 2.11.18
+* Fixed RepeatedValidator
