@@ -110,3 +110,6 @@
 
 ### 2.11.18
 * Fixed RepeatedValidator
+
+### 2.11.19
+* Changes Deduplication LOAD function

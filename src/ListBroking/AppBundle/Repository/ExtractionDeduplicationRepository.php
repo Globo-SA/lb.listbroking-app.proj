@@ -51,7 +51,7 @@ SQL;
 
         // Inserts the new deduplications from the file
         $insert_sql = <<<SQL
-            LOAD DATA INFILE :filename
+            LOAD DATA LOCAL INFILE :filename
             INTO TABLE extraction_deduplication
             FIELDS TERMINATED BY '{$file_control[0]}'
             ENCLOSED BY '{$file_control[1]}'
