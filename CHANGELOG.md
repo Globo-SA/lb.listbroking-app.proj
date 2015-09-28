@@ -113,3 +113,6 @@
 
 ### 2.11.19
 * Changes Deduplication LOAD function
+
+### 2.11.20
+* Removed LOAD DATA system from uploadDeduplicationsByFile

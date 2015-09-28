@@ -158,11 +158,11 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     /**
      * @inheritdoc
      */
-    public function uploadDeduplicationsByFile (Extraction $extraction, $filename, $field)
+    public function uploadDeduplicationsByFile (Extraction $extraction, \PHPExcel $file, $field)
     {
 
         $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
-                             ->uploadDeduplicationsByFile($filename, $extraction, $field)
+                             ->uploadDeduplicationsByFile($extraction, $file, $field)
         ;
     }
 

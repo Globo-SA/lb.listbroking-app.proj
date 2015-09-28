@@ -8,6 +8,7 @@ namespace ListBroking\AppBundle\Consumer;
 
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Service\BusinessLogic\ExtractionServiceInterface;
+use ListBroking\AppBundle\Service\Helper\FileHandlerServiceInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -19,9 +20,15 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
      */
     private $e_service;
 
-    public function __construct (ExtractionServiceInterface $e_service)
+    /**
+     * @var FileHandlerServiceInterface
+     */
+    private $f_service;
+
+    public function __construct (ExtractionServiceInterface $e_service, FileHandlerServiceInterface $f_service)
     {
         $this->e_service = $e_service;
+        $this->f_service = $f_service;
     }
 
     /**
@@ -43,10 +50,10 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
             $this->e_service->logExtractionAction($extraction, sprintf('Starting \'deduplication\' with field: %s', $msg_body['field']));
 
 
-            $filename = $msg_body['filename'];
+            $file = $this->f_service->import($msg_body['filename']);
 
             // Persist deduplications to the DB
-            $this->e_service->uploadDeduplicationsByFile($extraction, $filename, $msg_body['field']);
+            $this->e_service->uploadDeduplicationsByFile($extraction, $file, $msg_body['field']);
 
             // Filter extraction
             $extraction->setDeduplicationType($msg_body['deduplication_type']);
@@ -55,9 +62,6 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
 
             // Save changes
             $this->e_service->updateEntity($extraction);
-
-            // Delete file
-            unlink($filename);
 
             $this->e_service->logExtractionAction($extraction, 'Ending \'deduplication\', result: DONE');
 

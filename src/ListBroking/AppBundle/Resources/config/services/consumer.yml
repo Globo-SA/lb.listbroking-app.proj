@@ -5,7 +5,7 @@ services:
 
   app.consumer.deduplicate_extraction:
     class: ListBroking\AppBundle\Consumer\DeduplicateExtractionConsumer
-    arguments: [@extraction]
+    arguments: [@extraction, @file_handler]
 
   app.consumer.lock_extraction:
     class: ListBroking\AppBundle\Consumer\LockExtractionConsumer

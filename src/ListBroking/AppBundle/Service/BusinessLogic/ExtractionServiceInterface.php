@@ -5,7 +5,6 @@
  */
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionLog;
@@ -22,7 +21,7 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      *
      * @return ExtractionLog[]
      */
-    public function findLastExtractionLog(Extraction $extraction, $limit);
+    public function findLastExtractionLog (Extraction $extraction, $limit);
 
     /**
      * Find Extraction by id
@@ -99,12 +98,12 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      * Persists Deduplications to the database, this function uses PHPExcel with APC
      *
      * @param Extraction $extraction
-     * @param string     $filename
+     * @param \PHPExcel  $file
      * @param string     $field
      *
      * @return void
      */
-    public function uploadDeduplicationsByFile (Extraction $extraction, $filename, $field);
+    public function uploadDeduplicationsByFile (Extraction $extraction, \PHPExcel $file, $field);
 
     /**
      * Generate locks for the contacts of a given Extraction
