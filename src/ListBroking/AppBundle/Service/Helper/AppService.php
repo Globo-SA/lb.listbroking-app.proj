@@ -164,6 +164,8 @@ class AppService extends BaseService implements AppServiceInterface
                                               ->literal("%%{$query}%%")))
             ;
         }
+        $qb->orderBy('l.name','ASC')
+        ;
 
         $list = $qb->getQuery()
                    ->execute(null, Query::HYDRATE_ARRAY)

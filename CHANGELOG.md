@@ -116,3 +116,6 @@
 
 ### 2.11.20
 * Removed LOAD DATA system from uploadDeduplicationsByFile
+
+### 2.11.21
+* Removed forcing deduplication template
