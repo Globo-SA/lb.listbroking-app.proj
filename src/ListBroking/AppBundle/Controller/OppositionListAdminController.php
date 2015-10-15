@@ -29,7 +29,7 @@ class OppositionListAdminController extends Controller
 
         $a_service = $this->get('app');
 
-        $import_form = $a_service->generateForm('opposition_list_import', null, null, true);
+        $import_form = $a_service->generateForm('opposition_list_import', null, null, array(), true);
 
         $datagrid = $this->admin->getDatagrid();
         $formView = $datagrid->getForm()

@@ -119,3 +119,6 @@
 
 ### 2.11.21
 * Removed forcing deduplication template
+
+### 2.12.01
+* Added better extraction edit on filtration

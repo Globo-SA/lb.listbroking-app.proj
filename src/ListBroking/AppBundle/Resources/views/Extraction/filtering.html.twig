@@ -14,7 +14,8 @@
             </span>
         </div>
         <div class="container-fluid">
-            <button class="btn btn-flat btn-primary navbar-right navbar-btn" data-toggle="modal" data-target="#edit_extraction_modal">EDIT</button>
+            <button class="btn btn-flat btn-primary navbar-right navbar-btn" data-toggle="modal" data-target="#extraction_update_modal">EDIT</button>
+            {% include '@ListBrokingApp/Extraction/_partials/modal_extraction.html.twig' %}
             {% if is_granted('ROLE_SUPER_ADMIN') %}
                 <button class="btn btn-flat btn-primary navbar-right navbar-btn" data-toggle="modal" data-target="#sql-modal">SQL</button>
                 {% include '@ListBrokingApp/Extraction/_partials/modal_sql.html.twig' %}
@@ -24,27 +25,6 @@
 {% endblock sonata_page_content_nav %}
 
 {% block content %}
-    <div class="modal fade" id="edit_extraction_modal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
-                                class="sr-only">Close</span>
-                    </button>
-                    <h4 class="modal-title">
-                        <i class="fa fa-pencil-square-o"></i>&nbsp;Edit Extraction
-                        <i class="ion-loading-c" style="display: none;"></i>
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <iframe src="{{ path('admin_listbroking_app_extraction_edit', {id: extraction.id, iframe : 'true'}) }}" seamless frameBorder="0" width="100%" height="350px"></iframe>
-                </div>
-                <div class="modal-footer">
-                    <button data-dismiss="modal" class="btn btn-flat btn-default">CLOSE</button>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="row closed">
         <div class="col-xs-12">
             <!-- Nav tabs -->

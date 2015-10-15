@@ -19,7 +19,8 @@ class ExtractionAdminController extends CRUDController
      */
     public function cloneAction ()
     {
-        if (false === $this->admin->isGranted('EDIT')) {
+        if ( false === $this->admin->isGranted('EDIT') )
+        {
             throw new AccessDeniedException();
         }
 
@@ -61,8 +62,8 @@ class ExtractionAdminController extends CRUDController
             $form = $this->admin->getForm();
 
             return new RedirectResponse($this->admin->generateUrl('filtering', array(
-                'id' => $form->getData()
-                             ->getId(),
+                'id'     => $form->getData()
+                                 ->getId(),
                 'is_new' => true
             )));
         }
@@ -77,30 +78,47 @@ class ExtractionAdminController extends CRUDController
      *
      * @return RedirectResponse
      */
-    protected function redirectTo($object)
+    protected function redirectTo ($object)
     {
         $url = false;
 
-        if (null !== $this->get('request')->get('btn_update_and_list')) {
+        if ( null !==
+             $this->get('request')
+                  ->get('btn_update_and_list')
+        )
+        {
             $url = $this->admin->generateUrl('filtering');
         }
-        if (null !== $this->get('request')->get('btn_create_and_list')) {
+        if ( null !==
+             $this->get('request')
+                  ->get('btn_create_and_list')
+        )
+        {
             $url = $this->admin->generateUrl('filtering');
         }
 
-        if (null !== $this->get('request')->get('btn_create_and_create')) {
+        if ( null !==
+             $this->get('request')
+                  ->get('btn_create_and_create')
+        )
+        {
             $params = array();
-            if ($this->admin->hasActiveSubClass()) {
-                $params['subclass'] = $this->get('request')->get('subclass');
+            if ( $this->admin->hasActiveSubClass() )
+            {
+                $params['subclass'] = $this->get('request')
+                                           ->get('subclass')
+                ;
             }
             $url = $this->admin->generateUrl('filtering', $params);
         }
 
-        if ($this->getRestMethod() == 'DELETE') {
+        if ( $this->getRestMethod() == 'DELETE' )
+        {
             $url = $this->admin->generateUrl('list');
         }
 
-        if (!$url) {
+        if ( ! $url )
+        {
             $url = $this->admin->generateObjectUrl('filtering', $object);
         }
 
@@ -119,7 +137,7 @@ class ExtractionAdminController extends CRUDController
         }
 
         $is_new = $this->get('request')
-                          ->get('is_new')
+                       ->get('is_new')
         ;
 
         // Services
@@ -134,7 +152,13 @@ class ExtractionAdminController extends CRUDController
         /** @var Extraction $extraction */
         $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
 
-        if(!$this->admin->isGranted('SUPER_ADMIN') && $this->getUser()->getId() !== $extraction->getCreatedBy()->getId()){
+        if ( ! $this->admin->isGranted('SUPER_ADMIN') &&
+             $this->getUser()
+                  ->getId() !==
+             $extraction->getCreatedBy()
+                        ->getId()
+        )
+        {
             throw new AccessDeniedException('You can only edit extractions created by you ');
         }
 
@@ -148,12 +172,12 @@ class ExtractionAdminController extends CRUDController
                 // Publish Extraction to the Queue
                 $m_service->publishMessage('run_extraction', array(
                     'object_id' => $extraction->getId()
-                ))
-                ;
+                ));
             }
         }
 
         // Forms
+        $extraction_form = $this->generateExtractionForm($extraction);
         $extraction_deduplication = $a_service->generateForm('extraction_deduplication');
         $extraction_locking = $a_service->generateForm('extraction_locking');
 
@@ -166,12 +190,60 @@ class ExtractionAdminController extends CRUDController
             'preview_limit' => $e_service->findConfig('extraction.contact.show_limit'),
             'extraction'    => $extraction,
             'forms'         => array(
+                'extraction'               => $extraction_form,
                 'filters'                  => $filters_form->createView(),
                 'extraction_deduplication' => $extraction_deduplication->createView(),
                 'extraction_locking'       => $extraction_locking->createView(),
             ),
             'elements'      => $this->admin->getShow(),
-        ))
-            ;
+        ));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function editAction ($id = null)
+    {
+        // Sonata doesn't not maintain the same form uniqid when changing pages
+        // so old id needs to be forced
+        $request = $this->container->get('request')->request->all();
+        $form_data = $request[key($request)];
+        $this->admin->setUniqid(key($request));
+
+        /** @var Extraction $object */
+        $id = $this->get('request')->get($this->admin->getIdParameter());
+        $object = $this->admin->getObject($id);
+
+        // If the quantity was changed mark the extraction to be re_run
+        if($object->getQuantity() != $form_data['quantity'])
+        {
+            // Publish Extraction to the Queue
+            $m_service = $this->get('messaging');
+            $m_service->publishMessage('run_extraction', array(
+                'object_id' => $object->getId()
+            ));
+            $object->setIsAlreadyExtracted(false);
+        }
+
+        return parent::editAction($id); // TODO: Change the autogenerated stub
+    }
+
+    private function generateExtractionForm (Extraction $extraction)
+    {
+        $id = $this->get('request')
+                   ->get($this->admin->getIdParameter())
+        ;
+
+        $this->admin->setSubject($extraction);
+
+        /** @var $form \Symfony\Component\Form\Form */
+        $extraction_form = $this->admin->getForm();
+        $extraction_form->setData($extraction);
+
+        $view = $extraction_form->createView();
+        $this->get('twig')
+             ->getExtension('form')->renderer->setTheme($view, $this->admin->getFormTheme());
+
+        return $view;
     }
 }

@@ -34,7 +34,7 @@ class StagingContactAdminController extends Controller
         $a_service = $this->get('app');
         $t_service = $this->get('task');
 
-        $import_form = $a_service->generateForm(new StagingContactImportType(), null,  null, true);
+        $import_form = $a_service->generateForm(new StagingContactImportType(), null, null, array(), true);
 
         $datagrid = $this->admin->getDatagrid();
         $formView = $datagrid->getForm()->createView();

@@ -1,0 +1,69 @@
+<div class="modal fade" id="extraction_update_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                            class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title"><i class="fa fa-plus"></i>&nbsp;Update Extraction</h4>
+            </div>
+            <div class="modal-body">
+                {{ form_start(forms.extraction, {action: url('admin_listbroking_app_extraction_edit', {id: extraction.id}), attr: {'id': 'update_extractio_form'}}) }}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="nav-tabs-custom">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="active"><a href="#tab_1" data-toggle="tab"><span class="glyphicon glyphicon-exclamation-sign has-errors hide"></span> Global</a></li>
+                                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                                    <li><a href="#tab_2" data-toggle="tab"><span class="glyphicon glyphicon-exclamation-sign has-errors hide"></span> ADMIN</a></li>
+                                {% endif %}
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade in active" id="tab_1">
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div class="col-md-12 ">
+                                                <div class="sonata-ba-collapsed-fields">
+                                                    {{ form_row(forms.extraction.payout) }}
+                                                    {% if extraction.status < 3 %}
+                                                        {{ form_row(forms.extraction.quantity) }}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                                    <div class="tab-pane fade" id="tab_2">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-12 ">
+                                                    <div class="sonata-ba-collapsed-fields">
+                                                        {{ form_row(forms.extraction.is_already_extracted) }}
+                                                        {{ form_row(forms.extraction.is_deduplicating) }}
+                                                        {{ form_row(forms.extraction.is_locking) }}
+                                                        {{ form_row(forms.extraction.is_delivering) }}
+                                                        {{ form_row(forms.extraction.deduplication_type) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="update_extraction_btn" class="btn btn-success">
+                    <i class="fa fa-save"></i>&nbsp;Update&nbsp;<i class="icon icon-large ion-loading-c" style="display: none;"></i>
+                </button>
+                <button data-dismiss="modal" class="btn btn-flat btn-default">CLOSE</button>
+            </div>
+            {{ form_rest(forms.extraction) }}
+            {{ form_end(forms.extraction) }}
+        </div>
+    </div>
+</div>

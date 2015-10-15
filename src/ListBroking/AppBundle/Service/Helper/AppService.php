@@ -120,7 +120,7 @@ class AppService extends BaseService implements AppServiceInterface
     /**
      * @inheritdoc
      */
-    public function generateForm ($type, $action = null, $data = null, $view = false)
+    public function generateForm ($type, $action = null, $data = null, $options = array(), $view = false)
     {
         $form = $this->form_factory->createBuilder($type, $data);
         if ( $action )
