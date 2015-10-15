@@ -131,3 +131,6 @@
 
 ### 2.12.04
 * Save old extraction quantity to publish after edit
+
+### 2.12.05
+* Fixed missing object

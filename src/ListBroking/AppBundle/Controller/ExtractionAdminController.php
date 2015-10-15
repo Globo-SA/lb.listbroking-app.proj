@@ -216,6 +216,8 @@ class ExtractionAdminController extends CRUDController
 
         /** @var Extraction $object */
         $id = $this->get('request')->get($this->admin->getIdParameter());
+
+        $object = $this->admin->getObject($id);
         $old_quantity = $this->admin->getObject($id)->getQuantity();
 
         // Edit the object as normal
