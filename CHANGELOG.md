@@ -128,3 +128,6 @@
 
 ### 2.12.03
 * Publish extraction after the object is updated
+
+### 2.12.04
+* Save old extraction quantity to publish after edit
