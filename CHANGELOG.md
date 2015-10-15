@@ -125,3 +125,6 @@
 
 ### 2.12.02
 * Flush extraction changes on edit
+
+### 2.12.03
+* Publish extraction after the object is updated
