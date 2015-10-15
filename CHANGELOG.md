@@ -122,3 +122,6 @@
 
 ### 2.12.01
 * Added better extraction edit on filtration
+
+### 2.12.02
+* Flush extraction changes on edit
