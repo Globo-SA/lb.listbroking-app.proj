@@ -74,11 +74,11 @@ class ExtractionAdminController extends CRUDController
     /**
      * Redirect the user depend on this choice.
      *
-     * @param object $object
+     * @param object $extraction
      *
      * @return RedirectResponse
      */
-    protected function redirectTo ($object)
+    protected function redirectTo ($extraction)
     {
         $url = false;
 
@@ -119,7 +119,7 @@ class ExtractionAdminController extends CRUDController
 
         if ( ! $url )
         {
-            $url = $this->admin->generateObjectUrl('filtering', $object);
+            $url = $this->admin->generateObjectUrl('filtering', $extraction);
         }
 
         return new RedirectResponse($url);
@@ -206,6 +206,7 @@ class ExtractionAdminController extends CRUDController
     {
         // Services
         $a_service = $this->get('app');
+        $e_service = $this->get('extraction');
         $m_service = $this->get('messaging');
 
         // Sonata doesn't not maintain the same form uniqid when changing pages
@@ -214,10 +215,10 @@ class ExtractionAdminController extends CRUDController
         $form_data = $request[key($request)];
         $this->admin->setUniqid(key($request));
 
-        /** @var Extraction $object */
+        /** @var Extraction $extraction */
         $id = $this->get('request')->get($this->admin->getIdParameter());
 
-        $object = $this->admin->getObject($id);
+        $extraction = $this->admin->getObject($id);
         $old_quantity = $this->admin->getObject($id)->getQuantity();
 
         // Edit the object as normal
@@ -226,12 +227,18 @@ class ExtractionAdminController extends CRUDController
         // If the quantity changed, mark the extraction to be re_run
         if($old_quantity != $form_data['quantity'])
         {
-            // Publish Extraction to the Queue
-            $m_service->publishMessage('run_extraction', array(
-                'object_id' => $object->getId()
-            ));
-            $object->setIsAlreadyExtracted(false);
-            $a_service->updateEntity($object);
+            $extraction->setIsAlreadyExtracted(false);
+            $a_service->updateEntity($extraction);
+
+            $is_extraction_ready = $e_service->handleFiltration($extraction);
+            if ( $is_extraction_ready )
+            {
+
+                // Publish Extraction to the Queue
+                $m_service->publishMessage('run_extraction', array(
+                    'object_id' => $extraction->getId()
+                ));
+            }
         }
 
         return $response;

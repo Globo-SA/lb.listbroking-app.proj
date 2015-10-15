@@ -134,3 +134,6 @@
 
 ### 2.12.05
 * Fixed missing object
+
+### 2.12.06
+* Edit will now update and publish extraction
