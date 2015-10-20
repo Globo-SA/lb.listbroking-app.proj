@@ -66,6 +66,14 @@ class StatisticsService extends BaseService implements StatisticsServiceInterfac
                             break;
                         }
 
+                        if(in_array($field, array('postalcode1', 'postalcode2')))
+                        {
+                            $qb->addSelect("c.{$field} as {$field}");
+                            $qb->addGroupBy($field);
+
+                            break;
+                        }
+
                         // JOIN the aggregation association
                         if ( ! in_array($field, $fields) )
                         {

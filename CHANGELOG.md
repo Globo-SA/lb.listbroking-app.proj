@@ -137,3 +137,6 @@
 
 ### 2.12.06
 * Edit will now update and publish extraction
+
+### 2.12.07
+* Added more aggregations to the datacard

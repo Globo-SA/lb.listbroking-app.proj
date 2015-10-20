@@ -35,6 +35,28 @@
                                 {{ form_label(form.aggregation_country) }}
                             </div>
                             <div class="form-group col-md-2">
+                                {{ form_widget(form.aggregation_district) }}&nbsp;
+                                {{ form_label(form.aggregation_district) }}
+                            </div>
+                            <div class="form-group col-md-2">
+                                {{ form_widget(form.aggregation_county) }}&nbsp;
+                                {{ form_label(form.aggregation_county) }}
+                            </div>
+                            <div class="form-group col-md-2">
+                                {{ form_widget(form.aggregation_parish) }}&nbsp;
+                                {{ form_label(form.aggregation_parish) }}
+                            </div>
+                            <div class="form-group col-md-2">
+                                {{ form_widget(form.aggregation_postalcode1) }}&nbsp;
+                                {{ form_label(form.aggregation_postalcode1) }}
+                            </div>
+                            <div class="form-group col-md-2">
+                                {{ form_widget(form.aggregation_postalcode2) }}&nbsp;
+                                {{ form_label(form.aggregation_postalcode2) }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-2">
                                 {{ form_widget(form.aggregation_gender) }}&nbsp;
                                 {{ form_label(form.aggregation_gender) }}
                             </div>
@@ -48,7 +70,9 @@
                             </div>
                         </div>
                         <hr>
-                        <h4>Field Availability <small>(YES/NO)</small></h4>
+                        <h4>Field Availability
+                            <small>(YES/NO)</small>
+                        </h4>
 
                         <div class="row">
                             <div class="form-group col-md-2">

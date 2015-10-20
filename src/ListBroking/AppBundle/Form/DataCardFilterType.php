@@ -40,7 +40,14 @@ class DataCardFilterType extends AbstractType
            ->add('availability_postalcode2', 'checkbox', array('label' => 'Has Postalcode2', 'required' => false))
            ->add('availability_address', 'checkbox', array('label' => 'Has Address', 'required' => false))
 
-           ->add('aggregation_country', 'checkbox', array('label' => 'Country', 'required' => false, 'data' => true))
+           ->add('aggregation_country', 'checkbox', array('label' => 'Country', 'required' => false, 'data' => false))
+           ->add('aggregation_district', 'checkbox', array('label' => 'District', 'required' => false, 'data' => false))
+           ->add('aggregation_county', 'checkbox', array('label' => 'County', 'required' => false, 'data' => false))
+           ->add('aggregation_parish', 'checkbox', array('label' => 'Parish', 'required' => false, 'data' => false))
+
+           ->add('aggregation_postalcode1', 'checkbox', array('label' => 'Postalcode 1', 'required' => false, 'data' => false))
+           ->add('aggregation_postalcode2', 'checkbox', array('label' => 'Postalcode 2', 'required' => false, 'data' => false))
+
            ->add('aggregation_gender', 'checkbox', array('label' => 'Gender', 'required' => false))
            ->add('aggregation_is_mobile', 'checkbox', array('label' => 'Phone Type (fixed/mobile)', 'required' => false))
            ->add('aggregation_sub_category', 'checkbox', array('label' => 'SubCategory', 'required' => false))
