@@ -17,7 +17,7 @@ services:
 
   file_handler:
     class: ListBroking\AppBundle\Service\Helper\FileHandlerService
-    arguments: [@kernel]
+    arguments: [@kernel, @oneup_flysystem.aws_s3_filesystem]
 
   app:
     class: ListBroking\AppBundle\Service\Helper\AppService

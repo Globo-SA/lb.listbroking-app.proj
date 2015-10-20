@@ -32,3 +32,8 @@ parameters:
   rabbitmq_user:     guest
   rabbitmq_password: guest
   rabbitmq_vhost:    ~
+
+  aws_s3_region:      ~
+  aws_s3_key:         ~
+  aws_s3_secret:      ~
+  aws_s3_bucket:      ~

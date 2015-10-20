@@ -2,8 +2,10 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
-    - { resource: doctrine_cache.yml }
-    - { resource: rabbit_mq.yml }
+
+    - { resource: config_app_doctrine_cache.yml }
+    - { resource: config_app_filesystems.yml }
+    - { resource: config_app_rabbit_mq.yml }
 
 framework:
     #esi:             ~

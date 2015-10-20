@@ -49,6 +49,11 @@
         "commerceguys/addressing": "~0.6",
         "giggsey/libphonenumber-for-php": "~7.0",
 
+        "aws/aws-sdk-php": "^3.8",
+        "league/flysystem": "^1.0",
+        "league/flysystem-aws-s3-v3" : "^1.0",
+        "oneup/flysystem-bundle": "^1.1",
+
         "knplabs/knp-menu": "~1.1",
         "knplabs/knp-menu-bundle": "~1.1",
         "friendsofsymfony/jsrouting-bundle": "~1.5",

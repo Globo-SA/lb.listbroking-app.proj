@@ -84,6 +84,6 @@ class AjaxAuthenticationHandlerListener implements AuthenticationSuccessHandlerI
                 ->set(Security::AUTHENTICATION_ERROR, $exception)
         ;
 
-        return new RedirectResponse($this->router->generate('fos_user_security_login'));
+        return new RedirectResponse($this->router->generate('sonata_user_admin_security_login'));
     }
 }

@@ -30,7 +30,7 @@ security:
                 login_path:      /admin/login
                 use_forward:     false
                 check_path:      /admin/login_check
-                failure_path:    null
+                failure_path:    /admin/login
                 success_handler: listbroking.ajax_authentication_handler_listener
                 failure_handler: listbroking.ajax_authentication_handler_listener
             logout:
