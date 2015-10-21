@@ -47,10 +47,16 @@ class FileHandlerService implements FileHandlerServiceInterface
      */
     private $filesystem;
 
-    public function __construct (KernelInterface $kernel, Filesystem $filesystem)
+    /**
+     * @var array
+     */
+    private $filesystem_config;
+
+    public function __construct (KernelInterface $kernel, Filesystem $filesystem, $filesystem_config)
     {
         $this->kernel = $kernel;
         $this->filesystem = $filesystem;
+        $this->filesystem_config = $filesystem_config;
 
         //Set APC to cache cells
         $cacheMethod = \PHPExcel_CachedObjectStorageFactory::cache_to_sqlite3;
@@ -148,7 +154,6 @@ class FileHandlerService implements FileHandlerServiceInterface
      * @param        $extension
      * @param array  $headers
      * @param Query  $query
-     *
      */
     private function exportByQuery ($filename, $extension, $headers, Query $query)
     {
@@ -276,12 +281,13 @@ class FileHandlerService implements FileHandlerServiceInterface
             $file_info = $this->zipFile($filename, true);
         }
 
+        $s3_path = $path . pathinfo($file_info[0], PATHINFO_BASENAME);
         $stream = fopen($file_info[0], 'r+');
-        $this->filesystem->writeStream($path . pathinfo($file_info[0], PATHINFO_BASENAME), $stream);
+        $this->filesystem->writeStream($s3_path, $stream, array('ACL' => 'public-read'));
         fclose($stream);
 
-        $file_info[0] =  $this->filesystem->get($path)->getPath();
-        unlink($filename);
+        unlink($file_info[0]);
+        $file_info[0] = $this->generateFilesystemURL($s3_path);
 
         return $file_info;
     }
@@ -293,6 +299,11 @@ class FileHandlerService implements FileHandlerServiceInterface
         $name = preg_replace("/[^[:alnum:]]/ui", '', $name);
 
         return strtolower(sprintf('%s-%s-%s', $this->remove_accents($name), uniqid(), date('Y-m-d')));
+    }
+
+    private function generateFilesystemURL ($path)
+    {
+        return(sprintf('%s/%s', $this->filesystem_config['url'], $path));
     }
 
     private function remove_accents ($string)

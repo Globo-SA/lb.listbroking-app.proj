@@ -96,6 +96,9 @@ class ExtractionAdmin extends Admin
      */
     protected function configureFormFields (FormMapper $formMapper)
     {
+        $max_quantity  = $this->getConfigurationPool()->getContainer()->get('app')
+            ->findConfig('extraction.max_quantity');
+
         $formMapper->tab('Global')
                    ->with('Extraction')
         ;
@@ -106,12 +109,12 @@ class ExtractionAdmin extends Admin
         {
             $formMapper->add('name')
                        ->add('campaign', null, array('required' => true))
-                       ->add('quantity')
+                       ->add('quantity', null, array('attr' => array('min' => 1, 'max' => $max_quantity)))
             ;
         }
 
         $formMapper->add('payout')
-                   ->add('quantity')
+                   ->add('quantity', null, array('attr' => array('min' => 1, 'max' => $max_quantity)))
                    ->end()
                    ->end()
         ;

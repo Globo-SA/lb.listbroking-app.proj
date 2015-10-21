@@ -14,6 +14,10 @@
                             <br>
                             <p>Status code: {{ status_code }}</p>
                             <br>
+                            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                            <p>Stack trace: {{ stack_trace }}</p>
+                            <br>
+                            {% endif %}
                             <small>Something is broken. Please let us know what you were doing when this error occurred.
                                 We
                                 will fix
