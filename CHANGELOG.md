@@ -150,3 +150,6 @@
 
 ### 2.12.10
 * Added missing indexes on StagingContactDQP and Contact
+
+### 2.12.11
+* Fixed wrong index

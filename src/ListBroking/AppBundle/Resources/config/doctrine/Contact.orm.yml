@@ -17,7 +17,7 @@ ListBroking\AppBundle\Entity\Contact:
         postalcode2_index:
           columns: [ postalcode2 ]
         external_id_index:
-          columns: [ external_id_index ]
+          columns: [ external_id ]
     fields:
         is_clean:
           type: boolean
