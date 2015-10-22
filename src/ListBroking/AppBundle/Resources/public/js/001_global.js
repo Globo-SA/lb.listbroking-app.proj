@@ -105,7 +105,7 @@
                         var current_row = row.replace('%%code%%', value['code']);
                         current_row = current_row.replace('%%created_at%%', value['created_at'].date.replace('.000000', ''));
                         current_row = current_row.replace('%%msg%%', value['msg'].substring(0, 255) + '...');
-                        $table.append(current_row);
+                        $table.find('tbody').append(current_row);
                     });
 
                     $('.exceptions_menu').parent('li').addClass('open');

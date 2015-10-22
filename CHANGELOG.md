@@ -140,3 +140,7 @@
 
 ### 2.12.07
 * Added more aggregations to the datacard
+
+### 2.12.08
+* Changed the way new leads are persisted
+* Added a new unique constrain to the lead table (phone and country_id)

@@ -204,44 +204,53 @@ class ExtractionAdminController extends CRUDController
      */
     public function editAction ($id = null)
     {
-        // Services
-        $a_service = $this->get('app');
-        $e_service = $this->get('extraction');
-        $m_service = $this->get('messaging');
-
-        // Sonata doesn't not maintain the same form uniqid when changing pages
-        // so old id needs to be forced
-        $request = $this->container->get('request')->request->all();
-        $form_data = $request[key($request)];
-        $this->admin->setUniqid(key($request));
-
-        /** @var Extraction $extraction */
-        $id = $this->get('request')->get($this->admin->getIdParameter());
-
-        $extraction = $this->admin->getObject($id);
-        $old_quantity = $this->admin->getObject($id)->getQuantity();
-
-        // Edit the object as normal
-        $response = parent::editAction($id);
-
-        // If the quantity changed, mark the extraction to be re_run
-        if($old_quantity != $form_data['quantity'])
+        if ($this->getRestMethod() == 'POST')
         {
-            $extraction->setIsAlreadyExtracted(false);
-            $a_service->updateEntity($extraction);
+            // Services
+            $a_service = $this->get('app');
+            $e_service = $this->get('extraction');
+            $m_service = $this->get('messaging');
 
-            $is_extraction_ready = $e_service->handleFiltration($extraction);
-            if ( $is_extraction_ready )
+            // Sonata doesn't not maintain the same form uniqid when changing pages
+            // so old id needs to be forced
+            $request = $this->container->get('request')->request->all();
+            $form_data = $request[key($request)];
+            $this->admin->setUniqid(key($request));
+
+            /** @var Extraction $extraction */
+            $id = $this->get('request')
+                       ->get($this->admin->getIdParameter())
+            ;
+
+            $extraction = $this->admin->getObject($id);
+            $old_quantity = $this->admin->getObject($id)
+                                        ->getQuantity()
+            ;
+
+            // Edit the object as normal
+            $response = parent::editAction($id);
+
+            // If the quantity changed, mark the extraction to be re_run
+            if ( $old_quantity != $form_data['quantity'] )
             {
+                $extraction->setIsAlreadyExtracted(false);
+                $a_service->updateEntity($extraction);
 
-                // Publish Extraction to the Queue
-                $m_service->publishMessage('run_extraction', array(
-                    'object_id' => $extraction->getId()
-                ));
+                $is_extraction_ready = $e_service->handleFiltration($extraction);
+                if ( $is_extraction_ready )
+                {
+
+                    // Publish Extraction to the Queue
+                    $m_service->publishMessage('run_extraction', array(
+                        'object_id' => $extraction->getId()
+                    ));
+                }
             }
+
+            return $response;
         }
 
-        return $response;
+        return parent::editAction($id);
     }
 
     private function generateExtractionForm (Extraction $extraction)

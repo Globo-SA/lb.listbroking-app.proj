@@ -271,7 +271,6 @@ class FiltersType extends AbstractType
                                 'Yes'  => true,
                                 'No'   => false
                             ),
-                            'data'              => null,
                             'choices_as_values' => true,
                             'attr'              => array(
                                 'class' => 'form-control'
@@ -289,11 +288,10 @@ class FiltersType extends AbstractType
                         'options'              => array(
                             'placeholder'       => false,
                             'choices'           => array(
-                                'Both' => null,
                                 'Yes'  => true,
-                                'No'   => false
+                                'No'   => false,
+                                'Both' => null
                             ),
-                            'data'              => true,
                             'choices_as_values' => true,
                             'attr'              => array(
                                 'class' => 'form-control'

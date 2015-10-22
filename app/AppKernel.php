@@ -27,7 +27,9 @@ class AppKernel extends Kernel
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new Misd\GuzzleBundle\MisdGuzzleBundle(),
             new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
+            new Oneup\FlysystemBundle\OneupFlysystemBundle(),
             new Adclick\TaskControllerBundle\TaskControllerBundle(),
+
 
             //Security
             new FOS\UserBundle\FOSUserBundle(),

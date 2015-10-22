@@ -32,3 +32,11 @@ parameters:
   rabbitmq_user:     guest
   rabbitmq_password: guest
   rabbitmq_vhost:    ~
+
+  filesystem_url: http://listbroking.s3.amazonaws.com
+  filesystem_type: aws_s3
+
+  aws_s3_region:      ~
+  aws_s3_key:         ~
+  aws_s3_secret:      ~
+  aws_s3_bucket:      ~
