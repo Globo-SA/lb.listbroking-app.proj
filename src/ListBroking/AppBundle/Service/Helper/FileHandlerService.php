@@ -28,15 +28,6 @@ class FileHandlerService implements FileHandlerServiceInterface
 
     const IMPORTS_FOLDER = 'imports/';
 
-    public static $export_types = array(
-        'XLS'  => array('type' => 'Excel2007', 'extension' => 'xlsx', 'label' => 'Excel File (.xlsx)'),
-        'CSV'  => array('type' => 'CSV', 'extension' => 'csv', 'label' => 'Save as a CSV file (.csv)'),
-        'XML'  => array('type' => 'XML', 'extension' => 'xml', 'label' => 'Save as a XML file (.xml)'),
-        'JSON' => array('type' => 'JSON', 'extension' => 'json', 'label' => 'Save as a JSON file (.json)')
-    );
-
-    // Export File types
-
     /**
      * @var KernelInterface
      */
@@ -132,6 +123,8 @@ class FileHandlerService implements FileHandlerServiceInterface
      */
     private function generateFilename ($name, $extension, $absolute = false, $dir = '/')
     {
+        $extension = strtolower($extension);
+
         // Make sure the file is unique
         $path = $dir . $this->cleanUpName($name);
         if ( $extension )
@@ -192,12 +185,12 @@ class FileHandlerService implements FileHandlerServiceInterface
      */
     private function writerSelection ($extension, $filename)
     {
-        switch ( $extension )
+        switch ( strtoupper($extension) )
         {
             case 'CSV':
                 $writer = new CsvWriter($filename);
                 break;
-            case 'XLSX':
+            case 'XLS':
                 $writer = new XlsWriter($filename);
                 break;
             case 'XML':

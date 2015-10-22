@@ -144,3 +144,6 @@
 ### 2.12.08
 * Changed the way new leads are persisted
 * Added a new unique constrain to the lead table (phone and country_id)
+
+### 2.12.09
+* Fixed Excel extension from XLSX to XLS
