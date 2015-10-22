@@ -193,13 +193,12 @@ class StagingContactRepository extends EntityRepository
         if ( ! $lead )
         {
             $lead = new Lead();
+            $lead->setPhone($staging_contact->getPhone());
+            $lead->setIsMobile($staging_contact->getIsMobile());
+            $lead->setInOpposition($staging_contact->getInOpposition());
+            $lead->setCountry($dimensions['country']);
+            $em->persist($lead);
         }
-
-        $lead->setPhone($staging_contact->getPhone());
-        $lead->setIsMobile($staging_contact->getIsMobile());
-        $lead->setInOpposition($staging_contact->getInOpposition());
-        $lead->setCountry($dimensions['country']);
-        $em->persist($lead);
 
         $contact = $em->getRepository('ListBrokingAppBundle:Contact')
                       ->findOneBy(array(
@@ -212,9 +211,9 @@ class StagingContactRepository extends EntityRepository
         if ( ! $contact )
         {
             $contact = new Contact();
+            $contact->setLead($lead);
         }
 
-        $contact->setLead($lead);
         $contact->updateContactFacts($staging_contact);
         $contact->updateContactDimensions(array_values($dimensions));
 

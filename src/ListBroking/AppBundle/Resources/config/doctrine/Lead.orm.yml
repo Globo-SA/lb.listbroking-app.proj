@@ -11,6 +11,9 @@ ListBroking\AppBundle\Entity\Lead:
     indexes:
         phone_index:
           columns: [ phone ]
+    uniqueConstraints:
+        unique_idx:
+          columns: [ phone, country_id ]
     fields:
         phone:
             type:     string

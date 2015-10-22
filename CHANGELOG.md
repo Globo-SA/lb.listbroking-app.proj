@@ -137,3 +137,7 @@
 
 ### 2.12.06
 * Edit will now update and publish extraction
+
+### 2.12.07
+* Changed the way new leads are persisted
+* Added a new unique constrain to the lead table (phone and country_id)
