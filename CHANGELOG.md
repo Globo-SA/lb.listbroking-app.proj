@@ -147,3 +147,6 @@
 
 ### 2.12.09
 * Fixed Excel extension from XLSX to XLS
+
+### 2.12.10
+* Added missing indexes on StagingContactDQP and Contact

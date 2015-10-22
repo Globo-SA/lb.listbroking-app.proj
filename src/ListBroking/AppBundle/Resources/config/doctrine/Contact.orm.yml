@@ -10,10 +10,14 @@ ListBroking\AppBundle\Entity\Contact:
     indexes:
         date_index:
           columns: [ date ]
+        email_index:
+          columns: [ email ]
         postalcode1_index:
           columns: [ postalcode1 ]
         postalcode2_index:
           columns: [ postalcode2 ]
+        external_id_index:
+          columns: [ external_id_index ]
     fields:
         is_clean:
           type: boolean
