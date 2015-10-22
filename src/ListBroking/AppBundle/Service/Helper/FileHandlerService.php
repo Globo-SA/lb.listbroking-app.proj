@@ -197,7 +197,7 @@ class FileHandlerService implements FileHandlerServiceInterface
             case 'CSV':
                 $writer = new CsvWriter($filename);
                 break;
-            case 'Excel':
+            case 'XLSX':
                 $writer = new XlsWriter($filename);
                 break;
             case 'XML':
