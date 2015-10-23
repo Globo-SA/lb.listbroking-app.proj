@@ -161,3 +161,6 @@
 * Added lock_date to the Lock table
 * Converted expiration_date to date
 * Removed LockHistory
+
+### 2.12.14
+* Added missing lock_date creation on lead persist

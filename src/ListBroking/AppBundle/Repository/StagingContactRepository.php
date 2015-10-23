@@ -223,6 +223,7 @@ class StagingContactRepository extends EntityRepository
         {
             $lock = new Lock();
             $lock->setType(Lock::TYPE_NO_LOCKS);
+            $lock->setLockDate(new \DateTime());
             $lock->setExpirationDate($initial_lock_expiration_date);
             $lead->addLock($lock);
         }
