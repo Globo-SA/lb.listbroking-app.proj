@@ -109,11 +109,6 @@ services:
       arguments: [~, ListBroking\AppBundle\Entity\Lock, SonataAdminBundle:CRUD]
       tags:
           - {name: sonata.admin, manager_type: orm, group: Other, label: Lock}
-  listbroking.admin.lock_history:
-      class: ListBroking\AppBundle\Admin\LockHistoryAdmin
-      arguments: [~, ListBroking\AppBundle\Entity\LockHistory, SonataAdminBundle:CRUD]
-      tags:
-          - {name: sonata.admin, manager_type: orm, group: Other, label: LockHistory}
 
   listbroking.admin.configuration:
       class: ListBroking\AppBundle\Admin\ConfigurationAdmin

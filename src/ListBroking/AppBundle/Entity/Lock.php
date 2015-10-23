@@ -48,6 +48,12 @@ class Lock {
     private $sub_category;
 
     /**
+     * The date when the lock was created
+     * @var
+     */
+    protected $lock_date;
+
+    /**
      * Saves a future timestamp for the lock expiration time
      * @var
      */
@@ -76,6 +82,22 @@ class Lock {
     public function setType($type)
     {
         $this->type = $type;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLockDate ()
+    {
+        return $this->lock_date;
+    }
+
+    /**
+     * @param mixed $lock_date
+     */
+    public function setLockDate ($lock_date)
+    {
+        $this->lock_date = $lock_date;
     }
 
     /**

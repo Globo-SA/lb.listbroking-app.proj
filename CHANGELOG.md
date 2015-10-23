@@ -156,3 +156,8 @@
 
 ### 2.12.12
 * Converted Address, Firstname and Lastname to Uppercase
+
+### 2.12.13
+* Added lock_date to the Lock table
+* Converted expiration_date to date
+* Removed LockHistory

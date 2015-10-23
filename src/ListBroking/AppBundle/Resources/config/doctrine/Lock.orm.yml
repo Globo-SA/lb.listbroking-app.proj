@@ -12,8 +12,11 @@ ListBroking\AppBundle\Entity\Lock:
         type:
             type: smallint
             column: type
+        lock_date:
+            type: date
+            column: lock_date
         expiration_date:
-            type: datetime
+            type: date
             column: expiration_date
 # Timestampable
         created_at:
