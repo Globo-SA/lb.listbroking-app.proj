@@ -153,3 +153,6 @@
 
 ### 2.12.11
 * Fixed wrong index
+
+### 2.12.12
+* Converted Address, Firstname and Lastname to Uppercase

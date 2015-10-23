@@ -82,9 +82,9 @@ class NameValidator implements ValidatorInterface {
             }
         }
 
-        // Uppercase the first character of each word in a string
-        $contact->setFirstname(ucwords($firstname));
-        $contact->setLastname(ucwords($lastname));
+        // Convert to upper case all the letters
+        $contact->setFirstname(strtoupper($firstname));
+        $contact->setLastname(strtoupper($lastname));
     }
 
     /**

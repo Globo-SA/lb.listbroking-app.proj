@@ -19,6 +19,7 @@ use ListBroking\AppBundle\Engine\Validator\Dimension\GenderValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\OwnerValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\ParishValidator;
 use ListBroking\AppBundle\Engine\Validator\Dimension\SourceValidator;
+use ListBroking\AppBundle\Engine\Validator\Fact\AddressValidator;
 use ListBroking\AppBundle\Engine\Validator\Fact\BirthdateValidator;
 use ListBroking\AppBundle\Engine\Validator\Fact\EmailValidator;
 use ListBroking\AppBundle\Engine\Validator\Fact\NameValidator;
@@ -71,6 +72,7 @@ class ValidatorEngine
             // Dimension validations
             new CountryValidator($this->em, true),
             new PostalCodeValidator($this->em, false, $this->guzzle),
+            new AddressValidator($this->em, false),
             new DistrictValidator($this->em, false),
             new CountyValidator($this->em, false),
             new ParishValidator($this->em, false),
