@@ -164,3 +164,6 @@
 
 ### 2.12.14
 * Added missing lock_date creation on lead persist
+
+### 2.12.15
+* Fixed PhoneValidator Exception catch

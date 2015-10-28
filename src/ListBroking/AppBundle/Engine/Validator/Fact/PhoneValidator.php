@@ -104,7 +104,10 @@ class PhoneValidator implements ValidatorInterface {
                     break;
             }
 
-        }catch (\Exception $e){
+        }catch (DimensionValidationException $e){
+            throw $e;
+        }
+        catch (\Exception $e){
             throw new DimensionValidationException("Phone number doesn't match with {$country}'s' validation rules");
         }
     }
