@@ -60,7 +60,7 @@ class SubCategoryLockFilter implements LockFilterInterface
 
                 $orX->addMultiple(array(
                     $qb->expr()
-                       ->andX('locks.expiration_date <= CURRENT_TIMESTAMP()', 'locks.type = :sub_category_locks_type', "locks.sub_category = :sub_category_locks_sub_category_id_{$key}", "(locks.expiration_date >= :sub_category_locks_filter_expiration_date_{$key})"),
+                       ->andX('locks.type = :sub_category_locks_type', "locks.sub_category = :sub_category_locks_sub_category_id_{$key}", "(locks.expiration_date >= :sub_category_locks_filter_expiration_date_{$key})"),
                     $qb->expr()
                        ->andX('locks.type = :sub_category_locks_category_type', "locks.category = :sub_category_locks_category_{$key}", "(locks.expiration_date >= CURRENT_TIMESTAMP())"),
                 ))

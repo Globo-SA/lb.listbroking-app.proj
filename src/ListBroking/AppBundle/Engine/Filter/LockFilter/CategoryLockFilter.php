@@ -54,7 +54,7 @@ class CategoryLockFilter implements LockFilterInterface
 
                 // Check for lock on the category
                 $orX->add($qb->expr()
-                             ->andX('locks.expiration_date <= CURRENT_TIMESTAMP()', 'locks.type = :category_locks_type', "locks.category = :category_locks_category_id_{$key}", "(locks.expiration_date >= :category_locks_filter_expiration_date_{$key})"))
+                             ->andX('locks.type = :category_locks_type', "locks.category = :category_locks_category_id_{$key}", "(locks.expiration_date >= :category_locks_filter_expiration_date_{$key})"))
                 ;
                 $qb->setParameter('category_locks_type', $this->type_id);
                 $qb->setParameter("category_locks_category_id_{$key}", $filter['category']);

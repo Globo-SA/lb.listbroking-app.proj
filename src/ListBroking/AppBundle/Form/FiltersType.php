@@ -76,9 +76,9 @@ class FiltersType extends AbstractType
             '5 months ago' => '-5 month',
             '6 months ago' => '-6 month',
             '1 year ago' => '-1 year',
-            '2 year ago' => '-2 year',
-            '3 year ago' => '-3 year',
-            '30 year ago' => '-30 year',
+            '2 years ago' => '-2 year',
+            '3 years ago' => '-3 year',
+            '30 years ago' => '-30 year',
         );
 
         // Filter Schema
@@ -525,7 +525,6 @@ class FiltersType extends AbstractType
                         'type'                 => 'checkbox',
                         'options'              => array(
                             'value'    => 1, //NoLocksFilter
-                            'data'     => true,
                             'required' => false,
                             'attr'     => array(
                                 'data-toggle'    => 'tooltip',

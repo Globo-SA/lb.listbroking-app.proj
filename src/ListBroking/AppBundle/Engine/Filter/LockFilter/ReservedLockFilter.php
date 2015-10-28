@@ -55,7 +55,7 @@ class ReservedLockFilter implements LockFilterInterface
 
             // Check for reserved locks
             $orX->add($qb->expr()
-                         ->andX('locks.expiration_date <= CURRENT_TIMESTAMP()', 'locks.type = :reserved_locks_type', "(locks.expiration_date >= :reserved_locks_filter_expiration_date_{$key})"))
+                         ->andX('locks.type = :reserved_locks_type', "(locks.expiration_date >= :reserved_locks_filter_expiration_date_{$key})"))
             ;
             $qb->setParameter('reserved_locks_type', $this->type_id);
 

@@ -170,3 +170,6 @@
 
 ### 2.12.16
 * Added more expiration time to locks
+
+### 2.12.17
+* Removed future locks from specific lock types
