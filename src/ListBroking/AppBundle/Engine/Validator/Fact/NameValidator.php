@@ -21,7 +21,7 @@ class NameValidator implements ValidatorInterface {
     protected $rules = array(
         array('regex' => '/^\S{1}$/i', 'msg' => 'Name only contains one letter'),
         array('regex' => '/\d/i', 'msg' => 'Name contains a digit'),
-        array('regex' => '/(test|teste|fake|asd)/i', 'msg' => 'Test name'),
+        array('regex' => '/(test|teste|fake|asd|@)/i', 'msg' => 'Test name'),
     );
 
     /**

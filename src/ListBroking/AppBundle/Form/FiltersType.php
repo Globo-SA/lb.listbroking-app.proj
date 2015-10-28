@@ -75,7 +75,10 @@ class FiltersType extends AbstractType
             '4 months ago' => '-4 month',
             '5 months ago' => '-5 month',
             '6 months ago' => '-6 month',
-
+            '1 year ago' => '-1 year',
+            '2 year ago' => '-2 year',
+            '3 year ago' => '-3 year',
+            '30 year ago' => '-30 year',
         );
 
         // Filter Schema

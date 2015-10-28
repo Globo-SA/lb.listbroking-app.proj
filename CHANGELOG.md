@@ -167,3 +167,6 @@
 
 ### 2.12.15
 * Fixed PhoneValidator Exception catch
+
+### 2.12.16
+* Added more expiration time to locks
