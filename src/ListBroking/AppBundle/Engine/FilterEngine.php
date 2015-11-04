@@ -134,7 +134,7 @@ class FilterEngine
         if ( array_key_exists('lock', $filters) && ! empty($filters['lock']) )
         {
             $locksOrX = $lead_qb->expr()
-                                ->andX()
+                                ->orX()
             ;
 
             // Iterate over Lock Filter Types
