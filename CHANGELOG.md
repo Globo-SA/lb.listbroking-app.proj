@@ -173,3 +173,6 @@
 
 ### 2.12.17
 * Removed future locks from specific lock types
+
+### 2.12.18
+* Added unique index on campaign for name+client_id
