@@ -176,3 +176,6 @@
 
 ### 2.12.18
 * Added unique index on campaign for name+client_id
+
+### 2.12.19
+* Added more filters to the extraction list

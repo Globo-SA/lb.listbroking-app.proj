@@ -59,7 +59,8 @@ class ExtractionAdmin extends Admin
     protected function configureDatagridFilters (DatagridMapper $datagridMapper)
     {
         $datagridMapper->add('name')
-                       ->add('campaign')
+                       ->add('campaign.client', null, array('label' => 'Client'))
+                       ->add('status', 'doctrine_orm_string', array(), 'choice', array('choices' => Extraction::$status_names))
         ;
     }
 
@@ -96,8 +97,11 @@ class ExtractionAdmin extends Admin
      */
     protected function configureFormFields (FormMapper $formMapper)
     {
-        $max_quantity  = $this->getConfigurationPool()->getContainer()->get('app')
-            ->findConfig('extraction.max_quantity');
+        $max_quantity = $this->getConfigurationPool()
+                             ->getContainer()
+                             ->get('app')
+                             ->findConfig('extraction.max_quantity')
+        ;
 
         $formMapper->tab('Global')
                    ->with('Extraction')
