@@ -58,7 +58,7 @@ class NoLocksLockFilter implements LockFilterInterface
 
             // Check for all locks
             $orX->add($qb->expr()
-                         ->andX("(locks.expiration_date >= :no_locks_locks_filter_expiration_date_{$key})"))
+                         ->andX("(locks.expiration_date <= :no_locks_locks_filter_expiration_date_{$key})"))
             ;
             $qb->setParameter("no_locks_locks_filter_expiration_date_{$key}", $filter['interval']);
         }
