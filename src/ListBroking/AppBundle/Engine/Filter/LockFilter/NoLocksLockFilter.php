@@ -36,7 +36,7 @@ class NoLocksLockFilter implements LockFilterInterface
      * @throws InvalidFilterTypeException
      * @return mixed
      */
-    public function addFilter (Orx $orX, QueryBuilder $qb, $filters)
+    public function addFilter ( $orX, QueryBuilder $qb, $filters)
     {
         /**
          * Lock Type isn't used for this filter !!

@@ -36,7 +36,7 @@ class ReservedLockFilter implements LockFilterInterface
      * @throws InvalidFilterTypeException
      * @return mixed
      */
-    public function addFilter (Orx $orX, QueryBuilder $qb, $filters)
+    public function addFilter ( $orX, QueryBuilder $qb, $filters)
     {
         foreach ( $filters as $key => $filter )
         {
