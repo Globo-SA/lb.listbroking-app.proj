@@ -1,116 +1,116 @@
 <?php
 /**
- *
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
 namespace ListBroking\AppBundle\Engine\Filter\ContactFilter;
 
-
 use Doctrine\ORM\Query\Expr\Andx;
-use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
-
 use ListBroking\AppBundle\Engine\Filter\ContactFilterInterface;
-use ListBroking\AppBundle\Exception\InvalidFilterTypeException;
 use ListBroking\AppBundle\Form\FiltersType;
 
-class BasicContactFilter implements ContactFilterInterface {
+class BasicContactFilter implements ContactFilterInterface
+{
 
     /**
      * @inheritdoc
      */
-    public function addFilter(Andx $andx, QueryBuilder $qb, $filters)
+    public function addFilter (Andx $andx, QueryBuilder $qb, $filters)
     {
-        $previous_field = '';
-        foreach($filters as $filter){
-
-            if($previous_field == $filter['field'])
-            {
-                $andx = $qb->expr()
-                            ->orX()
-                ;
-            }
-            $previous_field = $filter['field'];
-
+        $exp_bucket = array();
+        $params_bucket = array();
+        foreach ( $filters as $filter )
+        {
             // Validate the Filter
             FiltersType::validateFilter($filter);
 
             // Add the join alias
             $filter['field'] = 'contacts.' . $filter['field'];
 
-            // Generate an unique id for each filter to avoid collisions
-            $uid = uniqid();
-
-            switch($filter['opt']){
+            switch ( $filter['opt'] )
+            {
                 case FiltersType::EQUAL_OPERATION:
 
-                    $name =  "in_filter_{$uid}";
+                    $name =  str_replace('.','_' ,sprintf("in_filter_%s", $filter['field']));
 
                     // Inclusion or Exclusion Filter
                     switch($filter['filter_operation']){
                         case FiltersType::INCLUSION_FILTER:
-                            $andx->add(
-                                $qb->expr()->in($filter['field'],':'. $name)
-                            );
+                            $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['expression'] = $qb->expr()->in($filter['field'],':'. $name);
                             break;
                         case FiltersType::EXCLUSION_FILTER:
-                            $andx->add(
-                                $qb->expr()->notIn($filter['field'],':'. $name)
-                            );
+                            $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['expression'] = $qb->expr()->notIn($filter['field'],':'. $name);
                             break;
                         default:
                             break;
                     }
-                    $qb->setParameter($name, $filter['value']);
-
+                    $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['parameter_id'] = $name;
+                    $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['values'][] = $filter['value'][0];
                     break;
                 case FiltersType::BETWEEN_OPERATION:
 
-                    $name_x =  "between_filter_x_{$uid}";
-                    $name_y =  "between_filter_y_{$uid}";
+                    $name_x =  str_replace('.','_', sprintf("between_filter_x_%s",$filter['field']));
+                    $name_y =  str_replace('.','_', sprintf("between_filter_y_%s",$filter['field']));
 
                     // Inclusion or Exclusion Filter
                     switch($filter['filter_operation']){
                         case FiltersType::INCLUSION_FILTER:
-                            $andx->add(
-                                $qb->expr()->between(
-                                    $filter['field'],
-                                    ":between_filter_x_{$uid}",
-                                    ":between_filter_y_{$uid}"
-                                )
+                            $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['expression'] = $qb->expr()->between(
+                                $filter['field'],
+                                ":".$name_x,
+                                ":".$name_y
                             );
                             break;
                         case FiltersType::EXCLUSION_FILTER:
-                            $andx->add(
-                                // NOT BETWEEN EQ DOESN'T EXIST IN DOCTRINE QUERY BUILDER
-                                $qb->expr()->not(
-                                    $qb->expr()->between(
-                                        $filter['field'],
-                                        ":between_filter_x_{$uid}",
-                                        ":between_filter_y_{$uid}"
-                                    )
+                            $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['expression'] = $qb->expr()->not(
+                                $qb->expr()->between(
+                                    $filter['field'],
+                                    ":".$name_x,
+                                    ":".$name_y
                                 )
                             );
-
                             break;
                         default:
                             break;
                     }
-                    $qb->setParameter($name_x, $filter['value'][0]);
-                    $qb->setParameter($name_y, $filter['value'][1]);
 
-                    break;
-                default:
-                    throw new InvalidFilterTypeException(
-                        "\"{$filter['opt']}\" is an invalid filter option, in "
-                        . __CLASS__);
+                    $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['parameter_id']['x'] = $name_x;
+                    $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['parameter_id']['y'] = $name_y;
+
+                    $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['values']['x'] = $filter['value'][0];
+                    $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['values']['y'] = $filter['value'][1];
                     break;
             }
+        }
+        foreach ( $exp_bucket as $field => $operations )
+        {
+            $orX = $qb->expr()->orX();
+            foreach ( $operations as $operation => $filter_types )
+            {
+                foreach ( $filter_types as $filter_type => $filter )
+                {
+                    $expression = $filter['expression'];
+                    $orX->add($expression);
+
+                    $parameter_id = $filter['parameter_id'];
+                    $values = $filter['values'];
+                    switch($operation)
+                    {
+                        case FiltersType::EQUAL_OPERATION:
+                            $qb->setParameter($parameter_id, $values);
+                            break;
+                        case FiltersType::BETWEEN_OPERATION:
+                            $qb->setParameter($parameter_id['x'], $values['x']);
+                            $qb->setParameter($parameter_id['y'], $values['y']);
+                            break;
+                    }
+                }
+            }
+            $andx->add($orX);
         }
     }
 

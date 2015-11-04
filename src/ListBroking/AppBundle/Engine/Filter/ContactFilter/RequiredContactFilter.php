@@ -12,7 +12,6 @@ namespace ListBroking\AppBundle\Engine\Filter\ContactFilter;
 
 
 use Doctrine\ORM\Query\Expr\Andx;
-use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 
 use ListBroking\AppBundle\Engine\Filter\ContactFilterInterface;

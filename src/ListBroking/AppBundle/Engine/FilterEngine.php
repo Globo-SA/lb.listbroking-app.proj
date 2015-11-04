@@ -198,6 +198,7 @@ class FilterEngine
         $lead_qb->groupBy('leads.id');
         $lead_qb->setMaxResults($limit);
 
+        die(print_r($lead_qb->getDQL()));
         return $lead_qb;
     }
 }
