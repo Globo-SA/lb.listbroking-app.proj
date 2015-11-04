@@ -155,7 +155,7 @@ class FilterEngine
         {
 
             $contactsAndX = $lead_qb->expr()
-                                    ->andX()
+                                    ->orX()
             ;
 
             // Iterate over Contact Filter Types
