@@ -12,6 +12,7 @@ namespace ListBroking\AppBundle\Engine\Filter;
 
 
 use Doctrine\ORM\Query\Expr\Andx;
+use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 
 use ListBroking\AppBundle\Exception\InvalidFilterObjectException;
@@ -33,5 +34,5 @@ interface ContactFilterInterface {
      * @throws InvalidFilterTypeException
      * @return mixed
      */
-    public function addFilter(Andx $andx, QueryBuilder $qb, $filters);
+    public function addFilter(Orx $andx, QueryBuilder $qb, $filters);
 }

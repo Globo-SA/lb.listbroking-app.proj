@@ -12,6 +12,7 @@ namespace ListBroking\AppBundle\Engine\Filter\ContactFilter;
 
 
 use Doctrine\ORM\Query\Expr\Andx;
+use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 
 use ListBroking\AppBundle\Engine\Filter\ContactFilterInterface;
@@ -22,14 +23,9 @@ use ListBroking\AppBundle\Form\FiltersType;
 class RequiredContactFilter implements ContactFilterInterface {
 
     /**
-     * @param Andx $andx
-     * @param QueryBuilder $qb
-     * @param $filters
-     * @throws InvalidFilterObjectException
-     * @throws InvalidFilterTypeException
-     * @return mixed
+     * @inheritdoc
      */
-    public function addFilter(Andx $andx, QueryBuilder $qb, $filters)
+    public function addFilter(Orx $andx, QueryBuilder $qb, $filters)
     {
         foreach($filters as $filter){
 
