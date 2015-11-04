@@ -45,12 +45,12 @@ class CampaignLockFilter implements LockFilterInterface
      */
     public function addFilter ( $orX, QueryBuilder $qb, $filters)
     {
-        foreach ( $filters as $key => $f )
+        foreach ( $filters as $f )
         {
             // Validate the Filter
             FiltersType::validateFilter($f);
 
-            foreach ( $f['value'] as $filter )
+            foreach ( $f['value'] as $key => $filter )
             {
 
                 if ( ! ($filter['interval'] instanceof \DateTime) )
