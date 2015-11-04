@@ -25,7 +25,7 @@ class RequiredContactFilter implements ContactFilterInterface {
     /**
      * @inheritdoc
      */
-    public function addFilter(Orx $andx, QueryBuilder $qb, $filters)
+    public function addFilter($andx, QueryBuilder $qb, $filters)
     {
         foreach($filters as $filter){
 
