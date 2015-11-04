@@ -34,5 +34,5 @@ interface ContactFilterInterface {
      * @throws InvalidFilterTypeException
      * @return mixed
      */
-    public function addFilter($andx, QueryBuilder $qb, $filters);
+    public function addFilter(Andx $andx, QueryBuilder $qb, $filters);
 }

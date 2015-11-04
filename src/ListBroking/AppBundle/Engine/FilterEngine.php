@@ -159,18 +159,8 @@ class FilterEngine
             ;
 
             // Iterate over Contact Filter Types
-            $previous_field = '';
             foreach ( $filters['contact'] as $type => $contact_filters )
             {
-
-                if($previous_field == $contact_filters['field'])
-                {
-                    $contactsAndX = $lead_qb->expr()
-                                            ->orX()
-                    ;
-                }
-                $previous_field = $contact_filters['field'];
-
                 /** @var ContactFilterInterface $contact_filter_type */
                 $contact_filter_type = $this->contact_filter_types[$type];
                 $contact_filter_type->addFilter($contactsAndX, $lead_qb, $contact_filters);

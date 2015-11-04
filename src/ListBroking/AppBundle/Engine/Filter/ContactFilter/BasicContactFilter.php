@@ -16,7 +16,6 @@ use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 
 use ListBroking\AppBundle\Engine\Filter\ContactFilterInterface;
-use ListBroking\AppBundle\Exception\InvalidFilterObjectException;
 use ListBroking\AppBundle\Exception\InvalidFilterTypeException;
 use ListBroking\AppBundle\Form\FiltersType;
 
@@ -25,9 +24,18 @@ class BasicContactFilter implements ContactFilterInterface {
     /**
      * @inheritdoc
      */
-    public function addFilter($andx, QueryBuilder $qb, $filters)
+    public function addFilter(Andx $andx, QueryBuilder $qb, $filters)
     {
+        $previous_field = '';
         foreach($filters as $filter){
+
+            if($previous_field == $filter['field'])
+            {
+                $andx = $qb->expr()
+                            ->orX()
+                ;
+            }
+            $previous_field = $filter['field'];
 
             // Validate the Filter
             FiltersType::validateFilter($filter);
