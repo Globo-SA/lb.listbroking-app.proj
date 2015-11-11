@@ -8,11 +8,9 @@
 
 namespace ListBroking\AppBundle\Engine\Filter\LockFilter;
 
-use Doctrine\ORM\Query\Expr\Orx;
+use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\QueryBuilder;
 use ListBroking\AppBundle\Engine\Filter\LockFilterInterface;
-use ListBroking\AppBundle\Exception\InvalidFilterObjectException;
-use ListBroking\AppBundle\Exception\InvalidFilterTypeException;
 use ListBroking\AppBundle\Form\FiltersType;
 
 class CampaignLockFilter implements LockFilterInterface
@@ -35,19 +33,15 @@ class CampaignLockFilter implements LockFilterInterface
     }
 
     /**
-     * @param $andX          $orX
-     * @param QueryBuilder $qb
-     * @param              $filters
-     *
-     * @throws InvalidFilterObjectException
-     * @throws InvalidFilterTypeException
-     * @return mixed
-     */
-    public function addFilter ( $andX, QueryBuilder $qb, $filters)
+     * @inheritdoc
+     * */
+    public function addFilter (Andx $andX, QueryBuilder $qb, $filters)
     {
         foreach ( $filters as $f )
         {
-            $orX = $qb->expr()->orX();
+            $orX = $qb->expr()
+                      ->orX()
+            ;
 
             // Validate the Filter
             FiltersType::validateFilter($f);
@@ -63,12 +57,13 @@ class CampaignLockFilter implements LockFilterInterface
                 $orX->addMultiple(array(
                     // check for locks on the campaign
                     $qb->expr()
-                       ->andX('locks.type = :campaign_locks_type', "locks.campaign = :campaign_locks_campaign_id_{$key}", "(locks.lock_date >= :campaign_locks_filter_expiration_date_{$key})"),
+                       ->andX('locks.type = :campaign_locks_type', "locks.campaign = :campaign_locks_campaign_id_{$key}",
+                           "(locks.lock_date >= :campaign_locks_filter_expiration_date_{$key})"),
                     // Check for locks on the parent (client)
                     $qb->expr()
-                       ->andX('locks.type = :campaign_locks_client_type', "locks.client = :campaign_locks_client_id_{$key}", "(locks.lock_date >= :campaign_locks_filter_expiration_date_{$key})")
-                ))
-                ;
+                       ->andX('locks.type = :campaign_locks_client_type', "locks.client = :campaign_locks_client_id_{$key}",
+                           "(locks.lock_date >= :campaign_locks_filter_expiration_date_{$key})")
+                ));
 
                 // Query the child to get the parent
                 $sub_qb = $qb->getEntityManager()
@@ -89,7 +84,6 @@ class CampaignLockFilter implements LockFilterInterface
 
                 $qb->setParameter('campaign_locks_client_type', $this->parent_id);
                 $qb->setParameter("campaign_locks_client_id_{$key}", $campaign->getClient());
-
             }
             $andX->add($orX);
         }

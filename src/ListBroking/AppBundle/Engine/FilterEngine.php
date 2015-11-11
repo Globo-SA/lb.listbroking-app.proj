@@ -90,6 +90,10 @@ class FilterEngine
          */
 
         $filters = FiltersType::prepareFilters($extraction->getFilters());
+
+//        die(print_r($extraction->getFilters(),1));
+//        die(print_r($filters,1));
+//        die;
         $limit = $extraction->getQuantity();
 
         $lead_qb = $this->em->createQueryBuilder()
@@ -129,7 +133,7 @@ class FilterEngine
         // Check if there are Lock filters
         if ( array_key_exists('lock', $filters) && ! empty($filters['lock']) )
         {
-            $locksOrX = $lead_qb->expr()
+            $locksAndX = $lead_qb->expr()
                                 ->andX()
             ;
 
@@ -138,11 +142,11 @@ class FilterEngine
             {
                 /** @var LockFilterInterface $lock_filter_type */
                 $lock_filter_type = $this->lock_filter_types[$type];
-                $lock_filter_type->addFilter($locksOrX, $lead_qb, $lock_filters);
+                $lock_filter_type->addFilter($locksAndX, $lead_qb, $lock_filters);
             }
 
             // LEFT OUTER JOIN
-            $lead_qb->leftJoin('leads.locks', 'locks', 'WITH', $locksOrX);
+            $lead_qb->leftJoin('leads.locks', 'locks', 'WITH', $locksAndX);
             $lead_qb->andWhere('locks.lead IS NULL');
         }
 

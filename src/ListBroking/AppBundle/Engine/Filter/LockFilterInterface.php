@@ -10,7 +10,7 @@
 
 namespace ListBroking\AppBundle\Engine\Filter;
 
-use Doctrine\ORM\Query\Expr\Orx;
+use Doctrine\ORM\Query\Expr\Andx;
 
 use Doctrine\ORM\QueryBuilder;
 use ListBroking\AppBundle\Exception\InvalidFilterObjectException;
@@ -29,12 +29,12 @@ interface LockFilterInterface {
     const SUB_CATEGORY_LOCK_TYPE = 'sub_category_lock';
 
     /**
-     * @param Orx $orX
+     * @param Andx $andX
      * @param QueryBuilder $qb
      * @param $filters
      * @throws InvalidFilterObjectException
      * @throws InvalidFilterTypeException
      * @return mixed
      */
-    public function addFilter($orX, QueryBuilder $qb, $filters);
+    public function addFilter (Andx $andX, QueryBuilder $qb, $filters);
 } 

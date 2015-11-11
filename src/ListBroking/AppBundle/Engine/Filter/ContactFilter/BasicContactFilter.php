@@ -15,7 +15,6 @@ use ListBroking\AppBundle\Form\FiltersType;
 
 class BasicContactFilter implements ContactFilterInterface
 {
-
     /**
      * @inheritdoc
      */
@@ -127,6 +126,14 @@ class BasicContactFilter implements ContactFilterInterface
         }
     }
 
+    /**
+     * Add the given parameters to the QueryBuilder
+     *
+     * @param QueryBuilder $qb
+     * @param string       $operation
+     * @param string       $parameter_id
+     * @param array        $values
+     */
     private function addParameters (QueryBuilder $qb, $operation, $parameter_id, $values)
     {
         switch ( $operation )

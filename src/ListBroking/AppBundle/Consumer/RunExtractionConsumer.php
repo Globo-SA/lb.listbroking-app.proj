@@ -32,6 +32,7 @@ class RunExtractionConsumer implements ConsumerInterface
     {
         try
         {
+//            return true;
             // PHP is run in shared nothing architecture, so long running processes need to
             // Clear the entity manager before running
             $this->e_service->clearEntityManager();

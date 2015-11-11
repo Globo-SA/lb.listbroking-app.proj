@@ -182,3 +182,6 @@
 
 ### 2.12.20
 * Refactored BasicContactFilters for better query generation
+
+### 2.13.01
+* Refactored all FilterEngine filters for better performance

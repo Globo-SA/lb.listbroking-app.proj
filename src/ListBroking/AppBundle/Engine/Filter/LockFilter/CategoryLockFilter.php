@@ -8,11 +8,9 @@
 
 namespace ListBroking\AppBundle\Engine\Filter\LockFilter;
 
-use Doctrine\ORM\Query\Expr\Orx;
+use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\QueryBuilder;
 use ListBroking\AppBundle\Engine\Filter\LockFilterInterface;
-use ListBroking\AppBundle\Exception\InvalidFilterObjectException;
-use ListBroking\AppBundle\Exception\InvalidFilterTypeException;
 use ListBroking\AppBundle\Form\FiltersType;
 
 class CategoryLockFilter implements LockFilterInterface
@@ -29,15 +27,9 @@ class CategoryLockFilter implements LockFilterInterface
     }
 
     /**
-     * @param Orx          $orX
-     * @param QueryBuilder $qb
-     * @param              $filters
-     *
-     * @throws InvalidFilterObjectException
-     * @throws InvalidFilterTypeException
-     * @return mixed
-     */
-    public function addFilter ( $orX, QueryBuilder $qb, $filters)
+     * @inheritdoc
+     * */
+    public function addFilter (Andx $andX, QueryBuilder $qb, $filters)
     {
         foreach ( $filters as $key => $f )
         {
@@ -53,9 +45,9 @@ class CategoryLockFilter implements LockFilterInterface
                 }
 
                 // Check for lock on the category
-                $orX->add($qb->expr()
-                             ->andX('locks.type = :category_locks_type', "locks.category = :category_locks_category_id_{$key}", "(locks.expiration_date >= :category_locks_filter_expiration_date_{$key})"))
-                ;
+                $andX->add($qb->expr()
+                             ->andX('locks.type = :category_locks_type', "locks.category = :category_locks_category_id_{$key}",
+                                 "(locks.lock_date >= :category_locks_filter_expiration_date_{$key})"));
                 $qb->setParameter('category_locks_type', $this->type_id);
                 $qb->setParameter("category_locks_category_id_{$key}", $filter['category']);
                 $qb->setParameter("category_locks_filter_expiration_date_{$key}", $filter['interval']);

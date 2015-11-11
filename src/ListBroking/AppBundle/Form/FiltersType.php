@@ -27,13 +27,21 @@ class FiltersType extends AbstractType
     const EXCLUSION_FILTER = 'exclusion';
 
     // Field Types
-    const FIELD_TYPE_INTEGER = 'integer';
+    const FIELD_TYPE_INTEGER     = 'integer';
 
-    const FIELD_TYPE_ARRAY   = 'array';
+    const FIELD_TYPE_ARRAY       = 'array';
 
-    const FIELD_TYPE_BOOLEAN = 'boolean';
+    const FIELD_TYPE_BOOLEAN     = 'boolean';
 
-    const FIELD_TYPE_RANGE   = 'range';
+    const FIELD_TYPE_RANGE       = 'range';
+
+    const FIELD_TYPE_CHOICE      = 'choice';
+
+    const FIELD_TYPE_CHOICE_YES  = 'yes';
+
+    const FIELD_TYPE_CHOICE_NO   = 'no';
+
+    const FIELD_TYPE_CHOICE_BOTH = 'both';
 
     // Operations
     const EQUAL_OPERATION   = 'equal';
@@ -75,9 +83,9 @@ class FiltersType extends AbstractType
             '4 months ago' => '-4 month',
             '5 months ago' => '-5 month',
             '6 months ago' => '-6 month',
-            '1 year ago' => '-1 year',
-            '2 years ago' => '-2 year',
-            '3 years ago' => '-3 year',
+            '1 year ago'   => '-1 year',
+            '2 years ago'  => '-2 year',
+            '3 years ago'  => '-3 year',
             '30 years ago' => '-30 year',
         );
 
@@ -265,20 +273,19 @@ class FiltersType extends AbstractType
                         'has_exclusion_filter' => false,
                         'table'                => 'lead',
                         'field'                => 'is_mobile',
-                        'field_type'           => self::FIELD_TYPE_BOOLEAN,
+                        'field_type'           => self::FIELD_TYPE_CHOICE,
                         'type'                 => 'choice',
                         'options'              => array(
-                            'placeholder'       => false,
-                            'choices'           => array(
-                                'Both' => null,
-                                'Yes'  => true,
-                                'No'   => false
+                            'placeholder' => false,
+                            'choices'     => array(
+                                self::FIELD_TYPE_CHOICE_BOTH => 'Both',
+                                self::FIELD_TYPE_CHOICE_YES  => 'Yes',
+                                self::FIELD_TYPE_CHOICE_NO   => 'No'
                             ),
-                            'choices_as_values' => true,
-                            'attr'              => array(
+                            'attr'        => array(
                                 'class' => 'form-control'
                             ),
-                            'label'             => 'Mobile numbers'
+                            'label'       => 'Mobile numbers'
                         ),
                     ),
                     array(
@@ -286,20 +293,19 @@ class FiltersType extends AbstractType
                         'has_exclusion_filter' => false,
                         'table'                => 'contact',
                         'field'                => 'is_clean',
-                        'field_type'           => self::FIELD_TYPE_BOOLEAN,
+                        'field_type'           => self::FIELD_TYPE_CHOICE,
                         'type'                 => 'choice',
                         'options'              => array(
-                            'placeholder'       => false,
-                            'choices'           => array(
-                                'Yes'  => true,
-                                'No'   => false,
-                                'Both' => null
+                            'placeholder' => false,
+                            'choices'     => array(
+                                self::FIELD_TYPE_CHOICE_YES  => 'Yes',
+                                self::FIELD_TYPE_CHOICE_NO   => 'No',
+                                self::FIELD_TYPE_CHOICE_BOTH => 'Both'
                             ),
-                            'choices_as_values' => true,
-                            'attr'              => array(
+                            'attr'        => array(
                                 'class' => 'form-control'
                             ),
-                            'label'             => 'Clean contacts'
+                            'label'       => 'Clean contacts'
                         )
                     ),
                     array(
@@ -307,23 +313,22 @@ class FiltersType extends AbstractType
                         'has_exclusion_filter' => false,
                         'table'                => 'lead',
                         'field'                => 'in_opposition',
-                        'field_type'           => self::FIELD_TYPE_BOOLEAN,
+                        'field_type'           => self::FIELD_TYPE_CHOICE,
                         'type'                 => 'choice',
                         'options'              => array(
-                            'placeholder'       => false,
-                            'choices'           => array(
-                                'Both' => null,
-                                'Yes'  => true,
-                                'No'   => false
+                            'placeholder' => false,
+                            'choices'     => array(
+                                self::FIELD_TYPE_CHOICE_NO   => 'No',
+                                self::FIELD_TYPE_CHOICE_YES  => 'Yes',
+                                self::FIELD_TYPE_CHOICE_BOTH => 'Both'
                             ),
-                            'data'              => false,
-                            'choices_as_values' => true,
-                            'read_only'         => true,
-                            'disabled'          => true,
-                            'attr'              => array(
+                            'data'        => 'no', // Default value, remove then the filter is enabled
+                            'read_only'   => true,
+                            'disabled'    => false,
+                            'attr'        => array(
                                 'class' => 'form-control'
                             ),
-                            'label'             => 'In Opposition Lists'
+                            'label'       => 'In Opposition Lists'
                         )
                     ),
                 )
@@ -679,8 +684,7 @@ class FiltersType extends AbstractType
              ! array_key_exists('field', $filter) ||
              ! array_key_exists('field_type', $filter) ||
              ! array_key_exists('opt', $filter) ||
-             ! array_key_exists('value', $filter) ||
-             ! is_array($filter['value'])
+             ! array_key_exists('value', $filter)
         )
         {
             throw new InvalidFilterObjectException('Invalid filter, must be: array(\'filter_type\' => \'\',\'filter_operation\' => \'\',\'field\' => \'\',\'field_type\' => \'\', \'opt\' => \'\',
@@ -709,6 +713,11 @@ class FiltersType extends AbstractType
                 foreach ( $filter as $data )
                 {
                     $final_values = array();
+                    if(!is_array($data['value']))
+                    {
+                        $data['value'] = array($data['value']);
+                    }
+
                     foreach ( $data['value'] as $value )
                     {
                         if ( is_bool($value) )
@@ -889,6 +898,40 @@ class FiltersType extends AbstractType
                 }
 
                 if ( ! empty($values) )
+                {
+                    $final_filters[$field_table][$filter_type][] = array(
+                        'filter_type'      => $filter_type,
+                        'filter_operation' => $filter_operation,
+                        'field'            => $field,
+                        'field_type'       => $field_type,
+                        'opt'              => self::EQUAL_OPERATION,
+                        'value'            => $values
+
+                    );
+                }
+                break;
+            case FiltersType::FIELD_TYPE_CHOICE:
+
+                if ( empty($values) )
+                {
+                    break;
+                }
+
+                switch ( $values )
+                {
+                    case self::FIELD_TYPE_CHOICE_YES:
+                        $values = 1;
+                        break;
+                    case self::FIELD_TYPE_CHOICE_NO:
+                        $values = 0;
+                        break;
+                    case self::FIELD_TYPE_CHOICE_BOTH:
+                    default:
+                        $values = null;
+                        break;
+                }
+
+                if ( $values !== null )
                 {
                     $final_filters[$field_table][$filter_type][] = array(
                         'filter_type'      => $filter_type,

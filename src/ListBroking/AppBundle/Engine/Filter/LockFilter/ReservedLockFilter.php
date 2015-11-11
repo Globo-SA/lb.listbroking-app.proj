@@ -8,11 +8,9 @@
 
 namespace ListBroking\AppBundle\Engine\Filter\LockFilter;
 
-use Doctrine\ORM\Query\Expr\Orx;
+use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\QueryBuilder;
 use ListBroking\AppBundle\Engine\Filter\LockFilterInterface;
-use ListBroking\AppBundle\Exception\InvalidFilterObjectException;
-use ListBroking\AppBundle\Exception\InvalidFilterTypeException;
 
 class ReservedLockFilter implements LockFilterInterface
 {
@@ -28,15 +26,9 @@ class ReservedLockFilter implements LockFilterInterface
     }
 
     /**
-     * @param Orx          $orX
-     * @param QueryBuilder $qb
-     * @param              $filters
-     *
-     * @throws InvalidFilterObjectException
-     * @throws InvalidFilterTypeException
-     * @return mixed
-     */
-    public function addFilter ( $orX, QueryBuilder $qb, $filters)
+     * @inheritdoc
+     * */
+    public function addFilter (Andx $andX, QueryBuilder $qb, $filters)
     {
         foreach ( $filters as $key => $filter )
         {
@@ -54,9 +46,8 @@ class ReservedLockFilter implements LockFilterInterface
             }
 
             // Check for reserved locks
-            $orX->add($qb->expr()
-                         ->andX('locks.type = :reserved_locks_type', "(locks.expiration_date >= :reserved_locks_filter_expiration_date_{$key})"))
-            ;
+            $andX->add($qb->expr()
+                         ->andX('locks.type = :reserved_locks_type', "(locks.expiration_date >= :reserved_locks_filter_expiration_date_{$key})"));
             $qb->setParameter('reserved_locks_type', $this->type_id);
 
             $qb->setParameter("reserved_locks_filter_expiration_date_{$key}", $filter['interval']);

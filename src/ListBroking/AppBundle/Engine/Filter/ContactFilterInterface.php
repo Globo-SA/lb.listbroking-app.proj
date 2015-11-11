@@ -27,12 +27,12 @@ interface ContactFilterInterface {
     const REQUIRED_TYPE = 'required';
 
     /**
-     * @param Andx $andx
+     * @param Andx $andX
      * @param QueryBuilder $qb
      * @param $filters
      * @throws InvalidFilterObjectException
      * @throws InvalidFilterTypeException
      * @return mixed
      */
-    public function addFilter(Andx $andx, QueryBuilder $qb, $filters);
+    public function addFilter(Andx $andX, QueryBuilder $qb, $filters);
 }

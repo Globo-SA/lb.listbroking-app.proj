@@ -24,7 +24,7 @@ class RequiredContactFilter implements ContactFilterInterface {
     /**
      * @inheritdoc
      */
-    public function addFilter(Andx $andx, QueryBuilder $qb, $filters)
+    public function addFilter(Andx $andX, QueryBuilder $qb, $filters)
     {
         foreach($filters as $filter){
 
@@ -35,7 +35,7 @@ class RequiredContactFilter implements ContactFilterInterface {
             $filter['field'] = 'contacts.' . $filter['field'];
 
             // Add Not null validation
-            $andx->add(
+            $andX->add(
                 $qb->expr()->isNotNull($filter['field'])
             );
         }

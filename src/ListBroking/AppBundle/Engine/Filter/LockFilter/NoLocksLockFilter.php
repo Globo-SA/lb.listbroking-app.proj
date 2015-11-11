@@ -8,11 +8,9 @@
 
 namespace ListBroking\AppBundle\Engine\Filter\LockFilter;
 
-use Doctrine\ORM\Query\Expr\Orx;
+use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\QueryBuilder;
 use ListBroking\AppBundle\Engine\Filter\LockFilterInterface;
-use ListBroking\AppBundle\Exception\InvalidFilterObjectException;
-use ListBroking\AppBundle\Exception\InvalidFilterTypeException;
 
 class NoLocksLockFilter implements LockFilterInterface
 {
@@ -22,21 +20,20 @@ class NoLocksLockFilter implements LockFilterInterface
      */
     public $type_id;
 
+    /**
+     * NoLocksLockFilter constructor.
+     *
+     * @param string $type_id
+     */
     function __construct ($type_id)
     {
         $this->type_id = $type_id;
     }
 
     /**
-     * @param Orx          $orX
-     * @param QueryBuilder $qb
-     * @param              $filters
-     *
-     * @throws InvalidFilterObjectException
-     * @throws InvalidFilterTypeException
-     * @return mixed
-     */
-    public function addFilter ( $orX, QueryBuilder $qb, $filters)
+     * @inheritdoc
+     * */
+    public function addFilter (Andx $andX, QueryBuilder $qb, $filters)
     {
         /**
          * Lock Type isn't used for this filter !!
@@ -57,9 +54,8 @@ class NoLocksLockFilter implements LockFilterInterface
             }
 
             // Check for all locks
-            $orX->add($qb->expr()
-                         ->andX("(locks.expiration_date >= :no_locks_locks_filter_expiration_date_{$key})"))
-            ;
+            $andX->add($qb->expr()
+                          ->andX("(locks.expiration_date >= :no_locks_locks_filter_expiration_date_{$key})"));
             $qb->setParameter("no_locks_locks_filter_expiration_date_{$key}", $filter['interval']);
         }
     }
