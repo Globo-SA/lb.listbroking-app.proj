@@ -188,3 +188,6 @@
 
 ### 2.13.02
 * Fixed invalid filter in filter
+
+### 2.13.03
+* Quick fix on BasicContacts with multiple values

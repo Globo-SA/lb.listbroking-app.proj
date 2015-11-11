@@ -140,7 +140,19 @@ class BasicContactFilter implements ContactFilterInterface
         switch ( $operation )
         {
             case FiltersType::EQUAL_OPERATION:
-                $qb->setParameter($parameter_id, $values[0]);
+
+                if(count($values) == 1)
+                {
+                    $qb->setParameter($parameter_id, $values[0]);
+                }else
+                {
+                    $final_values = array();
+                    foreach ( $values as $value )
+                    {
+                        $final_values[] = $value[0];
+                    }
+                    $qb->setParameter($parameter_id, $final_values);
+                }
                 break;
             case FiltersType::BETWEEN_OPERATION:
                 $qb->setParameter($parameter_id['x'], $values['x']);
