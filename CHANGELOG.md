@@ -185,3 +185,6 @@
 
 ### 2.13.01
 * Refactored all FilterEngine filters for better performance
+
+### 2.13.02
+* Fixed invalid filter in filter

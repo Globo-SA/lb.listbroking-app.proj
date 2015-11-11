@@ -15,6 +15,7 @@ use ListBroking\AppBundle\Form\FiltersType;
 
 class BasicContactFilter implements ContactFilterInterface
 {
+
     /**
      * @inheritdoc
      */
@@ -52,7 +53,7 @@ class BasicContactFilter implements ContactFilterInterface
                             break;
                     }
                     $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['parameter_id'] = $name;
-                    $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['values'][] = $filter['value'][0];
+                    $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['values'][] = $filter['value'];
                     break;
                 case FiltersType::BETWEEN_OPERATION:
 
@@ -139,7 +140,7 @@ class BasicContactFilter implements ContactFilterInterface
         switch ( $operation )
         {
             case FiltersType::EQUAL_OPERATION:
-                $qb->setParameter($parameter_id, $values);
+                $qb->setParameter($parameter_id, $values[0]);
                 break;
             case FiltersType::BETWEEN_OPERATION:
                 $qb->setParameter($parameter_id['x'], $values['x']);

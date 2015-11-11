@@ -91,9 +91,6 @@ class FilterEngine
 
         $filters = FiltersType::prepareFilters($extraction->getFilters());
 
-//        die(print_r($extraction->getFilters(),1));
-//        die(print_r($filters,1));
-//        die;
         $limit = $extraction->getQuantity();
 
         $lead_qb = $this->em->createQueryBuilder()
