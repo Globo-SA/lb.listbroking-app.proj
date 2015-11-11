@@ -90,8 +90,8 @@ class CampaignLockFilter implements LockFilterInterface
                 $qb->setParameter('campaign_locks_client_type', $this->parent_id);
                 $qb->setParameter("campaign_locks_client_id_{$key}", $campaign->getClient());
 
-                $andX->add($orX);
             }
+            $andX->add($orX);
         }
     }
 } 
