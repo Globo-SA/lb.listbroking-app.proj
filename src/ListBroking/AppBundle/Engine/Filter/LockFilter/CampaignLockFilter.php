@@ -35,7 +35,7 @@ class CampaignLockFilter implements LockFilterInterface
     }
 
     /**
-     * @param Orx          $orX
+     * @param $andX          $orX
      * @param QueryBuilder $qb
      * @param              $filters
      *
@@ -43,10 +43,12 @@ class CampaignLockFilter implements LockFilterInterface
      * @throws InvalidFilterTypeException
      * @return mixed
      */
-    public function addFilter ( $orX, QueryBuilder $qb, $filters)
+    public function addFilter ( $andX, QueryBuilder $qb, $filters)
     {
         foreach ( $filters as $f )
         {
+            $orX = $qb->expr()->orX();
+
             // Validate the Filter
             FiltersType::validateFilter($f);
 
@@ -87,6 +89,8 @@ class CampaignLockFilter implements LockFilterInterface
 
                 $qb->setParameter('campaign_locks_client_type', $this->parent_id);
                 $qb->setParameter("campaign_locks_client_id_{$key}", $campaign->getClient());
+
+                $andX->add($orX);
             }
         }
     }
