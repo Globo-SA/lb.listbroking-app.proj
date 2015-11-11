@@ -61,10 +61,11 @@ class CampaignLockFilter implements LockFilterInterface
                 $orX->addMultiple(array(
                     // check for locks on the campaign
                     $qb->expr()
-                       ->andX('locks.type = :campaign_locks_type', "locks.campaign = :campaign_locks_campaign_id_{$key}", "(locks.expiration_date >= :campaign_locks_filter_expiration_date_{$key})"),
+                       ->andX('locks.type = :campaign_locks_type', "locks.campaign = :campaign_locks_campaign_id_{$key}", "(locks.lock_date >= :campaign_locks_filter_expiration_date_{$key})", "(locks
+                       .expiration_date >= CURRENT_TIMESTAMP())"),
                     // Check for locks on the parent (client)
                     $qb->expr()
-                       ->andX('locks.type = :campaign_locks_client_type', "locks.client = :campaign_locks_client_id_{$key}", "(locks.expiration_date >= CURRENT_TIMESTAMP())")
+                       ->andX('locks.type = :campaign_locks_client_type', "locks.client = :campaign_locks_client_id_{$key}", "(locks.lock_date >= CURRENT_TIMESTAMP())")
                 ))
                 ;
 
