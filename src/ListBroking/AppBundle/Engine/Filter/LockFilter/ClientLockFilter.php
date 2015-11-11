@@ -58,7 +58,7 @@ class ClientLockFilter implements LockFilterInterface
 
                 // Check for locks on the client
                 $orX->add($qb->expr()
-                             ->andX('locks.type = :client_locks_type', "locks.client = :client_locks_client_id_{$key}", "(locks.expiration_date >= :client_locks_filter_expiration_date_{$key})"))
+                             ->andX('locks.type = :client_locks_type', "locks.client = :client_locks_client_id_{$key}", "(locks.lock_date >= :client_locks_filter_expiration_date_{$key})"))
                 ;
                 $qb->setParameter('client_locks_type', $this->type_id);
                 $qb->setParameter("client_locks_client_id_{$key}", $filter['client']);
