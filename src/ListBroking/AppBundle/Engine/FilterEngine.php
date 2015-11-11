@@ -74,7 +74,6 @@ class FilterEngine
      * @param Extraction $extraction
      *
      * @throws InvalidFilterObjectException
-     *
      * @return QueryBuilder
      */
     public function compileFilters (Extraction $extraction)
@@ -85,7 +84,6 @@ class FilterEngine
          * the main idea is to filter:
          *  . Leads by it's Phone, OppositionList and Locks (the Lead availability)
          *  . Contacts by it's demographic and location information
-         *
          * The QueryBuilder is amazing for dynamic SQL generation,
          * but can be daunting to understand, so good luck xD
          *                                        - Samuel Castro
@@ -117,16 +115,14 @@ class FilterEngine
             if ( $extraction->getDeduplicationType() == Extraction::EXCLUDE_DEDUPLICATION_TYPE )
             {
                 $lead_qb->andWhere($lead_qb->expr()
-                                           ->isNull('dedup.id'))
-                ;
+                                           ->isNull('dedup.id'));
             }
 
             // Include ExtractionDeduplications
             if ( $extraction->getDeduplicationType() == Extraction::INCLUDE_DEDUPLICATION_TYPE )
             {
                 $lead_qb->andWhere($lead_qb->expr()
-                                           ->isNotNull('dedup.id'))
-                ;
+                                           ->isNotNull('dedup.id'));
             }
         }
 
@@ -153,7 +149,6 @@ class FilterEngine
         // Check if there are Contact filters
         if ( array_key_exists('contact', $filters) && ! empty($filters['contact']) )
         {
-
             $contactsAndX = $lead_qb->expr()
                                     ->andX()
             ;

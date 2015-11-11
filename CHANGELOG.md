@@ -179,3 +179,6 @@
 
 ### 2.12.19
 * Added more filters to the extraction list
+
+### 2.12.20
+* Refactored BasicContactFilters for better query generation
