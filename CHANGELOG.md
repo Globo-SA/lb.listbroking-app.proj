@@ -191,3 +191,6 @@
 
 ### 2.13.03
 * Quick fix on BasicContacts with multiple values
+
+### 2.13.04
+* Added batch validation on addContacts

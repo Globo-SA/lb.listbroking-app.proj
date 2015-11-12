@@ -83,15 +83,23 @@ class ExtractionRepository extends EntityRepository
             }
             $batch++;
         }
-        $this->insertBatch($batch_values);
+        if(count($batch_values) > 0)
+        {
+            $this->insertBatch($batch_values);
+        }
     }
 
     private function insertBatch ($batch_values)
     {
         $batch_string = implode(',', $batch_values);
+        if(empty($batch_string))
+        {
+            return;
+        }
+
         $sql = <<<SQL
                 INSERT INTO extraction_contact (extraction_id, contact_id)
-                VALUES $batch_string
+                VALUES {$batch_string}
 SQL;
         $this->getEntityManager()
              ->getConnection()
