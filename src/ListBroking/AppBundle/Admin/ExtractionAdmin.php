@@ -112,12 +112,12 @@ class ExtractionAdmin extends Admin
         )
         {
             $formMapper->add('name')
-                       ->add('campaign', null, array('required' => true))
-                       ->add('quantity', null, array('attr' => array('min' => 1, 'max' => $max_quantity)))
             ;
         }
 
-        $formMapper->add('payout')
+        $formMapper
+                   ->add('campaign', null, array('required' => true))
+                   ->add('payout')
                    ->add('quantity', null, array('attr' => array('min' => 1, 'max' => $max_quantity)))
                    ->end()
                    ->end()

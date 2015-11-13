@@ -194,3 +194,6 @@
 
 ### 2.13.04
 * Added batch validation on addContacts
+
+### 2.13.05
+* Added campaign to extraction edit
