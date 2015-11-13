@@ -197,3 +197,6 @@
 
 ### 2.13.05
 * Added campaign to extraction edit
+
+### 2.13.06
+* Added campaign to extraction filtering

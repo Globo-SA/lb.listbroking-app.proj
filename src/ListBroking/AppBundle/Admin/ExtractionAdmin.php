@@ -107,16 +107,9 @@ class ExtractionAdmin extends Admin
                    ->with('Extraction')
         ;
 
-        if ( ! $this->getSubject()
-                    ->getId()
-        )
-        {
-            $formMapper->add('name')
-            ;
-        }
-
         $formMapper
-                   ->add('campaign', null, array('required' => true))
+                   ->add('name')
+                   ->add('campaign')
                    ->add('payout')
                    ->add('quantity', null, array('attr' => array('min' => 1, 'max' => $max_quantity)))
                    ->end()

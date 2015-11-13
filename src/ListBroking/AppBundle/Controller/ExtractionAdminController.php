@@ -150,7 +150,7 @@ class ExtractionAdminController extends CRUDController
                               ->get($this->admin->getIdParameter())
         ;
         /** @var Extraction $extraction */
-        $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
+        $extraction = $this->admin->getObject($extraction_id);
 
         if ( ! $this->admin->isGranted('SUPER_ADMIN') &&
              $this->getUser()
@@ -255,10 +255,6 @@ class ExtractionAdminController extends CRUDController
 
     private function generateExtractionForm (Extraction $extraction)
     {
-        $id = $this->get('request')
-                   ->get($this->admin->getIdParameter())
-        ;
-
         $this->admin->setSubject($extraction);
 
         /** @var $form \Symfony\Component\Form\Form */

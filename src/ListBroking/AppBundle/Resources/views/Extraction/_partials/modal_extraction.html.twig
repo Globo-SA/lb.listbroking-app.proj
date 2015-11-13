@@ -24,10 +24,12 @@
                                         <div class="row">
                                             <div class="col-md-12 ">
                                                 <div class="sonata-ba-collapsed-fields">
-                                                    {{ form_row(forms.extraction.payout) }}
-                                                    {% if extraction.status < 3 %}
+                                                    <div{% if extraction.status >= 3 %} style="display: none;"{% endif %}>
+                                                        {{ form_row(forms.extraction.name) }}
+                                                        {{ form_row(forms.extraction.campaign) }}
                                                         {{ form_row(forms.extraction.quantity) }}
-                                                    {% endif %}
+                                                    </div>
+                                                    {{ form_row(forms.extraction.payout) }}
                                                 </div>
                                             </div>
                                         </div>
