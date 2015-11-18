@@ -11,10 +11,11 @@ namespace ListBroking\AppBundle\Entity;
 use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 
 /**
+ * Function: Stores all non-processed contacts
+ *
  * This Entity must not be used in any report or
  * prod extraction, this is just a staging table
  * of ETL processes
- * Class StagingContact
  * @package ListBroking\AppBundle\Entity
  */
 class StagingContact

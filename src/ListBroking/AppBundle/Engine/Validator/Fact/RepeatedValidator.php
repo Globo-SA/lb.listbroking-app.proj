@@ -94,7 +94,7 @@ class RepeatedValidator implements ValidatorInterface {
             }
             $validations['infos'][$this->getName()][] = $info;
 
-            if($owner_contact && $owner_contact->isIsClean())
+            if($owner_contact && $owner_contact->isClean())
             {
                 throw new DimensionValidationException('Contact already exists and cleaned');
             }

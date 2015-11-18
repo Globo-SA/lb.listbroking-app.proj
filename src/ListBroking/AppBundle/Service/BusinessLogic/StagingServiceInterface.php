@@ -5,6 +5,7 @@
  */
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
+use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Service\Base\BaseServiceInterface;
 
@@ -94,4 +95,13 @@ interface StagingServiceInterface extends BaseServiceInterface
      * @return mixed
      */
     public function validateStagingContact (StagingContact $contact);
+
+    /**
+     * Finds Contacts with expired TYPE_INITIAL_LOCK
+     *
+     * @param integer $limit
+     *
+     * @return Contact[]
+     */
+    public function findContactsWithExpiredInitialLock($limit);
 }

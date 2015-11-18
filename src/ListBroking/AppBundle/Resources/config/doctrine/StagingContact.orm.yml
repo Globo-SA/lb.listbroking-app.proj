@@ -8,6 +8,11 @@ ListBroking\AppBundle\Entity\StagingContact:
             id:   true
             generator:
                 strategy: AUTO
+    indexes:
+        email_index:
+          columns: [ email ]
+        phone_index:
+          columns: [ phone ]
     fields:
         external_id:
             type:   string

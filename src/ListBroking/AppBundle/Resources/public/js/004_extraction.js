@@ -12,7 +12,7 @@
         var prev_id = 0;
         if (App.variables.extractionId) {
             // Extraction Log Actions
-            setInterval(function () {
+           setInterval(function () {
                 $('#loading_widget').fadeIn();
                 $.ajax({
                     type: "GET",
@@ -72,8 +72,9 @@
             }, App.variables.intervalTimeout);
         }
 
-        // Only if the Extraction Status is STATUS_CONFIRMATION = 2 or STATUS_FINAL = 3
-        if (ListBroking.variables.extractionStatus >= 2) {
+
+        // Only if the Extraction Status is STATUS_CONFIRMATION = 2
+        if (App.variables.extractionStatus == 2) {
             $.listenToExtractionChanges(function (extraction) {
                 console.log('new extraction:' + extraction);
                 if ($.isExtractionReady(extraction)) {
@@ -86,10 +87,12 @@
             });
         }
 
-        // Add Loading on filtering start
-        $("#submit_filters").click(function () {
-            $(this).find('i.loading').fadeIn();
-        });
+        // If STATUS_FINAL = 3 refresh the page
+        if (App.variables.extractionStatus == 3 && App.variables.previousExtractionStatus != 3) {
+            window.location.href=window.location.href;
+            App.variables.previousExtractionStatus = App.variables.extractionStatus;
+        }
+
 
     });
 

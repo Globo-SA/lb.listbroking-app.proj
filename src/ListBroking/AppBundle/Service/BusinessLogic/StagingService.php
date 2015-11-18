@@ -122,6 +122,15 @@ class StagingService extends BaseService implements StagingServiceInterface
         $this->v_engine->run($staging_contact);
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function findContactsWithExpiredInitialLock($limit)
+    {
+        return $this->entity_manager->getRepository('ListBrokingAppBundle:Contact')
+                                                        ->findContactsWithExpiredInitialLock($limit);
+    }
+
     private function loadStagingContactDimensions (StagingContact $staging_contact)
     {
         //Dimension Tables

@@ -8,6 +8,9 @@ ListBroking\AppBundle\Entity\Lock:
             id: true
             generator:
                 strategy: AUTO
+    indexes:
+        type_index:
+          columns: [ type ]
     fields:
         type:
             type: smallint

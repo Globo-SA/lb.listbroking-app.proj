@@ -1,6 +1,6 @@
-ListBroking\AppBundle\Entity\StagingContactDQP:
+ListBroking\AppBundle\Entity\StagingContactProcessed:
     type:   entity
-    table:  staging_contact_dqp
+    table:  staging_contact_processed
     id:
         id:
             type: bigint
@@ -23,11 +23,13 @@ ListBroking\AppBundle\Entity\StagingContactDQP:
         processed:
             type:   boolean
             column: processed
+            nullable: true
             options:
                 default: 0
         running:
             type:   boolean
             column: running
+            nullable: true
             options:
                 default: 0
         update:
@@ -47,6 +49,7 @@ ListBroking\AppBundle\Entity\StagingContactDQP:
         in_opposition:
             type:   boolean
             column: in_opposition
+            nullable: true
         lead_id:
             type:   bigint
             column: lead_id
@@ -54,7 +57,6 @@ ListBroking\AppBundle\Entity\StagingContactDQP:
         contact_id:
             type:   bigint
             column: contact_id
-            nullable: true
             nullable: true
         email:
             type:   string

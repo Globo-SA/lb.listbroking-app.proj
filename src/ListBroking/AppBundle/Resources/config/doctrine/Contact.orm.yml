@@ -1,6 +1,7 @@
 ListBroking\AppBundle\Entity\Contact:
     type:   entity
     table:  contact
+    repositoryClass: ListBroking\AppBundle\Repository\ContactRepository
     id:
         id:
             type: bigint
@@ -19,6 +20,9 @@ ListBroking\AppBundle\Entity\Contact:
         external_id_index:
           columns: [ external_id ]
     fields:
+        is_ready_to_use:
+          type: boolean
+          column: is_ready_to_use
         is_clean:
           type: boolean
           column: is_clean

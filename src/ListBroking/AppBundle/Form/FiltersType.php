@@ -150,7 +150,7 @@ class FiltersType extends AbstractType
                         'options'              => array(
                             'required' => false,
                             'attr'     => array(
-                                'class' => 'form-control'
+                                'class' => 'form-control',
                             ),
                             'label'    => 'Has Birthdate'
                         )
@@ -234,10 +234,10 @@ class FiltersType extends AbstractType
                         'field_type'           => self::FIELD_TYPE_RANGE,
                         'type'                 => 'collection',
                         'options'              => array(
-                            'required'     => false,
+                            'required'  => false,
                             'attr'         => array(
                                 'data-collection' => 'true',
-                                'class'           => 'col-md-12'
+                                'class'           => 'col-md-12 blocked-input'
                             ),
                             'type'         => new RangeType('birthdate', 'birthdaterangepicker', 'Birthdate (range)'),
                             'allow_add'    => true,
@@ -255,7 +255,7 @@ class FiltersType extends AbstractType
                             'required'     => false,
                             'attr'         => array(
                                 'data-collection' => 'true',
-                                'class'           => 'col-md-12'
+                                'class'           => 'col-md-12 blocked-input'
                             ),
                             'type'         => new RangeType('date', 'daterangepicker', 'Contact acquisition dates (ranges)', $default_date_range),
                             'allow_add'    => true,
@@ -713,7 +713,7 @@ class FiltersType extends AbstractType
                 foreach ( $filter as $data )
                 {
                     $final_values = array();
-                    if(!is_array($data['value']))
+                    if ( ! is_array($data['value']) )
                     {
                         $data['value'] = array($data['value']);
                     }

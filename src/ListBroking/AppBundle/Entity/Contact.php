@@ -26,14 +26,17 @@ class Contact
     /**
      * @var boolean
      */
+    private $is_ready_to_use = 0;
+
+    /**
+     * @var boolean
+     */
     private $is_clean = 0;
 
     /**
      * @var string
      */
     private $external_id;
-
-    // GENERATED STUFF
 
     /**
      * @var string
@@ -53,7 +56,7 @@ class Contact
     /**
      * @var \DateTime
      */
-    private $birthdate = NULL;
+    private $birthdate = null;
 
     /**
      * @var string
@@ -150,7 +153,6 @@ class Contact
         return $this->firstname . ' ' . $this->lastname;
     }
 
-
     /**
      * Updates the dimensions of the Contact
      *
@@ -158,10 +160,9 @@ class Contact
      */
     public function updateContactDimensions ($dimensions)
     {
-
         foreach ( $dimensions as $dimension )
         {
-            if(empty($dimension))
+            if ( empty($dimension) )
             {
                 continue;
             }
@@ -184,35 +185,40 @@ class Contact
             'external_id'  => $s_contact->getExternalId(),
             'firstname'    => $s_contact->getFirstname(),
             'lastname'     => $s_contact->getLastname(),
-            'birthdate'    => empty($birthdate) ? NULL : new \DateTime($s_contact->getBirthdate()),
+            'birthdate'    => empty($birthdate) ? null : new \DateTime($s_contact->getBirthdate()),
             'address'      => $s_contact->getAddress(),
             'postalcode1'  => $s_contact->getPostalcode1(),
             'postalcode2'  => $s_contact->getPostalcode2(),
-            'ip_address'   => $s_contact->getIpaddress(),
+            'ipaddress'    => $s_contact->getIpaddress(),
             'date'         => $s_contact->getDate(),
-            'validations'  => $s_contact->getValidations(),
             'post_request' => $s_contact->getPostRequest(),
 
         );
 
+        // If there's a new postalcode1 value,
+        // reset the old values before adding the new ones
+        if ( ! empty($fields['postalcode1']) )
+        {
+            $this->postalcode1 = null;
+            $this->postalcode2 = null;
+        }
+        else{
+            // If there isn't a postalcode1, postalcode2
+            // doesn't make sense
+            $fields['postalcode2'] = null;
+        }
+
         foreach ( $fields as $field => $new_value )
         {
             $inflector = new Inflector();
-            $getMethod = 'get' . $inflector->classify($field);
             $setMethod = 'set' . $inflector->classify($field);
 
-            // Don't update if the Staging
-            // Field is Empty
-            if(empty($new_value))
+            if ( empty($new_value) )
             {
                 continue;
             }
 
-            $old_value = $this->$getMethod();
-            if ( $s_contact->getUpdate() || empty($old_value) )
-            {
-                $this->$setMethod($new_value);
-            }
+            $this->$setMethod($new_value);
         }
     }
 
@@ -228,7 +234,7 @@ class Contact
     /**
      * @return boolean
      */
-    public function isIsClean ()
+    public function isClean ()
     {
         return $this->is_clean;
     }
@@ -239,6 +245,22 @@ class Contact
     public function setIsClean ($is_clean)
     {
         $this->is_clean = $is_clean;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isReadyToUse ()
+    {
+        return $this->is_ready_to_use;
+    }
+
+    /**
+     * @param boolean $is_ready_to_use
+     */
+    public function setIsReadyToUse ($is_ready_to_use)
+    {
+        $this->is_ready_to_use = $is_ready_to_use;
     }
 
     /**

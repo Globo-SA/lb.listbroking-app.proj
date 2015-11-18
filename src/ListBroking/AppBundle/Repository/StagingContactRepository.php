@@ -13,15 +13,16 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Contact;
+use ListBroking\AppBundle\Entity\ContactTimeLine;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\Lock;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Entity\StagingContactDQP;
+use ListBroking\AppBundle\Entity\StagingContactProcessed;
 use ListBroking\AppBundle\Parser\DateTimeParser;
 
 class StagingContactRepository extends EntityRepository
 {
-
     /**
      * Imports an Database file
      *
@@ -135,7 +136,7 @@ class StagingContactRepository extends EntityRepository
                                          ->andWhere('s.valid = :valid')
                                          ->andWhere('s.processed = :processed')
                                          ->andWhere('s.valid = :valid')
-                                         ->andWhere('s.updated_at <= :updated_before')
+                                         ->andWhere('s.updated_at >= :updated_before')
                                          ->setParameters(array(
                                              'valid'          => 0,
                                              'processed'      => 1,
@@ -148,26 +149,9 @@ class StagingContactRepository extends EntityRepository
 
         while ( ($staging_contact = $staging_contacts_to_move->next()) !== false )
         {
-            $staging_contact = $staging_contact[0];
-            $new_entity = new StagingContactDQP();
-            $old_reflection = new \ReflectionObject($staging_contact);
-            $new_reflection = new \ReflectionObject($new_entity);
-
-            $inflector = new Inflector();
-            foreach ( $old_reflection->getProperties() as $property )
-            {
-                $property_name = $property->getName();
-                if ( $new_reflection->hasProperty($property_name) && $property_name != 'updated_at' )
-                {
-                    $get_method = 'get' . $inflector->classify($property_name);
-                    $set_method = 'set' . $inflector->classify($property_name);
-
-                    $new_entity->$set_method($staging_contact->$get_method());
-                }
-            }
-            $entity_manager->persist($new_entity);
-            $entity_manager->remove($staging_contact);
+            $this->moveStagingContact($staging_contact[0], new StagingContactDQP());
         }
+
         $entity_manager->flush();
     }
 
@@ -214,6 +198,7 @@ class StagingContactRepository extends EntityRepository
             $contact->setLead($lead);
         }
 
+        // Update contact information
         $contact->updateContactFacts($staging_contact);
         $contact->updateContactDimensions(array_values($dimensions));
 
@@ -222,7 +207,7 @@ class StagingContactRepository extends EntityRepository
         if ( $initial_lock_expiration_date > $now )
         {
             $lock = new Lock();
-            $lock->setType(Lock::TYPE_NO_LOCKS);
+            $lock->setType(Lock::TYPE_INITIAL_LOCK);
             $lock->setLockDate(new \DateTime());
             $lock->setExpirationDate($initial_lock_expiration_date);
             $lead->addLock($lock);
@@ -231,8 +216,8 @@ class StagingContactRepository extends EntityRepository
         // Persist contact
         $em->persist($contact);
 
-        // Remove StagingContact
-        $em->remove($staging_contact);
+        // Move StagingContact
+        $this->moveStagingContact($staging_contact, new StagingContactProcessed());
 
         $em->flush();
     }
@@ -283,10 +268,10 @@ class StagingContactRepository extends EntityRepository
      */
     public function findAndLockContactsToValidate ($limit = 50)
     {
-        $em = $this->getEntityManager();
+        $entity_manager = $this->getEntityManager();
 
         // Get contacts and lock the rows
-        $em->beginTransaction();
+        $entity_manager->beginTransaction();
         $staging_contacts = $this->createQueryBuilder('s')
                                  ->where('s.valid = :valid')
                                  ->andWhere('s.running = :running')
@@ -306,12 +291,40 @@ class StagingContactRepository extends EntityRepository
         }
 
         // Flush the changes
-        $em->flush();
+        $entity_manager->flush();
 
         // Commit the transaction removing the lock
-        $em->commit();
+        $entity_manager->commit();
 
         return $staging_contacts;
+    }
+
+    /**
+     * @param StagingContact                            $from
+     * @param StagingContactDQP|StagingContactProcessed $to
+     */
+    private function moveStagingContact (StagingContact $from, $to)
+    {
+        $entity_manager = $this->getEntityManager();
+
+        $from_reflection = new \ReflectionObject($from);
+        $new_reflection = new \ReflectionObject($to);
+
+        $inflector = new Inflector();
+        foreach ( $from_reflection->getProperties() as $property )
+        {
+            $property_name = $property->getName();
+            if ( $new_reflection->hasProperty($property_name) && $property_name != 'updated_at' )
+            {
+                $get_method = 'get' . $inflector->classify($property_name);
+                $set_method = 'set' . $inflector->classify($property_name);
+
+                $to->$set_method($from->$get_method());
+            }
+        }
+        $entity_manager->persist($to);
+
+        $entity_manager->remove($from);
     }
 }
 

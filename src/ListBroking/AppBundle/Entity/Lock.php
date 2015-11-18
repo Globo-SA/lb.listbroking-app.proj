@@ -1,23 +1,22 @@
 <?php
 /**
- *
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
 namespace ListBroking\AppBundle\Entity;
 
-use ListBroking\AppBundle\Behavior\BlameableEntityBehavior,
-    ListBroking\AppBundle\Behavior\TimestampableEntityBehavior
-    ;
+use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
+use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 
-class Lock {
+class Lock
+{
 
-    use TimestampableEntityBehavior,
-        BlameableEntityBehavior;
+    use TimestampableEntityBehavior, BlameableEntityBehavior;
+
+    const TYPE_INITIAL_LOCK = 0;
 
     const TYPE_NO_LOCKS     = 1;
 
@@ -62,16 +61,15 @@ class Lock {
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId ()
     {
         return $this->id;
     }
 
-
     /**
      * @return mixed
      */
-    public function getType()
+    public function getType ()
     {
         return $this->type;
     }
@@ -79,7 +77,7 @@ class Lock {
     /**
      * @param mixed $type
      */
-    public function setType($type)
+    public function setType ($type)
     {
         $this->type = $type;
     }
@@ -103,7 +101,7 @@ class Lock {
     /**
      * @return mixed
      */
-    public function getExpirationDate()
+    public function getExpirationDate ()
     {
         return $this->expiration_date;
     }
@@ -111,7 +109,7 @@ class Lock {
     /**
      * @param mixed $expiration_date
      */
-    public function setExpirationDate($expiration_date)
+    public function setExpirationDate ($expiration_date)
     {
         $this->expiration_date = $expiration_date;
     }
@@ -119,7 +117,7 @@ class Lock {
     /**
      * @return mixed
      */
-    public function getLead()
+    public function getLead ()
     {
         return $this->lead;
     }
@@ -127,7 +125,7 @@ class Lock {
     /**
      * @param mixed $lead
      */
-    public function setLead($lead)
+    public function setLead ($lead)
     {
         $this->lead = $lead;
     }
@@ -136,9 +134,10 @@ class Lock {
      * Set extraction
      *
      * @param Extraction $extraction
+     *
      * @return Lock
      */
-    public function setExtraction(Extraction $extraction = null)
+    public function setExtraction (Extraction $extraction = null)
     {
         $this->extraction = $extraction;
 
@@ -147,10 +146,9 @@ class Lock {
 
     /**
      * Get extraction
-     *
      * @return Extraction
      */
-    public function getExtraction()
+    public function getExtraction ()
     {
         return $this->extraction;
     }
@@ -158,7 +156,7 @@ class Lock {
     /**
      * @return mixed
      */
-    public function getCampaign()
+    public function getCampaign ()
     {
         return $this->campaign;
     }
@@ -166,7 +164,7 @@ class Lock {
     /**
      * @param mixed $campaign
      */
-    public function setCampaign($campaign)
+    public function setCampaign ($campaign)
     {
         $this->campaign = $campaign;
     }
@@ -174,7 +172,7 @@ class Lock {
     /**
      * @return mixed
      */
-    public function getCategory()
+    public function getCategory ()
     {
         return $this->category;
     }
@@ -182,7 +180,7 @@ class Lock {
     /**
      * @param mixed $category
      */
-    public function setCategory($category)
+    public function setCategory ($category)
     {
         $this->category = $category;
     }
@@ -190,7 +188,7 @@ class Lock {
     /**
      * @return mixed
      */
-    public function getClient()
+    public function getClient ()
     {
         return $this->client;
     }
@@ -198,7 +196,7 @@ class Lock {
     /**
      * @param mixed $client
      */
-    public function setClient($client)
+    public function setClient ($client)
     {
         $this->client = $client;
     }
@@ -206,7 +204,7 @@ class Lock {
     /**
      * @return mixed
      */
-    public function getSubCategory()
+    public function getSubCategory ()
     {
         return $this->sub_category;
     }
@@ -214,7 +212,7 @@ class Lock {
     /**
      * @param mixed $sub_category
      */
-    public function setSubCategory($sub_category)
+    public function setSubCategory ($sub_category)
     {
         $this->sub_category = $sub_category;
     }
