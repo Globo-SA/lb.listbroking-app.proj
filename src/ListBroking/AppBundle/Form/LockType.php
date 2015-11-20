@@ -66,7 +66,7 @@ class LockType extends AbstractType
                         'data-placeholder' => 'Select one...',
                         'class'            => 'form-control'
                     ),
-                    'label'             => 'Expired',
+                    'label'             => 'Time since last sale',
                     'choices'           => $this->expiration_choices,
                     'choices_as_values' => true,
                 ))

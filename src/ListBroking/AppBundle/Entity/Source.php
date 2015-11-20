@@ -1,25 +1,22 @@
 <?php
 /**
- * 
  * @author     Pedro Tentugal <pedro.tentugal@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
 namespace ListBroking\AppBundle\Entity;
 
-use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
-use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 use Doctrine\Common\Collections\ArrayCollection;
+use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 
-class Source {
+class Source
+{
 
     const CACHE_ID = 'source';
 
-    use TimestampableEntityBehavior,
-        BlameableEntityBehavior;
+    use TimestampableEntityBehavior;
 
     protected $id;
 
@@ -31,16 +28,14 @@ class Source {
 
     protected $external_id;
 
-
-
     protected $contacts;
 
-    function __construct()
+    function __construct ()
     {
         $this->contacts = new ArrayCollection();
     }
 
-    function __toString()
+    function __toString ()
     {
         return $this->name;
     }
@@ -48,7 +43,7 @@ class Source {
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId ()
     {
         return $this->id;
     }
@@ -56,7 +51,7 @@ class Source {
     /**
      * @return mixed
      */
-    public function getCountry()
+    public function getCountry ()
     {
         return $this->country;
     }
@@ -64,7 +59,7 @@ class Source {
     /**
      * @param mixed $country
      */
-    public function setCountry($country)
+    public function setCountry ($country)
     {
         $this->country = $country;
     }
@@ -72,7 +67,7 @@ class Source {
     /**
      * @return mixed
      */
-    public function getExternalId()
+    public function getExternalId ()
     {
         return $this->external_id;
     }
@@ -80,7 +75,7 @@ class Source {
     /**
      * @param $external_id
      */
-    public function setExternalId($external_id)
+    public function setExternalId ($external_id)
     {
         $this->external_id = $external_id;
     }
@@ -88,7 +83,7 @@ class Source {
     /**
      * @return mixed
      */
-    public function getName()
+    public function getName ()
     {
         return $this->name;
     }
@@ -96,7 +91,7 @@ class Source {
     /**
      * @param mixed $name
      */
-    public function setName($name)
+    public function setName ($name)
     {
         $this->name = $name;
     }
@@ -104,7 +99,7 @@ class Source {
     /**
      * @return mixed
      */
-    public function getOwner()
+    public function getOwner ()
     {
         return $this->owner;
     }
@@ -112,16 +107,16 @@ class Source {
     /**
      * @param mixed $owner
      */
-    public function setOwner($owner)
+    public function setOwner ($owner)
     {
         $this->owner = $owner;
     }
 
-
     /**
      * @param Contact $contact
      */
-    public function addContacts(Contact $contact){
+    public function addContacts (Contact $contact)
+    {
         $contact->setSource($this);
         $this->contacts[] = $contact;
     }
@@ -129,7 +124,8 @@ class Source {
     /**
      * @param Contact $contact
      */
-    public function removeContacts(Contact $contact){
+    public function removeContacts (Contact $contact)
+    {
         $this->contacts->removeElement($contact);
     }
 } 

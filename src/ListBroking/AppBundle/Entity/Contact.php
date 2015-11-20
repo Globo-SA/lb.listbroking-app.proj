@@ -10,23 +10,16 @@ namespace ListBroking\AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Util\Inflector;
-use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
 use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 
 class Contact
 {
-
-    use TimestampableEntityBehavior, BlameableEntityBehavior;
+    use TimestampableEntityBehavior;
 
     /**
      * @var integer
      */
     private $id;
-
-    /**
-     * @var boolean
-     */
-    private $is_ready_to_use = 0;
 
     /**
      * @var boolean
@@ -181,17 +174,17 @@ class Contact
     {
         $birthdate = trim($s_contact->getBirthdate());
         $fields = array(
-            'email'        => $s_contact->getEmail(),
-            'external_id'  => $s_contact->getExternalId(),
-            'firstname'    => $s_contact->getFirstname(),
-            'lastname'     => $s_contact->getLastname(),
-            'birthdate'    => empty($birthdate) ? null : new \DateTime($s_contact->getBirthdate()),
-            'address'      => $s_contact->getAddress(),
-            'postalcode1'  => $s_contact->getPostalcode1(),
-            'postalcode2'  => $s_contact->getPostalcode2(),
-            'ipaddress'    => $s_contact->getIpaddress(),
-            'date'         => $s_contact->getDate(),
-            'post_request' => $s_contact->getPostRequest(),
+            'email'           => $s_contact->getEmail(),
+            'external_id'     => $s_contact->getExternalId(),
+            'firstname'       => $s_contact->getFirstname(),
+            'lastname'        => $s_contact->getLastname(),
+            'birthdate'       => empty($birthdate) ? null : new \DateTime($s_contact->getBirthdate()),
+            'address'         => $s_contact->getAddress(),
+            'postalcode1'     => $s_contact->getPostalcode1(),
+            'postalcode2'     => $s_contact->getPostalcode2(),
+            'ipaddress'       => $s_contact->getIpaddress(),
+            'date'            => $s_contact->getDate(),
+            'post_request'    => $s_contact->getPostRequest(),
 
         );
 
@@ -202,7 +195,8 @@ class Contact
             $this->postalcode1 = null;
             $this->postalcode2 = null;
         }
-        else{
+        else
+        {
             // If there isn't a postalcode1, postalcode2
             // doesn't make sense
             $fields['postalcode2'] = null;
@@ -245,22 +239,6 @@ class Contact
     public function setIsClean ($is_clean)
     {
         $this->is_clean = $is_clean;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isReadyToUse ()
-    {
-        return $this->is_ready_to_use;
-    }
-
-    /**
-     * @param boolean $is_ready_to_use
-     */
-    public function setIsReadyToUse ($is_ready_to_use)
-    {
-        $this->is_ready_to_use = $is_ready_to_use;
     }
 
     /**

@@ -1,23 +1,20 @@
-<li class="dropdown">
-    <a class="extraction_log_menu dropdown-toggle" data-toggle="dropdown" href="#">
+<li>
+    <a class="extraction_log_menu dropdown-toggle" href="#">
         <i class="fa fa-paperclip text-info"></i> <i class="fa fa-caret-down"></i>
     </a>
-    <ul class="dropdown-menu" role="menu" style="width: 1000px;">
-        <li class="small_row row">
-            <div class="col-md-12">
-                &nbsp;
-                <h4 class="text-info"><i class="fa fa-paperclip fa-fw"></i>&nbsp;Extraction Log
-                    <small>(real time logging)</small>
-                </h4>
-                <ul id="extraction_log_list" class="list-group" data-prototype="<li class='list-group-item'>%%id%%. %%log%%<small class='text-success'> (%%created_at%%)</small></li>">
-                    <li class='list-group-item'>
-                        <b>ID</b> . <b>LOG</b>  <b>(CREATED_AT)</b>
-                    </li>
-                </ul>
+</li>
+
+<div class="panel panel-primary extraction_log_panel">
+    <div class="panel-heading"><i class="fa fa-paperclip fa-fw"></i>&nbsp;Extraction Log
+        <small>(real time logging)</small>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div id="extraction_log_list" class="col-md-12" data-prototype="<div class='log list-group'><div class='list-group-item'><h6 class='list-group-item-heading'>%%log%%</h6><small
+            class='list-group-item-text'><b>created at:</b> %%created_at%%</small></div></div>">
             </div>
-            <hr>
-        </li>
-        <li class="small_row row">
+        </div>
+        <div class="row">
             <div class="col-md-12">
                 <p><i class="fa fa-exclamation-triangle fa-fw"></i>
                     This block show the latest actions occurring on the background (server-side) for the current Extraction
@@ -26,6 +23,6 @@
                 </p>
                 <br>
             </div>
-        </li>
-    </ul>
-</li>
+        </div>
+    </div>
+</div>

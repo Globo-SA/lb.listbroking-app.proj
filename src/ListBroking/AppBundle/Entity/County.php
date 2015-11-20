@@ -10,7 +10,6 @@
 
 namespace ListBroking\AppBundle\Entity;
 
-use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
 use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -18,8 +17,7 @@ class County {
 
     const CACHE_ID = 'county';
 
-    use TimestampableEntityBehavior,
-        BlameableEntityBehavior;
+    use TimestampableEntityBehavior;
 
     protected $id;    protected $name;
 

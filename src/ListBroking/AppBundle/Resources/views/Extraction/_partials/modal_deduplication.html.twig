@@ -1,22 +1,18 @@
-<div class="modal fade" id="lead_deduplication_modal">
+<div class="modal fade double_modal" id="lead_deduplication_modal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                             class="sr-only">Close</span>
                 </button>
-                <h4 class="modal-title"><i class="fa fa-times"></i>&nbsp;Lead Deduplication</h4>
+                <h4 class="modal-title"><i class="fa fa-download"></i>&nbsp;Download for Deduplication</h4>
             </div>
             <div class="modal-body">
                 <blockquote class="small-label">
                     <div class="form-group">
-                        <label>Download List for Deduplication</label>
+                        <label>Template</label>
                         <input type="hidden" data-select-mode="ajax" data-select-minimum-input="0" data-select-type="ExtractionTemplate" data-placeholder="Select a template..." class="form-control
                         row-margin" value="1">
-                        <button type="button" id="deduplication-download" data-extraction="{{ extraction.id }}" class="btn btn-flat btn-primary space">
-                            <i class="fa fa-envelope-o"></i>&nbsp;SEND&nbsp;
-                            <i class="loading ion-loading-c" style="display: none;"></i>
-                        </button>
                     </div>
                     <div class="alert alert-info bigger-space" role="alert">
                         <i class="fa fa-info text-primary"></i>
@@ -27,6 +23,22 @@
                         </ul>
                     </div>
                 </blockquote>
+            </div>
+            <div class="modal-footer small">
+                <button type="button" id="deduplication-download" data-extraction="{{ extraction.id }}" class="btn btn-flat btn-primary space">
+                    <i class="fa fa-envelope-o"></i>&nbsp;SEND&nbsp;
+                    <i class="loading ion-loading-c" style="display: none;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                            class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title"><i class="fa fa-upload"></i>&nbsp;Upload for Deduplication</h4>
             </div>
             {{ form_start(forms.extraction_deduplication, {attr: {'data-extraction': extraction.id}}) }}
             <div class="modal-body">

@@ -14,7 +14,6 @@ ListBroking\AppBundle\Entity\ExtractionTemplate:
         template:
             type: json_array
             column: template
-
 # Timestampable
         created_at:
             type: datetime
@@ -26,7 +25,6 @@ ListBroking\AppBundle\Entity\ExtractionTemplate:
             nullable: true
             gedmo: { timestampable: { on: update } }
 # End of Timestampable
-
 # Blameable
     manyToOne:
         created_by:

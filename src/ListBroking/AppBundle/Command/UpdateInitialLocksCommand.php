@@ -9,17 +9,17 @@
 namespace ListBroking\AppBundle\Command;
 
 use Adclick\TaskControllerBundle\Service\TaskServiceInterface;
-use ListBroking\AppBundle\Entity\Contact;
+use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Service\BusinessLogic\StagingService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UpdateContactsWithExpiredInitialLockCommand extends ContainerAwareCommand
+class UpdateInitialLocksCommand extends ContainerAwareCommand
 {
 
-    const MAX_RUNNING = 100;
+    const MAX_RUNNING = 1;
 
     /**
      * @var TaskServiceInterface
@@ -28,9 +28,9 @@ class UpdateContactsWithExpiredInitialLockCommand extends ContainerAwareCommand
 
     protected function configure ()
     {
-        $this->setName('listbroking:contact:update_initial_lock')
-             ->setDescription('Updates contacts that are ready to be used in extractions')
-             ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Max contacts to validate per task iteration', 100)
+        $this->setName('listbroking:staging:update_initial_locks')
+             ->setDescription('Updates leads that are ready to be used in extractions')
+             ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Max Leads to validate per task iteration', 100)
         ;
     }
 
@@ -56,22 +56,22 @@ class UpdateContactsWithExpiredInitialLockCommand extends ContainerAwareCommand
                               ->get('staging')
             ;
 
-            $contacts = $s_service->findContactsWithExpiredInitialLock($limit);
-            if ( ! $contacts )
+            $leads = $s_service->findLeadsWithExpiredInitialLock($limit);
+            if ( ! $leads )
             {
-                $this->service->write('No contacts to process');
+                $this->service->write('No leads to process');
                 $this->service->finish();
 
                 return;
             }
 
-            $this->service->write(sprintf('Updating %s Contact(s) with expired Initial Lock (TYPE_INITIAL_LOCK)', count($contacts)));
+            $this->service->write(sprintf('Updating %s Lead(s) with expired Initial Lock (TYPE_INITIAL_LOCK)', count($leads)));
 
-            /** @var Contact $contact */
-            foreach ( $contacts as $contact )
+            /** @var Lead $lead */
+            foreach ( $leads as $lead )
             {
-                $this->service->write("Updating Contact: {$contact->getId()}");
-                $contact->setIsReadyToUse(1);
+                $this->service->write("Updating Lead: {$lead->getId()}");
+                $lead->setIsReadyToUse(1);
             }
             $s_service->flushAll();
 

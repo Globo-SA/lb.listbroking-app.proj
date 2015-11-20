@@ -61,7 +61,7 @@ class FiltersType extends AbstractType
 
         // Default Values
         $default_date_range = date('Y/m/01 - Y/m/t'); // Current month
-        $default_country_id = $this->a_service->findConfig('default_country_id');
+        $lock_time = str_replace('+', '', $appService->findConfig('lock.time'));
 
         // Arrays for Choices
         $countries = $this->a_service->findEntities('ListBrokingAppBundle:Country');
@@ -74,19 +74,13 @@ class FiltersType extends AbstractType
         $campaigns = $this->a_service->findEntities('ListBrokingAppBundle:Campaign');
         $expiration_choices = array(
             ''             => '',
-            '1 Week ago'   => '-1 week',
-            '2 Weeks ago'  => '-2 week',
-            '3 Weeks ago'  => '-3 week',
-            '1 month ago'  => '-1 month',
-            '2 months ago' => '-2 month',
             '3 months ago' => '-3 month',
             '4 months ago' => '-4 month',
             '5 months ago' => '-5 month',
             '6 months ago' => '-6 month',
             '1 year ago'   => '-1 year',
             '2 years ago'  => '-2 year',
-            '3 years ago'  => '-3 year',
-            '30 years ago' => '-30 year',
+            'Never sold'   => '-30 year'
         );
 
         // Filter Schema
@@ -234,7 +228,7 @@ class FiltersType extends AbstractType
                         'field_type'           => self::FIELD_TYPE_RANGE,
                         'type'                 => 'collection',
                         'options'              => array(
-                            'required'  => false,
+                            'required'     => false,
                             'attr'         => array(
                                 'data-collection' => 'true',
                                 'class'           => 'col-md-12 blocked-input'
@@ -538,7 +532,7 @@ class FiltersType extends AbstractType
                                 'title'          => 'Only select leads without active locks, this should always be checked!',
                                 'class'          => 'form-control'
                             ),
-                            'label'    => 'Only unlocked Leads'
+                            'label'    => sprintf('Not sold in the last %s', $lock_time)
                         )
                     )
                 )

@@ -1,29 +1,24 @@
 <?php
 /**
- * 
  * @author     Pedro Tentugal <pedro.tentugal@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
 namespace ListBroking\AppBundle\Entity;
 
-use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
-use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 use Doctrine\Common\Collections\ArrayCollection;
+use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 
-class Owner {
+class Owner
+{
 
     const CACHE_ID = 'owner';
 
-    use TimestampableEntityBehavior,
-        BlameableEntityBehavior;
+    use TimestampableEntityBehavior;
 
     protected $id;
-
-
 
     protected $name;
 
@@ -41,13 +36,13 @@ class Owner {
 
     protected $contacts;
 
-    function __construct()
+    function __construct ()
     {
         $this->contacts = new ArrayCollection();
-        $this->sources  = new ArrayCollection();
+        $this->sources = new ArrayCollection();
     }
 
-    function __toString()
+    function __toString ()
     {
         return $this->name;
     }
@@ -55,16 +50,15 @@ class Owner {
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId ()
     {
         return $this->id;
     }
 
-
     /**
      * @return mixed
      */
-    public function getAccountName()
+    public function getAccountName ()
     {
         return $this->account_name;
     }
@@ -72,7 +66,7 @@ class Owner {
     /**
      * @param mixed $account_name
      */
-    public function setAccountName($account_name)
+    public function setAccountName ($account_name)
     {
         $this->account_name = $account_name;
     }
@@ -80,7 +74,7 @@ class Owner {
     /**
      * @return mixed
      */
-    public function getContacts()
+    public function getContacts ()
     {
         return $this->contacts;
     }
@@ -88,7 +82,8 @@ class Owner {
     /**
      * @param Contact $contact
      */
-    public function addContacts(Contact $contact){
+    public function addContacts (Contact $contact)
+    {
         $contact->setOwner($this);
         $this->contacts[] = $contact;
     }
@@ -96,14 +91,15 @@ class Owner {
     /**
      * @param Contact $contact
      */
-    public function removeContacts(Contact $contact){
+    public function removeContacts (Contact $contact)
+    {
         $this->contacts->removeElement($contact);
     }
 
     /**
      * @return mixed
      */
-    public function getCountry()
+    public function getCountry ()
     {
         return $this->country;
     }
@@ -111,7 +107,7 @@ class Owner {
     /**
      * @param mixed $country
      */
-    public function setCountry($country)
+    public function setCountry ($country)
     {
         $this->country = $country;
     }
@@ -119,7 +115,7 @@ class Owner {
     /**
      * @return mixed
      */
-    public function getEmail()
+    public function getEmail ()
     {
         return $this->email;
     }
@@ -127,7 +123,7 @@ class Owner {
     /**
      * @param mixed $email
      */
-    public function setEmail($email)
+    public function setEmail ($email)
     {
         $this->email = $email;
     }
@@ -135,7 +131,7 @@ class Owner {
     /**
      * @return mixed
      */
-    public function getName()
+    public function getName ()
     {
         return $this->name;
     }
@@ -143,7 +139,7 @@ class Owner {
     /**
      * @param mixed $name
      */
-    public function setName($name)
+    public function setName ($name)
     {
         $this->name = $name;
     }
@@ -151,7 +147,7 @@ class Owner {
     /**
      * @return mixed
      */
-    public function getPhone()
+    public function getPhone ()
     {
         return $this->phone;
     }
@@ -159,7 +155,7 @@ class Owner {
     /**
      * @param mixed $phone
      */
-    public function setPhone($phone)
+    public function setPhone ($phone)
     {
         $this->phone = $phone;
     }
@@ -167,7 +163,7 @@ class Owner {
     /**
      * @return mixed
      */
-    public function getPriority()
+    public function getPriority ()
     {
         return $this->priority;
     }
@@ -175,7 +171,7 @@ class Owner {
     /**
      * @param mixed $priority
      */
-    public function setPriority($priority)
+    public function setPriority ($priority)
     {
         $this->priority = $priority;
     }
@@ -183,19 +179,20 @@ class Owner {
     /**
      * @return mixed
      */
-    public function getSources()
+    public function getSources ()
     {
         return $this->sources;
     }
 
-    public function addSources(Source $source){
+    public function addSources (Source $source)
+    {
         $source->setOwner($this);
         $this->sources[] = $source;
     }
 
-    public function removeSources(Source $source){
+    public function removeSources (Source $source)
+    {
         $this->sources->removeElement($source);
     }
 
-
-} 
+}

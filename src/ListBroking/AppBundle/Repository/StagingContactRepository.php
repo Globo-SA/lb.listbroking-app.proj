@@ -202,6 +202,8 @@ class StagingContactRepository extends EntityRepository
         $contact->updateContactFacts($staging_contact);
         $contact->updateContactDimensions(array_values($dimensions));
 
+
+        // Lock the Lead - Resting time
         $now = new \DateTime();
         $initial_lock_expiration_date = $staging_contact->getInitialLockExpirationDate();
         if ( $initial_lock_expiration_date > $now )
@@ -212,6 +214,7 @@ class StagingContactRepository extends EntityRepository
             $lock->setExpirationDate($initial_lock_expiration_date);
             $lead->addLock($lock);
         }
+        $lead->setIsReadyToUse(0);
 
         // Persist contact
         $em->persist($contact);

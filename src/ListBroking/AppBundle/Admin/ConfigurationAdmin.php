@@ -12,6 +12,7 @@ use Sonata\AdminBundle\Show\ShowMapper;
 class ConfigurationAdmin extends Admin
 {
     protected $datagridValues = array(
+        '_sort_by' => 'name',
         '_sort_order' => 'DESC'
     );
 

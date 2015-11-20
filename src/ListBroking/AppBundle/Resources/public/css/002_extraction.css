@@ -50,3 +50,23 @@ blockquote {
         margin: 30px auto;
     }
 }
+
+
+.double_modal .modal-body{
+    padding: 20px 20px 0px 20px;
+}
+
+.double_modal .modal-footer.small{
+    padding: 5px 20px 12px;
+}
+
+.double_modal .modal-header.small{
+    padding: 0px 15px 15px 15px;
+}
+
+.extraction_log_panel{
+    position: fixed;
+    bottom: -10px;
+    right: 10px;
+    z-index: 100;
+}

@@ -10,7 +10,6 @@
 
 namespace ListBroking\AppBundle\Entity;
 
-use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
 use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -18,8 +17,7 @@ class Lead {
 
     const CACHE_ID = 'lead';
 
-    use TimestampableEntityBehavior,
-        BlameableEntityBehavior;
+    use TimestampableEntityBehavior;
 
     protected $id;
 
@@ -28,6 +26,8 @@ class Lead {
     protected $is_mobile;
 
     protected $in_opposition;
+
+    protected $is_ready_to_use = 0;
 
     protected $date;
 
@@ -97,6 +97,22 @@ class Lead {
     }
 
     /**
+     * @return boolean
+     */
+    public function getIsReadyToUse ()
+    {
+        return $this->is_ready_to_use;
+    }
+
+    /**
+     * @param boolean $is_ready_to_use
+     */
+    public function setIsReadyToUse ($is_ready_to_use)
+    {
+        $this->is_ready_to_use = $is_ready_to_use;
+    }
+
+    /**
      * @param mixed $is_mobile
      */
     public function setIsMobile($is_mobile)
@@ -157,6 +173,14 @@ class Lead {
      */
     public function removeContacts(Contact $contact){
         $this->contacts->removeElement($contact);
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getLocks ()
+    {
+        return $this->locks;
     }
 
     /**

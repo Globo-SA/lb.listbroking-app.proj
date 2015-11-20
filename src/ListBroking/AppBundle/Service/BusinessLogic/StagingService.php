@@ -110,7 +110,7 @@ class StagingService extends BaseService implements StagingServiceInterface
     public function syncContactsWithOppositionLists ()
     {
         $this->entity_manager->getRepository('ListBrokingAppBundle:Lead')
-                             ->syncContactsWithOppositionLists()
+                             ->syncLeadsWithOppositionLists()
         ;
     }
 
@@ -125,10 +125,12 @@ class StagingService extends BaseService implements StagingServiceInterface
     /**
      * @inheritdoc
      */
-    public function findContactsWithExpiredInitialLock($limit)
+    public function findLeadsWithExpiredInitialLock($limit)
     {
-        return $this->entity_manager->getRepository('ListBrokingAppBundle:Contact')
-                                                        ->findContactsWithExpiredInitialLock($limit);
+        $initial_lock_time = new \DateTime($this->findConfig('lock.initial_time'));
+
+        return $this->entity_manager->getRepository('ListBrokingAppBundle:Lead')
+                                                        ->findLeadsWithExpiredInitialLock($limit, $initial_lock_time);
     }
 
     private function loadStagingContactDimensions (StagingContact $staging_contact)

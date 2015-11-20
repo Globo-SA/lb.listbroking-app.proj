@@ -7,55 +7,38 @@
         "use strict";
 
         var has_new_logs = false;
-        var extraction_log_rows = [];
+        var extraction_logs = [];
 
         var prev_id = 0;
         if (App.variables.extractionId) {
             // Extraction Log Actions
-           setInterval(function () {
+            setInterval(function () {
                 $('#loading_widget').fadeIn();
                 $.ajax({
                     type: "GET",
                     url: App.routing.generate('ajax_lastest_extraction_log', {extraction_id: App.variables.extractionId}),
                     dataType: 'json',
                     success: function (data) {
-                        var response = data.response;
-                        var $table = $('#extraction_log_list');
-                        var row = $table.data('prototype');
+                        var logs = data.response;
+                        var $list = $('#extraction_log_list');
+                        var row = $list.data('prototype');
 
-                        $.each(response, function (index, value) {
-                            if (extraction_log_rows[value['id']] == undefined) {
+                        // Only update if there's a new ID
+                        if (extraction_logs.length <= 0 || logs[0]['id'] != extraction_logs[0]['id']) {
+
+                            $.each(logs, function (index, value) {
 
                                 // Add new row
-                                extraction_log_rows[value['id']] = $.replaceVariables(row, {
+                                extraction_logs.push(value);
+
+                                $list.append($.replaceVariables(row, {
                                     id: value['id'],
                                     log: value['log'],
                                     created_at: value['created_at'].date.replace('.000000', '')
-                                });
-
-
-                                // Insert it to the DOM and Make it visible
-                                var selector = 'li:first';
-                                if (prev_id > value['id']) {
-                                    selector = 'li:last';
-                                }
-
-                                $table.find(selector).after(extraction_log_rows[value['id']]).fadeIn('slow');
-                                prev_id = value['id'];
-                                has_new_logs = true;
-
-                            }
-
-                            // Don't show more than 4 rows
-                            if ($table.find('li:visible').length > 4) {
-                                $table.find('li:visible:last').remove();
-                            }
-                        });
-
-                        if (extraction_log_rows.length > 0 && has_new_logs) {
-                            $('.extraction_log_menu').parent('li').addClass('open');
-                            has_new_logs = false;
+                                }));
+                            });
                         }
+
 
                         // Loading Widget, stop when everything is loaded
                         $('#loading_widget').fadeOut();
@@ -89,7 +72,7 @@
 
         // If STATUS_FINAL = 3 refresh the page
         if (App.variables.extractionStatus == 3 && App.variables.previousExtractionStatus != 3) {
-            window.location.href=window.location.href;
+            window.location.href = window.location.href;
             App.variables.previousExtractionStatus = App.variables.extractionStatus;
         }
 
@@ -270,7 +253,7 @@
 
     $.replaceVariables = function (row, variables) {
         $.each(variables, function (k, v) {
-           row = row.replace('%%' + k + '%%', v);
+            row = row.replace('%%' + k + '%%', v);
         });
 
         return row;

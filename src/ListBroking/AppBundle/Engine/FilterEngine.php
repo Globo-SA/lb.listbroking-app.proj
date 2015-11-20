@@ -190,7 +190,7 @@ class FilterEngine
         }
 
         // Only use contacts that are ready for being used
-        $lead_qb->andWhere('contacts.is_ready_to_use = :is_ready_to_use')
+        $lead_qb->andWhere('leads.is_ready_to_use = :is_ready_to_use')
                 ->setParameter('is_ready_to_use', 1)
         ;
 

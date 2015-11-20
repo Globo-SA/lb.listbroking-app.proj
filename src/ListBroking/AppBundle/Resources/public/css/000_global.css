@@ -14,6 +14,11 @@
 .bigger-space{
     margin-top: 30px;
 }
+.separator{
+    margin-top: 0;
+    margin-bottom: 0;
+    border-top: 2px solid #eee;
+}
 
 .grey-bg{
     background-color: rgb(234, 234, 234);

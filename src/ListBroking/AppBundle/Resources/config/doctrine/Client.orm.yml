@@ -21,7 +21,6 @@ ListBroking\AppBundle\Entity\Client:
         email_address:
             type: string
             column: email_address
-
 # Timestampable
         created_at:
             type: datetime
@@ -33,7 +32,6 @@ ListBroking\AppBundle\Entity\Client:
             nullable: true
             gedmo: { timestampable: { on: update } }
 # End of Timestampable
-
 # Blameable
     manyToOne:
         created_by:

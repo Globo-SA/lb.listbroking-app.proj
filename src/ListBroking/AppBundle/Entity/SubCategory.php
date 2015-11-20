@@ -1,29 +1,24 @@
 <?php
 /**
- * 
  * @author     Pedro Tentugal <pedro.tentugal@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
 namespace ListBroking\AppBundle\Entity;
 
-use ListBroking\AppBundle\Behavior\BlameableEntityBehavior;
-use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 use Doctrine\Common\Collections\ArrayCollection;
+use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 
-class SubCategory {
+class SubCategory
+{
 
     const CACHE_ID = 'sub_category';
 
-    use TimestampableEntityBehavior,
-        BlameableEntityBehavior;
+    use TimestampableEntityBehavior;
 
     protected $id;
-
-
 
     protected $name;
 
@@ -31,12 +26,12 @@ class SubCategory {
 
     protected $contacts;
 
-    function __construct()
+    function __construct ()
     {
         $this->contacts = new ArrayCollection();
     }
 
-    function __toString()
+    function __toString ()
     {
         return $this->name;
     }
@@ -44,16 +39,15 @@ class SubCategory {
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId ()
     {
         return $this->id;
     }
 
-
     /**
      * @return mixed
      */
-    public function getName()
+    public function getName ()
     {
         return $this->name;
     }
@@ -61,7 +55,7 @@ class SubCategory {
     /**
      * @param mixed $name
      */
-    public function setName($name)
+    public function setName ($name)
     {
         $this->name = $name;
     }
@@ -69,7 +63,7 @@ class SubCategory {
     /**
      * @return mixed
      */
-    public function getCategory()
+    public function getCategory ()
     {
         return $this->category;
     }
@@ -77,7 +71,7 @@ class SubCategory {
     /**
      * @param mixed $category
      */
-    public function setCategory($category)
+    public function setCategory ($category)
     {
         $this->category = $category;
     }
@@ -85,7 +79,7 @@ class SubCategory {
     /**
      * @return mixed
      */
-    public function getContacts()
+    public function getContacts ()
     {
         return $this->contacts;
     }
@@ -93,7 +87,7 @@ class SubCategory {
     /**
      * @param mixed $contacts
      */
-    public function setContacts($contacts)
+    public function setContacts ($contacts)
     {
         $this->contacts = $contacts;
     }

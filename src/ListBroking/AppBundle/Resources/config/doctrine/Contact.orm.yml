@@ -20,9 +20,6 @@ ListBroking\AppBundle\Entity\Contact:
         external_id_index:
           columns: [ external_id ]
     fields:
-        is_ready_to_use:
-          type: boolean
-          column: is_ready_to_use
         is_clean:
           type: boolean
           column: is_clean
@@ -90,24 +87,7 @@ ListBroking\AppBundle\Entity\Contact:
             targetEntity: ListBroking\AppBundle\Entity\ExtractionContact
             mappedBy:     contact
             cascade:      [all]
-# Blameable
     manyToOne:
-        created_by:
-            targetEntity: Application\Sonata\UserBundle\Entity\User
-            joinColumn:
-                name: created_by
-                referencedColumnName: id
-                onDelete: restrict
-            gedmo: { blameable: { on: create } }
-
-        updated_by:
-            targetEntity: Application\Sonata\UserBundle\Entity\User
-            joinColumn:
-                name: updated_by
-                referencedColumnName: id
-                onDelete: restrict
-            gedmo: { blameable: { on: update } }
-# End of blameable
         lead:
             targetEntity: ListBroking\AppBundle\Entity\Lead
             inversedBy:   contacts

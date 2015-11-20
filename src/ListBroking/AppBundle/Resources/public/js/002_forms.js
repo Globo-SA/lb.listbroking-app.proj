@@ -94,10 +94,6 @@
             startDate: moment()
         });
 
-        $('.blocked-input input').focus(function(){
-            $(this).blur();
-        })
-
         // Fix tooltips on checkboxes
         $("[data-toggle='tooltip'][type='checkbox']").each(function () {
             var $el = $(this);

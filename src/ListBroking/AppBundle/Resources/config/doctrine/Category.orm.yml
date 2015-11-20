@@ -12,7 +12,6 @@ ListBroking\AppBundle\Entity\Category:
             type:   string
             column: name
             unique: true
-
 # Timestampable
         created_at:
             type: datetime
@@ -24,25 +23,6 @@ ListBroking\AppBundle\Entity\Category:
             nullable: true
             gedmo: { timestampable: { on: update } }
 # End of Timestampable
-
-# Blameable
-    manyToOne:
-        created_by:
-            targetEntity: Application\Sonata\UserBundle\Entity\User
-            joinColumn:
-                name: created_by
-                referencedColumnName: id
-                onDelete: restrict
-            gedmo: { blameable: { on: create } }
-
-        updated_by:
-            targetEntity: Application\Sonata\UserBundle\Entity\User
-            joinColumn:
-                name: updated_by
-                referencedColumnName: id
-                onDelete: restrict
-            gedmo: { blameable: { on: update } }
-# End of blameable
     oneToMany:
         sub_categories:
             targetEntity: ListBroking\AppBundle\Entity\SubCategory

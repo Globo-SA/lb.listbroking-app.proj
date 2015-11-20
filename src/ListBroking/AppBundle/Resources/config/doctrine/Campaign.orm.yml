@@ -29,7 +29,6 @@ ListBroking\AppBundle\Entity\Campaign:
             nullable: true
             gedmo: { timestampable: { on: update } }
 # End of Timestampable
-
 # Blameable
     manyToOne:
         created_by:

@@ -1,31 +1,27 @@
 <?php
 /**
- * 
  * @author     Pedro Tentugal <pedro.tentugal@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
 namespace ListBroking\AppBundle\Entity;
 
-use ListBroking\AppBundle\Behavior\BlameableEntityBehavior,
-    ListBroking\AppBundle\Behavior\TimestampableEntityBehavior
-    ;
+use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 
-class Country {
+class Country
+{
 
     const CACHE_ID = 'country';
 
-    use TimestampableEntityBehavior,
-        BlameableEntityBehavior;
+    use TimestampableEntityBehavior;
 
     protected $id;
 
     protected $name;
 
-    function __toString()
+    function __toString ()
     {
         return $this->name;
     }
@@ -33,7 +29,7 @@ class Country {
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId ()
     {
         return $this->id;
     }
@@ -41,7 +37,7 @@ class Country {
     /**
      * @return mixed
      */
-    public function getName()
+    public function getName ()
     {
         return $this->name;
     }
@@ -49,7 +45,7 @@ class Country {
     /**
      * @param mixed $name
      */
-    public function setName($name)
+    public function setName ($name)
     {
         $this->name = $name;
     }

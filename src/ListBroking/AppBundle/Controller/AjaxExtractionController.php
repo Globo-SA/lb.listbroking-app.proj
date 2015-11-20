@@ -33,7 +33,7 @@ class AjaxExtractionController extends Controller
         $a_service = $this->get('app');
         try
         {
-//            $a_service->validateAjaxRequest($request);
+            $a_service->validateAjaxRequest($request);
 
             $e_service = $this->get('extraction');
 

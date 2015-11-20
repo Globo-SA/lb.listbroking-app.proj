@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class OppositionList
 {
+    const CACHE_ID = 'opposition_list';
+
     /**
      * @var integer
      */

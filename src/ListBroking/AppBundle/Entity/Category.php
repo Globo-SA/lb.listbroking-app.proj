@@ -1,27 +1,22 @@
 <?php
 /**
- * 
  * @author     Pedro Tentugal <pedro.tentugal@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
  * [LISTBROKING_DISCLAIMER]
  */
 
 namespace ListBroking\AppBundle\Entity;
 
-use ListBroking\AppBundle\Behavior\BlameableEntityBehavior,
-    ListBroking\AppBundle\Behavior\TimestampableEntityBehavior
-    ;
-
 use Doctrine\Common\Collections\ArrayCollection;
+use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
 
-class Category {
+class Category
+{
 
     const CACHE_ID = 'category';
 
-    use TimestampableEntityBehavior,
-        BlameableEntityBehavior;
+    use TimestampableEntityBehavior;
 
     protected $id;
 
@@ -29,12 +24,12 @@ class Category {
 
     protected $sub_categories;
 
-    function __construct()
+    function __construct ()
     {
         $this->sub_categories = new ArrayCollection();
     }
 
-    function __toString()
+    function __toString ()
     {
         return $this->name;
     }
@@ -42,16 +37,15 @@ class Category {
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId ()
     {
         return $this->id;
     }
 
-
     /**
      * @return mixed
      */
-    public function getName()
+    public function getName ()
     {
         return $this->name;
     }
@@ -59,24 +53,26 @@ class Category {
     /**
      * @param mixed $name
      */
-    public function setName($name)
+    public function setName ($name)
     {
         $this->name = $name;
     }
 
-    public function addSubCategory(SubCategory $sub_category){
+    public function addSubCategory (SubCategory $sub_category)
+    {
         $sub_category->setCategory($this);
         $this->sub_categories[] = $sub_category;
     }
 
-    public function removeSubCategory(SubCategory $sub_category){
+    public function removeSubCategory (SubCategory $sub_category)
+    {
         $this->sub_categories->removeElement($sub_category);
     }
 
     /**
      * @return mixed
      */
-    public function getSubCategories()
+    public function getSubCategories ()
     {
         return $this->sub_categories;
     }
