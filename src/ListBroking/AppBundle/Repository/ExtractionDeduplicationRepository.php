@@ -45,7 +45,7 @@ class ExtractionDeduplicationRepository extends EntityRepository
         $method = 'set' . $inflector->classify($field);
 
         $batch = 1;
-        $batchSize = 1000;
+        $batchSize = 5000;
 
         /** @var \PHPExcel_Worksheet_Row $row */
         foreach ( $row_iterator as $row )

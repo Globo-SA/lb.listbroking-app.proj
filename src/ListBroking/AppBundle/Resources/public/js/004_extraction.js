@@ -6,10 +6,11 @@
     $(function () {
         "use strict";
 
-        var has_new_logs = false;
         var extraction_logs = [];
+        var $panel = $('#extraction_log_panel');
+        var $list = $('#extraction_log_list');
+        var row = $list.data('prototype');
 
-        var prev_id = 0;
         if (App.variables.extractionId) {
             // Extraction Log Actions
             setInterval(function () {
@@ -20,12 +21,11 @@
                     dataType: 'json',
                     success: function (data) {
                         var logs = data.response;
-                        var $list = $('#extraction_log_list');
-                        var row = $list.data('prototype');
 
                         // Only update if there's a new ID
                         if (extraction_logs.length <= 0 || logs[0]['id'] != extraction_logs[0]['id']) {
 
+                            extraction_logs = [];
                             $.each(logs, function (index, value) {
 
                                 // Add new row
@@ -37,6 +37,11 @@
                                     created_at: value['created_at'].date.replace('.000000', '')
                                 }));
                             });
+
+                            $panel.addClass('active');
+                            setTimeout(function(){
+                                $panel.removeClass('active');
+                            },5000);
                         }
 
 
@@ -44,7 +49,7 @@
                         $('#loading_widget').fadeOut();
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        var response = jqXHR.responseJSON.response;
+                        var response = jqXHR.responseJSON;
                         console.log(response);
 
                         // Loading Widget, stop when everything is loaded

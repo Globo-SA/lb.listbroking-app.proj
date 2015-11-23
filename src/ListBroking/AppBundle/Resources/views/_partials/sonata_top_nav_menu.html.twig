@@ -24,9 +24,6 @@
         {% if app.user and is_granted('ROLE_SUPER_ADMIN') %}
             {% include '@ListBrokingApp/_partials/exceptions_dropdown.html.twig' %}
         {% endif %}
-        {% if extraction is defined %}
-            {% include '@ListBrokingApp/_partials/extraction_log_dropdown.html.twig' %}
-        {% endif %}
         {% if app.user %}
             {% set fullname = app.user.firstname ~ ' ' ~app.user.lastname %}
             <li class="dropdown user-menu">

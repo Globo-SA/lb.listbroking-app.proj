@@ -64,9 +64,22 @@ blockquote {
     padding: 0px 15px 15px 15px;
 }
 
-.extraction_log_panel{
+#extraction_log_panel{
     position: fixed;
-    bottom: -10px;
+    bottom: -291px;
     right: 10px;
-    z-index: 100;
+    z-index: 1030;
+    -webkit-transition: bottom 1s;
+    -moz-transition: bottom 1s;
+    -ms-transition: bottom 1s;
+    -o-transition: bottom 1s;
+    transition: bottom 1s;
+}
+
+#extraction_log_panel:hover, #extraction_log_panel.active{
+    bottom: -18px;
+}
+
+#extraction_log_panel .panel-heading{
+    cursor: pointer;
 }
