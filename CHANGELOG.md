@@ -200,3 +200,6 @@
 
 ### 2.13.06
 * Added campaign to extraction filtering
+
+### 2.13.07
+* Fixed range filters
