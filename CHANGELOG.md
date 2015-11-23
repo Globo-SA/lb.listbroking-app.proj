@@ -203,3 +203,6 @@
 
 ### 2.13.07
 * Fixed range filters
+
+### 2.13.08
+* Compiled IN filters in on expression
