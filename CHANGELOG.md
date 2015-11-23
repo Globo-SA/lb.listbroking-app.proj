@@ -200,3 +200,12 @@
 
 ### 2.13.06
 * Added campaign to extraction filtering
+
+### 2.13.07
+* Fixed range filters
+
+### 2.13.08
+* Compiled IN filters in on expression
+
+### 2.13.09
+* Fixed AND OR on filters

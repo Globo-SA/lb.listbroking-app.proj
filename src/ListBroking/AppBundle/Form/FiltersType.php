@@ -845,7 +845,7 @@ class FiltersType extends AbstractType
                     if ( preg_match('/-/i', $value) )
                     {
                         $ranges = explode('-', $value);
-                        $value = array($ranges[0], $ranges[1]);
+                        $value = array(array($ranges[0], $ranges[1]));
                         $op = self::BETWEEN_OPERATION;
                     }
 
@@ -950,7 +950,7 @@ class FiltersType extends AbstractType
                     {
 
                         list($start, $end) = explode('-', $v[$first_key]);
-                        $value = array(trim($start), trim($end));
+                        $value[] = array(trim($start), trim($end));
                     }
                 }
 
