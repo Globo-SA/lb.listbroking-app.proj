@@ -43,12 +43,12 @@ class BasicContactFilter implements ContactFilterInterface
                     {
                         case FiltersType::INCLUSION_FILTER:
                             $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['expressions'] = $qb->expr()
-                                                                                                                             ->in($filter['field'], ':' . $name)
+                                                                                                                           ->in($filter['field'], ':' . $name)
                             ;
                             break;
                         case FiltersType::EXCLUSION_FILTER:
                             $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['expressions'] = $qb->expr()
-                                                                                                                             ->notIn($filter['field'], ':' . $name)
+                                                                                                                           ->notIn($filter['field'], ':' . $name)
                             ;
                             break;
                         default:
@@ -114,16 +114,22 @@ class BasicContactFilter implements ContactFilterInterface
                 if ( array_key_exists('inclusion', $filter_operations) )
                 {
                     $inclusion_filter = $filter_operations['inclusion'];
+                    $inclusion_or = $qb->expr()
+                                       ->orX()
+                    ;
 
-                    $this->addExpressions($qb, $expr, $inclusion_filter['expressions']);
+                    $this->addExpressions($expr, $inclusion_or, $inclusion_filter['expressions']);
                     $this->addParameters($qb, $operation, $inclusion_filter['parameter_id'], $inclusion_filter['values']);
                 }
 
                 if ( array_key_exists('exclusion', $filter_operations) )
                 {
                     $exclusion_filter = $filter_operations['exclusion'];
+                    $exclusion_and = $qb->expr()
+                                        ->andX()
+                    ;
 
-                    $this->addExpressions($qb, $expr, $exclusion_filter['expressions']);
+                    $this->addExpressions($expr, $exclusion_and, $exclusion_filter['expressions']);
                     $this->addParameters($qb, $operation, $exclusion_filter['parameter_id'], $exclusion_filter['values']);
                 }
                 $orX->add($expr);
@@ -135,27 +141,23 @@ class BasicContactFilter implements ContactFilterInterface
     /**
      * Add the given parts to the QueryBuilder
      *
-     * @param QueryBuilder $qb
      * @param Composite    $expr
+     * @param Composite    $comp
      * @param              $parts
      */
-    private function addExpressions (QueryBuilder $qb, Composite $expr, $parts)
+    private function addExpressions (Composite $expr, Composite $comp, $parts)
     {
-        if(is_array($parts))
+        if ( is_array($parts) )
         {
-            $oxX = $qb->expr()
-                      ->orX()
-            ;
-
             foreach ( $parts as $part )
             {
-                $oxX->add($part);
+                $comp->add($part);
             }
-            $expr->add($oxX);
-        }else{
-            $expr->add($parts);
-        }
+            $expr->add($comp);
 
+            return;
+        }
+        $expr->add($parts);
     }
 
     /**

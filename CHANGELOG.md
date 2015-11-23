@@ -206,3 +206,6 @@
 
 ### 2.13.08
 * Compiled IN filters in on expression
+
+### 2.13.09
+* Fixed AND OR on filters
