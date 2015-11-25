@@ -7,7 +7,9 @@ var ListBroking = {
         culture: 'en'
     },
     variables: {
+        extractionId: null,
+        extractionStatus: null,
         extractionIntervalId: 0,
-        intervalTimeout: 10000,
+        intervalTimeout: 10000
     }
 };

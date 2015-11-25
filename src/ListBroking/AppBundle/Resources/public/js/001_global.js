@@ -132,6 +132,13 @@
             bSort: true,
             bInfo: false
         });
+        // Paginated dataTable instance
+        $('[data-toggle=paginated_table]').dataTable({
+            bPaginate: true,
+            bFilter: true,
+            bSort: true,
+            bInfo: true
+        });
 
         /**
          * Extra jQuery animations

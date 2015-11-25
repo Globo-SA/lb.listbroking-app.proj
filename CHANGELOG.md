@@ -215,3 +215,6 @@
 
 ### 2.14.02
 * Added more filtration options to the DataCard
+
+### 2.14.03
+* Made filters summary easier to lookup

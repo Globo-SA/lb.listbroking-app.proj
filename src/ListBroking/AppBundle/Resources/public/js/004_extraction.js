@@ -11,8 +11,9 @@
         var $list = $('#extraction_log_list');
         var row = $list.data('prototype');
 
-        App.variables.previousExtractionStatus = App.variables.extractionStatus;
         if (App.variables.extractionId) {
+            App.variables.previousExtractionStatus = App.variables.extractionStatus;
+
             // Extraction Log Actions
             setInterval(function () {
                 $('#loading_widget').fadeIn();
@@ -62,11 +63,17 @@
             }, App.variables.intervalTimeout);
         }
 
-
-        // Only if the Extraction Status is STATUS_CONFIRMATION = 2
-        if (App.variables.extractionStatus == 2) {
+        if (App.variables.extractionStatus > 2) {
             $.listenToExtractionChanges(function (extraction) {
                 console.log('new extraction:' + extraction);
+
+                // If status changed refresh the page
+                if (App.variables.extractionStatus != App.variables.previousExtractionStatus) {
+                    window.location.href = window.location.href;
+
+                    return;
+                }
+
                 if ($.isExtractionReady(extraction)) {
                     console.log('Extraction is ready!!!');
                     $.refreshSummaryTab(extraction);
@@ -76,15 +83,6 @@
                 $("#extraction_info_payout").text(extraction.payout);
             });
         }
-
-        // If STATUS_FINAL = 3 refresh the page
-        console.log(App.variables);
-        if (App.variables.extractionStatus == 3 && App.variables.previousExtractionStatus != 3) {
-            window.location.href = window.location.href;
-            App.variables.previousExtractionStatus = App.variables.extractionStatus;
-        }
-
-
     });
 
     /**
