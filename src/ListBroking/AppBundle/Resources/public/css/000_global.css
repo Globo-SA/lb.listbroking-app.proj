@@ -7,6 +7,10 @@
     opacity: 0.4;
 }
 
+.fill_width{
+    width: 100%;
+}
+
 .space{
     margin-top: 10px;
 }

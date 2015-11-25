@@ -26,6 +26,7 @@
                         if (extraction_logs.length <= 0 || logs[0]['id'] != extraction_logs[0]['id']) {
 
                             extraction_logs = [];
+                            $list.empty();
                             $.each(logs, function (index, value) {
 
                                 // Add new row
