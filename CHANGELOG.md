@@ -211,4 +211,4 @@
 * Fixed AND OR on filters
 
 ### 2.14.01
-* Change the way contacts are updated and saved
+* Changed the way contacts are updated and saved
