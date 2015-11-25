@@ -138,7 +138,7 @@
                 <div role="tabpanel">
                     <div class="panel-body">
                         {% if stats is not empty %}
-                            <table class="table table-condensed table-hover">
+                            <table class="table table-condensed table-hover" data-toggle="paginated_table">
                                 <thead>
                                 <tr>
                                     {% set headers = stats[0]|keys|sort %}

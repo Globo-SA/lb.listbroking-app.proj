@@ -218,3 +218,6 @@
 
 ### 2.14.03
 * Made filters summary easier to lookup
+
+### 2.14.04
+* Added pagination to the DataCard

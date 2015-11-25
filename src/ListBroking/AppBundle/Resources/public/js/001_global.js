@@ -132,6 +132,7 @@
             bSort: true,
             bInfo: false
         });
+
         // Paginated dataTable instance
         $('[data-toggle=paginated_table]').dataTable({
             bPaginate: true,
