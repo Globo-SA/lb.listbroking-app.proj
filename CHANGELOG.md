@@ -212,3 +212,6 @@
 
 ### 2.14.01
 * Changed the way contacts are updated and saved
+
+### 2.14.02
+* Added more filtration options to the DataCard

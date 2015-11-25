@@ -11,6 +11,7 @@
         var $list = $('#extraction_log_list');
         var row = $list.data('prototype');
 
+        App.variables.previousExtractionStatus = App.variables.extractionStatus;
         if (App.variables.extractionId) {
             // Extraction Log Actions
             setInterval(function () {
@@ -77,6 +78,7 @@
         }
 
         // If STATUS_FINAL = 3 refresh the page
+        console.log(App.variables);
         if (App.variables.extractionStatus == 3 && App.variables.previousExtractionStatus != 3) {
             window.location.href = window.location.href;
             App.variables.previousExtractionStatus = App.variables.extractionStatus;
