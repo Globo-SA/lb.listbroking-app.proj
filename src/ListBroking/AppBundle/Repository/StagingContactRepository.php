@@ -182,6 +182,7 @@ class StagingContactRepository extends EntityRepository
             $lead->setInOpposition($staging_contact->getInOpposition());
             $lead->setCountry($dimensions['country']);
             $em->persist($lead);
+
         }
 
         $contact = $em->getRepository('ListBrokingAppBundle:Contact')
@@ -196,6 +197,10 @@ class StagingContactRepository extends EntityRepository
         {
             $contact = new Contact();
             $contact->setLead($lead);
+
+            // Persist contact
+            $em->persist($contact);
+
         }
 
         // Update contact information
@@ -212,17 +217,22 @@ class StagingContactRepository extends EntityRepository
             $lock->setType(Lock::TYPE_INITIAL_LOCK);
             $lock->setLockDate(new \DateTime());
             $lock->setExpirationDate($initial_lock_expiration_date);
+            $em->persist($lock);
+
             $lead->addLock($lock);
         }
         $lead->setIsReadyToUse(0);
 
-        // Persist contact
-        $em->persist($contact);
+        $em->flush();
+
+        $staging_contact->setLeadId($lead->getId());
+        $staging_contact->setContactId($contact->getId());
 
         // Move StagingContact
         $this->moveStagingContact($staging_contact, new StagingContactProcessed());
 
         $em->flush();
+
     }
 
     /**

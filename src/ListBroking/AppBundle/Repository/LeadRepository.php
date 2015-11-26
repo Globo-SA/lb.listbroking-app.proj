@@ -57,9 +57,7 @@ SQL;
                                                              'lo.type = :lock_type',
                                                              'lo.expiration_date >= CURRENT_TIMESTAMP()'
                                                          )))
-                  ->andWhere('c.id IS NULL')
-                  ->andWhere('lo.id IS NULL')
-
+                  ->andWhere($qb->expr()->orX('c.id IS NULL', 'lo.id IS NULL'))
                   ->andWhere('l.is_ready_to_use = :is_ready_to_use')
 
                   ->setParameter('initial_lock_time', $initial_lock_time)

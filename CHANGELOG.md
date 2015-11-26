@@ -221,3 +221,6 @@
 
 ### 2.14.04
 * Added pagination to the DataCard
+
+### 2.14.05
+* Fixed staging_contact_processed
