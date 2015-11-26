@@ -41,26 +41,22 @@ SQL;
      * Finds Leads with expired TYPE_INITIAL_LOCK
      *
      * @param integer    $limit
-     * @param  \DateTime $initial_lock_time
      *
      * @return \ListBroking\AppBundle\Entity\Lead[]
      */
-    public function findLeadsWithExpiredInitialLock ($limit, $initial_lock_time)
+    public function findLeadsWithExpiredInitialLock ($limit)
     {
         $qb = $this->createQueryBuilder('l');
 
         return $qb
-                  ->leftJoin('l.contacts', 'c', 'WITH', $qb->expr()->andX('c.date >= :initial_lock_time'))
                   ->leftJoin('l.locks', 'lo', 'WITH', $qb->expr()
                                                          ->andX()
                                                          ->addMultiple(array(
                                                              'lo.type = :lock_type',
                                                              'lo.expiration_date >= CURRENT_TIMESTAMP()'
                                                          )))
-                  ->andWhere($qb->expr()->orX('c.id IS NULL', 'lo.id IS NULL'))
+                  ->andWhere('lo.id IS NULL')
                   ->andWhere('l.is_ready_to_use = :is_ready_to_use')
-
-                  ->setParameter('initial_lock_time', $initial_lock_time)
                   ->setParameter('lock_type', Lock::TYPE_INITIAL_LOCK)
                   ->setParameter('is_ready_to_use', 0)
 

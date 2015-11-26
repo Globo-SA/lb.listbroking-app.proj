@@ -224,3 +224,6 @@
 
 ### 2.14.05
 * Fixed staging_contact_processed
+
+### 2.14.07
+* Fixed update_initial_locks

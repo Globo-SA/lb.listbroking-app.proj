@@ -127,10 +127,8 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     public function findLeadsWithExpiredInitialLock($limit)
     {
-        $initial_lock_time = new \DateTime($this->findConfig('lock.initial_time'));
-
         return $this->entity_manager->getRepository('ListBrokingAppBundle:Lead')
-                                                        ->findLeadsWithExpiredInitialLock($limit, $initial_lock_time);
+                                                        ->findLeadsWithExpiredInitialLock($limit);
     }
 
     private function loadStagingContactDimensions (StagingContact $staging_contact)
