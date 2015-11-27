@@ -186,41 +186,6 @@ class AjaxExtractionController extends Controller
         }
     }
 
-    //    /**
-    //     * Downloads the Extraction for deduplication
-    //     *
-    //     * @param $extraction_id
-    //     * @param $extraction_template_id
-    //     *
-    //     * @return Response
-    //     * @throws InvalidExtractionException
-    //     */
-    //    public function extractionDownloadAction ($extraction_id, $extraction_template_id)
-    //    {
-    //        $a_service = $this->get('app');
-    //        try
-    //        {
-    //            //Service
-    //            $e_service = $this->get('extraction');
-    //            $f_service = $this->get('file_handler');
-    //
-    //            // Current Extraction
-    //            $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
-    //
-    //            // Generate the Extraction File
-    //            $template = json_decode($e_service->findEntity('ListBrokingAppBundle:ExtractionTemplate', $extraction_template_id)
-    //                                              ->getTemplate(), 1);
-    //            $query = $e_service->getExtractionContactsQuery($extraction);
-    //            list($filename, $password) = $f_service->generateFileFromQuery($extraction->getName(), $template['extension'], $query, $template['headers'], false);
-    //
-    //            return $a_service->createAttachmentResponse($filename);
-    //        }
-    //        catch ( \Exception $e )
-    //        {
-    //            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
-    //        }
-    //    }
-
     /**
      * Publishes the extraction for deduplication
      *

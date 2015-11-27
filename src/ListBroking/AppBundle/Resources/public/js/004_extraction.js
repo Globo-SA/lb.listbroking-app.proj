@@ -63,7 +63,7 @@
             }, App.variables.intervalTimeout);
         }
 
-        if (App.variables.extractionStatus > 2) {
+        if (App.variables.extractionStatus >= 2) {
             $.listenToExtractionChanges(function (extraction) {
                 console.log('new extraction:' + extraction);
 
@@ -246,11 +246,11 @@
         $('.footer-button:not(#confirm_extraction_btn)').removeAttr('disabled');
         $('.footer-button[type=checkbox]').iCheck('enable').iCheck('update');
         if (extraction.is_delivering) {
-            $('#deliver_extraction_trigger, #deduplication-download')
+            $('#deliver_extraction_trigger, #deduplication_download')
                 .attr('disabled', 'disabled')
                 .find('i.loading, i.ion-loading-c').fadeIn();
         } else {
-            $('#deliver_extraction_trigger, #deduplication-download')
+            $('#deliver_extraction_trigger, #deduplication_download')
                 .removeAttr('disabled')
                 .find('i.loading, i.ion-loading-c').fadeOut();
         }

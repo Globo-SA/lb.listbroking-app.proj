@@ -11,7 +11,8 @@
                 <blockquote class="small-label">
                     <div class="form-group">
                         <label>Template</label>
-                        <input type="hidden" data-select-mode="ajax" data-select-minimum-input="0" data-select-type="ExtractionTemplate" data-placeholder="Select a template..." class="form-control
+                        <input id="deduplication_template" type="hidden" data-select-mode="ajax" data-select-minimum-input="0" data-select-type="ExtractionTemplate" data-placeholder="Select a
+                        template..." class="form-control
                         row-margin" value="1">
                     </div>
                     <div class="alert alert-info bigger-space" role="alert">
@@ -25,7 +26,7 @@
                 </blockquote>
             </div>
             <div class="modal-footer small">
-                <button type="button" id="deduplication-download" data-extraction="{{ extraction.id }}" class="btn btn-flat btn-primary space">
+                <button type="button" id="deduplication_download" data-extraction="{{ extraction.id }}" class="btn btn-flat btn-primary space">
                     <i class="fa fa-envelope-o"></i>&nbsp;SEND&nbsp;
                     <i class="loading ion-loading-c" style="display: none;"></i>
                 </button>

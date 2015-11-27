@@ -6,46 +6,18 @@
         "use strict";
         // Get and save extraction id as a global variable
         var $extraction_deduplication_form = $("form[name=extraction_deduplication]");
-        var $deduplication_btn = $('#deduplication-download');
+        var $deduplication_btn = $('#deduplication_download');
         var $extraction_deduplication_upload_button = $("#extraction_deduplication_upload_button");
-
-        //// Downloads the extraction for deduplication
-        //$deduplication_btn.on('click', function (e) {
-        //    e.preventDefault();
-        //
-        //    var extraction_template = $(this).prev('input').select2('val');
-        //    if (extraction_template) {
-        //        var url = Routing.generate('ajax_extraction_download', {extraction_id: $(this).data('extraction'), extraction_template_id: extraction_template});
-        //        $deduplication_btn.find('i').fadeIn();
-        //
-        //        $.fileDownload(url, {
-        //            successCallback: function (url) {
-        //                $deduplication_btn.find('i').fadeOut();
-        //            }
-        //        });
-        //    }
-        //});
+        var extraction_template = $("#deduplication_template");
 
         // Publishes the extraction for delivering
         $deduplication_btn.on('click', function (e) {
             $deduplication_btn.attr('disabled', 'disabled').find('i').fadeIn();
-            var extraction_template = $(this).prev('input').select2('val');
             $.ajax({
                 type: "POST",
-                url: App.routing.generate('ajax_extraction_deliver', {extraction_id: App.variables.extractionId, extraction_template_id: extraction_template}),
+                url: App.routing.generate('ajax_extraction_deliver', {extraction_id: App.variables.extractionId, extraction_template_id: extraction_template.select2('val')}),
                 dataType: 'json',
                 success: function (data) {
-
-                    //$('#delivery_modal_send').find('i.loading').fadeOut();
-                    //
-                    ////Close modal
-                    //$('#delivery_modal').modal('hide');
-                    //
-                    //// Set loading on trigger
-                    //$('#deliver_extraction_trigger')
-                    //    .attr('disabled', 'disabled')
-                    //    .find('i.loading').fadeIn()
-                    //;
                 }
             });
         });

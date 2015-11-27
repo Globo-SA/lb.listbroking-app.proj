@@ -227,3 +227,6 @@
 
 ### 2.14.07
 * Fixed update_initial_locks
+
+### 2.14.08
+* Fixed ajax extraction status not updating extraction
