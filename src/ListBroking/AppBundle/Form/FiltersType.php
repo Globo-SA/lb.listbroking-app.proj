@@ -306,6 +306,26 @@ class FiltersType extends AbstractType
                         'filter_type'          => LeadFilterInterface::BASIC_TYPE,
                         'has_exclusion_filter' => false,
                         'table'                => 'lead',
+                        'field'                => 'is_ready_to_use',
+                        'field_type'           => self::FIELD_TYPE_CHOICE,
+                        'type'                 => 'choice',
+                        'options'              => array(
+                            'placeholder' => false,
+                            'choices'     => array(
+                                self::FIELD_TYPE_CHOICE_YES  => 'Yes',
+                                self::FIELD_TYPE_CHOICE_NO   => 'No',
+                                self::FIELD_TYPE_CHOICE_BOTH => 'Both'
+                            ),
+                            'attr'        => array(
+                                'class' => 'form-control'
+                            ),
+                            'label'       => 'Contacts ready to be used'
+                        )
+                    ),
+                    array(
+                        'filter_type'          => LeadFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'lead',
                         'field'                => 'in_opposition',
                         'field_type'           => self::FIELD_TYPE_CHOICE,
                         'type'                 => 'choice',

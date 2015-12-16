@@ -189,11 +189,6 @@ class FilterEngine
             $lead_qb->andWhere($leadsAndX);
         }
 
-        // Only use contacts that are ready for being used
-        $lead_qb->andWhere('leads.is_ready_to_use = :is_ready_to_use')
-                ->setParameter('is_ready_to_use', 1)
-        ;
-
         // Group by Lead to get only
         // one contact per lead
         $lead_qb->groupBy('leads.id');

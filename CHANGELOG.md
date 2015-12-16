@@ -230,3 +230,6 @@
 
 ### 2.14.08
 * Fixed ajax extraction status not updating extraction
+
+### 2.14.09
+* Added is_ready_to_use as an extraction filter
