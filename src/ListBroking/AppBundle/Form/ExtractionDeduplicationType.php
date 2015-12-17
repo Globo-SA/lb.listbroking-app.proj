@@ -18,11 +18,7 @@ class ExtractionDeduplicationType extends AbstractType
     {
         $builder->add('deduplication_type', 'choice', array(
                 'label'             => 'Deduplication type',
-                'choices'           => array(
-                    'File with the leads to remove' => Extraction::EXCLUDE_DEDUPLICATION_TYPE,
-                    'File with the leads to keep'   => Extraction::INCLUDE_DEDUPLICATION_TYPE
-                ),
-                'choices_as_values' => true,
+                'choices'           => Extraction::$deduplication_names,
                 'attr'              => array(
                     'class'       => 'form-control',
                     'data-select' => 'local'

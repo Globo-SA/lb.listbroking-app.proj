@@ -107,8 +107,7 @@ class ExtractionAdmin extends Admin
                    ->with('Extraction')
         ;
 
-        $formMapper
-                   ->add('name')
+        $formMapper->add('name')
                    ->add('campaign')
                    ->add('payout')
                    ->add('quantity', null, array('attr' => array('min' => 1, 'max' => $max_quantity)))
@@ -120,11 +119,12 @@ class ExtractionAdmin extends Admin
         if ( $this->isGranted('ROLE_SUPER_ADMIN') )
         {
             $formMapper->tab('ADMIN')//
+                       ->add('status', 'choice', array('choices' => Extraction::$status_names))
+                       ->add('deduplication_type', 'choice', array('required' => false, 'choices' => Extraction::$deduplication_names))
                        ->add('is_already_extracted', null, array('required' => false))
                        ->add('is_deduplicating', null, array('required' => false))
                        ->add('is_locking', null, array('required' => false))
                        ->add('is_delivering', null, array('required' => false))
-                       ->add('deduplication_type', null, array('required' => false))
                        ->end()
             ;
         }

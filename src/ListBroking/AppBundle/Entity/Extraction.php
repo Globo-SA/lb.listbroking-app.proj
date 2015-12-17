@@ -40,6 +40,11 @@ class Extraction
         3 => 'Finished'
     );
 
+    public static $deduplication_names = array(
+        self::EXCLUDE_DEDUPLICATION_TYPE => 'File with the leads to remove',
+        self::INCLUDE_DEDUPLICATION_TYPE => 'File with the leads to keep'
+    );
+
     /**
      * @var integer
      */

@@ -233,3 +233,6 @@
 
 ### 2.14.09
 * Added is_ready_to_use as an extraction filter
+
+### 2.14.10
+* Added more admin options to extraction edit
