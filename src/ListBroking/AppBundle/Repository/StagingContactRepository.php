@@ -136,7 +136,7 @@ class StagingContactRepository extends EntityRepository
                                          ->andWhere('s.valid = :valid')
                                          ->andWhere('s.processed = :processed')
                                          ->andWhere('s.valid = :valid')
-                                         ->andWhere('s.updated_at >= :updated_before')
+                                         ->andWhere('s.updated_at <= :updated_before')
                                          ->setParameters(array(
                                              'valid'          => 0,
                                              'processed'      => 1,

@@ -236,3 +236,6 @@
 
 ### 2.14.10
 * Added more admin options to extraction edit
+
+### 2.14.11
+* Fixed staging cleanup query
