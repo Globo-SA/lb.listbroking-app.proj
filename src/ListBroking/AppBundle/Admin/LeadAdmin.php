@@ -55,9 +55,8 @@ class LeadAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('phone')
-            ->add('is_mobile')
-            ->add('in_opposition')
+            ->add('phone', null, array('disabled' => true))
+            ->add('in_opposition', null, array('required' => false))
         ;
     }
 

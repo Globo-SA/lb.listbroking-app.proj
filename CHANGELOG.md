@@ -239,3 +239,6 @@
 
 ### 2.14.11
 * Fixed staging cleanup query
+
+### 2.14.12
+* Updated the LeadAdmin board to be usable by the Brokers
