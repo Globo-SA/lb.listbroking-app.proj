@@ -242,3 +242,8 @@
 
 ### 2.14.12
 * Updated the LeadAdmin board to be usable by the Brokers
+
+### 2.14.13
+* Removed composer.lock from the .gitignore file
+* Updated symfony dependencies
+* Added nullable to source.external_id

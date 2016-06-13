@@ -30,7 +30,6 @@
 # Composer PHAR
 /composer.phar
 /.travis.yml
-/composer.lock
 
 # Others
 /web/bower
