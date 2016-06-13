@@ -1,5 +1,5 @@
 services:
-#  listbroking.exceptionhandler.exception_listener:
+  listbroking.exceptionhandler.exception_listener:
     class: ListBroking\ExceptionHandlerBundle\EventListener\ExceptionListener
     arguments: [@doctrine.orm.entity_manager, @mailer, @twig, @router]
     tags:

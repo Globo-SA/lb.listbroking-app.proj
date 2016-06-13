@@ -247,3 +247,6 @@
 * Removed composer.lock from the .gitignore file
 * Updated symfony dependencies
 * Added nullable to source.external_id
+
+### 2.14.14
+* Fixed wrong indentation on the services.yml file
