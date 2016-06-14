@@ -250,3 +250,6 @@
 
 ### 2.14.14
 * Fixed wrong indentation on the services.yml file
+
+### 2.14.15
+* Removed old BlameableListener (Gedmo resolved the problem)
