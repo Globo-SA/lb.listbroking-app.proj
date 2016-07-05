@@ -161,8 +161,10 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     public function uploadDeduplicationsByFile (Extraction $extraction, \PHPExcel $file, $field)
     {
 
+        $batch_sizes = $this->findConfig("batch_sizes");
+
         $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
-                             ->uploadDeduplicationsByFile($extraction, $file, $field)
+                             ->uploadDeduplicationsByFile($extraction, $file, $field, $batch_sizes["deduplication"])
         ;
     }
 

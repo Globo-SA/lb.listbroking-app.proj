@@ -1,0 +1,35 @@
+# This file is auto-generated during the composer install
+parameters:
+    database_driver: pdo_mysql
+    database_host: listbroking.cf5u3qshwqye.eu-west-1.rds.amazonaws.com
+    database_port: null
+    database_name: listbroking
+    database_user: listbroking_u
+    database_password: Uoyc1T68
+    mailer_transport: smtp
+    mailer_encryption: null
+    mailer_host: mail.authsmtp.com
+    mailer_user: ac55250
+    mailer_password: pfbwbxa8chbmmp
+    locale: en
+    secret: 2EhOCT9QEkk6lyHsD03krKnivtbsUq
+    java_bin_path: /usr/bin/java
+    ruby_bin_path: /usr/bin/ruby
+    compass_bin_path: /usr/bin/compass
+    database_logging: true
+    database_profiling: true
+    memcached_host: localhost
+    memcached_port: 11211
+    domain: 'http://listbroking.adctools.com'
+    app_services_channel_log_file_path: /var/www/listbroking.adctools.com/logs/app_services.log
+    rabbitmq_host: 10.0.12.147
+    rabbitmq_port: 5672
+    rabbitmq_user: lb-user
+    rabbitmq_password: 9gdNW0LK
+    rabbitmq_vhost: listbroking
+    filesystem_url: 'http://listbroking.s3.amazonaws.com'
+    filesystem_type: aws_s3
+    aws_s3_region: eu-west-1
+    aws_s3_key: AKIAIBSQAAQA2YEWB4PQ
+    aws_s3_secret: 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
+    aws_s3_bucket: listbroking
