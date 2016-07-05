@@ -253,3 +253,7 @@
 
 ### 2.14.15
 * Removed old BlameableListener (Gedmo resolved the problem)
+
+### 2.15.01
+* Changed dedup raw sql instead of doctrine
+* Deploy script
