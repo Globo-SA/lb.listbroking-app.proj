@@ -28,7 +28,7 @@ class ExtractionDeduplicationRepository extends EntityRepository
      * @throws \Doctrine\DBAL\DBALException
      * @return mixed
      */
-    public function uploadDeduplicationsByFile (Extraction $extraction, \PHPExcel $file, $field)
+    public function uploadDeduplicationsByFile (Extraction $extraction, \PHPExcel $file, $field, $batch_size)
     {
         $conn = $this->getEntityManager()
                      ->getConnection()
@@ -39,13 +39,9 @@ class ExtractionDeduplicationRepository extends EntityRepository
                              ->getRowIterator()
         ;
 
-        $em = $this->getEntityManager();
-
-        $inflector = new Inflector();
-        $method = 'set' . $inflector->classify($field);
-
         $batch = 1;
-        $batchSize = 5000;
+
+        $deduplication_values = array();
 
         /** @var \PHPExcel_Worksheet_Row $row */
         foreach ( $row_iterator as $row )
@@ -60,22 +56,26 @@ class ExtractionDeduplicationRepository extends EntityRepository
             $value = $cell_iterator->current()->getValue();
             if(!empty($value))
             {
-                $deduplication = new ExtractionDeduplication();
-                $deduplication->setExtraction($extraction);
-                $deduplication->$method($value);
 
-                $em->persist($deduplication);
+                $deduplication_values[] = sprintf("(%s, '%s' )", $extraction->getId() , $value);
+
             }
-
-            if ( ($batch % $batchSize) === 0 )
+            if ( ($batch % $batch_size) === 0 )
             {
 
+                $insert_dedup_sql = "INSERT INTO extraction_deduplication ( extraction_id, phone ) VALUES " . implode(", ", $deduplication_values);
+                $conn->prepare($insert_dedup_sql)
+                    ->execute();
+
                 $batch = 1;
-                $em->flush();
+                $deduplication_values = array();
+
             }
+
             $batch++;
         }
-        $em->flush();
+
+
 
         $find_leads_sql_params = array(
             'extraction' => $extraction->getId()
