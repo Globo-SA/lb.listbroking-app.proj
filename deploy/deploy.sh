@@ -57,6 +57,7 @@ fi
 echo "Update static files"
 bower update
 app/console assets:install
+app/console assetic:dump --env=ENVIRONMENT
 
 setfacl -R -m g:apache:rwX -m g:users:rwX app/cache app/logs app/spool
 setfacl -dR -m g:apache:rwX -m g:users:rwX app/cache app/logs app/spool

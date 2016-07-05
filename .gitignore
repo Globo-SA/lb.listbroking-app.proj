@@ -6,6 +6,7 @@
 /app/logs/*
 !app/cache/.gitkeep
 !app/logs/.gitkeep
+!app/spool/.gitkeep
 
 # Parameters
 /app/config/parameters.yml
@@ -23,6 +24,8 @@
 /web/uploads/
 /web/exports/*
 /web/imports/*
+!web/imports/.gitkeep
+!web/exports/.gitkeep
 
 # PHPUnit
 /app/phpunit.xml
