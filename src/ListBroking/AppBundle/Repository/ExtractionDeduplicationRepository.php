@@ -63,9 +63,7 @@ class ExtractionDeduplicationRepository extends EntityRepository
             if ( ($batch % $batch_size) === 0 )
             {
 
-                $insert_dedup_sql = "INSERT INTO extraction_deduplication ( extraction_id, phone ) VALUES " . implode(", ", $deduplication_values);
-                $conn->prepare($insert_dedup_sql)
-                    ->execute();
+                $this->insertExtractionDeduplication($conn, $deduplication_values);
 
                 $batch = 1;
                 $deduplication_values = array();
@@ -75,6 +73,10 @@ class ExtractionDeduplicationRepository extends EntityRepository
             $batch++;
         }
 
+        if(empty($deduplication_values))
+        {
+            $this->insertExtractionDeduplication($conn, $deduplication_values);
+        }
 
 
         $find_leads_sql_params = array(
@@ -96,6 +98,20 @@ class ExtractionDeduplicationRepository extends EntityRepository
 SQL;
         $conn->prepare($find_leads_sql)
              ->execute($find_leads_sql_params)
+        ;
+    }
+
+    /**
+     * Send Deduplications to the database
+     * 
+     * @param $conn
+     * @param $deduplication_values
+     */
+    private function insertExtractionDeduplication($conn, $deduplication_values)
+    {
+        $insert_dedup_sql = "INSERT INTO extraction_deduplication ( extraction_id, phone ) VALUES " . implode(", ", $deduplication_values);
+        $conn->prepare($insert_dedup_sql)
+             ->execute()
         ;
     }
 }

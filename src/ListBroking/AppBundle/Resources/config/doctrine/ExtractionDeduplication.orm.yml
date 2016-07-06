@@ -25,8 +25,8 @@ ListBroking\AppBundle\Entity\ExtractionDeduplication:
             column: contact_id
             nullable: true
         phone:
-            type: integer
-            column: phone
+            type:     string
+            column:   phone
             nullable: true
     manyToOne:
         extraction:
