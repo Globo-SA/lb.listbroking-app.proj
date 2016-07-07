@@ -8,12 +8,8 @@
 
 namespace ListBroking\AppBundle\Repository;
 
-use Doctrine\Common\Util\Inflector;
 use Doctrine\ORM\EntityRepository;
 use ListBroking\AppBundle\Entity\Extraction;
-use ListBroking\AppBundle\Entity\ExtractionContact;
-use ListBroking\AppBundle\Entity\ExtractionDeduplication;
-use ListBroking\AppBundle\Entity\Lock;
 
 class ExtractionDeduplicationRepository extends EntityRepository
 {
@@ -73,7 +69,7 @@ class ExtractionDeduplicationRepository extends EntityRepository
             $batch++;
         }
 
-        if(empty($deduplication_values))
+        if ( ! empty($deduplication_values))
         {
             $this->insertExtractionDeduplication($conn, $deduplication_values);
         }
@@ -103,7 +99,7 @@ SQL;
 
     /**
      * Send Deduplications to the database
-     * 
+     *
      * @param $conn
      * @param $deduplication_values
      */

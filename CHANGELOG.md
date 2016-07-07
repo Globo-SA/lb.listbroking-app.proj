@@ -261,3 +261,6 @@
 ### 2.15.02
 * Fixed extraction_deduplication phone type
 * Fixed batch update
+
+### 2.15.03
+* Fixed batch update on last iteration
