@@ -8,13 +8,13 @@
 
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
-use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Engine\FilterEngine;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionDeduplication;
 use ListBroking\AppBundle\Entity\ExtractionLog;
 use ListBroking\AppBundle\Form\FiltersType;
 use ListBroking\AppBundle\Service\Base\BaseService;
+use ListBroking\AppBundle\Service\Helper\FileHandlerServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -108,6 +108,39 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     }
 
     /**
+     * @inheritDoc
+     */
+    public function exportExtractionContacts(FileHandlerServiceInterface $file_service, Extraction $extraction, $template, $batch_size)
+    {
+        $total = 0;
+        $offset = 0;
+        $total_contacts_to_export = $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')
+                                                        ->countExtractionContacts($extraction)
+        ;
+        $batches_to_run = ceil($total_contacts_to_export / $batch_size);
+        $this->logExtractionAction($extraction, sprintf("Export starts - total_contacts_to_export: %s, batches_to_run: %s", $total_contacts_to_export, $batches_to_run));
+
+        $file_service->createFileWriter($extraction->getName(), $template['extension']);
+        $file_service->openWriter();
+        for ($i = 1; $i <= $batches_to_run; $i++)
+        {
+            $extraction_contacts = $this->findExtractionContactsWithOffset($extraction, $template['headers'], $batch_size, $offset);
+            $total += count($extraction_contacts);
+            $this->logInfo('BATCH: ' . $i . ' LIMIT: ' . $batch_size . ' OFFSET: ' . $offset . ' CONTACTS: ' . count($extraction_contacts));
+
+            $file_service->writeArray($extraction_contacts);
+
+            $last_of_batch = end($extraction_contacts);
+            $offset = $last_of_batch['id'];
+        }
+        $export_info = $file_service->closeWriter();
+
+        $this->logExtractionAction($extraction, sprintf("Total contacts exported: %s", $total));
+
+        return $export_info;
+    }
+
+    /**
      * @inheritdoc
      */
     public function handleFiltration (Extraction $extraction)
@@ -173,6 +206,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     public function logExtractionAction (Extraction $extraction, $message)
     {
+        $this->logInfo($message);
 
         $extraction_log = new ExtractionLog();
         $extraction_log->setLog($message);
@@ -230,5 +264,20 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $extraction->setQuery(json_encode($query));
 
         $this->updateEntity($extraction);
+    }
+
+    /**
+     * Finds extraction contacts of a given extraction with a limit and an offset
+     *
+     * @param Extraction $extraction
+     * @param array      $headers
+     * @param int        $limit
+     * @param int        $offset
+     *
+     * @return array
+     */
+    private function findExtractionContactsWithOffset(Extraction $extraction, $headers, $limit, $offset)
+    {
+        return $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')->findExtractionContactsWithIdOffset($extraction, $headers, $limit, $offset);
     }
 }

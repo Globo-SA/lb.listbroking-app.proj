@@ -56,6 +56,24 @@ class ExtractionContactRepository extends EntityRepository
     }
 
     /**
+     * Counts the Extraction Contacts of a given Extraction
+     *
+     * @param Extraction $extraction
+     *
+     * @return mixed
+     */
+    public function countExtractionContacts(Extraction $extraction)
+    {
+        return (int) $this->createQueryBuilder('ec')
+                    ->select('count(ec.id)')
+                    ->where('ec.extraction = :extraction')
+                    ->setParameter('extraction', $extraction->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult()
+            ;
+    }
+
+    /**
      * Gets a Query object of the Extraction Contacts
      *
      * @param Extraction $extraction
@@ -95,5 +113,61 @@ class ExtractionContactRepository extends EntityRepository
         return $query;
     }
 
+    /**
+     * Finds extraction contacts of a given extraction with a limit and an ID offset
+     *
+     * @param Extraction $extraction
+     * @param array     $headers
+     * @param int        $limit
+     * @param int        $offset
+     *
+     * @return array
+     */
+    public function findExtractionContactsWithIdOffset(Extraction $extraction, $headers, $limit, $offset)
+    {
+        $conn = $this->getEntityManager()
+                     ->getConnection()
+        ;
 
+        $parameters = array(
+            'extraction_id' => $extraction->getId(),
+            'offset' => $offset
+        );
+
+        $composed_headers = $this->composeHeaders($headers);
+        $find_extraciton_contacts_query = <<<SQL
+            SELECT extraction_contact.id, {$composed_headers}
+            FROM extraction_contact extraction_contact
+            LEFT JOIN contact contact ON contact.id = extraction_contact.contact_id
+            LEFT JOIN lead lead ON lead.id = contact.lead_id
+            LEFT JOIN source source ON source.id = contact.source_id
+            LEFT JOIN owner owner ON owner.id = contact.owner_id
+            JOIN sub_category sub_category ON sub_category.id = contact.sub_category_id
+            LEFT JOIN category category ON category.id = sub_category.category_id
+            JOIN gender gender ON gender.id = contact.gender_id
+            LEFT JOIN district district ON district.id = contact.district_id
+            LEFT JOIN county county ON county.id = contact.county_id
+            LEFT JOIN parish parish ON parish.id = contact.parish_id
+            JOIN country country ON country.id = contact.country_id
+            WHERE extraction_contact.extraction_id = :extraction_id
+            AND extraction_contact.id > :offset
+            ORDER BY extraction_contact.id ASC
+            LIMIT $limit
+            ;
+SQL;
+        $statment = $conn->prepare($find_extraciton_contacts_query);
+        $statment->execute($parameters);
+
+        return $statment->fetchAll();
+    }
+
+    private function composeHeaders($headers){
+        $composed_headers = array();
+        foreach ($headers as $label => $field)
+        {
+            $composed_headers[] =  sprintf('%s as "%s"', $field, $label);
+        }
+
+        return implode(",", $composed_headers);
+    }
 }

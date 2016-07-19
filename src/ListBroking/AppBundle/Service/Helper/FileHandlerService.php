@@ -11,11 +11,12 @@ namespace ListBroking\AppBundle\Service\Helper;
 use Doctrine\ORM\Query;
 use Exporter\Handler;
 use Exporter\Source\ArraySourceIterator;
-use Exporter\Writer\CsvWriter;
 use Exporter\Writer\JsonWriter;
+use Exporter\Writer\WriterInterface;
 use Exporter\Writer\XlsWriter;
 use Exporter\Writer\XmlExcelWriter;
 use League\Flysystem\Filesystem;
+use ListBroking\AppBundle\Exporter\Exporter\CsvWriter;
 use ListBroking\AppBundle\Exporter\Source\DoctrineORMQuerySourceIterator;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -42,6 +43,16 @@ class FileHandlerService implements FileHandlerServiceInterface
      * @var array
      */
     private $filesystem_config;
+
+    /**
+     * @var WriterInterface
+     */
+    private $writer;
+
+    /**
+     * @var string
+     */
+    private $filepath;
 
     public function __construct (KernelInterface $kernel, Filesystem $filesystem, $filesystem_config)
     {
@@ -80,6 +91,47 @@ class FileHandlerService implements FileHandlerServiceInterface
         // Export and store
         $this->exportByArray($filepath, $extension, $array);
         $file_info = $this->store(self::EXPORTS_FOLDER, $filepath, $zipped);
+
+        return $file_info;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createFileWriter($name, $extension)
+    {
+        // Generate File
+        $this->filepath = $this->generateFilename($name, $extension, true, '/../web/exports/');
+
+        $this->writer = $this->writerSelection($this->filepath, $extension);
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function writeArray($array)
+    {
+        foreach ($array as $row)
+        {
+            $this->writer->write($row);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function openWriter()
+    {
+        $this->writer->open();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function closeWriter($zipped = true)
+    {
+        $this->writer->close();
+        $file_info = $this->store(self::EXPORTS_FOLDER, $this->filepath, $zipped);
 
         return $file_info;
     }
@@ -151,7 +203,7 @@ class FileHandlerService implements FileHandlerServiceInterface
     private function exportByQuery ($filename, $extension, $headers, Query $query)
     {
         $source = new DoctrineORMQuerySourceIterator($query, $headers, 'Y-m-d');
-        $writer = $this->writerSelection($extension, $filename);
+        $writer = $this->writerSelection($filename, $extension);
 
         Handler::create($source, $writer)
                ->export()
@@ -168,7 +220,7 @@ class FileHandlerService implements FileHandlerServiceInterface
     private function exportByArray ($filename, $extension, $array)
     {
         $source = new ArraySourceIterator($array);
-        $writer = $this->writerSelection($extension, $filename);
+        $writer = $this->writerSelection($filename, $extension);
 
         Handler::create($source, $writer)
                ->export()
@@ -178,12 +230,12 @@ class FileHandlerService implements FileHandlerServiceInterface
     /**
      * Selects a file writer by type
      *
-     * @param $extension
      * @param $filename
+     * @param $extension
      *
-     * @return CsvWriter|JsonWriter|XlsWriter|XmlExcelWriter
+     * @return WriterInterface
      */
-    private function writerSelection ($extension, $filename)
+    private function writerSelection($filename, $extension)
     {
         switch ( strtoupper($extension) )
         {

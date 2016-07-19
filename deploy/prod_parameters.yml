@@ -11,6 +11,8 @@ parameters:
     mailer_host: mail.authsmtp.com
     mailer_user: ac55250
     mailer_password: pfbwbxa8chbmmp
+    mailer_from_email: systems@adclick.pt
+    mailer_to_email: adit@adclick.pt
     locale: en
     secret: 2EhOCT9QEkk6lyHsD03krKnivtbsUq
     java_bin_path: /usr/bin/java

@@ -9,6 +9,7 @@ use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionLog;
 use ListBroking\AppBundle\Service\Base\BaseServiceInterface;
+use ListBroking\AppBundle\Service\Helper\FileHandlerServiceInterface;
 
 interface ExtractionServiceInterface extends BaseServiceInterface
 {
@@ -51,6 +52,18 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      * @return Query
      */
     public function getExtractionContactsQuery (Extraction $extraction, $fetch_mode = null);
+
+    /**
+     * Uses a FileHandlerService to export contacts of a given Extraction
+     *
+     * @param FileHandlerServiceInterface $file_service
+     * @param Extraction            $extraction
+     * @param array                 $template
+     * @param int                   $batch_size
+
+     *
+     */
+    public function exportExtractionContacts(FileHandlerServiceInterface $file_service, Extraction $extraction, $template, $batch_size);
 
     /**
      * Finds all the contacts of a given Extraction with
