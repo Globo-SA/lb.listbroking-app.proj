@@ -269,3 +269,6 @@
 ### 2.16.01
 * Changed export to raw sql instead of doctrine
 * Changed ExtractionTemplate headers config
+
+### 2.16.02
+* Fixed error on the deploy script
