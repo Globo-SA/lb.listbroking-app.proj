@@ -264,3 +264,8 @@
 
 ### 2.15.03
 * Fixed batch update on last iteration
+* Fixed batch update
+
+### 2.16.01
+* Changed export to raw sql instead of doctrine
+* Changed ExtractionTemplate headers config

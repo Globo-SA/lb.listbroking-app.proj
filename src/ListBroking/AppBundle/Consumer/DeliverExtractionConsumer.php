@@ -59,9 +59,9 @@ class DeliverExtractionConsumer implements ConsumerInterface
             $template = json_decode($this->e_service->findEntity('ListBrokingAppBundle:ExtractionTemplate', $msg_body['extraction_template_id'])
                                                     ->getTemplate(), 1);
 
-            $query = $this->e_service->getExtractionContactsQuery($extraction, ClassMetadata::FETCH_EAGER);
+            $batch_size = $this->e_service->findConfig("batch_sizes")['deliver'];
 
-            list($filepath, $password) = $this->f_service->generateFileFromQuery($extraction->getName(), $template['extension'], $query, $template['headers']);
+            list($filepath, $password) =  $this->e_service->exportExtractionContacts($this->f_service, $extraction, $template, $batch_size);
 
             // Send the Extraction by Email
             $email_template = '@ListBrokingApp/KitEmail/deliver_extraction.html.twig';

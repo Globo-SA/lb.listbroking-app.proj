@@ -182,8 +182,7 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function logError ($msg)
     {
-        $msg = '[' . date('Y-m-d h:d:s') . '] ' . $msg;
-        $this->logger->error($msg);
+        $this->logger->error($this->generateLogMsg($msg));
     }
 
     /**
@@ -191,9 +190,7 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function logInfo ($msg)
     {
-
-        $msg = '[' . date('Y-m-d h:d:s') . '] ' . $msg;
-        $this->logger->info($msg);
+        $this->logger->info($this->generateLogMsg($msg));
     }
 
     /**
@@ -296,7 +293,7 @@ abstract class BaseService implements BaseServiceInterface
         return false;
     }
 
-    /*
+    /**
      * Generates a cache_id to be used in the
      * module locking system
      *
@@ -325,5 +322,37 @@ abstract class BaseService implements BaseServiceInterface
         {
             $entity = $this->entity_manager->merge($entity);
         }
+    }
+
+    /**
+     * Generates a log message with date and memory usage
+     *
+     * @param string $msg
+     *
+     * @return string
+     */
+    private function generateLogMsg($msg){
+        return sprintf("[%s][%s] %s", date('Y-m-d h:d:s') , $this->memoryUsage(), $msg);
+    }
+    /**
+     * Returns the currently used memory
+     *
+     * @return string
+     */
+    private function memoryUsage()
+    {
+        $mem_usage = memory_get_usage(true);
+
+        if ($mem_usage < 1024)
+        {
+            return $mem_usage . " B";
+        }
+
+        if ($mem_usage < 1048576)
+        {
+            return round($mem_usage / 1024, 2) . "kB";
+        }
+
+        return round($mem_usage / 1048576, 2) . "MB";
     }
 }

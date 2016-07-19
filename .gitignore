@@ -45,6 +45,7 @@
 !web/images/.gitkeep
 
 # IDEs
+.idea
 /.idea
 /.nbproject
 
