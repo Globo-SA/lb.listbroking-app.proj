@@ -115,7 +115,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $total = 0;
         $offset = 0;
         $total_contacts_to_export = $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')
-                                                        ->countExtractionContacts($extraction)
+                                                         ->countExtractionContacts($extraction)
         ;
         $batches_to_run = ceil($total_contacts_to_export / $batch_size);
         $this->logExtractionAction($extraction, sprintf("Export starts - total_contacts_to_export: %s, batches_to_run: %s", $total_contacts_to_export, $batches_to_run));
@@ -124,9 +124,13 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $file_service->openWriter();
         for ($i = 1; $i <= $batches_to_run; $i++)
         {
-            $extraction_contacts = $this->findExtractionContactsWithOffset($extraction, $template['headers'], $batch_size, $offset);
-            $total += count($extraction_contacts);
-            $this->logInfo('BATCH: ' . $i . ' LIMIT: ' . $batch_size . ' OFFSET: ' . $offset . ' CONTACTS: ' . count($extraction_contacts));
+            $extraction_contacts = $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')
+                                                        ->findExtractionContactsWithIdOffset($extraction, $template['headers'], $batch_size, $offset)
+            ;
+            $batch_extraction_contacts = count($extraction_contacts);
+
+            $total += $batch_extraction_contacts;
+            $this->logInfo(sprintf('BATCH: %s LIMIT: %s OFFSET: %s CONTACTS: %s', $i, $batch_size, $offset, $batch_extraction_contacts));
 
             $file_service->writeArray($extraction_contacts);
 
@@ -264,20 +268,5 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $extraction->setQuery(json_encode($query));
 
         $this->updateEntity($extraction);
-    }
-
-    /**
-     * Finds extraction contacts of a given extraction with a limit and an offset
-     *
-     * @param Extraction $extraction
-     * @param array      $headers
-     * @param int        $limit
-     * @param int        $offset
-     *
-     * @return array
-     */
-    private function findExtractionContactsWithOffset(Extraction $extraction, $headers, $limit, $offset)
-    {
-        return $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')->findExtractionContactsWithIdOffset($extraction, $headers, $limit, $offset);
     }
 }
