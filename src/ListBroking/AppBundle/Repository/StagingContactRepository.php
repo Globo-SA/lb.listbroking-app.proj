@@ -31,17 +31,21 @@ class StagingContactRepository extends EntityRepository
      */
     public function importStagingContactsFile (\PHPExcel $file, array $default_info)
     {
+        $conn = $this->getEntityManager()
+                     ->getConnection()
+        ;
+
         $row_iterator = $file->getWorksheetIterator()
                              ->current()
                              ->getRowIterator()
         ;
 
-        $headers = array_keys(StagingContact::$import_template);
-
         $em = $this->getEntityManager();
 
         $batch = 1;
-        $batchSize = 1000;
+        $batchSize = 2;
+
+        $staging_contacts = array();
 
         /** @var \PHPExcel_Worksheet_Row $row */
         foreach ( $row_iterator as $row )
@@ -52,33 +56,21 @@ class StagingContactRepository extends EntityRepository
                 continue;
             }
 
-            $array_data = array();
-
+            $contact_data = array();
             /** @var  \PHPExcel_Cell $cell */
-
-            $index = 0;
             foreach ( $row->getCellIterator() as $cell )
             {
                 $value = trim($cell->getValue());
-
-                if ( ! empty($value) )
-                {
-                    $array_data[$headers[$index]] = $value;
-                }
-                $index++;
+                $contact_data[] =  is_numeric($value) ? $value : sprintf("'%s'", $value);
             }
-
-            if ( ! empty($array_data) && $row->getRowIndex() != 1 )
-            {
-                $array_data = array_replace($array_data, $default_info);
-                $this->addStagingContact($array_data);
-            }
+            $staging_contacts[] = sprintf("(%s)", implode(',', $contact_data));
 
             if ( ($batch % $batchSize) === 0 )
             {
+                $this->insertStagingContactBatch($conn, $staging_contacts);
 
                 $batch = 1;
-                $em->flush();
+                $staging_contacts = array();
             }
             $batch++;
         }
@@ -119,6 +111,46 @@ class StagingContactRepository extends EntityRepository
         ;
 
         return $staging_contact;
+    }
+
+
+    /**
+     * Send a Batch of StagingContacts to the database
+     *
+     * @param $conn
+     * @param $staging_contacts
+     */
+    private function insertStagingContactBatch($conn, $staging_contacts)
+    {
+        $insert_dedup_sql =<<<SQL
+                INSERT INTO staging_contact (
+                external_id,
+                phone,
+                email,
+                firstname,
+                lastname,
+                birthdate,
+                address,
+                postalcode1,
+                postalcode2,
+                ipaddress,
+                gender,
+                country,
+                owner,
+                source_name,
+                source_external_id,
+                source_country,
+                sub_category,
+                date,
+                initial_lock_expiration_date,
+                post_request
+                ) VALUES %s
+SQL;
+
+        $insert_dedup_sql = sprintf($insert_dedup_sql, implode(',', $staging_contacts));
+        $conn->prepare($insert_dedup_sql)
+             ->execute()
+        ;
     }
 
     /**

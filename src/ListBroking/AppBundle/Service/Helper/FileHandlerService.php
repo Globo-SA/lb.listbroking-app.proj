@@ -320,7 +320,7 @@ class FileHandlerService implements FileHandlerServiceInterface
      */
     private function store ($path, $filename, $zipped)
     {
-        $file_info = array();
+        $file_info = array($filename);
         if ( $zipped )
         {
             $file_info = $this->zipFile($filename, true);

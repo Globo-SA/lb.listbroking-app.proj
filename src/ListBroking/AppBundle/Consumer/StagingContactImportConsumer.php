@@ -54,7 +54,7 @@ class StagingContactImportConsumer implements ConsumerInterface
 
             $msg_body = unserialize($msg->body);
 
-            $this->s_service->logInfo(sprintf('Starting \'importStagingContacts\', filename: %s', $msg_body['filename']));
+            $this->s_service->logInfo(sprintf('Starting \'importStagingContacts\', owner: %s, update: %s, filename: %s', $msg_body['owner'], $msg_body['update'], $msg_body['filename']));
 
             $file = $this->f_service->import($msg_body['filename']);
 
