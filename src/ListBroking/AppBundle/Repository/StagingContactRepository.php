@@ -29,8 +29,9 @@ class StagingContactRepository extends EntityRepository
      *
      * @param \PHPExcel $file
      * @param array     $extra_fields
+     * @param           $batch_size
      */
-    public function importStagingContactsFile (\PHPExcel $file, array $extra_fields = [])
+    public function importStagingContactsFile (\PHPExcel $file, array $extra_fields = [], $batch_size)
     {
         $conn = $this->getEntityManager()
                      ->getConnection()
@@ -44,7 +45,6 @@ class StagingContactRepository extends EntityRepository
         $em = $this->getEntityManager();
 
         $batch = 1;
-        $batchSize = 2;
 
         $staging_contacts = array();
 
@@ -65,13 +65,13 @@ class StagingContactRepository extends EntityRepository
                 $contact_data[] = $this->cleanUpValue($value);
             }
 
-            $extra_fields['created_at'] = date('YYY-mm-dd h:d:s');
+            $extra_fields['created_at'] = date('Y-m-d H:i:s');
             foreach($extra_fields as $field => $value){
                 $contact_data[] = $this->cleanUpValue($value);
             }
             $staging_contacts[] = $contact_data;
 
-            if ( ($batch % $batchSize) === 0 )
+            if ( ($batch % $batch_size) === 0 )
             {
                 $this->insertStagingContactBatch($conn, $staging_contacts, $extra_fields);
 
@@ -263,8 +263,8 @@ class StagingContactRepository extends EntityRepository
 
             $contact->setIsClean(true);
 
-            // Remove StagingContact
-//            $em->remove($staging_contact);
+            // Move StagingContact
+            $this->moveStagingContact($staging_contact, new StagingContactProcessed());
 
             $em->flush();
         }

@@ -58,7 +58,9 @@ class StagingContactImportConsumer implements ConsumerInterface
 
             $file = $this->f_service->loadExcelFile($msg_body['filename']);
 
-            $this->s_service->importStagingContacts($file, array('owner' => $msg_body['owner'], 'for_update' => $msg_body['update'] ? 1 : 0));
+            $batch_size = $this->s_service->findConfig("batch_sizes")['staging_import'];
+
+            $this->s_service->importStagingContacts($file, array('owner' => $msg_body['owner'], 'for_update' => $msg_body['update'] ? 1 : 0), $batch_size);
 
             $this->m_system->unlockProducer($producer_id);
 
