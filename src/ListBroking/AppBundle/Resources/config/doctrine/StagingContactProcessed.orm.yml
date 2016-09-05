@@ -133,7 +133,9 @@ ListBroking\AppBundle\Entity\StagingContactProcessed:
         date:
             type: date
             column: date
-            nullable: false
+            nullable: true
+            options:
+                default: NULL
         initial_lock_expiration_date:
             type: date
             column: initial_lock_expiration_date

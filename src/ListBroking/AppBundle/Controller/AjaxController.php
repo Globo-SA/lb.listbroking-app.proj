@@ -183,6 +183,7 @@ class AjaxController extends Controller
             StagingContact::IMPORT_TEMPLATE_FILENAME,
             StagingContact::IMPORT_TEMPLATE_FILE_EXTENSION,
             array(StagingContact::$import_template),
+            false,
             false);
 
         return $a_service->createAttachmentResponse($filename);

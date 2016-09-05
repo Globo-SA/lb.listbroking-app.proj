@@ -73,7 +73,7 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
             {
                 if ( $staging_contact->getUpdate() )
                 {
-                    $this->service->write("Loading StagingContact: {$staging_contact->getId()}");
+                    $this->service->write(sprintf("Loading StagingContact: id:%s, contact_id: %s", $staging_contact->getId(), $staging_contact->getContactId()));
                     $this->staging_service->loadUpdatedContact($staging_contact);
                     continue;
                 }

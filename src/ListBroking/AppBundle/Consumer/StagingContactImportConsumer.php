@@ -54,11 +54,11 @@ class StagingContactImportConsumer implements ConsumerInterface
 
             $msg_body = unserialize($msg->body);
 
-            $this->s_service->logInfo(sprintf('Starting \'importStagingContacts\', owner: %s, update: %s, filename: %s', $msg_body['owner'], $msg_body['update'], $msg_body['filename']));
+            $this->s_service->logInfo(sprintf('Starting \'importStagingContacts\', owner: %s, update: %s, filename: %s', $msg_body['owner'], $msg_body['owner'], $msg_body['filename']));
 
-            $file = $this->f_service->import($msg_body['filename']);
+            $file = $this->f_service->loadExcelFile($msg_body['filename']);
 
-            $this->s_service->importStagingContacts($file, array('owner' => $msg_body['owner'], 'update' => $msg_body['update']));
+            $this->s_service->importStagingContacts($file, array('owner' => $msg_body['owner'], 'for_update' => $msg_body['update'] ? 1 : 0));
 
             $this->m_system->unlockProducer($producer_id);
 
