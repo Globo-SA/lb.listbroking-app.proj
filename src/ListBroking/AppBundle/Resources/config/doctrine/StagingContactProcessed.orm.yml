@@ -5,6 +5,8 @@ ListBroking\AppBundle\Entity\StagingContactProcessed:
         id:
             type: bigint
             id:   true
+            generator:
+                strategy: AUTO
     indexes:
         email_index:
           columns: [ email ]

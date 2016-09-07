@@ -277,4 +277,5 @@
 * Changed StagingContact import to raw SQL (instead of doctrine objects)
 * Fixed the StagingContact update system
 * Better Staging Contact Import UI
+* Added AutoIncrement PK on StagingContactDQP and StagingContactProcessed
 * Moved app logs to app/logs

@@ -335,6 +335,8 @@ class StagingContactRepository extends EntityRepository
                 $to->$set_method($from->$get_method());
             }
         }
+
+        $to->setId(null);
         $entity_manager->persist($to);
 
         $entity_manager->remove($from);
