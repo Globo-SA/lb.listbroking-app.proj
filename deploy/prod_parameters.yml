@@ -23,7 +23,7 @@ parameters:
     memcached_host: localhost
     memcached_port: 11211
     domain: 'http://listbroking.adctools.com'
-    app_services_channel_log_file_path: /var/www/listbroking.adctools.com/logs/app_services.log
+    app_services_channel_log_file_path: /var/www/listbroking.adctools.com/httpdocs/production/app/logs/app_services.log
     rabbitmq_host: 10.0.12.147
     rabbitmq_port: 5672
     rabbitmq_user: lb-user

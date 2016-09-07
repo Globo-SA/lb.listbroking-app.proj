@@ -272,3 +272,9 @@
 
 ### 2.16.02
 * Fixed error on the deploy script
+
+### 2.17.01
+* Changed StagingContact import to raw SQL (instead of doctrine objects)
+* Fixed the StagingContact update system
+* Better Staging Contact Import UI
+* Moved app logs to app/logs
