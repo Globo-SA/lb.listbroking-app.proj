@@ -61,10 +61,10 @@ class StagingService extends BaseService implements StagingServiceInterface
     /**
      * @inheritdoc
      */
-    public function importStagingContacts ($file, array $default_info = [])
+    public function importStagingContacts ($file, array $extra_fields = [], $batch_size)
     {
         $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                             ->importStagingContactsFile($file, $default_info)
+                             ->importStagingContactsFile($file, $extra_fields, $batch_size)
         ;
     }
 
@@ -99,8 +99,9 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     public function loadUpdatedContact (StagingContact $staging_contact)
     {
+        $dimensions = $this->loadStagingContactDimensions($staging_contact);
         $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                             ->loadUpdatedContact($staging_contact)
+                             ->loadUpdatedContact($staging_contact, $dimensions)
         ;
     }
 

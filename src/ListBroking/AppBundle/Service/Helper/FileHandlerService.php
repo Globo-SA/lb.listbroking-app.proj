@@ -25,9 +25,13 @@ use Symfony\Component\HttpKernel\KernelInterface;
 class FileHandlerService implements FileHandlerServiceInterface
 {
 
-    const EXPORTS_FOLDER = 'exports/';
+    const EXTERNAL_EXPORTS_FOLDER = 'exports/';
 
-    const IMPORTS_FOLDER = 'imports/';
+    const EXTERNAL_IMPORTS_FOLDER = 'imports/';
+
+    const INTERNAL_EXPORTS_FOLDER = '/../web/exports/';
+
+    const INTERNAL_IMPORTS_FOLDER = '/../web/imports/';
 
     /**
      * @var KernelInterface
@@ -68,14 +72,18 @@ class FileHandlerService implements FileHandlerServiceInterface
     /**
      * @inheritdoc
      */
-    public function generateFileFromQuery ($name, $extension, Query $query, $headers, $zipped = true)
+    public function generateFileFromQuery ($name, $extension, Query $query, $headers, $zipped = true, $upload = true)
     {
         // Generate File
-        $filepath = $this->generateFilename($name, $extension, true, '/../web/exports/');
+        $filepath = $this->generateFilename($name, $extension, true, self::INTERNAL_EXPORTS_FOLDER);
 
         // Export and store
         $this->exportByQuery($filepath, $extension, $headers, $query);
-        $file_info = $this->store(self::EXPORTS_FOLDER, $filepath, $zipped);
+
+        $file_info = array($filepath, '');
+        if($upload){
+            $file_info = $this->store(self::EXTERNAL_EXPORTS_FOLDER, $filepath, $zipped);
+        }
 
         return $file_info;
     }
@@ -83,14 +91,18 @@ class FileHandlerService implements FileHandlerServiceInterface
     /**
      * @inheritdoc
      */
-    public function generateFileFromArray ($name, $extension, $array, $zipped = true)
+    public function generateFileFromArray ($name, $extension, $array, $zipped = true, $upload = true)
     {
         // Generate File
-        $filepath = $this->generateFilename($name, $extension, true, '/../web/exports/');
+        $filepath = $this->generateFilename($name, $extension, true, self::INTERNAL_EXPORTS_FOLDER);
 
         // Export and store
         $this->exportByArray($filepath, $extension, $array);
-        $file_info = $this->store(self::EXPORTS_FOLDER, $filepath, $zipped);
+
+        $file_info = array($filepath, '');
+        if($upload){
+            $file_info = $this->store(self::EXTERNAL_EXPORTS_FOLDER, $filepath, $zipped);
+        }
 
         return $file_info;
     }
@@ -101,7 +113,7 @@ class FileHandlerService implements FileHandlerServiceInterface
     public function createFileWriter($name, $extension)
     {
         // Generate File
-        $this->filepath = $this->generateFilename($name, $extension, true, '/../web/exports/');
+        $this->filepath = $this->generateFilename($name, $extension, true, self::INTERNAL_EXPORTS_FOLDER);
 
         $this->writer = $this->writerSelection($this->filepath, $extension);
     }
@@ -131,7 +143,7 @@ class FileHandlerService implements FileHandlerServiceInterface
     public function closeWriter($zipped = true)
     {
         $this->writer->close();
-        $file_info = $this->store(self::EXPORTS_FOLDER, $this->filepath, $zipped);
+        $file_info = $this->store(self::EXTERNAL_EXPORTS_FOLDER, $this->filepath, $zipped);
 
         return $file_info;
     }
@@ -139,10 +151,16 @@ class FileHandlerService implements FileHandlerServiceInterface
     /**
      * @inheritdoc
      */
-    public function import ($filename)
+    public function loadExcelFile($filename)
     {
         /** @var \PHPExcel_Reader_Abstract $reader */
         $reader = \PHPExcel_IOFactory::createReader(\PHPExcel_IOFactory::identify($filename));
+        $fileinfo = pathinfo($filename);
+        if(strtoupper($fileinfo['extension']) == 'CSV'){
+            $delimiter = $this->findCsvDelimiter($filename);
+            $reader->setDelimiter($delimiter);
+        }
+
         $reader->setReadDataOnly(true);
         $reader->setLoadSheetsOnly(0);
 
@@ -158,9 +176,9 @@ class FileHandlerService implements FileHandlerServiceInterface
         $data = $form->getData();
         /** @var UploadedFile $uploaded_file */
         $uploaded_file = $data['upload_file'];
-        $path = $this->generateFilename($uploaded_file->getClientOriginalName(), null, self::IMPORTS_FOLDER);
+        $path = $this->generateFilename($uploaded_file->getClientOriginalName(), null, true, self::INTERNAL_IMPORTS_FOLDER);
 
-        return $uploaded_file->move(self::IMPORTS_FOLDER, $path);
+        return $uploaded_file->move(self::EXTERNAL_IMPORTS_FOLDER, $path);
     }
 
     /**
@@ -175,15 +193,7 @@ class FileHandlerService implements FileHandlerServiceInterface
      */
     private function generateFilename ($name, $extension, $absolute = false, $dir = '/')
     {
-        $extension = strtolower($extension);
-
-        // Make sure the file is unique
-        $path = $dir . $this->cleanUpName($name);
-        if ( $extension )
-        {
-            $path = $path . '.' . $extension;
-        }
-
+        $path = $dir . $this->cleanUpName($name, strtolower($extension));
         if ( $absolute )
         {
             $path = $this->kernel->getRootDir() . $path;
@@ -320,7 +330,7 @@ class FileHandlerService implements FileHandlerServiceInterface
      */
     private function store ($path, $filename, $zipped)
     {
-        $file_info = array();
+        $file_info = array($filename, '');
         if ( $zipped )
         {
             $file_info = $this->zipFile($filename, true);
@@ -337,13 +347,22 @@ class FileHandlerService implements FileHandlerServiceInterface
         return $file_info;
     }
 
-    private function cleanUpName ($name)
+    private function cleanUpName ($name, $extension = null)
     {
-        $name = preg_replace('/\s/i', '-', $name);
-        $name = preg_replace('/\(duplicate\)/i', '', $name);
-        $name = preg_replace("/[^[:alnum:]]/ui", '', $name);
+        $fileinfo = pathinfo($name);
 
-        return strtolower(sprintf('%s-%s-%s', $this->remove_accents($name), uniqid(), date('Y-m-d')));
+        if ( ! $extension )
+        {
+            $extension = $fileinfo['extension'];
+        }
+
+        $filename = preg_replace('/\s/i', '-', $fileinfo['filename']);
+        $filename = preg_replace('/\(duplicate\)/i', '', $filename);
+        $filename = preg_replace("/[^[:alnum:]]/ui", '', $filename);
+        $filename = $this->removeAccents($filename);
+
+        // uniqid() used to make sure the file is unique
+        return strtolower(sprintf('%s-%s-%s.%s', $filename, uniqid(), date('Y-m-d'), $extension));
     }
 
     private function generateFilesystemURL ($path)
@@ -351,7 +370,13 @@ class FileHandlerService implements FileHandlerServiceInterface
         return(sprintf('%s/%s', $this->filesystem_config['url'], $path));
     }
 
-    private function remove_accents ($string)
+    /**
+     * Official Worldpress function to remove accents from strings
+     * @param $string
+     *
+     * @return string
+     */
+    private function removeAccents ($string)
     {
         if ( ! preg_match('/[\x80-\xff]/', $string) )
         {
@@ -549,5 +574,43 @@ class FileHandlerService implements FileHandlerServiceInterface
         $string = strtr($string, $chars);
 
         return $string;
+    }
+
+    /**
+     * Finds the delimiter of a CSV file
+     * @param     $filepath
+     * @param int $checkLines
+     *
+     * @return mixed
+     */
+    private function findCsvDelimiter($filepath, $checkLines = 2)
+    {
+        $file = new \SplFileObject($filepath);
+        $delimiters = array(
+            ',',
+            '\t',
+            ';',
+            '|',
+            ':'
+        );
+        $results = array();
+        $i = 0;
+        while($file->valid() && $i <= $checkLines){
+            $line = $file->fgets();
+            foreach ($delimiters as $delimiter){
+                $regExp = '/['.$delimiter.']/';
+                $fields = preg_split($regExp, $line);
+                if(count($fields) > 1){
+                    if(!empty($results[$delimiter])){
+                        $results[$delimiter]++;
+                    } else {
+                        $results[$delimiter] = 1;
+                    }
+                }
+            }
+            $i++;
+        }
+        $results = array_keys($results, max($results));
+        return $results[0];
     }
 } 

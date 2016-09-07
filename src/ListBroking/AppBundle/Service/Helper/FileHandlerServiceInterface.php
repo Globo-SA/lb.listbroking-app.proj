@@ -6,7 +6,6 @@
 namespace ListBroking\AppBundle\Service\Helper;
 
 use Doctrine\ORM\Query;
-use Exporter\Writer\WriterInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\File;
 
@@ -19,7 +18,7 @@ interface FileHandlerServiceInterface
      *
      * @return \PHPExcel
      */
-    public function import ($filename);
+    public function loadExcelFile($filename);
 
     /**
      * Saves a file on a form
@@ -32,28 +31,30 @@ interface FileHandlerServiceInterface
 
     /**
      * Generates a file using a Query object
-     * @param string     $name
-     * @param string     $extension
-     * @param Query      $query
-     * @param array      $headers
-     * @param bool       $zipped
      *
-     * @return string
+     * @param string $name
+     * @param string $extension
+     * @param Query  $query
+     * @param array  $headers
+     * @param bool   $zipped
+     * @param bool   $upload
+     *
+     * @return array
      */
-    public function generateFileFromQuery($name, $extension, Query $query, $headers, $zipped = true);
-
+    public function generateFileFromQuery($name, $extension, Query $query, $headers, $zipped = true, $upload = true);
 
     /**
      * Generates a file using an Array
      *
-     * @param string      $name
-     * @param string      $extension
-     * @param array       $array
-     * @param bool        $zipped
+     * @param string $name
+     * @param string $extension
+     * @param array  $array
+     * @param bool   $zipped
+     * @param bool   $upload
      *
-     * @return string
+     * @return array
      */
-    public function generateFileFromArray ($name, $extension, $array, $zipped = true);
+    public function generateFileFromArray ($name, $extension, $array, $zipped = true, $upload = true);
 
     /**
      * Generates a file Writer

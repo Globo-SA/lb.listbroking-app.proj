@@ -61,7 +61,7 @@ class OppositionListImportConsumer implements ConsumerInterface
 
             $this->s_service->logInfo(sprintf('Starting \'importOppostionList\' for opposition_list: %s', $msg_body['opposition_list']));
 
-            $file = $this->f_service->import($msg_body['filename']);
+            $file = $this->f_service->loadExcelFile($msg_body['filename']);
 
             $this->s_service->importOppositionList($msg_body['opposition_list'], $file, $msg_body['clear_old']);
 

@@ -9,11 +9,11 @@
 namespace ListBroking\AppBundle\Repository;
 
 use Doctrine\Common\Util\Inflector;
+use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Contact;
-use ListBroking\AppBundle\Entity\ContactTimeLine;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\Lock;
 use ListBroking\AppBundle\Entity\StagingContact;
@@ -23,25 +23,30 @@ use ListBroking\AppBundle\Parser\DateTimeParser;
 
 class StagingContactRepository extends EntityRepository
 {
+
     /**
      * Imports an Database file
      *
      * @param \PHPExcel $file
-     * @param array     $default_info
+     * @param array     $extra_fields
+     * @param           $batch_size
      */
-    public function importStagingContactsFile (\PHPExcel $file, array $default_info)
+    public function importStagingContactsFile (\PHPExcel $file, array $extra_fields = [], $batch_size)
     {
+        $conn = $this->getEntityManager()
+                     ->getConnection()
+        ;
+
         $row_iterator = $file->getWorksheetIterator()
                              ->current()
                              ->getRowIterator()
         ;
 
-        $headers = array_keys(StagingContact::$import_template);
-
         $em = $this->getEntityManager();
 
         $batch = 1;
-        $batchSize = 1000;
+
+        $staging_contacts = array();
 
         /** @var \PHPExcel_Worksheet_Row $row */
         foreach ( $row_iterator as $row )
@@ -52,33 +57,26 @@ class StagingContactRepository extends EntityRepository
                 continue;
             }
 
-            $array_data = array();
-
+            $contact_data = array();
             /** @var  \PHPExcel_Cell $cell */
-
-            $index = 0;
             foreach ( $row->getCellIterator() as $cell )
             {
                 $value = trim($cell->getValue());
-
-                if ( ! empty($value) )
-                {
-                    $array_data[$headers[$index]] = $value;
-                }
-                $index++;
+                $contact_data[] = $this->cleanUpValue($value);
             }
 
-            if ( ! empty($array_data) && $row->getRowIndex() != 1 )
-            {
-                $array_data = array_replace($array_data, $default_info);
-                $this->addStagingContact($array_data);
+            $extra_fields['created_at'] = date('Y-m-d H:i:s');
+            foreach($extra_fields as $field => $value){
+                $contact_data[] = $this->cleanUpValue($value);
             }
+            $staging_contacts[] = $contact_data;
 
-            if ( ($batch % $batchSize) === 0 )
+            if ( ($batch % $batch_size) === 0 )
             {
+                $this->insertStagingContactBatch($conn, $staging_contacts, $extra_fields);
 
                 $batch = 1;
-                $em->flush();
+                $staging_contacts = array();
             }
             $batch++;
         }
@@ -240,8 +238,9 @@ class StagingContactRepository extends EntityRepository
      * Contact table
      *
      * @param StagingContact $staging_contact
+     * @param array          $dimensions
      */
-    public function loadUpdatedContact (StagingContact $staging_contact)
+    public function loadUpdatedContact (StagingContact $staging_contact, array $dimensions)
     {
         $em = $this->getEntityManager();
         $contact_id = $staging_contact->getContactId();
@@ -260,11 +259,12 @@ class StagingContactRepository extends EntityRepository
             }
 
             $contact->updateContactFacts($staging_contact);
+            $contact->updateContactDimensions(array_values($dimensions));
 
             $contact->setIsClean(true);
 
-            // Remove StagingContact
-            $em->remove($staging_contact);
+            // Move StagingContact
+            $this->moveStagingContact($staging_contact, new StagingContactProcessed());
 
             $em->flush();
         }
@@ -335,9 +335,60 @@ class StagingContactRepository extends EntityRepository
                 $to->$set_method($from->$get_method());
             }
         }
+
+        $to->setId(null);
         $entity_manager->persist($to);
 
         $entity_manager->remove($from);
     }
+
+    /**
+     * Send a Batch of StagingContacts to the database
+     *
+     * @param Connection   $conn
+     * @param array        $staging_contacts
+     * @param array        $extra_fields
+     */
+    private function insertStagingContactBatch($conn, $staging_contacts, $extra_fields = [])
+    {
+        $fields = array_merge(array_keys(StagingContact::$import_template), array_keys($extra_fields));
+        $sql_template =<<<SQL
+                INSERT INTO staging_contact (%s) VALUES %s
+SQL;
+
+        $insert_query = sprintf($sql_template, implode(',', $fields), $this->implodeForInsertQuery($staging_contacts));
+
+        $conn->prepare($insert_query)
+             ->execute()
+        ;
+    }
+
+    /**
+     * Implodes and array for being used in an Insert Query
+     *
+     * @param $array
+     *
+     * @return string
+     */
+    private function implodeForInsertQuery($array){
+
+        $imploded = '';
+        foreach ($array as $item)
+        {
+            $imploded[] = sprintf("(%s)", implode(',', $item));
+
+        }
+
+        return implode(',', $imploded);
+    }
+
+    private function cleanUpValue($value){
+        if(empty($value)){
+            return 'NULL';
+        }
+
+        return is_numeric($value) || is_bool($value) ? $value : sprintf("'%s'", $value);
+    }
+
 }
 

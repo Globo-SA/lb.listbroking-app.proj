@@ -76,6 +76,8 @@
 
                 //Close modal
                 $('#staging_contact_import_modal').modal('hide');
+
+                checkIsImporting();
             })
         ;
 

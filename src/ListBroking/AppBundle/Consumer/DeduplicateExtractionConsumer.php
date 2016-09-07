@@ -50,7 +50,7 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
             $this->e_service->logExtractionAction($extraction, sprintf('Starting \'deduplication\' with field: %s', $msg_body['field']));
 
 
-            $file = $this->f_service->import($msg_body['filename']);
+            $file = $this->f_service->loadExcelFile($msg_body['filename']);
 
             // Persist deduplications to the DB
             $this->e_service->uploadDeduplicationsByFile($extraction, $file, $msg_body['field']);

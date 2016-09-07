@@ -183,9 +183,8 @@ class Contact
             'postalcode1'     => $s_contact->getPostalcode1(),
             'postalcode2'     => $s_contact->getPostalcode2(),
             'ipaddress'       => $s_contact->getIpaddress(),
-            'date'            => $s_contact->getDate(),
-            'post_request'    => $s_contact->getPostRequest(),
-
+            'date'            => empty($s_contact->getDate()) ? null : $s_contact->getDate(),
+            'post_request'    => $s_contact->getPostRequest()
         );
 
         // If there's a new postalcode1 value,
