@@ -42,8 +42,6 @@ class StagingContactRepository extends EntityRepository
                              ->getRowIterator()
         ;
 
-        $em = $this->getEntityManager();
-
         $batch = 1;
 
         $staging_contacts = array();
@@ -70,6 +68,7 @@ class StagingContactRepository extends EntityRepository
                 $contact_data[] = $this->cleanUpValue($value);
             }
             $staging_contacts[] = $contact_data;
+            error_log(json_encode($staging_contacts));
 
             if ( ($batch % $batch_size) === 0 )
             {
@@ -80,7 +79,11 @@ class StagingContactRepository extends EntityRepository
             }
             $batch++;
         }
-        $em->flush();
+
+        if ( ! empty($staging_contacts))
+        {
+            $this->insertStagingContactBatch($conn, $staging_contacts);
+        }
     }
 
     /**

@@ -279,3 +279,7 @@
 * Better Staging Contact Import UI
 * Added AutoIncrement PK on StagingContactDQP and StagingContactProcessed
 * Moved app logs to app/logs
+
+### 2.17.02
+* Fixed not processing batch remainder then importing StagingContacts
+* Removed verbose setting from the Supervisor configuration files
