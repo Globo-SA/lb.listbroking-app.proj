@@ -283,3 +283,6 @@
 ### 2.17.02
 * Fixed not processing batch remainder then importing StagingContacts
 * Removed verbose setting from the Supervisor configuration files
+
+### 2.17.03
+* Added missing extra fields to ContactImport batch remainder

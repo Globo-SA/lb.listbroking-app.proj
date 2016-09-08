@@ -82,7 +82,7 @@ class StagingContactRepository extends EntityRepository
 
         if ( ! empty($staging_contacts))
         {
-            $this->insertStagingContactBatch($conn, $staging_contacts);
+            $this->insertStagingContactBatch($conn, $staging_contacts, $extra_fields);
         }
     }
 
