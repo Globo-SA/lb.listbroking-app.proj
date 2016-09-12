@@ -589,6 +589,7 @@ class FileHandlerService implements FileHandlerServiceInterface
         $delimiters = array(
             ',',
             '\t',
+            '\n',
             ';',
             '|',
             ':'

@@ -68,7 +68,6 @@ class StagingContactRepository extends EntityRepository
                 $contact_data[] = $this->cleanUpValue($value);
             }
             $staging_contacts[] = $contact_data;
-            error_log(json_encode($staging_contacts));
 
             if ( ($batch % $batch_size) === 0 )
             {

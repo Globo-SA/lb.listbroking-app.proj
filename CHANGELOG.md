@@ -286,3 +286,6 @@
 
 ### 2.17.03
 * Added missing extra fields to ContactImport batch remainder
+
+### 2.17.04
+* Fixed missing \n delimiter on findCsvDelimiter
