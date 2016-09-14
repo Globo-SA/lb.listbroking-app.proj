@@ -295,3 +295,4 @@
 * Invalid StagingContact are now sent to StagingContactDQP
 * Removed \n delimiter on findCsvDelimiter (it gives false positives)
 * Added an header exclusion system for writing CSV's
+* Better Admin UI from StagingContact

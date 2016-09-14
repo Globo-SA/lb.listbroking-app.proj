@@ -21,9 +21,39 @@ class StagingContactAdmin extends Admin
     protected function configureDatagridFilters (DatagridMapper $datagridMapper)
     {
         $datagridMapper
-            ->add('valid')
-            ->add('processed')
-            ->add('update')
+            ->add('valid', 'doctrine_orm_callback', array('callback' => function($queryBuilder, $alias, $field, $value) {
+                if (!$value['value']) {
+                    return;
+                }
+
+                $queryBuilder->andWhere("{$alias}.valid = 1");
+
+                return true;
+            },
+               'field_type' => 'checkbox'
+            ))
+            ->add('processed', 'doctrine_orm_callback', array('callback' => function($queryBuilder, $alias, $field, $value) {
+                if (!$value['value']) {
+                    return;
+                }
+
+                $queryBuilder->andWhere("{$alias}.processed = 1");
+
+                return true;
+            },
+                'field_type' => 'checkbox'
+            ))
+            ->add('update', 'doctrine_orm_callback', array('callback' => function($queryBuilder, $alias, $field, $value) {
+                if (!$value['value']) {
+                    return;
+                }
+
+                $queryBuilder->andWhere("{$alias}.update = 1");
+
+                return true;
+            },
+            'field_type' => 'checkbox'
+            ))
         ;
     }
 
