@@ -136,7 +136,7 @@ class ExtractionContactRepository extends EntityRepository
 
         $composed_headers = $this->composeHeaders($headers);
         $find_extraciton_contacts_query = <<<SQL
-            SELECT extraction_contact.id, {$composed_headers}
+            SELECT extraction_contact.id as extraction_contact_id, {$composed_headers}
             FROM extraction_contact extraction_contact
             LEFT JOIN contact contact ON contact.id = extraction_contact.contact_id
             LEFT JOIN lead lead ON lead.id = contact.lead_id

@@ -294,3 +294,4 @@
 * Added default value 0 to all boolean fields on StagingContact(DQP/Processed)
 * Invalid StagingContact are now sent to StagingContactDQP
 * Removed \n delimiter on findCsvDelimiter (it gives false positives)
+* Added an header exclusion system for writing CSV's

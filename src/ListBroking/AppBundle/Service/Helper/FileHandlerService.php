@@ -121,11 +121,11 @@ class FileHandlerService implements FileHandlerServiceInterface
     /**
      * @inheritDoc
      */
-    public function writeArray($array)
+    public function writeArray($array, $keys_to_ignore = array())
     {
         foreach ($array as $row)
         {
-            $this->writer->write($row);
+            $this->writer->write(array_diff_key($row, array_flip($keys_to_ignore)));
         }
     }
 
