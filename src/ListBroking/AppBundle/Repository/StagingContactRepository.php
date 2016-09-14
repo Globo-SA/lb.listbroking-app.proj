@@ -60,12 +60,12 @@ class StagingContactRepository extends EntityRepository
             foreach ( $row->getCellIterator() as $cell )
             {
                 $value = trim($cell->getValue());
-                $contact_data[] = $this->cleanUpValue($value);
+                $contact_data[] = $this->cleanUpValue($conn, $value);
             }
 
             $extra_fields['created_at'] = date('Y-m-d H:i:s');
             foreach($extra_fields as $field => $value){
-                $contact_data[] = $this->cleanUpValue($value);
+                $contact_data[] = $this->cleanUpValue($conn, $value);
             }
             $staging_contacts[] = $contact_data;
 
@@ -239,7 +239,7 @@ class StagingContactRepository extends EntityRepository
      * Loads Updated StagingContacts to the
      * Contact table
      *
-     * @param StagingContact $staging_contact
+     * @param StagingContact $staging_cntact
      * @param array          $dimensions
      */
     public function loadUpdatedContact (StagingContact $staging_contact, array $dimensions)
@@ -257,6 +257,9 @@ class StagingContactRepository extends EntityRepository
             ;
             if ( ! $contact )
             {
+                $this->moveStagingContact($staging_contact, new StagingContactDQP());
+                $em->flush();
+
                 return;
             }
 
@@ -384,12 +387,12 @@ SQL;
         return implode(',', $imploded);
     }
 
-    private function cleanUpValue($value){
+    private function cleanUpValue(Connection $connection, $value){
         if(empty($value)){
             return 'NULL';
         }
 
-        return is_numeric($value) || is_bool($value) ? $value : sprintf("'%s'", $value);
+        return is_numeric($value) || is_bool($value) ? $value : $connection->quote($value);
     }
 
 }

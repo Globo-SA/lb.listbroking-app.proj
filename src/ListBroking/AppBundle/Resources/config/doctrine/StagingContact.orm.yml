@@ -26,19 +26,16 @@ ListBroking\AppBundle\Entity\StagingContact:
         processed:
             type:   boolean
             column: processed
-            nullable: true
             options:
                 default: 0
         running:
             type:   boolean
             column: running
-            nullable: true
             options:
                 default: 0
         update:
             type:   boolean
             column: for_update
-            nullable: true
             options:
                 default: 0
         phone:
@@ -48,11 +45,13 @@ ListBroking\AppBundle\Entity\StagingContact:
         is_mobile:
             type:   boolean
             column: is_mobile
-            nullable: true
+            options:
+                default: 0
         in_opposition:
             type:   boolean
             column: in_opposition
-            nullable: true
+            options:
+                default: 0
         lead_id:
             type:   bigint
             column: lead_id
@@ -142,7 +141,9 @@ ListBroking\AppBundle\Entity\StagingContact:
         initial_lock_expiration_date:
             type: date
             column: initial_lock_expiration_date
-            nullable: false
+            nullable: true
+            options:
+                default: NULL
         post_request:
             type:   json_array
             column: post_request

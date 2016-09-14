@@ -289,3 +289,8 @@
 
 ### 2.17.04
 * Fixed missing \n delimiter on findCsvDelimiter
+
+### 2.17.05
+* Added default value 0 to all boolean fields on StagingContact(DQP/Processed)
+* Invalid StagingContact are now sent to StagingContactDQP
+* Removed \n delimiter on findCsvDelimiter (it gives false positives)

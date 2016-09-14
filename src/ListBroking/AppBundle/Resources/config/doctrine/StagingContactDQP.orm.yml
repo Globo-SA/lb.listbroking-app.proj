@@ -35,7 +35,6 @@ ListBroking\AppBundle\Entity\StagingContactDQP:
         update:
             type:   boolean
             column: for_update
-            nullable: true
             options:
                 default: 0
         phone:
@@ -45,10 +44,13 @@ ListBroking\AppBundle\Entity\StagingContactDQP:
         is_mobile:
             type:   boolean
             column: is_mobile
-            nullable: true
+            options:
+                default: 0
         in_opposition:
             type:   boolean
             column: in_opposition
+            options:
+                default: 0
         lead_id:
             type:   bigint
             column: lead_id
@@ -56,7 +58,6 @@ ListBroking\AppBundle\Entity\StagingContactDQP:
         contact_id:
             type:   bigint
             column: contact_id
-            nullable: true
             nullable: true
         email:
             type:   string
@@ -139,7 +140,9 @@ ListBroking\AppBundle\Entity\StagingContactDQP:
         initial_lock_expiration_date:
             type: date
             column: initial_lock_expiration_date
-            nullable: false
+            nullable: true
+            options:
+                default: NULL
         post_request:
             type:   json_array
             column: post_request
@@ -152,8 +155,10 @@ ListBroking\AppBundle\Entity\StagingContactDQP:
         created_at:
             type: datetime
             nullable: true
+            gedmo: { timestampable: { on: create } }
 
         updated_at:
             type: datetime
             nullable: true
+            gedmo: { timestampable: { on: update } }
 # End of Timestampable
