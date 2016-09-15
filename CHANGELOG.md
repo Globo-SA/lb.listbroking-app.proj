@@ -296,3 +296,6 @@
 * Removed \n delimiter on findCsvDelimiter (it gives false positives)
 * Added an header exclusion system for writing CSV's
 * Better Admin UI from StagingContact
+
+### 2.17.06
+* Changed error email from adit to it-tools

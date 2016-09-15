@@ -14,7 +14,7 @@ parameters:
   mailer_user:       ~
   mailer_password:   ~
   mailer_from_email: systems@adclick.pt
-  mailer_to_email:   adit@adclick.pt
+  mailer_to_email:   it-tools@adclick.pt
 
   locale:            en
   domain: http://listbroking.adctools.com
