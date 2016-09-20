@@ -299,3 +299,6 @@
 
 ### 2.17.06
 * Changed error email from adit to it-tools
+
+### 2.17.07
+* Fixed CSV delimiter not being found on one column files 

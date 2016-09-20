@@ -158,7 +158,9 @@ class FileHandlerService implements FileHandlerServiceInterface
         $fileinfo = pathinfo($filename);
         if(strtoupper($fileinfo['extension']) == 'CSV'){
             $delimiter = $this->findCsvDelimiter($filename);
-            $reader->setDelimiter($delimiter);
+            if($delimiter){
+                $reader->setDelimiter($delimiter);
+            }
         }
 
         $reader->setReadDataOnly(true);
@@ -611,6 +613,9 @@ class FileHandlerService implements FileHandlerServiceInterface
             $i++;
         }
         $results = array_keys($results, max($results));
+        if(empty($results)){
+            return null;
+        }
         return $results[0];
     }
 } 
