@@ -302,3 +302,7 @@
 
 ### 2.17.07
 * Fixed CSV delimiter not being found on one column files 
+
+### 2.17.08
+* Added Contact acquisition dates to the DataCard
+* Added Date aggregation to the DataCard

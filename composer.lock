@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9020818c3996ff93b51ba49b566d387a",
-    "content-hash": "4d3efce99ec1fd0e30dcc566d40c480f",
+    "hash": "4bbee9c60e9c579f2a0cd395ad307da0",
+    "content-hash": "2bbac9089307a5dceb8c3c93540a68b3",
     "packages": [
         {
             "name": "adclick/api-abstraction-bundle",
@@ -208,6 +208,68 @@
                 "sdk"
             ],
             "time": "2016-06-28 23:29:43"
+        },
+        {
+            "name": "beberlei/DoctrineExtensions",
+            "version": "v1.0.11",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/beberlei/DoctrineExtensions.git",
+                "reference": "6dbe65e469e8bdcfe165ea16636b7049af479a24"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/beberlei/DoctrineExtensions/zipball/6dbe65e469e8bdcfe165ea16636b7049af479a24",
+                "reference": "6dbe65e469e8bdcfe165ea16636b7049af479a24",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "doctrine/orm": "~2.1",
+                "nesbot/carbon": "*",
+                "phpunit/phpunit": "~4.5",
+                "symfony/yaml": "~2.6",
+                "zf1/zend-date": "~1.12",
+                "zf1/zend-registry": "~1.12"
+            },
+            "suggest": {
+                "nesbot/carbon": "Alternative to DateTime",
+                "zf1/zend-date": "Alternative to DateTime"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "DoctrineExtensions\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de"
+                },
+                {
+                    "name": "Steve Lacey",
+                    "email": "steve@stevelacey.net"
+                }
+            ],
+            "description": "A set of extensions to Doctrine 2 that add support for additional query functions available in MySQL and Oracle.",
+            "keywords": [
+                "database",
+                "doctrine",
+                "orm"
+            ],
+            "time": "2016-07-06 17:12:30"
         },
         {
             "name": "behat/transliterator",
@@ -1328,7 +1390,7 @@
                     "homepage": "https://github.com/friendsofsymfony/FOSJsRoutingBundle/contributors"
                 },
                 {
-                    "name": "William Durand",
+                    "name": "William DURAND",
                     "email": "william.durand1@gmail.com"
                 }
             ],
@@ -2333,7 +2395,7 @@
                     "email": "stof@notk.org"
                 },
                 {
-                    "name": "KnpLabs",
+                    "name": "Knplabs",
                     "homepage": "http://knplabs.com"
                 },
                 {
@@ -2675,7 +2737,6 @@
                 "rest",
                 "web service"
             ],
-            "abandoned": true,
             "time": "2014-12-01 08:29:51"
         },
         {
@@ -2981,7 +3042,7 @@
                 "queue",
                 "rabbitmq"
             ],
-            "abandoned": "php-amqplib/rabbitmq-bundle",
+            "abandoned": true,
             "time": "2015-12-11 17:57:35"
         },
         {

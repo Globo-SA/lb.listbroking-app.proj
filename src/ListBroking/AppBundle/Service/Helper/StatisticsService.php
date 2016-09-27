@@ -19,11 +19,6 @@ class StatisticsService extends BaseService implements StatisticsServiceInterfac
      */
     public function generateStatisticsQuery ($data)
     {
-        $qb = $this->entity_manager->getRepository('ListBrokingAppBundle:Contact')
-                                   ->createQueryBuilder('c')
-                                   ->select('count(c.id) as total')
-        ;
-
         if ( empty($data) )
         {
             return array();
@@ -34,7 +29,10 @@ class StatisticsService extends BaseService implements StatisticsServiceInterfac
         {
             return $this->doctrine_cache->fetch($cache_id);
         }
-
+        $qb = $this->entity_manager->getRepository('ListBrokingAppBundle:Contact')
+                                   ->createQueryBuilder('c')
+                                   ->select('count(c.id) as total')
+        ;
         $fields = array();
         foreach ( $data as $key => $values )
         {
@@ -54,6 +52,23 @@ class StatisticsService extends BaseService implements StatisticsServiceInterfac
                         ;
                     }
                     break;
+                case DataCardFilterType::CONTACT_INFO_TYPE:
+                    if($field === 'date'){
+                        $dates = explode('-', str_replace(' ', '', $values[$field]));
+
+                        $from = (new \DateTime($dates[0]))->format('Y-m-d');
+                        if(count($dates) > 1){
+                            $to = (new \DateTime($dates[1]))->format('Y-m-d');
+
+                            $qb->andWhere($qb->expr()->between("c.{$field}", "'{$from}'", "'{$to}'"));
+                            break;
+                        }
+
+                        $qb->andWhere($qb->expr()->eq("c.{$field}", "'{$from}'"));
+                        break;
+                    }
+
+                    break;
                 case DataCardFilterType::AGGREGATION_TYPE:
                     if ( $values )
                     {
@@ -62,6 +77,17 @@ class StatisticsService extends BaseService implements StatisticsServiceInterfac
                             $qb->addSelect('CASE WHEN(lead.is_mobile = 1) THEN \'YES\' ELSE \'NO\' as is_mobile');
                             $qb->join('c.lead', 'lead');
                             $qb->addGroupBy('is_mobile');
+
+                            break;
+                        }
+
+                        if( $field == 'date'){
+                            $aggregation_name = sprintf("%s_by_%s", $field, $values);
+
+                            $qb->addSelect("YEAR(c.date) as year");
+                            $qb->addSelect(sprintf("%s(c.date) as %s", $values, $aggregation_name));
+
+                            $qb->addGroupBy($aggregation_name);
 
                             break;
                         }

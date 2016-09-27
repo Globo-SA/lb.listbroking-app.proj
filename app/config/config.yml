@@ -73,6 +73,10 @@ doctrine:
         dql:
             datetime_functions:
                 interval: L
+            string_functions:
+                DAY: DoctrineExtensions\Query\Mysql\Day
+                MONTH: DoctrineExtensions\Query\Mysql\Month
+                YEAR: DoctrineExtensions\Query\Mysql\Year
 
 # Swiftmailer Configuration
 swiftmailer:

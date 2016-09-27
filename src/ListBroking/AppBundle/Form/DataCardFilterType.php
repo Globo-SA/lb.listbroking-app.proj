@@ -8,6 +8,7 @@
 
 namespace ListBroking\AppBundle\Form;
 
+use ListBroking\AppBundle\Form\Type\RangeType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -15,6 +16,8 @@ class DataCardFilterType extends AbstractType
 {
 
     const ENTITY_TYPE = 'entity';
+
+    const CONTACT_INFO_TYPE = 'contact';
     
     const AGGREGATION_TYPE = 'aggregation';
 
@@ -26,6 +29,7 @@ class DataCardFilterType extends AbstractType
      */
     public function buildForm (FormBuilderInterface $builder, array $options)
     {
+       $default_date_range = date('Y/m/01 - Y/m/t'); // Current month
        $builder
            ->add('entity_country', 'entity', array(
                'class' => 'ListBroking\AppBundle\Entity\Country',
@@ -33,6 +37,7 @@ class DataCardFilterType extends AbstractType
                'required' => false,
                'label' => 'Countries'
            ))
+
            ->add('entity_source', 'entity', array(
                'class' => 'ListBroking\AppBundle\Entity\Source',
                'multiple' => true,
@@ -50,6 +55,10 @@ class DataCardFilterType extends AbstractType
                'multiple' => true,
                'required' => false,
                'label' => 'SubCategory'
+           ))
+           ->add('contact_date', new RangeType('date', 'daterangepicker', 'Contact acquisition dates (ranges)', $default_date_range), array(
+               'required' => false,
+               'label' => 'Creation Date'
            ))
 
            ->add('availability_firstname', 'checkbox', array('label' => 'Has Firstname', 'required' => false))
@@ -72,6 +81,7 @@ class DataCardFilterType extends AbstractType
            ->add('aggregation_gender', 'checkbox', array('label' => 'Gender', 'required' => false))
            ->add('aggregation_is_mobile', 'checkbox', array('label' => 'Phone Type (fixed/mobile)', 'required' => false))
            ->add('aggregation_sub_category', 'checkbox', array('label' => 'SubCategory', 'required' => false))
+           ->add('aggregation_date', 'choice', array('label' => 'Date', 'required' => false, 'choices'=> array('day' => 'Day', 'month' => 'Month', 'year' => 'Year')))
        ;
 
     }

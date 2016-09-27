@@ -64,7 +64,8 @@
 
         "adclick/authorization-client-bundle": "1.*",
         "adclick/api-abstraction-bundle": "1.*",
-        "adclick/task-controller-bundle": "1.*"
+        "adclick/task-controller-bundle": "1.*",
+        "beberlei/DoctrineExtensions": "^1.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
