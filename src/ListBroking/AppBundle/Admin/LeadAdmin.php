@@ -70,6 +70,11 @@ class LeadAdmin extends Admin
             ->add('phone')
             ->add('is_mobile')
             ->add('in_opposition')
+            ->add('contacts', 'sonata_type_collection', array('route' => array("name"=> "show")), array(
+                'edit' => 'inline',
+                'inline' => 'table',
+                'sortable' => 'position'
+            ))
             ->add('created_at')
             ->add('updated_at')
         ;

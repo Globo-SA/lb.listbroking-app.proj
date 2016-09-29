@@ -306,3 +306,6 @@
 ### 2.17.08
 * Added Contact acquisition dates to the DataCard
 * Added Date aggregation to the DataCard
+
+### 2.17.09
+* Better lead management from the UI
