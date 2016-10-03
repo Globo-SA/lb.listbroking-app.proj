@@ -361,10 +361,11 @@ class FiltersType extends AbstractType
                         'options'              => array(
                             'placeholder'       => false,
                             'choices'           => $this->getChoicesArray($countries),
-                            'data'              => null,
                             'choices_as_values' => true,
                             'attr'              => array(
-                                'class' => 'form-control'
+                                'data-select-mode' => 'local',
+                                'placeholder'      => 'Select one or more...',
+                                'class'            => 'form-control'
                             ),
                             'label'             => 'Country'
                         ),

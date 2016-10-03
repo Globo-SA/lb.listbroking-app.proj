@@ -36,6 +36,7 @@ if [ -d lb-adctools-com ]; then
     rm -rf lb-adctools-com
 fi
 
+echo "Cloning project from GitLab"
 git clone git@git.adclick.pt:tools/lb-adctools-com.git
 cd lb-adctools-com
 git checkout $TAGNAME
@@ -47,20 +48,25 @@ else
     cp deploy/staging_parameters.yml app/config/parameters.yml
 fi
 
+echo "Installing dependencies"
 composer install
 
 if [ "$3" ] && [ "$3" == "schema-update" ]
 then
+    echo "Updating database schema"
     app/console doctrine:schema:update  --env=prod --force
 fi
 
 echo "Update static files"
 bower update
-app/console assets:install
+app/console assets:install --env=$ENVIRONMENT
 app/console assetic:dump --env=$ENVIRONMENT
 
+echo "Fixing permissions"
 setfacl -R -m g:apache:rwX -m g:users:rwX app/cache app/logs app/spool
 setfacl -dR -m g:apache:rwX -m g:users:rwX app/cache app/logs app/spool
+
+chmod -R 766 web/imports web/exports
 
 cd ..
 mv lb-adctools-com $TAGNAME
@@ -69,3 +75,6 @@ rm production
 ln -s $TAGNAME production
 
 cd $PREVIOUS_PATH
+
+echo "Restarting Supervisor processes"
+supervisorctl restart

@@ -309,3 +309,6 @@
 
 ### 2.17.09
 * Better lead management from the UI
+
+### 2.17.10
+* Fixed default data bug on the country filter
