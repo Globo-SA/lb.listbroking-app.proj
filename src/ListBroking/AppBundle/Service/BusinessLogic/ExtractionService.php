@@ -124,6 +124,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $file_service->openWriter();
         for ($i = 1; $i <= $batches_to_run; $i++)
         {
+            $this->logExtractionAction($extraction, sprintf("Export Running - current_batch: %s", $i));
+
             $extraction_contacts = $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')
                                                         ->findExtractionContactsWithIdOffset($extraction, $template['headers'], $batch_size, $offset)
             ;

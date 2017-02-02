@@ -312,3 +312,6 @@
 
 ### 2.17.10
 * Fixed default data bug on the country filter
+
+### 2.17.11
+* Show current batch in extraction log
