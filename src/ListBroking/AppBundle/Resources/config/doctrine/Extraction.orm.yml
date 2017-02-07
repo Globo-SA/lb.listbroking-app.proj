@@ -50,6 +50,11 @@ ListBroking\AppBundle\Entity\Extraction:
           column: query
           nullable: true
 # Timestampable
+        sold_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: change, field: status, value: 3 } }
+
         created_at:
             type: datetime
             nullable: true

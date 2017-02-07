@@ -35,6 +35,7 @@ class ClientAdmin extends Admin
             ->add('account_name')
             ->add('phone')
             ->add('email_address')
+            ->add('external_id')
         ;
     }
 
@@ -49,6 +50,7 @@ class ClientAdmin extends Admin
             ->add('account_name')
             ->add('phone')
             ->add('email_address')
+            ->add('external_id')
             ->add('created_by')
             ->add('updated_at')
             ->add('_action', 'actions', array(
@@ -72,6 +74,13 @@ class ClientAdmin extends Admin
             ->add('phone')
             ->add('email_address')
         ;
+
+        if ($this->isGranted('ROLE_SUPER_ADMIN'))
+        {
+            $formMapper
+                ->add('external_id')
+            ;
+        }
     }
 
     /**
@@ -85,6 +94,7 @@ class ClientAdmin extends Admin
             ->add('account_name')
             ->add('phone')
             ->add('email_address')
+            ->add('external_id')
             ->add('created_at')
             ->add('updated_at')
         ;

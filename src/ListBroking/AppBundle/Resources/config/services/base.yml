@@ -41,3 +41,7 @@ services:
     class: ListBroking\AppBundle\Service\BusinessLogic\StagingService
     parent: base
     arguments: [@validator_engine]
+
+  hurry:
+    class: ListBroking\AppBundle\Service\External\HurryService
+    arguments: [ %hurry_api_url%, %hurry_api_token%, @logger ]

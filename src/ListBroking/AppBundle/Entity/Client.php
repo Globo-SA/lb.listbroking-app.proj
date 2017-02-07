@@ -26,7 +26,7 @@ class Client
 
     protected $id;
 
-
+    protected $external_id;
 
     protected $name;
 
@@ -54,6 +54,24 @@ class Client
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getExternalId()
+    {
+        return $this->external_id;
+    }
+
+    /**
+     * @param int $external_id
+     * @return $this
+     */
+    public function setExternalId($external_id)
+    {
+        $this->external_id = $external_id;
+        return $this;
     }
 
 

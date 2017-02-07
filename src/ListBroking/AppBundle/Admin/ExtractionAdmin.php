@@ -61,6 +61,7 @@ class ExtractionAdmin extends Admin
         $datagridMapper->add('name')
                        ->add('campaign.client', null, array('label' => 'Client'))
                        ->add('status', 'doctrine_orm_string', array(), 'choice', array('choices' => Extraction::$status_names))
+                       ->add('sold_at', 'doctrine_orm_date_range')
         ;
     }
 
@@ -76,6 +77,7 @@ class ExtractionAdmin extends Admin
                    ->add('payout')
                    ->add('created_by')
                    ->add('updated_at')
+                   ->add('sold_at')
                    ->add('_action', 'actions', array(
                        'actions' => array(
                            'filtering' => array(
@@ -103,6 +105,16 @@ class ExtractionAdmin extends Admin
                              ->findConfig('extraction.max_quantity')
         ;
 
+        $extraction = $this->getSubject();
+        if ($extraction instanceof Extraction)
+        {
+            $displaySoldAt = $extraction->getStatus() == 3;
+        }
+        else
+        {
+            $displaySoldAt = false;
+        }
+
         $formMapper->tab('Global')
                    ->with('Extraction')
         ;
@@ -111,7 +123,14 @@ class ExtractionAdmin extends Admin
                    ->add('campaign')
                    ->add('payout')
                    ->add('quantity', null, array('attr' => array('min' => 1, 'max' => $max_quantity)))
-                   ->end()
+        ;
+
+        if ($displaySoldAt)
+        {
+            $formMapper->add('sold_at');
+        }
+
+        $formMapper->end()
                    ->end()
         ;
 
@@ -128,6 +147,7 @@ class ExtractionAdmin extends Admin
                        ->end()
             ;
         }
+
     }
 
     /**
@@ -140,6 +160,7 @@ class ExtractionAdmin extends Admin
                    ->add('status')
                    ->add('quantity')
                    ->add('payout')
+                   ->add('sold_at')
                    ->add('created_at')
                    ->add('updated_at')
         ;
