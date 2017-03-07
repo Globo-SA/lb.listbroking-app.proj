@@ -30,12 +30,7 @@ class APIController extends Controller
         $a_service = $this->get('app');
         try
         {
-            $is_authenticated = $this->authenticate($request->get('username'), $request->get('token'));
-
-            if ( ! $is_authenticated )
-            {
-                throw new AccessDeniedException();
-            }
+            $this->checkCredentials($request);
 
             $lead = $request->get('lead');
 
@@ -66,11 +61,7 @@ class APIController extends Controller
         $a_service = $this->get('app');
         try
         {
-            $is_authenticated = $this->authenticate($request->get('username'), $request->get('token'));
-            if (!$is_authenticated)
-            {
-                throw new AccessDeniedException();
-            }
+            $this->checkCredentials($request);
 
             $e_service = $this->get('extraction');
             $end_date = $request->get('end_date');
@@ -109,11 +100,7 @@ class APIController extends Controller
         $a_service = $this->get('app');
         try
         {
-            $is_authenticated = $this->authenticate($request->get('username'), $request->get('token'));
-            if (!$is_authenticated)
-            {
-                throw new AccessDeniedException();
-            }
+            $this->checkCredentials($request);
 
             $e_service = $this->get('extraction');
             $end_date = $request->get('end_date');
@@ -140,6 +127,19 @@ class APIController extends Controller
         {
             $a_service->logError(sprintf("API Active Campaigns error: %s start_date: %s end_date: %s trace: %s", $e->getMessage(), $request->get('start_date'), $request->get('end_date'), $e->getTraceAsString()));
             return $this->createJsonResponse($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Wrapper around the authenticate function to throw an exception when request isn't authenticated
+     * @param Request $request
+     * @throws AccessDeniedException
+     */
+    private function checkCredentials(Request $request)
+    {
+        if (! $this->authenticate($request->get('username'), $request->get('token')) )
+        {
+            throw new AccessDeniedException();
         }
     }
 

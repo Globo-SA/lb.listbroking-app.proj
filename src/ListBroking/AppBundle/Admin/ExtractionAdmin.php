@@ -106,14 +106,6 @@ class ExtractionAdmin extends Admin
         ;
 
         $extraction = $this->getSubject();
-        if ($extraction instanceof Extraction)
-        {
-            $displaySoldAt = $extraction->getStatus() == 3;
-        }
-        else
-        {
-            $displaySoldAt = false;
-        }
 
         $formMapper->tab('Global')
                    ->with('Extraction')
@@ -125,7 +117,7 @@ class ExtractionAdmin extends Admin
                    ->add('quantity', null, array('attr' => array('min' => 1, 'max' => $max_quantity)))
         ;
 
-        if ($displaySoldAt)
+        if ($extraction instanceof Extraction && $extraction->getStatus() == 3)
         {
             $formMapper->add('sold_at');
         }
