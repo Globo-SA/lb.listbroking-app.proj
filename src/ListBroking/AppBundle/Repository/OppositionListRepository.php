@@ -45,6 +45,8 @@ SQL;
 
         $em = $this->getEntityManager();
 
+        $batch = 0;
+        $batchSize = 1000;
         /** @var \PHPExcel_Worksheet_Row $row */
         foreach ($row_iterator as $row)
         {
@@ -52,9 +54,6 @@ SQL;
             if($row->getRowIndex() == 1 && $config['has_header']){
                 continue;
             }
-
-            $batch = 1;
-            $batchSize = 1000;
 
             /** @var \PHPExcel_Cell $cell */
             foreach ($row->getCellIterator() as $cell)
@@ -69,19 +68,17 @@ SQL;
                     $opposition = new OppositionList();
                     $opposition->setType($type);
                     $opposition->setPhone($value);
-
                     $em->persist($opposition);
-                }
+                    $batch++;
+                    if (($batch % $batchSize) === 0) {
 
-                if (($batch % $batchSize) === 0) {
-
-                    $batch = 1;
-                    $em->flush();
+                        $batch = 0;
+                        $em->flush();
+                    }
                 }
-                $batch++;
             }
-            $em->flush();
         }
+        $em->flush();
         $em->clear();
     }
 
