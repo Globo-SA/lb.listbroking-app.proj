@@ -15,7 +15,7 @@
         });
 
         // Select2 widgets - OPEN INPUT
-        $("[data-select-mode=open]").each(function () {
+        $("[data-select-mode=open]:not(#filters_location_contact\\:postalcode1\\:integer\\:basic\\:inclusion)").each(function () {
             $(this).select2({
                 tags: [],
                 allowClear: true,
