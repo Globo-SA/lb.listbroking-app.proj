@@ -315,3 +315,9 @@
 
 ### 2.17.11
 * Show current batch in extraction log
+
+### 2.17.12
+* Added API endpoints for revenue reporting
+* Added account information to campaigns to synchronize with Hurry
+* Fixed entity manager flushing too often during opposition list import
+* Removed select2 from include:postalcode1 input to prevent UI freezing on extraction filter page
