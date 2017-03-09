@@ -30,12 +30,7 @@ class APIController extends Controller
         $a_service = $this->get('app');
         try
         {
-            $is_authenticated = $this->authenticate($request->get('username'), $request->get('token'));
-
-            if ( ! $is_authenticated )
-            {
-                throw new AccessDeniedException();
-            }
+            $this->checkCredentials($request);
 
             $lead = $request->get('lead');
 
@@ -54,6 +49,97 @@ class APIController extends Controller
         catch ( \Exception $e )
         {
             return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getActiveCampaignsAction(Request $request)
+    {
+        $a_service = $this->get('app');
+        try
+        {
+            $this->checkCredentials($request);
+
+            $e_service = $this->get('extraction');
+            $end_date = $request->get('end_date');
+            $start_date = $request->get('start_date');
+            if ($start_date == null)
+            {
+                if ($end_date != null)
+                {
+                    return $this->createJsonResponse(Array("error" => "end date can't be defined without a start date"), 400);
+                }
+                $start_date = date('Y-m-1');
+            }
+            if ($end_date == null)
+            {
+                $end_date = date('Y-m-t');
+            }
+            $data = $e_service->getActiveCampaigns($start_date, $end_date, $request->get('page', 1), $request->get('page_size', 500));
+            if ($data == null)
+            {
+                return $this->createJsonResponse(Array("error" => "invalid request"), 400);
+            }
+            return $this->createJsonResponse($data);
+        } catch (\Exception $e)
+        {
+            $a_service->logError(sprintf("API Active Campaigns error: %s start_date: %s end_date: %s trace: %s", $e->getMessage(), $request->get('start_date'), $request->get('end_date'), $e->getTraceAsString()));
+            return $this->createJsonResponse($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getExtractionsRevenueAction(Request $request)
+    {
+        $a_service = $this->get('app');
+        try
+        {
+            $this->checkCredentials($request);
+
+            $e_service = $this->get('extraction');
+            $end_date = $request->get('end_date');
+            $start_date = $request->get('start_date');
+            if ($start_date == null)
+            {
+                if ($end_date != null)
+                {
+                    return $this->createJsonResponse(Array("error" => "end date can't be defined without a start date"), 400);
+                }
+                $start_date = date('Y-m-1');
+            }
+            if ($end_date == null)
+            {
+                $end_date = date('Y-m-t');
+            }
+            $data = $e_service->getRevenue($start_date, $end_date, $request->get('page', 1), $request->get('page_size', 500));
+            if ($data === null)
+            {
+                return $this->createJsonResponse(Array("error" => "invalid request"), 400);
+            }
+            return $this->createJsonResponse($data);
+        } catch (\Exception $e)
+        {
+            $a_service->logError(sprintf("API Active Campaigns error: %s start_date: %s end_date: %s trace: %s", $e->getMessage(), $request->get('start_date'), $request->get('end_date'), $e->getTraceAsString()));
+            return $this->createJsonResponse($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Wrapper around the authenticate function to throw an exception when request isn't authenticated
+     * @param Request $request
+     * @throws AccessDeniedException
+     */
+    private function checkCredentials(Request $request)
+    {
+        if (! $this->authenticate($request->get('username'), $request->get('token')) )
+        {
+            throw new AccessDeniedException();
         }
     }
 

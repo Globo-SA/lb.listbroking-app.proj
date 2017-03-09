@@ -115,6 +115,11 @@ class Extraction
     private $query;
 
     /**
+     * @var \DateTime
+     */
+    private $sold_at;
+
+    /**
      * @Exclude
      * @var ArrayCollection
      */
@@ -416,6 +421,24 @@ class Extraction
     {
         $this->query = $query;
 
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getSoldAt()
+    {
+        return $this->sold_at;
+    }
+
+    /**
+     * @param \DateTime $sold_at
+     * @return Extraction
+     */
+    public function setSoldAt($sold_at)
+    {
+        $this->sold_at = $sold_at;
         return $this;
     }
 

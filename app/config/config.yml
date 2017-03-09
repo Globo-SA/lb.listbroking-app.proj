@@ -73,6 +73,7 @@ doctrine:
         dql:
             datetime_functions:
                 interval: L
+                date: Application\Doctrine\DQL\Date
             string_functions:
                 DAY: DoctrineExtensions\Query\Mysql\Day
                 MONTH: DoctrineExtensions\Query\Mysql\Month

@@ -28,9 +28,11 @@ services:
           - {name: sonata.admin, manager_type: orm, group: Client, label: Client}
   listbroking.admin.campaign:
       class: ListBroking\AppBundle\Admin\CampaignAdmin
-      arguments: [~, ListBroking\AppBundle\Entity\Campaign, SonataAdminBundle:CRUD]
+      arguments: [~, ListBroking\AppBundle\Entity\Campaign, ListBrokingAppBundle:CampaignAdmin]
       tags:
           - {name: sonata.admin, manager_type: orm, group: Client, label: Campaign}
+      calls:
+          - [ setTemplate, [edit, ListBrokingAppBundle:Campaign:edit.html.twig]]
   listbroking.admin.category:
       class: ListBroking\AppBundle\Admin\CategoryAdmin
       arguments: [~, ListBroking\AppBundle\Entity\Category, SonataAdminBundle:CRUD]

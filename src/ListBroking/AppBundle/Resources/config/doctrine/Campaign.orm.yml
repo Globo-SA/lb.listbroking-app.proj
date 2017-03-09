@@ -17,6 +17,18 @@ ListBroking\AppBundle\Entity\Campaign:
         description:
             type: text
             column: description
+        external_id:
+            type: bigint
+            column: external_id
+            nullable: true
+        account_name:
+            type: string
+            column: account_name
+            nullable: true
+        account_id:
+            type: bigint
+            column: account_id
+            nullable: true
 
 # Timestampable
         created_at:

@@ -30,6 +30,12 @@ class Campaign
 
     protected $description;
 
+    protected $external_id;
+
+    protected $account_name;
+
+    protected $account_id;
+
     protected $client;
 
     protected $extractions;
@@ -62,10 +68,12 @@ class Campaign
 
     /**
      * @param mixed $description
+     * @return $this
      */
     public function setDescription($description)
     {
         $this->description = $description;
+        return $this;
     }
 
     /**
@@ -78,10 +86,66 @@ class Campaign
 
     /**
      * @param mixed $name
+     * @return $this
      */
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExternalId()
+    {
+        return $this->external_id;
+    }
+
+    /**
+     * @param mixed $external_id
+     * @return $this
+     */
+    public function setExternalId($external_id)
+    {
+        $this->external_id = $external_id;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAccountName()
+    {
+        return $this->account_name;
+    }
+
+    /**
+     * @param mixed $account_name
+     * @return $this
+     */
+    public function setAccountName($account_name)
+    {
+        $this->account_name = $account_name;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAccountId()
+    {
+        return $this->account_id;
+    }
+
+    /**
+     * @param mixed $account_id
+     * @return $this
+     */
+    public function setAccountId($account_id)
+    {
+        $this->account_id = $account_id;
+        return $this;
     }
 
     /**
@@ -94,24 +158,30 @@ class Campaign
 
     /**
      * @param mixed $client
+     * @return $this
      */
     public function setClient($client)
     {
         $this->client = $client;
+        return $this;
     }
 
     /**
      * @param Extraction $extraction
+     * @return $this;
      */
     public function addExtraction(Extraction $extraction){
     	$extraction->setCampaign($this);
         $this->extractions[] = $extraction;
+        return $this;
     }
 
     /**
      * @param Extraction $extraction
+     * @return $this
      */
     public function removeExtraction(Extraction $extraction){
         $this->extractions->removeElement($extraction);
+        return $this;
     }
 }

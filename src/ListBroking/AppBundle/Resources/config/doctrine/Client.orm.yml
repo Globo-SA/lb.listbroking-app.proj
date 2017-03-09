@@ -21,6 +21,10 @@ ListBroking\AppBundle\Entity\Client:
         email_address:
             type: string
             column: email_address
+        external_id:
+            type: bigint
+            unique: true
+            nullable: true
 # Timestampable
         created_at:
             type: datetime

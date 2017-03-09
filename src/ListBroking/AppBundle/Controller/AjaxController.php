@@ -288,4 +288,37 @@ class AjaxController extends Controller
             return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
         }
     }
+
+    public function hurryAccountsAction (Request $request)
+    {
+        try
+        {
+            $h_service = $this->get('hurry');
+            $accounts = $h_service->fetchAccounts();
+            if (empty($accounts))
+            {
+                return $this->createJsonResponse(['accounts' => []], 200);
+            } else
+            {
+                return $this->createJsonResponse(['accounts' => $accounts], 200);
+            }
+        } catch (\Exception $e)
+        {
+            return $this->createJsonResponse(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    private function createJsonResponse ($response, $code = 200)
+    {
+        // Handle exceptions that don't have a valid http code
+        if ( ! is_int($code) || $code === '0' )
+        {
+            $code = 500;
+        }
+
+        return new JsonResponse(array(
+            'code'     => $code,
+            'response' => $response
+        ), $code);
+    }
 }

@@ -271,4 +271,32 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
 
         $this->updateEntity($extraction);
     }
+
+    /**
+     * @param \DateTime|string $start_date
+     * @param \DateTime|string $end_date
+     * @param int $page
+     * @param int $limit
+     *
+     * @return array|null
+     */
+    public function getActiveCampaigns($start_date, $end_date, $page, $limit)
+    {
+        $extractionRepository = $this->entity_manager->getRepository('ListBrokingAppBundle:Extraction');
+        return $extractionRepository->getActiveCampaigns($start_date, $end_date, $page, $limit);
+    }
+
+    /**
+     * @param \DateTime|string $start_date
+     * @param \DateTime|string $end_date
+     * @param int $page
+     * @param int $limit
+     *
+     * @return array|null
+     */
+    public function getRevenue($start_date, $end_date, $page, $limit)
+    {
+        $extractionRepository = $this->entity_manager->getRepository('ListBrokingAppBundle:Extraction');
+        return $extractionRepository->getRevenue($start_date, $end_date, $page, $limit);
+    }
 }

@@ -45,6 +45,7 @@ class CampaignAdmin extends Admin
             ->add('id')
             ->add('client')
             ->add('name')
+            ->add('account_name')
             ->add('created_by')
             ->add('updated_at')
             ->add('_action', 'actions', array(
@@ -66,6 +67,8 @@ class CampaignAdmin extends Admin
             ->add('client')
             ->add('name')
             ->add('description')
+            ->add('account_name')
+            ->add('account_id')
         ;
     }
 
@@ -79,6 +82,8 @@ class CampaignAdmin extends Admin
             ->add('client')
             ->add('name')
             ->add('description')
+            ->add('account_name')
+            ->add('account_id')
             ->add('created_at')
             ->add('updated_at')
         ;
