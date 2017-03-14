@@ -45,7 +45,7 @@ class AjaxExtractionController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+            return $a_service->createJsonResponse($e->getMessage(), 500);
         }
     }
 
@@ -87,7 +87,7 @@ class AjaxExtractionController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+            return $a_service->createJsonResponse($e->getMessage(), 500);
         }
     }
 
@@ -136,7 +136,7 @@ class AjaxExtractionController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+            return $a_service->createJsonResponse($e->getMessage(), 500);
         }
     }
 
@@ -182,7 +182,7 @@ class AjaxExtractionController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+            return $a_service->createJsonResponse($e->getMessage(), 500);
         }
     }
 
@@ -236,7 +236,7 @@ class AjaxExtractionController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+            return $a_service->createJsonResponse($e->getMessage(), 500);
         }
     }
 
@@ -284,7 +284,7 @@ class AjaxExtractionController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+            return $a_service->createJsonResponse($e->getMessage(), 500);
         }
     }
 
@@ -328,7 +328,7 @@ class AjaxExtractionController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+            return $a_service->createJsonResponse($e->getMessage(), 500);
         }
     }
 }
