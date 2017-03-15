@@ -42,3 +42,6 @@ parameters:
   aws_s3_key:         ~
   aws_s3_secret:      ~
   aws_s3_bucket:      ~
+
+  hurry_api_token:    ~
+  hurry_api_url:      ~
