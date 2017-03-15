@@ -35,3 +35,5 @@ parameters:
     aws_s3_key: AKIAIBSQAAQA2YEWB4PQ
     aws_s3_secret: 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
     aws_s3_bucket: listbroking
+    hurry_api_token: 813d54c89b387b1a1d083c13195a0662
+    hurry_api_url: 'http://hurryup.adctools.com/api.php/'
