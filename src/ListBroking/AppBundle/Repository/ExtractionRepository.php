@@ -33,6 +33,7 @@ class ExtractionRepository extends EntityRepository
 
         $clonedObject->setName($extraction->getName() . ' (duplicate)');
         $clonedObject->setStatus(Extraction::STATUS_FILTRATION);
+        $clonedObject->setSoldAt(null);
         $clonedObject->getExtractionContacts()
                      ->clear()
         ;

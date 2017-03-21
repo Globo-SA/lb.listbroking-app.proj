@@ -321,3 +321,6 @@
 * Added account information to campaigns to synchronize with Hurry
 * Fixed entity manager flushing too often during opposition list import
 * Removed select2 from include:postalcode1 input to prevent UI freezing on extraction filter page
+
+### 2.17.13
+* Fixed extraction cloning keeping the sold at date
