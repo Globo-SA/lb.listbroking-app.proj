@@ -77,4 +77,4 @@ ln -s $TAGNAME production
 cd $PREVIOUS_PATH
 
 echo "Restarting Supervisor processes"
-supervisorctl restart
+supervisorctl restart all
