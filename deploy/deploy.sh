@@ -63,10 +63,10 @@ app/console assets:install --env=$ENVIRONMENT
 app/console assetic:dump --env=$ENVIRONMENT
 
 echo "Fixing permissions"
-setfacl -R -m g:apache:rwX -m g:users:rwX app/cache app/logs app/spool
-setfacl -dR -m g:apache:rwX -m g:users:rwX app/cache app/logs app/spool
+setfacl -R -m g:apache:rwX -m g:users:rwX app/cache app/logs app/spool web/imports web/exports
+setfacl -dR -m g:apache:rwX -m g:users:rwX app/cache app/logs app/spool web/imports web/exports
 
-chmod -R 766 web/imports web/exports
+chmod -R 775 web/imports web/exports
 
 cd ..
 mv lb-adctools-com $TAGNAME
