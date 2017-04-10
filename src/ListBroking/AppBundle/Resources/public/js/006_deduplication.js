@@ -9,6 +9,11 @@
         var $deduplication_btn = $('#deduplication_download');
         var $extraction_deduplication_upload_button = $("#extraction_deduplication_upload_button");
         var extraction_template = $("#deduplication_template");
+        var $deduplication_modal = $('#lead_deduplication_modal');
+
+        $deduplication_modal.on("show.bs.modal", function(ev){
+            $("#extraction_deduplication_remove_old_deduplication").iCheck("uncheck");
+        });
 
         // Publishes the extraction for delivering
         $deduplication_btn.on('click', function (e) {
@@ -93,7 +98,7 @@
                 $extraction_deduplication_upload_button.find('i.loading').fadeOut();
 
                 //Close modal
-                $('#lead_deduplication_modal').modal('hide');
+                $deduplication_modal.modal('hide');
 
                 // Set loading on trigger
                 $('#lead_deduplication_trigger')

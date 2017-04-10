@@ -35,6 +35,13 @@ class ExtractionDeduplicationType extends AbstractType
                         'data-select' => 'local'
                     )
                 ))
+                ->add('remove_old_deduplication', 'checkbox', array(
+                    'label' => 'Remove previous deduplications',
+                    'value' => true,
+                    'attr'              => array(
+                        'class'       => 'form-control'
+                    )
+                ))
                 ->add('upload_file', 'file', array(
                     'attr' => array('class' => 'form-control fileinput')
                 ))

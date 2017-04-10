@@ -119,6 +119,15 @@ interface ExtractionServiceInterface extends BaseServiceInterface
     public function uploadDeduplicationsByFile (Extraction $extraction, \PHPExcel $file, $field);
 
     /**
+     * Removes Deduplications associated with a given Extraction from the database.
+     *
+     * @param Extraction $extraction
+     *
+     * @return void
+     */
+    public function removeDeduplications(Extraction $extraction);
+
+    /**
      * Generate locks for the contacts of a given Extraction
      *
      * @param Extraction $extraction
