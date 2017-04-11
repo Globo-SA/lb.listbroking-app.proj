@@ -43,6 +43,7 @@ class ExtractionRepository extends EntityRepository
         $clonedObject->setDeduplicationType(null);
         $clonedObject->setQuery(null);
         $clonedObject->setIsAlreadyExtracted(false);
+        $clonedObject->setIsDeduplicating(false);
 
         return $clonedObject;
     }
