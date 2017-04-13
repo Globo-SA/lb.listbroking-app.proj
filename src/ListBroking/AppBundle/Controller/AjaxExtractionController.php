@@ -20,6 +20,9 @@ use Symfony\Component\HttpFoundation\Response;
 class AjaxExtractionController extends Controller
 {
 
+    const HTTP_SERVER_ERROR_CODE = 500;
+    const HTTP_BAD_REQUEST_CODE = 400;
+
     /**
      * Gets the last exceptions thrown by the system
      *
@@ -45,7 +48,7 @@ class AjaxExtractionController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), 500);
+            return $a_service->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
 
@@ -87,7 +90,7 @@ class AjaxExtractionController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), 500);
+            return $a_service->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
 
@@ -136,7 +139,7 @@ class AjaxExtractionController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), 500);
+            return $a_service->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
 
@@ -182,7 +185,7 @@ class AjaxExtractionController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), 500);
+            return $a_service->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
 
@@ -236,7 +239,7 @@ class AjaxExtractionController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), 500);
+            return $a_service->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
 
@@ -284,7 +287,7 @@ class AjaxExtractionController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), 500);
+            return $a_service->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
 
@@ -328,7 +331,7 @@ class AjaxExtractionController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), 500);
+            return $a_service->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
 }
