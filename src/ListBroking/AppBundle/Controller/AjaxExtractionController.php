@@ -225,8 +225,8 @@ class AjaxExtractionController extends Controller
             $deduplication_type = isset($data['deduplication_type']) ? $data['deduplication_type'] : Extraction::EXCLUDE_DEDUPLICATION_TYPE;
 
             // Remove previous deduplications
-            $removeOldDeduplication = isset($data['remove_old_deduplication']) ? $data['remove_old_deduplication'] : false;
-            if ($removeOldDeduplication)
+            $remove_old_deduplication = isset($data['remove_old_deduplication']) ? $data['remove_old_deduplication'] : false;
+            if ($remove_old_deduplication)
             {
                 $this->get('extraction')->removeDeduplications($extraction);
             }
