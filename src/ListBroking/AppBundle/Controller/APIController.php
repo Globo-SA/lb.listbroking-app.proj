@@ -17,6 +17,9 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 class APIController extends Controller
 {
 
+    const HTTP_SERVER_ERROR_CODE = 500;
+    const HTTP_BAD_REQUEST_CODE = 400;
+
     /**
      * Dumb Action that just saves the lead for the ETL process
      *
@@ -48,7 +51,7 @@ class APIController extends Controller
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), $e->getCode());
+            return $a_service->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
 
@@ -70,7 +73,7 @@ class APIController extends Controller
             {
                 if ($end_date != null)
                 {
-                    return $this->createJsonResponse(Array("error" => "end date can't be defined without a start date"), 400);
+                    return $this->createJsonResponse(Array("error" => "end date can't be defined without a start date"), self::HTTP_BAD_REQUEST_CODE);
                 }
                 $start_date = date('Y-m-1');
             }
@@ -78,16 +81,16 @@ class APIController extends Controller
             {
                 $end_date = date('Y-m-t');
             }
-            $data = $e_service->getActiveCampaigns($start_date, $end_date, $request->get('page', 1), $request->get('page_size', 500));
+            $data = $e_service->getActiveCampaigns($start_date, $end_date, $request->get('page', 1), $request->get('page_size', self::HTTP_SERVER_ERROR_CODE));
             if ($data == null)
             {
-                return $this->createJsonResponse(Array("error" => "invalid request"), 400);
+                return $this->createJsonResponse(Array("error" => "invalid request"), self::HTTP_BAD_REQUEST_CODE);
             }
             return $this->createJsonResponse($data);
         } catch (\Exception $e)
         {
             $a_service->logError(sprintf("API Active Campaigns error: %s start_date: %s end_date: %s trace: %s", $e->getMessage(), $request->get('start_date'), $request->get('end_date'), $e->getTraceAsString()));
-            return $this->createJsonResponse($e->getMessage(), 500);
+            return $this->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
 
@@ -109,7 +112,7 @@ class APIController extends Controller
             {
                 if ($end_date != null)
                 {
-                    return $this->createJsonResponse(Array("error" => "end date can't be defined without a start date"), 400);
+                    return $this->createJsonResponse(Array("error" => "end date can't be defined without a start date"), self::HTTP_BAD_REQUEST_CODE);
                 }
                 $start_date = date('Y-m-1');
             }
@@ -117,16 +120,16 @@ class APIController extends Controller
             {
                 $end_date = date('Y-m-t');
             }
-            $data = $e_service->getRevenue($start_date, $end_date, $request->get('page', 1), $request->get('page_size', 500));
+            $data = $e_service->getRevenue($start_date, $end_date, $request->get('page', 1), $request->get('page_size', self::HTTP_SERVER_ERROR_CODE));
             if ($data === null)
             {
-                return $this->createJsonResponse(Array("error" => "invalid request"), 400);
+                return $this->createJsonResponse(Array("error" => "invalid request"), self::HTTP_BAD_REQUEST_CODE);
             }
             return $this->createJsonResponse($data);
         } catch (\Exception $e)
         {
             $a_service->logError(sprintf("API Active Campaigns error: %s start_date: %s end_date: %s trace: %s", $e->getMessage(), $request->get('start_date'), $request->get('end_date'), $e->getTraceAsString()));
-            return $this->createJsonResponse($e->getMessage(), 500);
+            return $this->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
 

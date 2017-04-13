@@ -20,6 +20,9 @@ use Symfony\Component\HttpFoundation\Response;
 class AjaxController extends Controller
 {
 
+    const HTTP_SERVER_ERROR_CODE = 500;
+    const HTTP_BAD_REQUEST_CODE = 400;
+
     public function pingAction (Request $request)
     {
         $a_service = $this->get('app');
@@ -257,7 +260,7 @@ class AjaxController extends Controller
             {
                 return $a_service->createJsonResponse(array(
                     'response' => 'Emails could not be delivered'
-                ), 500);
+                ), self::HTTP_SERVER_ERROR_CODE);
             }
 
             return $a_service->createJsonResponse(array(
@@ -304,7 +307,7 @@ class AjaxController extends Controller
             }
         } catch (\Exception $e)
         {
-            return $this->createJsonResponse(['error' => $e->getMessage()], 500);
+            return $this->createJsonResponse(['error' => $e->getMessage()], self::HTTP_SERVER_ERROR_CODE);
         }
     }
 
@@ -313,7 +316,7 @@ class AjaxController extends Controller
         // Handle exceptions that don't have a valid http code
         if ( ! is_int($code) || $code === '0' )
         {
-            $code = 500;
+            $code = self::HTTP_SERVER_ERROR_CODE;
         }
 
         return new JsonResponse(array(
