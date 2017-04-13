@@ -208,6 +208,16 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     }
 
     /**
+     * @inheritdoc
+     */
+    public function removeDeduplications(Extraction $extraction)
+    {
+        $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
+                             ->removeDeduplications($extraction)
+        ;
+    }
+
+    /**
      * @inheritDoc
      */
     public function logExtractionAction (Extraction $extraction, $message)

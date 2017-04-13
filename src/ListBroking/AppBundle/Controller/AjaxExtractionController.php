@@ -227,6 +227,13 @@ class AjaxExtractionController extends Controller
             $field = isset($data['field']) ? $data['field'] : 'lead_id';
             $deduplication_type = isset($data['deduplication_type']) ? $data['deduplication_type'] : Extraction::EXCLUDE_DEDUPLICATION_TYPE;
 
+            // Remove previous deduplications
+            $remove_old_deduplication = isset($data['remove_old_deduplication']) ? $data['remove_old_deduplication'] : false;
+            if ($remove_old_deduplication)
+            {
+                $this->get('extraction')->removeDeduplications($extraction);
+            }
+
             // Publish Extraction to the Queue
             $m_service->publishMessage('deduplicate_extraction', array(
                 'object_id'          => $extraction->getId(),

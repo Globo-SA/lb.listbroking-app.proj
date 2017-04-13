@@ -98,6 +98,26 @@ SQL;
     }
 
     /**
+     * Remove deduplications from an extraction
+     *
+     * @param Extraction $extraction
+     */
+    public function removeDeduplications($extraction)
+    {
+        $conn = $this->getEntityManager()
+                     ->getConnection()
+        ;
+
+        $deleteExtractionSql = <<<SQL
+            DELETE FROM extraction_deduplication
+            WHERE extraction_id = ?
+SQL;
+        $conn->prepare($deleteExtractionSql)
+             ->execute(array($extraction->getId()))
+        ;
+    }
+
+    /**
      * Send Deduplications to the database
      *
      * @param $conn
