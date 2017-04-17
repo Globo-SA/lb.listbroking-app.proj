@@ -231,7 +231,9 @@ class AjaxExtractionController extends Controller
             $remove_old_deduplication = isset($data['remove_old_deduplication']) ? $data['remove_old_deduplication'] : false;
             if ($remove_old_deduplication)
             {
-                $this->get('extraction')->removeDeduplications($extraction);
+                $extraction_service = $this->get('extraction');
+                $extraction_service->logExtractionAction($extraction, 'Removing previous \'deduplications\'');
+                $extraction_service->removeDeduplications($extraction);
             }
 
             // Publish Extraction to the Queue

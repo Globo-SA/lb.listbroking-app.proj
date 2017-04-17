@@ -330,3 +330,6 @@
 * Fixes to deploy script
 * Reset "isDeduplicating" field on extraction cloning
 * Fix API HTTP Codes on exception
+
+### 2.18.01
+* Add log message when deduplications are removed
