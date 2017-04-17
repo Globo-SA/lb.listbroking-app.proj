@@ -322,5 +322,11 @@
 * Fixed entity manager flushing too often during opposition list import
 * Removed select2 from include:postalcode1 input to prevent UI freezing on extraction filter page
 
-### 2.17.13
+### 2.17.15
 * Fixed extraction cloning keeping the sold at date
+
+### 2.18.00
+* Option to remove the extraction's previous deduplications
+* Fixes to deploy script
+* Reset "isDeduplicating" field on extraction cloning
+* Fix API HTTP Codes on exception
