@@ -235,13 +235,16 @@ class AjaxExtractionController extends Controller
                 $extraction_service->logExtractionAction($extraction, 'Removing previous \'deduplications\'');
                 $extraction_service->removeDeduplications($extraction);
             }
+            //Skip extraction
+            $skip_run_extraction = (isset($data['skip_run_extraction']) && $data['skip_run_extraction'] == true) ? true : false;
 
             // Publish Extraction to the Queue
             $m_service->publishMessage('deduplicate_extraction', array(
                 'object_id'          => $extraction->getId(),
                 'filename'           => $file->getRealPath(),
                 'deduplication_type' => $deduplication_type,
-                'field'              => $field
+                'field'              => $field,
+                'skip_extracting'    => $skip_run_extraction
             ));
 
             return $a_service->createJsonResponse(array(), 200);
