@@ -39,7 +39,14 @@ class ExtractionDeduplicationType extends AbstractType
                     'label' => 'Remove previous deduplications',
                     'value' => true,
                     'attr'              => array(
-                        'class'       => 'form-control'
+                        'class'       => 'form-control extra-dedup-config'
+                    )
+                ))
+                ->add('skip_run_extraction', 'checkbox', array(
+                    'label' => 'Skip extraction step',
+                    'value' => true,
+                    'attr'              => array(
+                        'class'       => 'form-control extra-dedup-config'
                     )
                 ))
                 ->add('upload_file', 'file', array(

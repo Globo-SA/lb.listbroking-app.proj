@@ -12,7 +12,7 @@
         var $deduplication_modal = $('#lead_deduplication_modal');
 
         $deduplication_modal.on("show.bs.modal", function(ev){
-            $("#extraction_deduplication_remove_old_deduplication").iCheck("uncheck");
+            $(".extra-dedup-config").iCheck("uncheck");
         });
 
         // Publishes the extraction for delivering

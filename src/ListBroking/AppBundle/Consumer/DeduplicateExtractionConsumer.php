@@ -57,7 +57,10 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
 
             // Filter extraction
             $extraction->setDeduplicationType($msg_body['deduplication_type']);
-            $this->e_service->runExtraction($extraction);
+            if (empty($msg_body['skip_extracting']))
+            {
+                $this->e_service->runExtraction($extraction);
+            }
             $extraction->setIsDeduplicating(false);
 
             // Save changes
