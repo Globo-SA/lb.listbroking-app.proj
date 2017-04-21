@@ -333,3 +333,6 @@
 
 ### 2.18.01
 * Add log message when deduplications are removed
+
+### 2.18.02
+* Add option to skip extraction process when submitting deduplications
