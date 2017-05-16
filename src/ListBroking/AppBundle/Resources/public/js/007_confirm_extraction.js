@@ -42,6 +42,8 @@
                 return parseInt($(this).val());
             }).get();
 
+            var send_hurry = $("#extraction_locking_send_hurry").prop("checked");
+
             if (lock_types.length == 0 && !confirm('Do you really want to continue without locking the leads ?')) {
                 return false;
             }
@@ -51,7 +53,7 @@
                 type: "POST",
                 url: App.routing.generate('ajax_extraction_locks', {extraction_id: App.variables.extractionId}),
                 dataType: 'json',
-                data: {lock_types: lock_types},
+                data: {lock_types: lock_types, send_hurry: send_hurry},
                 success: function (data) {
 
                     window.location = $finalize_btn.data('url');

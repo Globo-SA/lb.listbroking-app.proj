@@ -281,6 +281,12 @@ class AjaxExtractionController extends Controller
             $extraction->setStatus(Extraction::STATUS_FINAL);
             $extraction->setIsLocking(true);
 
+            $send_hurry = $request->get('send_hurry', false);
+            if ($send_hurry)
+            {
+                $extraction->setSoldAt(new \DateTime());
+            }
+
             $a_service->updateEntity($extraction);
 
             // Check if there are lock_types

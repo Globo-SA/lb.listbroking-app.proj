@@ -26,6 +26,14 @@ class ExtractionLockingType extends AbstractType
                 Lock::TYPE_SUB_CATEGORY => 'SUBCATEGORY'
             ),
         ))
+                ->add('send_hurry', 'checkbox', array(
+                    'label' => 'Send extraction to hurry',
+                    'value' => true,
+                    'data' => true,
+                    'attr'              => array(
+                        'class'       => 'form-control extra-lock-config'
+                    )
+        ))
         ;
     }
 
