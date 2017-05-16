@@ -336,3 +336,6 @@
 
 ### 2.18.02
 * Add option to skip extraction process when submitting deduplications
+
+### 2.18.03
+* Add checkbox for comfirming an extraction as sold when closing
