@@ -67,7 +67,7 @@ class CampaignAdmin extends Admin
             ->add('client')
             ->add('name')
             ->add('description')
-            ->add('account_name')
+            ->add('account_name', null, array('required' => true))
             ->add('account_id')
         ;
     }

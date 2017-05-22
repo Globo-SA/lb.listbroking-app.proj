@@ -339,3 +339,6 @@
 
 ### 2.18.03
 * Add checkbox for comfirming an extraction as sold when closing
+
+### 2.18.04
+* Make *Account* a required field in campaign creation.
