@@ -342,3 +342,4 @@
 
 ### 2.18.04
 * Make *Account* a required field in campaign creation.
+* Grant access to all extractions for listbroker role
