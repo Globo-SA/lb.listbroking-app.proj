@@ -19,11 +19,6 @@ class ExtractionAdminController extends CRUDController
      */
     public function cloneAction ()
     {
-        if ( false === $this->admin->isGranted('EDIT') )
-        {
-            throw new AccessDeniedException();
-        }
-
         // Services
         $e_service = $this->get('extraction');
 
@@ -36,6 +31,18 @@ class ExtractionAdminController extends CRUDController
         if ( ! $extraction )
         {
             throw new NotFoundHttpException(sprintf('unable to find the object with id : %s', $id));
+        }
+
+        $user = $this->getUser();
+
+        if ( ! $this->admin->isGranted('SUPER_ADMIN') &&
+            ! in_array('ROLE_LISTBROKER', $user->getRoles()) &&
+            $user()->getId() !==
+            $extraction->getCreatedBy()
+                       ->getId()
+        )
+        {
+            throw new AccessDeniedException('You can only clone extractions created by you ');
         }
 
         /** @var Extraction $clonedObject */
@@ -131,11 +138,6 @@ class ExtractionAdminController extends CRUDController
      */
     public function filteringAction ()
     {
-        if ( false === $this->admin->isGranted('EDIT') )
-        {
-            throw new AccessDeniedException();
-        }
-
         $is_new = $this->get('request')
                        ->get('is_new')
         ;
@@ -151,10 +153,11 @@ class ExtractionAdminController extends CRUDController
         ;
         /** @var Extraction $extraction */
         $extraction = $this->admin->getObject($extraction_id);
+        $user = $this->getUser();
 
         if ( ! $this->admin->isGranted('SUPER_ADMIN') &&
-             $this->getUser()
-                  ->getId() !==
+             ! in_array('ROLE_LISTBROKER', $user->getRoles()) &&
+             $user()->getId() !==
              $extraction->getCreatedBy()
                         ->getId()
         )

@@ -41,7 +41,7 @@ class ExtractionAdmin extends Admin
         {
 
             // Admins are allowed to view all
-            if ( $this->isGranted('ROLE_SUPER_ADMIN') )
+            if ( $this->isGranted('ROLE_SUPER_ADMIN') || in_array('ROLE_LISTBROKER', $user->getRoles()) )
             {
                 return $query;
             }
