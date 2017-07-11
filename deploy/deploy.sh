@@ -43,9 +43,9 @@ git checkout $TAGNAME
 
 if [ "$ENVIRONMENT" == "prod" ] || [ "$ENVIRONMENT" == "PROD" ]
 then
-    cp deploy/prod_parameters.yml app/config/parameters.yml
+    cp app/config/parameters/prod_parameters.yml app/config/parameters.yml
 else
-    cp deploy/staging_parameters.yml app/config/parameters.yml
+    cp app/config/parameters/staging_parameters.yml app/config/parameters.yml
 fi
 
 echo "Installing dependencies"

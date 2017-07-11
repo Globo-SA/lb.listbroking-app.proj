@@ -1,5 +1,5 @@
 echo "Linking parameters"
-ln -sf deploy/dev_parameters.yml app/config/parameters.yml
+ln -sf app/config/parameters/dev_parameters.yml app/config/parameters.yml
 
 echo "Installing dependencies"
 dshell composer install
