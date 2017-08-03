@@ -24,7 +24,7 @@ parameters:
   ruby_bin_path: /usr/bin/ruby
   compass_bin_path: /usr/bin/compass
 
-  app_services_channel_log_file_path: /var/www/<instance>/httpdocs/production/app/logs/app_services.log
+  app_services_channel_log_file_path: /var/www/<instance>/project/app/logs/app_services.log
 
   memcached_host: localhost
   memcached_port: 11211
