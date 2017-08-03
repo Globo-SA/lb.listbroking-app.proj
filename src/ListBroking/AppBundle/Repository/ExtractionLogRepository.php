@@ -35,4 +35,18 @@ class ExtractionLogRepository extends EntityRepository
             ;
     }
 
+    /**
+     * Cleanup records from $maxExtractionId or older.
+     * @param $maxExtractionId
+     * @return mixed
+     */
+    public function cleanUp($maxExtractionId)
+    {
+        return $this->createQueryBuilder('el')
+            ->delete('ListBrokingAppBundle:ExtractionLog' ,'el')
+            ->where('el.extraction_id <= :extraction')
+            ->setParameter('extraction', $maxExtractionId)
+            ->getQuery()
+            ->execute();
+    }
 }

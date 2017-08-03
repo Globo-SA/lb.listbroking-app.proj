@@ -170,4 +170,19 @@ SQL;
 
         return implode(",", $composed_headers);
     }
+
+    /**
+     * Cleanup records from $maxExtractionId or older.
+     * @param $maxExtractionId
+     * @return mixed
+     */
+    public function cleanUp($maxExtractionId)
+    {
+        return $this->createQueryBuilder('ec')
+                    ->delete('ListBrokingAppBundle:ExtractionContact' ,'ec')
+                    ->where('ec.extraction_id <= :extraction')
+                    ->setParameter('extraction', $maxExtractionId)
+                    ->getQuery()
+                    ->execute();
+    }
 }

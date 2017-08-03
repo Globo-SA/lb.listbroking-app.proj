@@ -13,8 +13,11 @@ namespace ListBroking\ExceptionHandlerBundle\Repository;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
+use ListBroking\AppBundle\Behavior\DateSearchableRepositoryBehavior;
 
 class ExceptionLogRepository extends EntityRepository {
+
+    use DateSearchableRepositoryBehavior;
 
     const LIFETIME = 3600;
 
@@ -30,6 +33,21 @@ class ExceptionLogRepository extends EntityRepository {
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult(AbstractQuery::HYDRATE_ARRAY);
+    }
+
+    /**
+     * Cleanup records equal or older than id.
+     * @param $id
+     * @return mixed
+     */
+    public function cleanUp($id)
+    {
+        return $this->createQueryBuilder('el')
+                    ->delete('ListBrokingExceptionHandlerBundle:ExceptionLog' ,'el')
+                    ->where('el.id <= :id')
+                    ->setParameter('id', $id)
+                    ->getQuery()
+                    ->execute();
     }
 
 }

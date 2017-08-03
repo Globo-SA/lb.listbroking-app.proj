@@ -9,10 +9,14 @@
 namespace ListBroking\AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use ListBroking\AppBundle\Behavior\DateSearchableRepositoryBehavior;
 use ListBroking\AppBundle\Entity\Extraction;
+use ListBroking\AppBundle\Entity\Lock;
 
 class LockRepository extends EntityRepository
 {
+
+    use DateSearchableRepositoryBehavior;
 
     /**
      * Generates the necessary locks for a given Extraction
@@ -50,5 +54,32 @@ SQL;
                 'extraction_id'   => $extraction_id,
             ));
         }
+    }
+
+    /**
+     * Override the classic comparision function for the search. In the locks table case,
+     * we want to wipe data based on Expiration date instead of creation
+     * @param Lock $entity
+     * @param $date
+     * @return bool
+     */
+    protected function __locateIdOnDateCompare($entity, $date)
+    {
+        return $entity->getExpirationDate() < $date;
+    }
+
+    /**
+     * Cleanup records equal or older than id.
+     * @param $id
+     * @return mixed
+     */
+    public function cleanUp($id)
+    {
+        return $this->createQueryBuilder('l')
+                    ->delete('ListBrokingAppBundle:Lock' ,'l')
+                    ->where('l.id <= :id')
+                    ->setParameter('id', $id)
+                    ->getQuery()
+                    ->execute();
     }
 }

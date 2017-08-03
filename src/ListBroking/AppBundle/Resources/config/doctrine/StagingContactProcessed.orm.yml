@@ -1,6 +1,7 @@
 ListBroking\AppBundle\Entity\StagingContactProcessed:
     type:   entity
     table:  staging_contact_processed
+    repositoryClass: ListBroking\AppBundle\Repository\StagingContactProcessedRepository
     id:
         id:
             type: bigint

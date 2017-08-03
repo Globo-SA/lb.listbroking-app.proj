@@ -218,4 +218,37 @@ SQL;
 
         return $queryBuilder->getQuery()->getArrayResult();
     }
+
+    /**
+     * Find the most recent extraction before $date
+     * @param $date
+     * @return Extraction|null
+     */
+    public function findLastExtractionBeforeDate($date)
+    {
+        if ($date instanceof \DateTime)
+        {
+            $date = $date->format('Y-m-d 23:59:59');
+        }
+        if (!is_string($date))
+        {
+            return null;
+        }
+        $queryBuilder = $this->createQueryBuilder('e');
+        $queryBuilder
+            ->select('e')
+            ->where('e.created_at < :date ')
+            ->orderBy('id','desc')
+            ->setParameter('date', $date)
+            ->setMaxResults(1)
+        ;
+
+        try {
+            return $queryBuilder->getQuery()->getSingleResult();
+        }
+        catch (\Exception $e)
+        {
+            return null;
+        }
+    }
 }

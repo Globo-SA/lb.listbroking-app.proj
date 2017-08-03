@@ -1,6 +1,7 @@
 ListBroking\AppBundle\Entity\StagingContactDQP:
     type:   entity
     table:  staging_contact_dqp
+    repositoryClass: ListBroking\AppBundle\Repository\StagingContactDQPRepository
     id:
         id:
             type: bigint

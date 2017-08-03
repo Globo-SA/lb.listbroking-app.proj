@@ -130,4 +130,19 @@ SQL;
              ->execute()
         ;
     }
+
+    /**
+     * Cleanup records from $maxExtractionId or older.
+     * @param $maxExtractionId
+     * @return mixed
+     */
+    public function cleanUp($maxExtractionId)
+    {
+        return $this->createQueryBuilder('ed')
+                    ->delete('ListBrokingAppBundle:ExtractionDeduplication' ,'ed')
+                    ->where('ed.extraction_id <= :extraction')
+                    ->setParameter('extraction', $maxExtractionId)
+                    ->getQuery()
+                    ->execute();
+    }
 }
