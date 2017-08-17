@@ -95,7 +95,7 @@ monolog:
   handlers:
     app_services:
         type:     stream
-        path:     "%app_services_channel_log_file_path%"
+        path:     "%app_log_filename%"
         channels: ["app_services"]
 
 stof_doctrine_extensions:
