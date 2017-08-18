@@ -3,6 +3,7 @@ imports:
     - { resource: security.yml }
     - { resource: services.yml }
 
+    - { resource: bundles/monolog.yml }
     - { resource: config_app_doctrine_cache.yml }
     - { resource: config_app_filesystems.yml }
     - { resource: config_app_rabbit_mq.yml }
@@ -89,14 +90,6 @@ swiftmailer:
     spool:
         type: file
         path: "%kernel.root_dir%/spool"
-
-monolog:
-  channels: ["app_services"]
-  handlers:
-    app_services:
-        type:     stream
-        path:     "%app_log_filename%"
-        channels: ["app_services"]
 
 stof_doctrine_extensions:
   default_locale: en_UK
