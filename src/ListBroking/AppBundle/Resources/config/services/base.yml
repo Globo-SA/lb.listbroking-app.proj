@@ -3,30 +3,30 @@ services:
     class: ListBroking\AppBundle\Service\Base\BaseService
     abstract: true
     calls:
-      - [setEntityManager, [@doctrine.orm.entity_manager]]
-      - [setDoctrineCache, [@doctrine_cache.providers.memcached_query_cache]]
-      - [setFormFactory, [@form.factory]]
-      - [setLogger, [@logger]]
-      - [setTokenStorage, [@security.token_storage]]
+      - [setEntityManager, ["@doctrine.orm.entity_manager"]]
+      - [setDoctrineCache, ["@doctrine_cache.providers.memcached_query_cache"]]
+      - [setFormFactory, ["@form.factory"]]
+      - [setLogger, ["@logger"]]
+      - [setTokenStorage, ["@security.token_storage"]]
     tags:
-      - { name: monolog.logger, channel: app_services }
+      - { name: monolog.logger, channel: service }
 
   messaging:
     class: ListBroking\AppBundle\Service\Helper\MessagingService
-    arguments: [@service_container]
+    arguments: ["@service_container"]
 
   file_handler:
     class: ListBroking\AppBundle\Service\Helper\FileHandlerService
     arguments:
-      kernel: @kernel
-      filesystem: @oneup_flysystem.aws_s3_filesystem
+      projectRootDir:    "%kernel.root_dir%"
+      filesystem:        "@oneup_flysystem.aws_s3_filesystem"
       filesystem_config: {type: %filesystem_type%, url: %filesystem_url%}
 
 
   app:
     class: ListBroking\AppBundle\Service\Helper\AppService
     parent: base
-    arguments: [@mailer, @swiftmailer.spool, @swiftmailer.transport.real, @twig]
+    arguments: ["@mailer", "@swiftmailer.spool", "@swiftmailer.transport.real", "@twig"]
 
   statistics:
     class: ListBroking\AppBundle\Service\Helper\StatisticsService
@@ -35,13 +35,13 @@ services:
   extraction:
     class: ListBroking\AppBundle\Service\BusinessLogic\ExtractionService
     parent: base
-    arguments: [@request_stack, @filter_engine ]
+    arguments: ["@request_stack", "@filter_engine" ]
 
   staging:
     class: ListBroking\AppBundle\Service\BusinessLogic\StagingService
     parent: base
-    arguments: [@validator_engine]
+    arguments: ["@validator_engine"]
 
   hurry:
     class: ListBroking\AppBundle\Service\External\HurryService
-    arguments: [ %hurry_api_url%, %hurry_api_token%, @logger ]
+    arguments: [ %hurry_api_url%, %hurry_api_token%, "@logger" ]

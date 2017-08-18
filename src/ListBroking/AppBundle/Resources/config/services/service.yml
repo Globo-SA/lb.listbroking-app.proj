@@ -1,14 +1,11 @@
 services:
   guzzle.client:
-      class: %guzzle.client.class%
-      tags:
-          - { name: "guzzle.client" }
+      class: Guzzle\Service\Client
 
   filter_engine:
     class: ListBroking\AppBundle\Engine\FilterEngine
-    arguments:
-      entityManager: @doctrine.orm.entity_manager
+    arguments: ["@doctrine.orm.entity_manager"]
 
   validator_engine:
     class: ListBroking\AppBundle\Engine\ValidatorEngine
-    arguments: [@doctrine, @guzzle.client, @app]
+    arguments: ["@doctrine", "@guzzle.client", "@app"]

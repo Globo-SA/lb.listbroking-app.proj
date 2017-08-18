@@ -1,6 +1,7 @@
 # Cache and logs
 /app/spool/*
 /app/cache/*
+/var/*
 /app/logs/*
 !app/cache/.gitkeep
 !app/logs/.gitkeep

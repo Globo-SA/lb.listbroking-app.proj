@@ -11,16 +11,20 @@ sonata_admin:
         handler: sonata.admin.security.handler.role
     templates:
         layout: ListBrokingAppBundle::base.html.twig
-
     dashboard:
-
-        groups:
-            sonata.admin.group.users:
-                label:           admin.users
-                label_catalogue: admin
-                icon:            '<i class="fa fa-user"></i>'
-                items:
-                    - sonata.user.admin.user
+        blocks:
+            -
+              position: top
+              type: app.admin.statistics_block
+              class: col-md-12
+            -
+              position: top
+              type: sonata.admin.block.admin_list
+              class: col-md-12
+            -
+              position: top
+              type: app.admin.operational_email
+              class: col-md-12
 
     assets:
       stylesheets:

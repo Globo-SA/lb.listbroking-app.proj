@@ -10,7 +10,8 @@
 
 namespace ListBroking\AppBundle\DataFixtures\ORM;
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use ListBroking\AppBundle\Entity\Campaign;
 use ListBroking\AppBundle\Entity\Category;
@@ -25,14 +26,25 @@ use ListBroking\AppBundle\Entity\Owner;
 use ListBroking\AppBundle\Entity\Parish;
 use ListBroking\AppBundle\Entity\Source;
 use ListBroking\AppBundle\Entity\SubCategory;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class LoadTestData implements FixtureInterface
+class LoadTestData extends AbstractFixture implements ContainerAwareInterface, OrderedFixtureInterface
 {
     private $phoneIndex = [];
+
     /**
      * {@inheritDoc}
      */
-    function load(ObjectManager $manager)
+    public function getOrder()
+    {
+        return 10;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function load(ObjectManager $manager)
     {
         $campaigns = array();
         $clients = array();
@@ -234,5 +246,15 @@ class LoadTestData implements FixtureInterface
         $this->phoneIndex[$phone] = true;
 
         return $phone;
+    }
+
+    /**
+     * Sets the container.
+     *
+     * @param ContainerInterface|null $container A ContainerInterface instance or null
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        // TODO: Implement setContainer() method.
     }
 }

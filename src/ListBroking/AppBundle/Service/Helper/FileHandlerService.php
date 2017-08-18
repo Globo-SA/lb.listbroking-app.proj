@@ -20,7 +20,6 @@ use ListBroking\AppBundle\Exporter\Exporter\CsvWriter;
 use ListBroking\AppBundle\Exporter\Source\DoctrineORMQuerySourceIterator;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 class FileHandlerService implements FileHandlerServiceInterface
 {
@@ -34,9 +33,9 @@ class FileHandlerService implements FileHandlerServiceInterface
     const INTERNAL_IMPORTS_FOLDER = '/../web/imports/';
 
     /**
-     * @var KernelInterface
+     * @var string
      */
-    private $kernel;
+    private $projectRootDir;
 
     /**
      * @var Filesystem
@@ -58,10 +57,10 @@ class FileHandlerService implements FileHandlerServiceInterface
      */
     private $filepath;
 
-    public function __construct (KernelInterface $kernel, Filesystem $filesystem, $filesystem_config)
+    public function __construct(string $projectRootDir, Filesystem $filesystem, $filesystem_config)
     {
-        $this->kernel = $kernel;
-        $this->filesystem = $filesystem;
+        $this->projectRootDir    = $projectRootDir;
+        $this->filesystem        = $filesystem;
         $this->filesystem_config = $filesystem_config;
 
         //Set APC to cache cells
@@ -117,7 +116,7 @@ class FileHandlerService implements FileHandlerServiceInterface
 
         $this->writer = $this->writerSelection($this->filepath, $extension);
     }
-    
+
     /**
      * @inheritDoc
      */
@@ -198,7 +197,7 @@ class FileHandlerService implements FileHandlerServiceInterface
         $path = $dir . $this->cleanUpName($name, strtolower($extension));
         if ( $absolute )
         {
-            $path = $this->kernel->getRootDir() . $path;
+            $path = $this->projectRootDir . $path;
         }
 
         return $path;
@@ -612,10 +611,13 @@ class FileHandlerService implements FileHandlerServiceInterface
             }
             $i++;
         }
-        $results = array_keys($results, max($results));
-        if(empty($results)){
+
+        if (empty($results)) {
             return null;
         }
+
+        $results = array_keys($results, max($results));
+
         return $results[0];
     }
-} 
+}

@@ -1,5 +1,6 @@
 imports:
     - { resource: services/listener.yml }
+    - { resource: services/monolog.yml }
     - { resource: services/form.yml }
     - { resource: services/base.yml }
     - { resource: services/service.yml }

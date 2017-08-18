@@ -1,7 +1,8 @@
 services:
   listbroking.appbundle.filters.form:
     class:  ListBroking\AppBundle\Form\FiltersType
-    arguments: [@app]
+    arguments:
+      - "@app"
     tags:
       - { name: form.type, alias: filters }
 
@@ -17,7 +18,8 @@ services:
 
   listbroking.appbundle.opposition_list_import.form.type:
     class: ListBroking\AppBundle\Form\OppositionListImportType
-    arguments: [@app]
+    arguments:
+      - "@app"
     tags:
       - { name: form.type, alias: opposition_list_import }
 
