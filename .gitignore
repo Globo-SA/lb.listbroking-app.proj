@@ -51,3 +51,5 @@
 
 # Mac stuff
 .DS_Store
+
+.vault?password
