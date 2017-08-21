@@ -94,7 +94,7 @@ class FilterEngine
         $limit = $extraction->getQuantity();
 
         $lead_qb = $this->em->createQueryBuilder()
-                            ->select('leads.id as lead_id, contacts.id as contact_id')
+                            ->select('leads.id as lead_id, ANY_VALUE(contacts.id) as contact_id')
                             ->from('ListBrokingAppBundle:Lead', 'leads')
         ;
 
