@@ -377,11 +377,11 @@ SQL;
      */
     private function implodeForInsertQuery($array){
 
-        $imploded = '';
+        $imploded = [];
+
         foreach ($array as $item)
         {
             $imploded[] = sprintf("(%s)", implode(',', $item));
-
         }
 
         return implode(',', $imploded);
