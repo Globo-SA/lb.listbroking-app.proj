@@ -74,13 +74,17 @@ ListBroking\AppBundle\Entity\Contact:
 # Timestampable
         created_at:
             type: datetime
-            nullable: true
-            gedmo: { timestampable: { on: create } }
-
+            column: created_at
+            gedmo:
+                timestampable:
+                    on: create
         updated_at:
             type: datetime
-            nullable: true
-            gedmo: { timestampable: { on: update } }
+            column: updated_at
+            gedmo:
+                timestampable:
+                    on: update
+
 # End of Timestampable
     oneToMany:
         extraction_contacts:

@@ -21,8 +21,8 @@
         }
     ],
     "require": {
-        "php": ">=5.4.9",
-        "symfony/symfony": "2.7.*",
+        "php": ">=7.1",
+        "symfony/symfony": "~2.7",
         "doctrine/orm": "~2.2,>=2.2.3,<2.5",
         "doctrine/dbal": "<2.5",
         "doctrine/doctrine-bundle": "~1.4",
@@ -65,7 +65,8 @@
         "adclick/api-abstraction-bundle": "1.*",
         "adclick/task-controller-bundle": "1.*",
         "beberlei/DoctrineExtensions": "^1.0",
-        "guzzlehttp/guzzle": "^6.2.0"
+        "guzzlehttp/guzzle": "^6.2.0",
+        "doctrine/migrations": "^1.5"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -97,9 +98,6 @@
         "symfony-app-dir": "app",
         "symfony-web-dir": "web",
         "symfony-assets-install": "relative",
-        "incenteev-parameters": {
-            "file": "app/config/parameters.yml"
-        },
         "branch-alias": {
             "dev-master": "2.7-dev"
         }

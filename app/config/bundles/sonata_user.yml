@@ -1,0 +1,11 @@
+sonata_user:
+    security_acl: false
+    manager_type: orm # can be orm or mongodb
+    impersonating:
+        route: sonata_admin_dashboard
+    profile:  # Profile Form (firstname, lastname, etc ...)
+        form:
+            type:               sonata_user_profile
+            handler:            sonata.user.profile.form.handler.default
+            name:               sonata_user_profile_form
+            validation_groups:  [Profile]

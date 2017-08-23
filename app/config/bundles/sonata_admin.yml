@@ -1,0 +1,167 @@
+sonata_admin:
+    options:
+      title_mode: single_image
+      html5_validate: false # does not use html5 validation
+      pager_links: 5 # pager max links to display
+      use_icheck: false
+
+    title: ListBroking - Contact broking simplified
+    title_logo: bundles/listbrokingapp/images/logo.png
+    security:
+        handler: sonata.admin.security.handler.role
+    templates:
+        layout: ListBrokingAppBundle::base.html.twig
+
+    dashboard:
+
+        groups:
+            sonata.admin.group.users:
+                label:           admin.users
+                label_catalogue: admin
+                icon:            '<i class="fa fa-user"></i>'
+                items:
+                    - sonata.user.admin.user
+
+#            sonata.admin.group.product:
+#                label:           products_and_categories
+#                label_catalogue: admin
+#                icon:            '<i class="fa fa-cubes"></i>'
+#                items:
+#                    - ignite_your_project.admin.product
+#                    - ignite_your_project.admin.product_category
+#
+#            sonata.admin.group.blog:
+#                label:           blog
+#                label_catalogue: admin
+#                icon:            '<i class="fa fa-comments"></i>'
+#                items:
+#                    - ignite_your_project.admin.blog
+#                    - ignite_your_project.admin.blog_category
+#
+#            sonata.admin.group.more:
+#                label:           admin.others
+#                label_catalogue: admin
+#                icon:            '<i class="fa fa-gift"></i>'
+#                items:
+#                    - ignite_your_project.admin.store
+#                    - ignite_your_project.admin.partnership
+#                    - ignite_your_project.admin.promotion
+#                    - application.admin.review
+#
+#            sonata.admin.group.content:
+#                label:           admin.cms_content
+#                label_catalogue: admin
+#                icon:            '<i class="fa fa-th"></i>'
+#                items:
+#                    - ignite_your_project.cms_admin.page
+#                    - ignite_your_project.admin.gallery_cms
+##                    - ignite_your_project.admin.collection
+##                    - ignite_your_project.admin.gallery_collection
+#
+##                    - sonata.classification.admin.tag
+#                    - sonata.media.admin.media
+#
+#            admin.group.faq:
+#                label:           admin.faqs
+#                label_catalogue: admin
+#                icon:            '<i class="fa fa-question"></i>'
+#                items:
+#                    - ignite_your_project.admin.faq
+#                    - ignite_your_project.admin.faq_category
+#
+#            admin.group.product:
+#                label:           admin.products_and_categories
+#                label_catalogue: admin
+#                icon:            '<i class="fa fa-bars"></i>'
+#                items:
+#
+#            sonata.admin.group.site_builder:
+#                label:           admin.seo
+#                label_catalogue: admin
+#                icon:            '<i class="fa fa-puzzle-piece"></i>'
+#                items:
+#
+#            sonata.admin.group.administration:
+#                label:           admin.administration
+#                label_catalogue: admin
+#                icon:            '<i class="fa fa-cogs"></i>'
+#                items:
+#                    - ignite_your_project.admin.seo
+##                    - sonata.user.admin.group
+##                    - ignite_your_project.admin.advance_configuration
+
+    assets:
+      stylesheets:
+
+          # Defaults:
+          - bundles/sonataadmin/vendor/bootstrap/dist/css/bootstrap.min.css
+          - bundles/sonataadmin/vendor/AdminLTE/css/font-awesome.min.css
+          - bundles/sonataadmin/vendor/AdminLTE/css/ionicons.min.css
+          - bundles/sonataadmin/vendor/AdminLTE/css/AdminLTE.css
+          - bundles/sonatacore/vendor/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css
+          - bundles/sonataadmin/vendor/jqueryui/themes/base/jquery-ui.css
+
+          # Overrides
+          - bundles/sonataadmin/vendor/select2/select2.css
+          - bundles/sonataadmin/vendor/select2/select2-bootstrap.css #
+
+
+          # More Defaults:
+          - bundles/sonataadmin/vendor/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css
+          - bundles/sonataadmin/css/styles.css
+          - bundles/sonataadmin/css/layout.css
+
+          # Extra
+          - bower/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css
+          - bower/bootstrap-daterangepicker/daterangepicker-bs3.css
+          - bower/jquery-file-upload/css/jquery.fileupload.css
+          - bundles/listbrokingapp/css/000_global.css
+          - bundles/listbrokingapp/css/001_fixed_columns.css
+          - bundles/listbrokingapp/css/002_extraction.css
+
+      javascripts:
+
+        # Defaults:
+        - bundles/sonataadmin/vendor/jquery/dist/jquery.min.js
+
+        # Overrides
+        - bundles/sonataadmin/vendor/select2/select2.min.js
+        - bower/moment/min/moment.min.js
+
+        # More Defaults:
+        - bundles/sonataadmin/vendor/jquery.scrollTo/jquery.scrollTo.min.js
+        - bundles/sonataadmin/vendor/bootstrap/dist/js/bootstrap.min.js
+        - bundles/sonatacore/vendor/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js
+        - bundles/sonataadmin/vendor/jqueryui/ui/minified/jquery-ui.min.js
+        - bundles/sonataadmin/vendor/jqueryui/ui/minified/i18n/jquery-ui-i18n.min.js
+        - bundles/sonataadmin/jquery/jquery.form.js
+        - bundles/sonataadmin/jquery/jquery.confirmExit.js
+        - bundles/sonataadmin/vendor/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js
+
+        # Extra
+        - bower/bootstrap-daterangepicker/daterangepicker.js
+        - bower/DataTables/media/js/jquery.dataTables.min.js
+        - bower/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js
+        - bower/jquery.inputmask/dist/inputmask/jquery.inputmask.js
+        - bower/jquery.inputmask/dist/inputmask/jquery.inputmask.numeric.extensions.js
+        - bower/jquery-file-upload/js/jquery.iframe-transport.js
+        - bower/jquery-file-upload/js/jquery.fileupload.js
+        - bower/jquery-file-upload/js/jquery.fileupload-process.js
+        - bower/jquery-file-upload/js/jquery.fileupload-validate.js
+        - bower/jquery.fileDownload/src/Scripts/jquery.fileDownload.js
+        - bundles/fosjsrouting/js/router.js
+
+        # More Defaults
+        - bundles/sonataadmin/App.js
+        - bundles/sonataadmin/Admin.js
+
+        # More Extra
+        - bundles/listbrokingapp/js/000_listbroking.js
+        - bundles/listbrokingapp/js/001_global.js
+        - bundles/listbrokingapp/js/002_forms.js
+        - bundles/listbrokingapp/js/004_extraction.js
+        - bundles/listbrokingapp/js/005_collections.js
+        - bundles/listbrokingapp/js/006_deduplication.js
+        - bundles/listbrokingapp/js/007_confirm_extraction.js
+        - bundles/listbrokingapp/js/008_deliver_extraction.js
+        - bundles/listbrokingapp/js/999_lastJs.js
