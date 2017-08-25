@@ -106,16 +106,16 @@ class LoadTestData implements FixtureInterface
         $categories = array();
         $sub_categories = array();
         $categories_names = array(
-            "Finance" => array(
-                "credit",
-                "cards",
-                "consolidation",
+            'Finance' => array(
+                'credit',
+                'cards',
+                'consolidation',
             ),
-            "Education" => array(),
-            "Insurance" => array(
-                "personal",
-                "car",
-                "home",
+            'Education' => array(),
+            'Insurance' => array(
+                'personal',
+                'car',
+                'home',
             ),
         );
         foreach ($categories_names as $category_name => $sub_categories_names) {
@@ -209,10 +209,10 @@ class LoadTestData implements FixtureInterface
                 $contact->setDate(new \DateTime(('2016'.'-0'.rand(1, 9).'-'.rand(10, 28))));
                 $contact->setEmail(rand(10000000, 99999999).'@test.com');
                 $contact->setBirthdate(new \DateTime(('19'.rand(50, 95).'-0'.rand(1, 9).'-'.rand(10, 28))));
-                $contact->setAddress("Rua ".rand(10000000, 99999999));
-                $contact->setFirstname("Dont care");
-                $contact->setLastname("Dont care again");
-                $contact->setIpaddress("127.0.0.1");
+                $contact->setAddress('Rua '.rand(10000000, 99999999));
+                $contact->setFirstname('Dont care');
+                $contact->setLastname('Dont care again');
+                $contact->setIpaddress('127.0.0.1');
                 $contact->setPostalcode1(rand(1000, 9999));
                 $contact->setPostalcode2(rand(100, 999));
                 $contact->setSource($sources[array_rand($sources, 1)]);
