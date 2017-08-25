@@ -1,0 +1,7 @@
+# app/config/bundle/stof_doctrine_extensions.yml
+stof_doctrine_extensions:
+  default_locale: %locale%
+  orm:
+    default:
+      timestampable: true
+      blameable: true

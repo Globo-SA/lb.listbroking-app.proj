@@ -1,0 +1,23 @@
+sonata_block:
+    default_contexts: [cms]
+    blocks:
+        sonata.admin.block.stats:
+            contexts:   [admin]
+        sonata.admin.block.admin_list:
+            contexts:   [admin]
+        sonata.admin.block.search_result:
+            contexts:   [admin]
+
+        # UserBundle's Blocks
+        sonata.user.block.menu:
+            contexts: [user]
+
+        sonata.block.service.text:
+        sonata.admin.block.admin_list:
+
+        app.admin.statistics_block:
+        app.admin.operational_email:
+
+        # Custom Admin Blocks
+        sonata.block.service.statistics:
+        sonata.block.service.recent:
