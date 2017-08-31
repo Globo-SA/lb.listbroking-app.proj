@@ -5,9 +5,9 @@ services:
           - { name: sonata.block }
         arguments:
           - "sonata.block.service.statistics"
-          - @templating
-          - @doctrine.orm.default_entity_manager
-          - @security.authorization_checker
+          - "@templating"
+          - "@doctrine.orm.default_entity_manager"
+          - "@security.authorization_checker"
 
   app.admin.statistics_block:
         class: ListBroking\AppBundle\AdminBlock\StatisticsBlockService
@@ -15,11 +15,11 @@ services:
           - { name: sonata.block }
         arguments:
           - "sonata.block.service.statistics"
-          - @request_stack
-          - @app
-          - @statistics
-          - @templating
-          - @doctrine.orm.default_entity_manager
+          - "@request_stack"
+          - "@app"
+          - "@statistics"
+          - "@templating"
+          - "@doctrine.orm.default_entity_manager"
 
   listbroking.admin.client:
       class: ListBroking\AppBundle\Admin\ClientAdmin

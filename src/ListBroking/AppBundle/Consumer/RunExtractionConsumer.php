@@ -6,21 +6,41 @@
 
 namespace ListBroking\AppBundle\Consumer;
 
+use ListBroking\AppBundle\Entity\Extraction;
+use Listbroking\AppBundle\Monolog\Processor\ServiceLogTaskIdentifierInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ExtractionServiceInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
+use Psr\Log\LoggerInterface;
 
 class RunExtractionConsumer implements ConsumerInterface
 {
+    const LOGGER_IDENTIFIER = 'RabbitMQ-RunExtractionConsumer';
 
     /**
      * @var ExtractionServiceInterface
      */
     private $e_service;
 
-    function __construct (ExtractionServiceInterface $e_service)
-    {
+    /** @var LoggerInterface */
+    protected $logger;
+
+    /**
+     * RunExtractionConsumer constructor.
+     *
+     * @param ExtractionServiceInterface        $e_service
+     * @param LoggerInterface                   $logger
+     * @param ServiceLogTaskIdentifierInterface $serviceLogTaskIdentifier
+     */
+    public function __construct(
+        ExtractionServiceInterface $e_service,
+        LoggerInterface $logger,
+        ServiceLogTaskIdentifierInterface $serviceLogTaskIdentifier
+    ) {
         $this->e_service = $e_service;
+        $this->logger    = $logger;
+
+        $serviceLogTaskIdentifier->setLogIdentifier(self::LOGGER_IDENTIFIER);
     }
 
     /**
@@ -28,11 +48,11 @@ class RunExtractionConsumer implements ConsumerInterface
      *
      * @return mixed false to reject and requeue, any other value to acknowledge
      */
-    public function execute (AMQPMessage $msg)
+    public function execute(AMQPMessage $msg)
     {
-        try
-        {
-//            return true;
+        $extraction = null;
+
+        try {
             // PHP is run in shared nothing architecture, so long running processes need to
             // Clear the entity manager before running
             $this->e_service->clearEntityManager();
@@ -40,18 +60,36 @@ class RunExtractionConsumer implements ConsumerInterface
             $msg_body = unserialize($msg->body);
 
             $extraction = $this->e_service->findExtraction($msg_body['object_id']);
-            $this->e_service->logExtractionAction($extraction, 'Starting \'runExtraction\'');
+            $this->e_service->logExtractionAction($extraction, 'Starting "runExtraction"');
+            $this->logger->info('Starting "runExtraction"', ['extraction_id' => $extraction->getId()]);
 
             // Run Extraction
-            $result = $this->e_service->runExtraction($extraction) ? 'EXTRACTED' : 'NOT EXTRACTED!';
+            $result = $this->e_service->runExtraction($extraction)
+                ? sprintf('EXTRACTED %d contacts', count($extraction->getExtractionContacts()))
+                : 'NOT EXTRACTED!';
 
-            $this->e_service->logExtractionAction($extraction, sprintf('Ending \'runExtraction\', result: %s', $result));
+            $this->e_service->logExtractionAction($extraction, sprintf('Ending "runExtraction", result: %s', $result));
+            $this->logger->info(
+                'Ending "runExtraction"',
+                [
+                    'extraction_id' => $extraction->getId(),
+                    'result'        => $result
+                ]
+            );
 
             return true;
-        }
-        catch ( \Exception $e )
-        {
-            $this->e_service->logError($e);
+        } catch (\Exception $exception) {
+            if ($extraction instanceof Extraction) {
+                $this->e_service->logExtractionAction($extraction, sprintf('Error "runExtraction"'));
+            }
+
+            $this->logger->error(
+                '#LB-0014# Error on "runExtraction"',
+                [
+                    'extraction_id' => $extraction instanceof Extraction ? $extraction->getId() : null,
+                    'result'        => $exception->getMessage()
+                ]
+            );
 
             return false;
         }

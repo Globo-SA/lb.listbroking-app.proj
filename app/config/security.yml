@@ -1,6 +1,7 @@
 security:
     encoders:
-        "FOS\UserBundle\Model\UserInterface": sha512
+        FOS\UserBundle\Model\UserInterface: sha512
+
     role_hierarchy:
         ROLE_API_USER: ROLE_API_USER
         ROLE_LISTBROKER:
@@ -38,7 +39,7 @@ security:
             anonymous:          true
             remember_me:
                 always_remember_me: true
-                key:                "%secret%"
+                secret:                "%secret%"
                 lifetime:           31536000 # 365 days in seconds
                 path:                /
                 domain:              ~ # Defaults to the current domain from $_SERVER

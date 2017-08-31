@@ -1,17 +1,14 @@
 monolog:
-    channels: ["app_services"]
     handlers:
+        service:
+            type:   stream
+            path:  "%kernel.logs_dir%/%kernel.environment%_service.log"
+            level:  "%monolog.level.service%"
+            formatter: adclick.logger.formatter.compactformat
+            channels: ['service']
         main:
-            type:         fingers_crossed
-            action_level: error
-            handler:      nested
-        nested:
-            type:  stream
-            path:  "%kernel.logs_dir%/%kernel.environment%.log"
-            level: debug
-        console:
-            type:  console
-        app_services:
-            type:     stream
-            path:     "%kernel.logs_dir%/%app_log_filename%.log"
-            channels: ["app_services"]
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%_main.log"
+            level: "%monolog.level.main%"
+
+

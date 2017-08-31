@@ -63,6 +63,7 @@ class AjaxExtractionController extends Controller
     public function findExtractionAction (Request $request, $extraction_id)
     {
         $a_service = $this->get('app');
+
         try
         {
             $a_service->validateAjaxRequest($request);

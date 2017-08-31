@@ -1,24 +1,30 @@
 services:
   app.consumer.run_extraction:
     class: ListBroking\AppBundle\Consumer\RunExtractionConsumer
-    arguments: [@extraction]
+    arguments: ["@extraction", "@logger", "@listbroking.app.monolog.processor.service_log_task_identifier"]
+    tags:
+        - { name: monolog.logger, channel: service }
 
   app.consumer.deduplicate_extraction:
     class: ListBroking\AppBundle\Consumer\DeduplicateExtractionConsumer
-    arguments: [@extraction, @file_handler]
+    arguments: ["@extraction", "@file_handler", "@logger", "@listbroking.app.monolog.processor.service_log_task_identifier"]
+    tags:
+        - { name: monolog.logger, channel: service }
 
   app.consumer.lock_extraction:
     class: ListBroking\AppBundle\Consumer\LockExtractionConsumer
-    arguments: [@extraction]
+    arguments: ["@extraction"]
 
   app.consumer.deliver_extraction:
     class: ListBroking\AppBundle\Consumer\DeliverExtractionConsumer
-    arguments: [@app, @extraction, @file_handler]
+    arguments: ["@app", "@extraction", "@file_handler", "@logger", "@listbroking.app.monolog.processor.service_log_task_identifier"]
+    tags:
+        - { name: monolog.logger, channel: service }
 
   app.consumer.opposition_list_import:
     class: ListBroking\AppBundle\Consumer\OppositionListImportConsumer
-    arguments: [@messaging, @staging, @file_handler]
+    arguments: ["@messaging", "@staging", "@file_handler"]
 
   app.consumer.staging_contact_import:
     class: ListBroking\AppBundle\Consumer\StagingContactImportConsumer
-    arguments: [@messaging, @staging, @file_handler]
+    arguments: ["@messaging", "@staging", "@file_handler"]
