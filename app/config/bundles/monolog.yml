@@ -1,3 +1,9 @@
+services:
+    adclick.logger.formatter.compactformat:
+        class: Monolog\Formatter\LineFormatter
+        arguments:
+            - "%%datetime%%|%%extra.task_identifier%%|%%channel%%|%%level_name%%|M: %%message%%|%%context%%|\n"
+
 monolog:
     handlers:
         service:

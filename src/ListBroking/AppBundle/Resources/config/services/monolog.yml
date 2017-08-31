@@ -1,9 +1,4 @@
 services:
-    listbroking.app.monolog.formatter.compactformat:
-        class: Monolog\Formatter\LineFormatter
-        arguments:
-            - "%%datetime%%|%%extra.task_identifier%%|%%channel%%|%%level_name%%|M: %%message%%|%%context%%|\n"
-
     listbroking.app.monolog.processor.service_log_task_identifier:
         class: ListBroking\AppBundle\Monolog\Processor\ServiceLogTaskIdentifier
 
