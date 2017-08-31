@@ -25,6 +25,8 @@ class Lead {
 
     protected $is_mobile;
 
+    protected $is_sms_ok;
+
     protected $in_opposition;
 
     protected $is_ready_to_use = 0;
@@ -97,6 +99,14 @@ class Lead {
     }
 
     /**
+     * @return mixed
+     */
+    public function getIsSmsOk()
+    {
+        return $this->is_sms_ok;
+    }
+
+    /**
      * @return boolean
      */
     public function getIsReadyToUse ()
@@ -118,6 +128,14 @@ class Lead {
     public function setIsMobile($is_mobile)
     {
         $this->is_mobile = $is_mobile;
+    }
+
+    /**
+     * @param mixed $is_sms_ok
+     */
+    public function setIsSmsOk($is_sms_ok)
+    {
+        $this->is_sms_ok = $is_sms_ok;
     }
 
     /**

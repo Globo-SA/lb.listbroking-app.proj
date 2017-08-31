@@ -33,6 +33,10 @@ ListBroking\AppBundle\Entity\Lead:
         is_ready_to_use:
           type: boolean
           column: is_ready_to_use
+        is_sms_ok:
+          type: boolean
+          column: is_sms_ok
+          nullable: true
 # Timestampable
         created_at:
             type: datetime
