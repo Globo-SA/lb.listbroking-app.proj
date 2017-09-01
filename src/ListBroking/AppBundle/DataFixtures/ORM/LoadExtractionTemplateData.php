@@ -107,6 +107,10 @@ class LoadExtractionTemplateData extends AbstractFixture implements ContainerAwa
                 'name'     => 'Standard Email Template (With postalcode)',
                 'template' => "{\r\n\"headers\": {\r\n\"ID\": \"contact.id\",\r\n\"External ID\": \"contact.external_id\",\r\n\"Firstname\": \"contact.firstname\",\r\n\"Lastname\": \"contact.lastname\",\r\n\"Gender\": \"gender.name\",\r\n\"Birthdate\": \"contact.birthdate\",\r\n\"Email\": \"contact.email\",\r\n\"Postalcode1\": \"contact.postalcode1\",\r\n\"Postalcode2\": \"contact.postalcode2\",\r\n\"Acquisition date\": \"contact.date\"\r\n},\r\n\"extension\": \"xls\"\r\n}"
             ],
+            [
+                'name'     => 'Template SMS OK',
+                'template' => "{\r\n\t\"headers\": {\r\n\t\t\"To\": \"lead.phone\",\r\n\t\t\"SMS OK\": \"lead.is_sms_ok\"\r\n\t},\r\n\t\"extension\": \"csv\"\r\n}"
+            ],
         ];
     }
 }
