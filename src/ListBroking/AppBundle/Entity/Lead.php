@@ -37,7 +37,7 @@ class Lead {
     /**
      * @var boolean
      */
-    protected $is_sms_ok;
+    protected $is_sms_ok = false;
 
     /**
      * @var boolean

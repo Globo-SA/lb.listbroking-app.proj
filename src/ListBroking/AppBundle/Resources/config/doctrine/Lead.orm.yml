@@ -36,7 +36,9 @@ ListBroking\AppBundle\Entity\Lead:
         is_sms_ok:
           type: boolean
           column: is_sms_ok
-          nullable: true
+          nullable: false
+          options:
+            default: 0
 # Timestampable
         created_at:
             type: datetime
