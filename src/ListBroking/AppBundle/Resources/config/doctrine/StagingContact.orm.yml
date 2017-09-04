@@ -157,9 +157,13 @@ ListBroking\AppBundle\Entity\StagingContact:
             type: datetime
             nullable: true
             gedmo: { timestampable: { on: create } }
+            options:
+              default: CURRENT_TIMESTAMP
 
         updated_at:
             type: datetime
             nullable: true
             gedmo: { timestampable: { on: update } }
+            options:
+              default: CURRENT_TIMESTAMP
 # End of Timestampable
