@@ -18,7 +18,7 @@ class Version20170831150150 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE lead ADD is_sms_ok TINYINT(1) DEFAULT NULL');
+        $this->addSql('ALTER TABLE lead ADD is_sms_ok TINYINT(1) DEFAULT 0');
     }
 
     /**
