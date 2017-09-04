@@ -19,22 +19,54 @@ class Lead {
 
     use TimestampableEntityBehavior;
 
+    /**
+     * @var int
+     */
     protected $id;
 
+    /**
+     * @var int
+     */
     protected $phone;
 
+    /**
+     * @var boolean
+     */
     protected $is_mobile;
 
+    /**
+     * @var boolean
+     */
+    protected $is_sms_ok;
+
+    /**
+     * @var boolean
+     */
     protected $in_opposition;
 
-    protected $is_ready_to_use = 0;
+    /**
+     * @var boolean
+     */
+    protected $is_ready_to_use = false;
 
+    /**
+     * @var int
+     */
     protected $date;
 
+    /**
+     * @var string
+     */
     protected $country;
 
+    /**
+     * @var ArrayCollection
+     */
     protected $contacts;
 
+    /**
+     * @var ArrayCollection
+     */
     protected $locks;
 
     function __construct()
@@ -49,7 +81,7 @@ class Lead {
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getId()
     {
@@ -57,7 +89,7 @@ class Lead {
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCountry()
     {
@@ -65,7 +97,7 @@ class Lead {
     }
 
     /**
-     * @param mixed $country
+     * @param string $country
      */
     public function setCountry($country)
     {
@@ -73,7 +105,7 @@ class Lead {
     }
 
     /**
-     * @return mixed
+     * @return boolean
      */
     public function getInOpposition()
     {
@@ -81,7 +113,7 @@ class Lead {
     }
 
     /**
-     * @param mixed $in_opposition
+     * @param boolean $in_opposition
      */
     public function setInOpposition($in_opposition)
     {
@@ -89,11 +121,19 @@ class Lead {
     }
 
     /**
-     * @return mixed
+     * @return boolean
      */
     public function getIsMobile()
     {
         return $this->is_mobile;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsSmsOk()
+    {
+        return $this->is_sms_ok;
     }
 
     /**
@@ -113,7 +153,7 @@ class Lead {
     }
 
     /**
-     * @param mixed $is_mobile
+     * @param boolean $is_mobile
      */
     public function setIsMobile($is_mobile)
     {
@@ -121,7 +161,15 @@ class Lead {
     }
 
     /**
-     * @return mixed
+     * @param boolean $is_sms_ok
+     */
+    public function setIsSmsOk($is_sms_ok)
+    {
+        $this->is_sms_ok = $is_sms_ok;
+    }
+
+    /**
+     * @return int
      */
     public function getPhone()
     {
@@ -129,7 +177,7 @@ class Lead {
     }
 
     /**
-     * @param mixed $phone
+     * @param $phone
      */
     public function setPhone($phone)
     {
@@ -137,7 +185,7 @@ class Lead {
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getDate()
     {
@@ -145,7 +193,7 @@ class Lead {
     }
 
     /**
-     * @param mixed $date
+     * @param $date
      */
     public function setDate($date)
     {
@@ -153,7 +201,7 @@ class Lead {
     }
 
     /**
-     * @return mixed
+     * @return ArrayCollection
      */
     public function getContacts()
     {
@@ -178,7 +226,7 @@ class Lead {
     /**
      * @return ArrayCollection
      */
-    public function getLocks ()
+    public function getLocks()
     {
         return $this->locks;
     }

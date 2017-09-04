@@ -193,7 +193,7 @@ class FiltersType extends AbstractType
                             ),
                             'label'    => 'Has Postalcode2'
                         )
-                    )
+                    ),
                 )
             ),
             'contact'                             => array(
@@ -343,6 +343,26 @@ class FiltersType extends AbstractType
                                 'class' => 'form-control'
                             ),
                             'label'       => 'In Opposition Lists'
+                        )
+                    ),
+                    array(
+                        'filter_type'          => LeadFilterInterface::BASIC_TYPE,
+                        'has_exclusion_filter' => false,
+                        'table'                => 'lead',
+                        'field'                => 'is_sms_ok',
+                        'field_type'           => self::FIELD_TYPE_CHOICE,
+                        'type'                 => 'choice',
+                        'options'              => array(
+                            'placeholder' => false,
+                            'choices'     => array(
+                                self::FIELD_TYPE_CHOICE_BOTH => 'Both',
+                                self::FIELD_TYPE_CHOICE_YES  => 'Yes',
+                                self::FIELD_TYPE_CHOICE_NO   => 'No'
+                            ),
+                            'attr'        => array(
+                                'class' => 'form-control'
+                            ),
+                            'label'       => 'Is Sms Ok'
                         )
                     ),
                 )
