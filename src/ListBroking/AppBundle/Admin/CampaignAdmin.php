@@ -17,11 +17,7 @@ class CampaignAdmin extends Admin
 
     protected function configureRoutes(RouteCollection $collection)
     {
-        if (!$this->isGranted('ROLE_SUPER_ADMIN'))
-        {
-            $collection->remove('delete');
-        }
-
+        $collection->remove('delete');
     }
 
     /**

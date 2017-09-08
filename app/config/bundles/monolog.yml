@@ -16,5 +16,7 @@ monolog:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%_main.log"
             level: "%monolog.level.main%"
+            formatter: adclick.logger.formatter.compactformat
+            channels: ['!service']
 
 

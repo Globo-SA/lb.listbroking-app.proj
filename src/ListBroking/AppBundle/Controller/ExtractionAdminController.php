@@ -139,8 +139,7 @@ class ExtractionAdminController extends CRUDController
     public function filteringAction ()
     {
         $is_new = $this->get('request')
-                       ->get('is_new')
-        ;
+                       ->get('is_new');
 
         // Services
         $a_service = $this->get('app');
@@ -149,42 +148,52 @@ class ExtractionAdminController extends CRUDController
 
         // Current Extraction
         $extraction_id = $this->get('request')
-                              ->get($this->admin->getIdParameter())
-        ;
+                              ->get($this->admin->getIdParameter());
+
         /** @var Extraction $extraction */
         $extraction = $this->admin->getObject($extraction_id);
-        $user = $this->getUser();
+        $user       = $this->getUser();
 
         if ( ! $this->admin->isGranted('SUPER_ADMIN') &&
              ! in_array('ROLE_LISTBROKER', $user->getRoles()) &&
-             $user()->getId() !==
-             $extraction->getCreatedBy()
-                        ->getId()
-        )
-        {
+             $user()->getId() !== $extraction->getCreatedBy()->getId()
+        ) {
             throw new AccessDeniedException('You can only edit extractions created by you ');
         }
 
         // Handle Filters and update Extraction
-        if ( ! $is_new )
-        {
+        if (! $is_new) {
             $is_extraction_ready = $e_service->handleFiltration($extraction);
-            if ( $is_extraction_ready )
-            {
+
+            if ($is_extraction_ready) {
 
                 // Publish Extraction to the Queue
-                $m_service->publishMessage('run_extraction', array(
-                    'object_id' => $extraction->getId()
-                ));
+                $m_service->publishMessage(
+                    'run_extraction',
+                    [
+                        'object_id' => $extraction->getId()
+                    ]
+                );
+
+                return new RedirectResponse(
+                    $this->generateUrl('admin_listbroking_app_extraction_filtering', ['id' => $extraction_id])
+                );
             }
         }
 
         // Forms
-        $extraction_form = $this->generateExtractionForm($extraction);
+        $extraction_form          = $this->generateExtractionForm($extraction);
         $extraction_deduplication = $a_service->generateForm('extraction_deduplication');
-        $extraction_locking = $a_service->generateForm('extraction_locking');
+        $extraction_locking       = $a_service->generateForm('extraction_locking');
 
-        $filters_form = $a_service->generateForm('filters', $this->generateUrl('admin_listbroking_app_extraction_filtering', array('id' => $extraction_id)), $extraction->getFilters());
+        $filters_form = $a_service->generateForm(
+            'filters',
+            $this->generateUrl(
+                'admin_listbroking_app_extraction_filtering',
+                ['id' => $extraction_id]
+            ),
+            $extraction->getFilters()
+        );
 
         // Render Response
         return $this->render('@ListBrokingApp/Extraction/filtering.html.twig', array(
@@ -192,12 +201,12 @@ class ExtractionAdminController extends CRUDController
             'lock_time'     => $e_service->findConfig('lock.time'),
             'preview_limit' => $e_service->findConfig('extraction.contact.show_limit'),
             'extraction'    => $extraction,
-            'forms'         => array(
+            'forms'         => [
                 'extraction'               => $extraction_form,
                 'filters'                  => $filters_form->createView(),
                 'extraction_deduplication' => $extraction_deduplication->createView(),
                 'extraction_locking'       => $extraction_locking->createView(),
-            ),
+            ],
             'elements'      => $this->admin->getShow(),
         ));
     }

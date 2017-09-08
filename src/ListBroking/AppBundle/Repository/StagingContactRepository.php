@@ -34,13 +34,11 @@ class StagingContactRepository extends EntityRepository
     public function importStagingContactsFile (\PHPExcel $file, array $extra_fields = [], $batch_size)
     {
         $conn = $this->getEntityManager()
-                     ->getConnection()
-        ;
+                     ->getConnection();
 
         $row_iterator = $file->getWorksheetIterator()
                              ->current()
-                             ->getRowIterator()
-        ;
+                             ->getRowIterator();
 
         $batch = 1;
 
@@ -56,6 +54,7 @@ class StagingContactRepository extends EntityRepository
             }
 
             $contact_data = array();
+
             /** @var  \PHPExcel_Cell $cell */
             foreach ( $row->getCellIterator() as $cell )
             {
@@ -64,9 +63,11 @@ class StagingContactRepository extends EntityRepository
             }
 
             $extra_fields['created_at'] = date('Y-m-d H:i:s');
-            foreach($extra_fields as $field => $value){
+
+            foreach($extra_fields as $field => $value) {
                 $contact_data[] = $this->cleanUpValue($conn, $value);
             }
+
             $staging_contacts[] = $contact_data;
 
             if ( ($batch % $batch_size) === 0 )
@@ -76,6 +77,7 @@ class StagingContactRepository extends EntityRepository
                 $batch = 1;
                 $staging_contacts = array();
             }
+
             $batch++;
         }
 
@@ -375,8 +377,8 @@ SQL;
      *
      * @return string
      */
-    private function implodeForInsertQuery($array){
-
+    private function implodeForInsertQuery($array)
+    {
         $imploded = [];
 
         foreach ($array as $item)
@@ -387,13 +389,23 @@ SQL;
         return implode(',', $imploded);
     }
 
-    private function cleanUpValue(Connection $connection, $value){
-        if(empty($value)){
+    /**
+     * Clean value for DB insert
+     *
+     * @param Connection $connection
+     * @param mixed      $value
+     *
+     * @return mixed
+     */
+    private function cleanUpValue(Connection $connection, $value)
+    {
+        // if value is empty, set it has null
+        if ($value === '') {
+
             return 'NULL';
         }
 
         return is_numeric($value) || is_bool($value) ? $value : $connection->quote($value);
     }
-
 }
 

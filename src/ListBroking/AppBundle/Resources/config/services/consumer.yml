@@ -13,7 +13,9 @@ services:
 
   app.consumer.lock_extraction:
     class: ListBroking\AppBundle\Consumer\LockExtractionConsumer
-    arguments: ["@extraction"]
+    arguments: ["@extraction", "@logger", "@listbroking.app.monolog.processor.service_log_task_identifier"]
+    tags:
+        - { name: monolog.logger, channel: service }
 
   app.consumer.deliver_extraction:
     class: ListBroking\AppBundle\Consumer\DeliverExtractionConsumer
@@ -23,8 +25,12 @@ services:
 
   app.consumer.opposition_list_import:
     class: ListBroking\AppBundle\Consumer\OppositionListImportConsumer
-    arguments: ["@messaging", "@staging", "@file_handler"]
+    arguments: ["@messaging", "@staging", "@file_handler", "@logger", "@listbroking.app.monolog.processor.service_log_task_identifier"]
+    tags:
+        - { name: monolog.logger, channel: service }
 
   app.consumer.staging_contact_import:
     class: ListBroking\AppBundle\Consumer\StagingContactImportConsumer
-    arguments: ["@messaging", "@staging", "@file_handler"]
+    arguments: ["@messaging", "@staging", "@file_handler", "@logger", "@listbroking.app.monolog.processor.service_log_task_identifier"]
+    tags:
+        - { name: monolog.logger, channel: service }

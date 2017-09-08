@@ -3,7 +3,7 @@ sonata_admin:
       title_mode: single_image
       html5_validate: false # does not use html5 validation
       pager_links: 5 # pager max links to display
-      use_icheck: false
+      use_icheck: true
 
     title: ListBroking - Contact broking simplified
     title_logo: bundles/listbrokingapp/images/logo.png

@@ -106,9 +106,7 @@
         runLoop();
 
         // Run every x seconds
-        App.variables.extractionIntervalId = setInterval(function () {
-            runLoop();
-        }, App.variables.intervalTimeout);
+        App.variables.extractionIntervalId = setInterval(runLoop, App.variables.intervalTimeout);
     };
 
     /**

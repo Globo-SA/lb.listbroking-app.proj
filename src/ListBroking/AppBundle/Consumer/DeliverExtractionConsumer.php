@@ -131,11 +131,13 @@ class DeliverExtractionConsumer implements ConsumerInterface
                 ),
                 ['extraction_id' => $extraction->getId()]
             );
-
-            return true;
         } catch (\Exception $exception) {
             if ($extraction instanceof Extraction) {
                 $this->e_service->logExtractionAction($extraction, sprintf('Error "deliverExtraction"'));
+
+                // Set the Extraction as delivered
+                $extraction->setIsDelivering(false);
+                $this->e_service->updateEntity($extraction);
             }
 
             $this->logger->error(
@@ -145,8 +147,8 @@ class DeliverExtractionConsumer implements ConsumerInterface
                     'result'        => $exception->getMessage()
                 ]
             );
-
-            return false;
         }
+
+        return true;
     }
 }

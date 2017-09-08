@@ -118,11 +118,12 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
 
             $this->e_service->logExtractionAction($extraction, 'Ending "deduplicateExtraction", result: DONE');
             $this->logger->info('Ending "deduplicateExtraction", result: DONE', ['extraction_id' => $extraction->getId()]);
-
-            return true;
         } catch (\Exception $exception) {
             if ($extraction instanceof Extraction) {
-                $this->e_service->logExtractionAction($extraction, sprintf('Error "runExtraction"'));
+                $this->e_service->logExtractionAction($extraction, 'Error "deduplicateExtraction"');
+                $extraction->setIsAlreadyExtracted(true);
+                $extraction->setIsDeduplicating(false);
+                $this->e_service->updateEntity($extraction);
             }
 
             $this->logger->error(
@@ -132,8 +133,8 @@ class DeduplicateExtractionConsumer implements ConsumerInterface
                     'result'        => $exception->getMessage()
                 ]
             );
-
-            return false;
         }
+
+        return true;
     }
 }

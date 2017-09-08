@@ -76,11 +76,13 @@ class RunExtractionConsumer implements ConsumerInterface
                     'result'        => $result
                 ]
             );
-
-            return true;
         } catch (\Exception $exception) {
             if ($extraction instanceof Extraction) {
                 $this->e_service->logExtractionAction($extraction, sprintf('Error "runExtraction"'));
+
+                // Set the Extraction as finished
+                $extraction->setIsAlreadyExtracted(true);
+                $this->e_service->updateEntity($extraction);
             }
 
             $this->logger->error(
@@ -90,8 +92,8 @@ class RunExtractionConsumer implements ConsumerInterface
                     'result'        => $exception->getMessage()
                 ]
             );
-
-            return false;
         }
+
+        return true;
     }
 }

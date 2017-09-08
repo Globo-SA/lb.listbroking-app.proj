@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2015 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
@@ -28,7 +28,7 @@ class OppositionListRepository extends EntityRepository  {
 
         $conn = $this->getEntityManager()->getConnection();
 
-        if($clear_old){
+        if ($clear_old){
             $cleanup_sql = <<<SQL
             DELETE
             FROM opposition_list
@@ -47,11 +47,12 @@ SQL;
 
         $batch = 0;
         $batchSize = 1000;
+
         /** @var \PHPExcel_Worksheet_Row $row */
         foreach ($row_iterator as $row)
         {
             // Skip header
-            if($row->getRowIndex() == 1 && $config['has_header']){
+            if ($row->getRowIndex() == 1 && $config['has_header']){
                 continue;
             }
 
@@ -59,17 +60,19 @@ SQL;
             foreach ($row->getCellIterator() as $cell)
             {
                 $value = $cell->getValue();
-                if(empty($value)){
+                if (empty($value)){
                     continue;
                 }
 
                 // Import numbers from the correct cells
-                if(in_array($cell->getColumn(), $config['phone_columns'])){
+                if (in_array($cell->getColumn(), $config['phone_columns'])) {
                     $opposition = new OppositionList();
                     $opposition->setType($type);
                     $opposition->setPhone($value);
                     $em->persist($opposition);
+
                     $batch++;
+
                     if (($batch % $batchSize) === 0) {
 
                         $batch = 0;
@@ -78,8 +81,9 @@ SQL;
                 }
             }
         }
+
         $em->flush();
         $em->clear();
     }
 
-} 
+}
