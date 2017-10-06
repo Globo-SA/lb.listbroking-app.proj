@@ -58,6 +58,8 @@ abstract class BaseService implements BaseServiceInterface
     public function clearEntityManager ()
     {
         $this->entity_manager->clear();
+        $this->entity_manager->getConnection()->close();
+        $this->entity_manager->getConnection()->connect();
     }
 
     /**
