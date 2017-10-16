@@ -15,6 +15,10 @@
         {
             "url": "git@git.adclick.pt:bundles/authorization-client-bundle.git",
             "type": "git"
+        },
+        {
+            "url": "git@github.com:adclick/devops.php-standards.conf.git",
+            "type": "git"
         }
     ],
     "autoload": {
@@ -80,21 +84,23 @@
         "sensio/generator-bundle": "^3.0",
 
         "doctrine/doctrine-fixtures-bundle": "^2.3",
-        "fzaninotto/faker": "^1.5"
+        "fzaninotto/faker": "^1.5",
+        "adclick/php-standards": "1.*"
     },
     "scripts": {
         "symfony-scripts": [
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets"
         ],
         "post-install-cmd": [
             "@symfony-scripts"
         ],
         "post-update-cmd": [
-            "@symfony-scripts"
+            "@symfony-scripts",
+            "cp -nR \"vendor/adclick/php-standards/git/hooks/pre-commit\" \".git/hooks/pre-commit\"",
+            "./vendor/bin/phpcs --config-set installed_paths \"`pwd`/vendor/adclick/php-standards/AdclickCS,`pwd`/vendor/escapestudios/symfony2-coding-standard\"",
+            "./vendor/bin/phpcs --config-set default_standard AdclickCS"
         ]
     },
     "config": {

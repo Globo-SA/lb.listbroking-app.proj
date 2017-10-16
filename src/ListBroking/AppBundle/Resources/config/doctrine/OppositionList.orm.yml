@@ -18,4 +18,10 @@ ListBroking\AppBundle\Entity\OppositionList:
         phone:
             type: string
             length: 255
+        createdAt:
+            column: created_at
+            type: datetime
+            gedmo: { timestampable: { on: create } }
+            options:
+                default: 0
     lifecycleCallbacks: {  }

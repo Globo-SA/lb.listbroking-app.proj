@@ -6,28 +6,42 @@
 
 namespace ListBroking\AppBundle\Entity;
 
+/**
+ * ListBroking\AppBundle\Entity\ExtractionContact
+ */
 class ExtractionContact
 {
-
-    // GENERATED STUFF
-
     /**
      * @var integer
      */
-    private $id;
+    protected $id;
 
     /**
      * @var Extraction
      */
-    private $extraction;
+    protected $extraction;
 
     /**
      * @var Contact
      */
-    private $contact;
+    protected $contact;
+
+    /**
+     * @var \DateTime
+     */
+    protected $createdAt;
+
+    /**
+     * OppositionList constructor.
+     */
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+    }
 
     /**
      * Get id
+     *
      * @return integer
      */
     public function getId ()
@@ -37,9 +51,10 @@ class ExtractionContact
 
     /**
      * Get extraction
+     *
      * @return Extraction
      */
-    public function getExtraction ()
+    public function getExtraction()
     {
         return $this->extraction;
     }
@@ -51,7 +66,7 @@ class ExtractionContact
      *
      * @return ExtractionContact
      */
-    public function setExtraction (Extraction $extraction = null)
+    public function setExtraction(Extraction $extraction = null)
     {
         $this->extraction = $extraction;
 
@@ -60,9 +75,10 @@ class ExtractionContact
 
     /**
      * Get contact
+     *
      * @return Contact
      */
-    public function getContact ()
+    public function getContact()
     {
         return $this->contact;
     }
@@ -74,9 +90,33 @@ class ExtractionContact
      *
      * @return ExtractionContact
      */
-    public function setContact (Contact $contact = null)
+    public function setContact(Contact $contact = null)
     {
         $this->contact = $contact;
+
+        return $this;
+    }
+
+    /**
+     * Get Created At
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set Created At
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return ExtractionDeduplication
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

@@ -2,8 +2,6 @@
 
 namespace ListBroking\AppBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * ExtractionDeduplication
  *
@@ -13,7 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ExtractionDeduplication
 {
-
     const CACHE_ID = 'extraction_deduplication';
 
     /**
@@ -22,22 +19,39 @@ class ExtractionDeduplication
     const TYPE_PHONE = 'phone';
 
     /**
-     * @var integer
+     * @var int
      */
     protected $id;
 
+    /**
+     * @var int
+     */
     protected $lead_id;
 
+    /**
+     * @var int
+     */
     protected $contact_id;
 
+    /**
+     * @var Extraction
+     */
     protected $extraction;
 
+    /**
+     * @var string
+     */
     protected $phone;
+
+    /**
+     * @var \DateTime
+     */
+    protected $createdAt;
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -45,7 +59,7 @@ class ExtractionDeduplication
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getContactId()
     {
@@ -53,7 +67,7 @@ class ExtractionDeduplication
     }
 
     /**
-     * @param mixed $contact_id
+     * @param int $contact_id
      */
     public function setContactId($contact_id)
     {
@@ -61,7 +75,7 @@ class ExtractionDeduplication
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getLeadId()
     {
@@ -69,7 +83,7 @@ class ExtractionDeduplication
     }
 
     /**
-     * @param mixed $lead_id
+     * @param int $lead_id
      */
     public function setLeadId($lead_id)
     {
@@ -93,7 +107,7 @@ class ExtractionDeduplication
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getPhone()
     {
@@ -101,10 +115,34 @@ class ExtractionDeduplication
     }
 
     /**
-     * @param mixed $phone
+     * @param string $phone
      */
     public function setPhone($phone)
     {
         $this->phone = $phone;
+    }
+
+    /**
+     * Get Created At
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set Created At
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return ExtractionDeduplication
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 }

@@ -8,6 +8,13 @@ ListBroking\AppBundle\Entity\ExtractionContact:
             id: true
             generator:
                 strategy: AUTO
+    fields:
+        createdAt:
+            column: created_at
+            type: datetime
+            gedmo: { timestampable: { on: create } }
+            options:
+                default: 0
     manyToOne:
         extraction:
             targetEntity: ListBroking\AppBundle\Entity\Extraction

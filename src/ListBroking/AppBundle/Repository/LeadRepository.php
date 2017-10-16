@@ -26,7 +26,8 @@ class LeadRepository extends EntityRepository
         $sql = <<<SQL
             UPDATE lead l
             JOIN opposition_list ol on l.phone = ol.phone
-            SET l.in_opposition = 1
+            SET l.in_opposition = 1,
+                l.updated_at = now()
 SQL;
 
         /** @var Statement $stmt */
@@ -66,4 +67,4 @@ SQL;
                   ->execute()
             ;
     }
-} 
+}

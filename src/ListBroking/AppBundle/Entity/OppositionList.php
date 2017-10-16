@@ -2,8 +2,6 @@
 
 namespace ListBroking\AppBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * OppositionList
  */
@@ -14,23 +12,27 @@ class OppositionList
     /**
      * @var integer
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      */
-    private $type;
+    protected $type;
 
     /**
      * @var string
      */
-    private $phone;
+    protected $phone;
 
+    /**
+     * @var \DateTime
+     */
+    protected $createdAt;
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -41,6 +43,7 @@ class OppositionList
      * Set type
      *
      * @param string $type
+     *
      * @return OppositionList
      */
     public function setType($type)
@@ -53,7 +56,7 @@ class OppositionList
     /**
      * Get type
      *
-     * @return string 
+     * @return string
      */
     public function getType()
     {
@@ -64,6 +67,7 @@ class OppositionList
      * Set phone
      *
      * @param string $phone
+     *
      * @return OppositionList
      */
     public function setPhone($phone)
@@ -76,10 +80,34 @@ class OppositionList
     /**
      * Get phone
      *
-     * @return string 
+     * @return string
      */
     public function getPhone()
     {
         return $this->phone;
+    }
+
+    /**
+     * Get Created At
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set Created At
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return OppositionList
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 }
