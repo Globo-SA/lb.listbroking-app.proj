@@ -16,11 +16,11 @@ interface StagingServiceInterface extends BaseServiceInterface
      * Adds a new staging contact inferring
      * the fields by the array key
      *
-     * @param $data_array
+     * @param array $dataArray
      *
      * @return StagingContact
      */
-    public function addStagingContact ($data_array);
+    public function addStagingContact(array $dataArray);
 
     /**
      * Finds contacts that need validation and lock them
@@ -30,26 +30,26 @@ interface StagingServiceInterface extends BaseServiceInterface
      *
      * @return StagingContact[]
      */
-    public function findAndLockContactsToValidate ($limit = 50);
+    public function findAndLockContactsToValidate($limit = 50);
 
     /**
      * Imports an Opposition list by file
      *
-     * @param $type
-     * @param $file
-     * @param $clear_old
+     * @param string    $type
+     * @param \PHPExcel $file
+     * @param boolean   $clearOld
      */
-    public function importOppositionList ($type, $file, $clear_old);
+    public function importOppositionList($type, \PHPExcel $file, $clearOld);
 
     /**
      * Imports contacts from a file to the staging area
      * with optional default contact information
      *
-     * @param       $file
-     * @param array $extra_fields
-     * @param       $batch_size
+     * @param \PHPExcel $file
+     * @param array     $extraFields
+     * @param int       $batchSize
      */
-    public function importStagingContacts ($file, array $extra_fields = [], $batch_size);
+    public function importStagingContacts(\PHPExcel $file, array $extraFields = [], $batchSize);
 
     /**
      * Loads validated contacts from the staging area
@@ -57,17 +57,17 @@ interface StagingServiceInterface extends BaseServiceInterface
      *
      * @param StagingContact $contact
      */
-    public function loadValidatedContact (StagingContact $contact);
+    public function loadValidatedContact(StagingContact $contact);
 
     /**
      * Loads validated contacts from the staging area
      * to the Lead and Contact tables
      *
-     * @param $limit
+     * @param int $limit
      *
      * @return
      */
-    public function moveInvalidContactsToDQP ($limit);
+    public function moveInvalidContactsToDQP($limit);
 
     /**
      * Loads an updated contact from the staging area
@@ -77,12 +77,12 @@ interface StagingServiceInterface extends BaseServiceInterface
      *
      * @return mixed
      */
-    public function loadUpdatedContact (StagingContact $staging_contact);
+    public function loadUpdatedContact(StagingContact $staging_contact);
 
     /**
      * Syncs the Opposition table with the Leads
      */
-    public function syncContactsWithOppositionLists ();
+    public function syncContactsWithOppositionLists();
 
     /**
      * Validates a StagingContact using exceptions and
@@ -93,7 +93,7 @@ interface StagingServiceInterface extends BaseServiceInterface
      * @internal param $contacts
      * @return mixed
      */
-    public function validateStagingContact (StagingContact $contact);
+    public function validateStagingContact(StagingContact $contact);
 
     /**
      * Finds Leads with expired TYPE_INITIAL_LOCK

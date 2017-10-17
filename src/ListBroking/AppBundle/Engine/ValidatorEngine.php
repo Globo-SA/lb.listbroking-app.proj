@@ -32,9 +32,11 @@ use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Service\Helper\AppServiceInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
+/**
+ * ListBroking\AppBundle\Engine\ValidatorEngine
+ */
 class ValidatorEngine
 {
-
     /**
      * @var Registry
      */
@@ -58,16 +60,23 @@ class ValidatorEngine
     /**
      * @var AppServiceInterface
      */
-    protected $a_service;
+    protected $appService;
 
-    function __construct (RegistryInterface $doctrine, Client $guzzle, AppServiceInterface $a_service)
+    /**
+     * ValidatorEngine constructor.
+     *
+     * @param RegistryInterface   $doctrine
+     * @param Client              $guzzle
+     * @param AppServiceInterface $a_service
+     */
+    public function __construct(RegistryInterface $doctrine, Client $guzzle, AppServiceInterface $a_service)
     {
-        $this->doctrine = $doctrine;
-        $this->em = $doctrine->getManager();
-        $this->guzzle = $guzzle;
-        $this->a_service = $a_service;
+        $this->doctrine   = $doctrine;
+        $this->em         = $doctrine->getManager();
+        $this->guzzle     = $guzzle;
+        $this->appService = $a_service;
 
-        $this->validators = array(
+        $this->validators = [
 
             // Dimension validations
             new CountryValidator($this->em, true),
@@ -87,48 +96,40 @@ class ValidatorEngine
             new OppositionListValidator($this->em, true),
             new NameValidator($this->em, true),
             new BirthdateValidator($this->em, false),
-            new RepeatedValidator($this->em, true)
-        );
+            new RepeatedValidator($this->em, true),
+        ];
     }
 
     /**
      * Runs Validators to an array of
      * StagingContacts
      *
-     * @param $contact StagingContact
+     * @param StagingContact $contact
      */
-    public function run ($contact)
+    public function run($contact)
     {
-        $validations = array();
-        foreach ( $this->validators as $validator )
-        {
-            try
-            {
+        $validations = [];
+
+        foreach ($this->validators as $validator) {
+            try {
                 // Validate
-                $this->a_service->startStopWatch('validator_engine');
                 $validator->validate($contact, $validations);
-                $this->a_service->logInfo(sprintf('Stopwatch: validator %s, ran in %s milliseconds', $validator->getName(), $this->a_service->lapStopWatch('validator_engine')));
-            }
-            catch ( \Exception $e )
-            {
+            } catch (\Exception $e) {
                 $validations['errors'][$validator->getName()][] = $e->getMessage() . ', line:' . $e->getLine();
             }
         }
 
         $contact->setProcessed(true);
         $contact->setValidations($validations);
-        if ( ! array_key_exists('errors', $validations) )
-        {
+
+        if (! array_key_exists('errors', $validations)) {
             $contact->setValid(true);
         }
 
-        try
-        {
+        try {
             $this->em->flush();
-        }
-        catch ( \Exception $e )
-        {
-            $validations = array('exceptions' => $e->getMessage());
+        } catch (\Exception $e) {
+            $validations = ['exceptions' => $e->getMessage()];
             $contact->setValidations($validations);
             $contact->setValid(false);
 

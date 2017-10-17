@@ -8,159 +8,160 @@
 
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
-use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Engine\ValidatorEngine;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Service\Base\BaseService;
 
+/**
+ * ListBroking\AppBundle\Service\BusinessLogic\StagingService
+ */
 class StagingService extends BaseService implements StagingServiceInterface
 {
-
     /**
      * @var ValidatorEngine
      */
-    protected $v_engine;
+    protected $validatorEngine;
 
-    public function __construct (ValidatorEngine $v_engine)
+    /**
+     * StagingService constructor.
+     *
+     * @param ValidatorEngine $validatorEngine
+     */
+    public function __construct(ValidatorEngine $validatorEngine)
     {
-        $this->v_engine = $v_engine;
+        $this->validatorEngine = $validatorEngine;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function addStagingContact ($data_array)
-    {
-        return $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                                    ->addStagingContact($data_array)
-            ;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function findAndLockContactsToValidate ($limit = 50)
+    public function addStagingContact(array $dataArray)
     {
         return $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                                    ->findAndLockContactsToValidate($limit)
-            ;
+                                    ->addStagingContact($dataArray);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function importOppositionList ($type, $file, $clear_old)
+    public function findAndLockContactsToValidate($limit = 50)
+    {
+        return $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
+                                    ->findAndLockContactsToValidate($limit);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function importOppositionList($type, \PHPExcel $file, $clearOld)
     {
         $config = $this->findConfig('opposition_list.config');
 
         $this->entity_manager->getRepository('ListBrokingAppBundle:OppositionList')
-                             ->importOppositionListFile($type, $config[$type], $file, $clear_old)
-        ;
+                             ->importOppositionListFile($type, $config[$type], $file, $clearOld);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function importStagingContacts ($file, array $extra_fields = [], $batch_size)
+    public function importStagingContacts(\PHPExcel $file, array $extraFields = [], $batchSize)
     {
         $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                             ->importStagingContactsFile($file, $extra_fields, $batch_size)
-        ;
+                             ->importStagingContactsFile($file, $extraFields, $batchSize);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function loadValidatedContact (StagingContact $staging_contact)
+    public function loadValidatedContact(StagingContact $staging_contact)
     {
-        $this->startStopWatch('validator_engine');
-
         $dimensions = $this->loadStagingContactDimensions($staging_contact);
-        $this->logInfo(sprintf('Stopwatch: loadStagingContactDimensions, ran in %s milliseconds', $this->lapStopWatch('validator_engine')));
 
         $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                             ->loadValidatedContact($staging_contact, $dimensions)
-        ;
-        $this->logInfo(sprintf('Stopwatch: loadValidatedContact, ran in %s milliseconds', $this->lapStopWatch('validator_engine')));
+                             ->loadValidatedContact($staging_contact, $dimensions);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function moveInvalidContactsToDQP ($limit)
+    public function moveInvalidContactsToDQP($limit)
     {
         $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                             ->moveInvalidContactsToDQP($limit)
-        ;
+                             ->moveInvalidContactsToDQP($limit);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function loadUpdatedContact (StagingContact $staging_contact)
+    public function loadUpdatedContact(StagingContact $staging_contact)
     {
         $dimensions = $this->loadStagingContactDimensions($staging_contact);
         $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                             ->loadUpdatedContact($staging_contact, $dimensions)
-        ;
+                             ->loadUpdatedContact($staging_contact, $dimensions);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function syncContactsWithOppositionLists ()
+    public function syncContactsWithOppositionLists()
     {
         $this->entity_manager->getRepository('ListBrokingAppBundle:Lead')
-                             ->syncLeadsWithOppositionLists()
-        ;
+                             ->syncLeadsWithOppositionLists();
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function validateStagingContact (StagingContact $staging_contact)
+    public function validateStagingContact(StagingContact $staging_contact)
     {
-        $this->v_engine->run($staging_contact);
+        $this->validatorEngine->run($staging_contact);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function findLeadsWithExpiredInitialLock($limit)
     {
         return $this->entity_manager->getRepository('ListBrokingAppBundle:Lead')
-                                                        ->findLeadsWithExpiredInitialLock($limit);
+                                    ->findLeadsWithExpiredInitialLock($limit);
     }
 
-    private function loadStagingContactDimensions (StagingContact $staging_contact)
+    /**
+     * Get staging contact dimensions as an array
+     *
+     * @param StagingContact $stagingContact
+     *
+     * @return array
+     */
+    private function loadStagingContactDimensions(StagingContact $stagingContact)
     {
         //Dimension Tables
-        return array(
-            'source'       => $this->findDimension('ListBrokingAppBundle:Source', $staging_contact->getSourceName()),
-            'owner'        => $this->findDimension('ListBrokingAppBundle:Owner', $staging_contact->getOwner()),
-            'sub_category' => $this->findDimension('ListBrokingAppBundle:SubCategory', $staging_contact->getSubCategory()),
-            'gender'       => $this->findDimension('ListBrokingAppBundle:Gender', $staging_contact->getGender()),
-            'district'     => $this->findDimension('ListBrokingAppBundle:District', $staging_contact->getDistrict()),
-            'county'       => $this->findDimension('ListBrokingAppBundle:County', $staging_contact->getCounty()),
-            'parish'       => $this->findDimension('ListBrokingAppBundle:Parish', $staging_contact->getParish()),
-            'country'      => $this->findDimension('ListBrokingAppBundle:Country', $staging_contact->getCountry())
-        );
+        return [
+            'source'       => $this->findDimension('ListBrokingAppBundle:Source', $stagingContact->getSourceName()),
+            'owner'        => $this->findDimension('ListBrokingAppBundle:Owner', $stagingContact->getOwner()),
+            'sub_category' => $this->findDimension(
+                'ListBrokingAppBundle:SubCategory',
+                $stagingContact->getSubCategory()
+            ),
+            'gender'       => $this->findDimension('ListBrokingAppBundle:Gender', $stagingContact->getGender()),
+            'district'     => $this->findDimension('ListBrokingAppBundle:District', $stagingContact->getDistrict()),
+            'county'       => $this->findDimension('ListBrokingAppBundle:County', $stagingContact->getCounty()),
+            'parish'       => $this->findDimension('ListBrokingAppBundle:Parish', $stagingContact->getParish()),
+            'country'      => $this->findDimension('ListBrokingAppBundle:Country', $stagingContact->getCountry())
+        ];
     }
 
     /**
      * Finds the facts table Dimensions by name
      *
-     * @param       $repo_name
-     * @param       $name
+     * @param string $repoName
+     * @param string $name
      *
      * @return null|object
      */
-    private function findDimension ($repo_name, $name)
+    private function findDimension($repoName, $name)
     {
-        return $this->entity_manager->getRepository($repo_name)
-                                    ->findOneBy(array(
-                                        'name' => $name
-                                    ))
-            ;
+        return $this->entity_manager->getRepository($repoName)
+                                    ->findOneBy(['name' => $name]);
     }
 }

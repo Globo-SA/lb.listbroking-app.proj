@@ -28,6 +28,12 @@ ListBroking\AppBundle\Entity\ExtractionDeduplication:
             type:     string
             column:   phone
             nullable: true
+        createdAt:
+            column: created_at
+            type: datetime
+            gedmo: { timestampable: { on: create } }
+            options:
+                default: 0
     manyToOne:
         extraction:
             targetEntity:             ListBroking\AppBundle\Entity\Extraction
