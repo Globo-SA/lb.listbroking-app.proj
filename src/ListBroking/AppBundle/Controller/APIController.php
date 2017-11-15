@@ -1,24 +1,66 @@
 <?php
-/**
- * @author     Pedro Tentugal <pedro.tentugal@adclick.pt>
- * @copyright  2014 Adclick
- * @license    [LISTBROKING_URL_LICENSE_HERE]
- * [LISTBROKING_DISCLAIMER]
- */
 
 namespace ListBroking\AppBundle\Controller;
 
 use ListBroking\AppBundle\Exception\Validation\LeadValidationException;
+use ListBroking\AppBundle\Service\Authentication\FosUserAuthenticationServiceInterface;
+use ListBroking\AppBundle\Service\BusinessLogic\ExtractionServiceInterface;
+use ListBroking\AppBundle\Service\BusinessLogic\StagingServiceInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
+/**
+ * Class APIController
+ */
 class APIController extends Controller
 {
 
     const HTTP_SERVER_ERROR_CODE = 500;
     const HTTP_BAD_REQUEST_CODE = 400;
+    const HTTP_UNAUTHORIZED_CODE = 401;
+
+    /**
+     * @var LoggerInterface $logger
+     */
+    private $logger;
+
+    /**
+     * @var StagingServiceInterface $stagingService
+     */
+    private $stagingService;
+
+    /**
+     * @var ExtractionServiceInterface $extractionService
+     */
+    private $extractionService;
+
+    /**
+     * @var FosUserAuthenticationServiceInterface $fosUserAuthenticationService
+     */
+    private $fosUserAuthenticationService;
+
+    /**
+     * APIController constructor.
+     *
+     * @param LoggerInterface                       $logger
+     * @param StagingServiceInterface               $stagingService
+     * @param ExtractionServiceInterface            $extractionService
+     * @param FosUserAuthenticationServiceInterface $fosUserAuthenticationService
+     */
+    public function __construct(
+        LoggerInterface $logger,
+        StagingServiceInterface $stagingService,
+        ExtractionServiceInterface $extractionService,
+        FosUserAuthenticationServiceInterface $fosUserAuthenticationService
+    ) {
+        $this->logger                       = $logger;
+        $this->stagingService               = $stagingService;
+        $this->extractionService            = $extractionService;
+        $this->fosUserAuthenticationService = $fosUserAuthenticationService;
+    }
+
 
     /**
      * Dumb Action that just saves the lead for the ETL process
@@ -30,10 +72,9 @@ class APIController extends Controller
      */
     public function createStagingLeadAction (Request $request)
     {
-        $a_service = $this->get('app');
         try
         {
-            $this->checkCredentials($request);
+            $this->fosUserAuthenticationService->checkCredentials($request);
 
             $lead = $request->get('lead');
 
@@ -42,16 +83,15 @@ class APIController extends Controller
                 throw new LeadValidationException('Lead is empty');
             }
 
-            $s_service = $this->get('staging');
-            $s_service->addStagingContact($lead);
-            $s_service->flushAll();
-            $s_service->clearEntityManager();
+            $this->stagingService->addStagingContact($lead);
+            $this->stagingService->flushAll();
+            $this->stagingService->clearEntityManager();
 
             return $this->createJsonResponse('Lead added');
         }
         catch ( \Exception $e )
         {
-            return $a_service->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
+            return $this->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
 
@@ -61,19 +101,17 @@ class APIController extends Controller
      */
     public function getActiveCampaignsAction(Request $request)
     {
-        $a_service = $this->get('app');
         try
         {
-            $this->checkCredentials($request);
+            $this->fosUserAuthenticationService->checkCredentials($request);
 
-            $e_service = $this->get('extraction');
             $end_date = $request->get('end_date');
             $start_date = $request->get('start_date');
             if ($start_date == null)
             {
                 if ($end_date != null)
                 {
-                    return $this->createJsonResponse(Array("error" => "end date can't be defined without a start date"), self::HTTP_BAD_REQUEST_CODE);
+                    return $this->createJsonResponse(['error' => 'end date can\'t be defined without a start date'], self::HTTP_BAD_REQUEST_CODE);
                 }
                 $start_date = date('Y-m-1');
             }
@@ -81,15 +119,15 @@ class APIController extends Controller
             {
                 $end_date = date('Y-m-t');
             }
-            $data = $e_service->getActiveCampaigns($start_date, $end_date, $request->get('page', 1), $request->get('page_size', self::HTTP_SERVER_ERROR_CODE));
+            $data = $this->extractionService->getActiveCampaigns($start_date, $end_date, $request->get('page', 1), $request->get('page_size', self::HTTP_SERVER_ERROR_CODE));
             if ($data == null)
             {
-                return $this->createJsonResponse(Array("error" => "invalid request"), self::HTTP_BAD_REQUEST_CODE);
+                return $this->createJsonResponse(['error' => 'invalid request'], self::HTTP_BAD_REQUEST_CODE);
             }
             return $this->createJsonResponse($data);
         } catch (\Exception $e)
         {
-            $a_service->logError(sprintf("API Active Campaigns error: %s start_date: %s end_date: %s trace: %s", $e->getMessage(), $request->get('start_date'), $request->get('end_date'), $e->getTraceAsString()));
+            $this->logger->error(sprintf('API Active Campaigns error: %s start_date: %s end_date: %s trace: %s', $e->getMessage(), $request->get('start_date'), $request->get('end_date'), $e->getTraceAsString()));
             return $this->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
@@ -100,19 +138,17 @@ class APIController extends Controller
      */
     public function getExtractionsRevenueAction(Request $request)
     {
-        $a_service = $this->get('app');
         try
         {
-            $this->checkCredentials($request);
+            $this->fosUserAuthenticationService->checkCredentials($request);
 
-            $e_service = $this->get('extraction');
             $end_date = $request->get('end_date');
             $start_date = $request->get('start_date');
             if ($start_date == null)
             {
                 if ($end_date != null)
                 {
-                    return $this->createJsonResponse(Array("error" => "end date can't be defined without a start date"), self::HTTP_BAD_REQUEST_CODE);
+                    return $this->createJsonResponse(['error' => 'end date can\'t be defined without a start date'], self::HTTP_BAD_REQUEST_CODE);
                 }
                 $start_date = date('Y-m-1');
             }
@@ -120,46 +156,17 @@ class APIController extends Controller
             {
                 $end_date = date('Y-m-t');
             }
-            $data = $e_service->getRevenue($start_date, $end_date, $request->get('page', 1), $request->get('page_size', self::HTTP_SERVER_ERROR_CODE));
+            $data = $this->extractionService->getRevenue($start_date, $end_date, $request->get('page', 1), $request->get('page_size', self::HTTP_SERVER_ERROR_CODE));
             if ($data === null)
             {
-                return $this->createJsonResponse(Array("error" => "invalid request"), self::HTTP_BAD_REQUEST_CODE);
+                return $this->createJsonResponse(['error' => 'invalid request'], self::HTTP_BAD_REQUEST_CODE);
             }
             return $this->createJsonResponse($data);
         } catch (\Exception $e)
         {
-            $a_service->logError(sprintf("API Active Campaigns error: %s start_date: %s end_date: %s trace: %s", $e->getMessage(), $request->get('start_date'), $request->get('end_date'), $e->getTraceAsString()));
+            $this->logger->error(sprintf('API Active Campaigns error: %s start_date: %s end_date: %s trace: %s', $e->getMessage(), $request->get('start_date'), $request->get('end_date'), $e->getTraceAsString()));
             return $this->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
-    }
-
-    /**
-     * Wrapper around the authenticate function to throw an exception when request isn't authenticated
-     * @param Request $request
-     * @throws AccessDeniedException
-     */
-    private function checkCredentials(Request $request)
-    {
-        if (! $this->authenticate($request->get('username'), $request->get('token')) )
-        {
-            throw new AccessDeniedException();
-        }
-    }
-
-    /**
-     * Simple API user authentication by username, token
-     * and role ROLE_API_USER
-     *
-     * @param $username
-     * @param $token
-     *
-     * @return bool
-     */
-    private function authenticate ($username, $token)
-    {
-        $user = $this->get('fos_user.user_manager')->findUserBy(array('username' => $username, 'token' => $token));
-
-        return $user && $user->hasRole('ROLE_API_USER');
     }
 
     /**
@@ -172,9 +179,9 @@ class APIController extends Controller
      */
     private function createJsonResponse ($response, $code = 200)
     {
-        return new JsonResponse(array(
+        return new JsonResponse([
             'code'     => $code,
             'response' => $response
-        ), $code);
+        ], $code);
     }
 }

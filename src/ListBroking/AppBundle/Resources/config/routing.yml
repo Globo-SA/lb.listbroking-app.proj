@@ -13,3 +13,7 @@ ajax_extraction_routes:
 api_routes:
     prefix:   /api
     resource: "routing/api.yml"
+
+api_webhook_routes:
+    prefix: /api/webhook
+    resource: "routing/webhook.yml"

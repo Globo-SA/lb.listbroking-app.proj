@@ -1,0 +1,5 @@
+
+services:
+    app.validation.webhook_request_handler:
+        class: ListBroking\AppBundle\Validation\WebhookRequestHandlerService
+

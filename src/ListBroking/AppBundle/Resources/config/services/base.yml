@@ -32,15 +32,21 @@ services:
     class: ListBroking\AppBundle\Service\Helper\StatisticsService
     parent: base
 
-  extraction:
+  app.service.extraction:
     class: ListBroking\AppBundle\Service\BusinessLogic\ExtractionService
     parent: base
     arguments: ["@request_stack", "@filter_engine" ]
 
-  staging:
+  app.service.staging:
     class: ListBroking\AppBundle\Service\BusinessLogic\StagingService
     parent: base
-    arguments: ["@validator_engine"]
+    arguments:
+        - "@validator_engine"
+        - "@app.service.factory.opposition_list"
+        - "@validator"
+        - "@app.repository.opposition_list"
+        - "@app.repository.staging_contact"
+        - "@app.repository.lead"
 
   hurry:
     class: ListBroking\AppBundle\Service\External\HurryService

@@ -46,8 +46,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     public function findLastExtractionLog(Extraction $extraction, $limit)
     {
-        return $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionLog')
-                                    ->findLastExtractionLog($extraction, $limit);
+        return $this->entityManager->getRepository('ListBrokingAppBundle:ExtractionLog')
+                                   ->findLastExtractionLog($extraction, $limit);
     }
 
     /**
@@ -55,8 +55,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     public function cloneExtraction(Extraction $extraction)
     {
-        return $this->entity_manager->getRepository('ListBrokingAppBundle:Extraction')
-                                    ->cloneExtraction($extraction);
+        return $this->entityManager->getRepository('ListBrokingAppBundle:Extraction')
+                                   ->cloneExtraction($extraction);
     }
 
     /**
@@ -64,8 +64,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     public function findExtraction($id)
     {
-        return $this->entity_manager->getRepository('ListBrokingAppBundle:Extraction')
-                                    ->find($id);
+        return $this->entityManager->getRepository('ListBrokingAppBundle:Extraction')
+                                   ->find($id);
     }
 
     /**
@@ -73,8 +73,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     public function findExtractionContacts (Extraction $extraction, $limit = null)
     {
-        return $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')
-                                    ->findExtractionContacts($extraction, $limit);
+        return $this->entityManager->getRepository('ListBrokingAppBundle:ExtractionContact')
+                                   ->findExtractionContacts($extraction, $limit);
     }
 
     /**
@@ -82,8 +82,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     public function findExtractionSummary (Extraction $extraction)
     {
-        return $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')
-                                    ->findExtractionSummary($extraction);
+        return $this->entityManager->getRepository('ListBrokingAppBundle:ExtractionContact')
+                                   ->findExtractionSummary($extraction);
     }
 
     /**
@@ -91,8 +91,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     public function generateLocks (Extraction $extraction, $lock_types)
     {
-        $this->entity_manager->getRepository('ListBrokingAppBundle:Lock')
-                             ->generateLocks($extraction, $lock_types, $this->findConfig('lock.time'));
+        $this->entityManager->getRepository('ListBrokingAppBundle:Lock')
+                            ->generateLocks($extraction, $lock_types, $this->findConfig('lock.time'));
     }
 
     /**
@@ -100,8 +100,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     public function getExtractionContactsQuery (Extraction $extraction, $fetch_mode = null)
     {
-        return $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')
-                                    ->findExtractionContactsQuery($extraction, null, $fetch_mode);
+        return $this->entityManager->getRepository('ListBrokingAppBundle:ExtractionContact')
+                                   ->findExtractionContactsQuery($extraction, null, $fetch_mode);
     }
 
     /**
@@ -111,8 +111,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     {
         $total = 0;
         $offset = 0;
-        $total_contacts_to_export = $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')
-                                                         ->countExtractionContacts($extraction);
+        $total_contacts_to_export = $this->entityManager->getRepository('ListBrokingAppBundle:ExtractionContact')
+                                                        ->countExtractionContacts($extraction);
         $batches_to_run = ceil($total_contacts_to_export / $batch_size);
         $this->logger->info(
             sprintf(
@@ -131,8 +131,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
                 sprintf("Export Running - current_batch: %s", $i), ['extraction_id' => $extraction->getId()]
             );
 
-            $extraction_contacts = $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact')
-                                                        ->findExtractionContactsWithIdOffset($extraction, $template['headers'], $batch_size, $offset);
+            $extraction_contacts = $this->entityManager->getRepository('ListBrokingAppBundle:ExtractionContact')
+                                                       ->findExtractionContactsWithIdOffset($extraction, $template['headers'], $batch_size, $offset);
             $batch_extraction_contacts = count($extraction_contacts);
 
             $total += $batch_extraction_contacts;
@@ -172,7 +172,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             // Sets the new Filters and mark the Extraction to reprocess
             // and sets the status to confirmation
             $extraction->setFilters($filters);
-            $readable_filters = FiltersType::humanizeFilters($this->entity_manager, $extraction->getFilters());
+            $readable_filters = FiltersType::humanizeFilters($this->entityManager, $extraction->getFilters());
             $extraction->setReadableFilters($readable_filters);
 
             $extraction->setIsAlreadyExtracted(false);
@@ -209,8 +209,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     {
         $batch_sizes = $this->findConfig("batch_sizes");
 
-        $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
-                             ->uploadDeduplicationsByFile($extraction, $file, $field, $batch_sizes["deduplication"]);
+        $this->entityManager->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
+                            ->uploadDeduplicationsByFile($extraction, $file, $field, $batch_sizes["deduplication"]);
     }
 
     /**
@@ -218,8 +218,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     public function removeDeduplications(Extraction $extraction)
     {
-        $this->entity_manager->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
-                             ->removeDeduplications($extraction);
+        $this->entityManager->getRepository('ListBrokingAppBundle:ExtractionDeduplication')
+                            ->removeDeduplications($extraction);
     }
 
     /**
@@ -231,7 +231,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $extraction_log->setLog($message);
 
         $extraction->addExtractionLog($extraction_log);
-        $this->entity_manager->persist($extraction_log);
+        $this->entityManager->persist($extraction_log);
 
         $this->updateEntity($extraction);
 
@@ -283,8 +283,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             sprintf('Creating contacts with batch_size: %s', $batch_sizes['filter_engine']),
             ['extraction_id' => $extraction->getId()]
         );
-        $this->entity_manager->getRepository('ListBrokingAppBundle:Extraction')
-                             ->addContacts($extraction, $contacts, $batch_sizes['filter_engine']);
+        $this->entityManager->getRepository('ListBrokingAppBundle:Extraction')
+                            ->addContacts($extraction, $contacts, $batch_sizes['filter_engine']);
         $this->logger->info(
             sprintf(
                 'Finished adding contacts to extraction in %s milliseconds',
@@ -316,7 +316,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     public function getActiveCampaigns($start_date, $end_date, $page, $limit)
     {
-        $extractionRepository = $this->entity_manager->getRepository('ListBrokingAppBundle:Extraction');
+        $extractionRepository = $this->entityManager->getRepository('ListBrokingAppBundle:Extraction');
         return $extractionRepository->getActiveCampaigns($start_date, $end_date, $page, $limit);
     }
 
@@ -330,7 +330,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      */
     public function getRevenue($start_date, $end_date, $page, $limit)
     {
-        $extractionRepository = $this->entity_manager->getRepository('ListBrokingAppBundle:Extraction');
+        $extractionRepository = $this->entityManager->getRepository('ListBrokingAppBundle:Extraction');
         return $extractionRepository->getRevenue($start_date, $end_date, $page, $limit);
     }
 }

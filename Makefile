@@ -53,7 +53,7 @@ tests:
 	make unit
 
 unit:
-	./bin/phpunit -c app
+	vendor/phpunit/phpunit/phpunit --configuration app/phpunit.xml.dist
 
 spec:
 	./bin/phpspec run -c phpspec.yml

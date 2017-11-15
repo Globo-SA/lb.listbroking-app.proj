@@ -1,0 +1,4 @@
+leadcentre_unsubscribe:
+    path: /leadcentre/unsubscribe
+    defaults: { _controller: app.controller.webhook:unsubscribeFromLeadcentreAction }
+    methods: [POST]

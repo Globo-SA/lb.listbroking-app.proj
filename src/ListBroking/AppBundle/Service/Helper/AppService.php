@@ -147,8 +147,8 @@ class AppService extends BaseService implements AppServiceInterface
             throw new \Exception('Type can not be empty', 400);
         }
 
-        $qb = $this->entity_manager->getRepository("{$bundle}:{$type}")
-                                   ->createQueryBuilder('l')
+        $qb = $this->entityManager->getRepository("{$bundle}:{$type}")
+                                  ->createQueryBuilder('l')
         ;
         if ( ! empty($ids) )
         {

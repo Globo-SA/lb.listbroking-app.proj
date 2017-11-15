@@ -1,0 +1,18 @@
+services:
+    app.repository.opposition_list:
+        class: ListBroking\AppBundle\Repository\OppositionListRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\OppositionList'
+
+    app.repository.staging_contact:
+        class: ListBroking\AppBundle\Repository\StagingContactRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\StagingContact'
+
+    app.repository.lead:
+        class: ListBroking\AppBundle\Repository\LeadRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\Lead'

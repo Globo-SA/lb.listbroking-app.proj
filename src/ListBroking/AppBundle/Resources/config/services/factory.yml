@@ -1,0 +1,6 @@
+services:
+  app.service.factory.lead:
+    class: ListBroking\AppBundle\Service\Factory\LeadFactory
+
+  app.service.factory.opposition_list:
+    class: ListBroking\AppBundle\Service\Factory\OppositionListFactory

@@ -1,11 +1,11 @@
 api_create_staging_lead:
     path: /v1/create/staging_lead
-    defaults: { _controller: ListBrokingAppBundle:API:createStagingLead }
+    defaults: { _controller: app.controller.api:createStagingLeadAction }
 
 api_campaigns_get_active:
     path: /v1/campaigns/active
-    defaults: { _controller: ListBrokingAppBundle:API:getActiveCampaigns }
+    defaults: { _controller: app.controller.api:getActiveCampaignsAction }
 
 api_campaigns_get_revenue:
     path: /v1/campaigns/revenue
-    defaults: { _controller: ListBrokingAppBundle:API:getExtractionsRevenue }
+    defaults: { _controller: app.controller.api:getExtractionsRevenueAction }

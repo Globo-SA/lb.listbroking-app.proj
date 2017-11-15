@@ -10,6 +10,7 @@ namespace ListBroking\AppBundle\Repository;
 
 use Doctrine\DBAL\Statement;
 use Doctrine\ORM\EntityRepository;
+use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\Lock;
 
 class LeadRepository extends EntityRepository
@@ -66,5 +67,24 @@ SQL;
                   ->setMaxResults($limit)
                   ->execute()
             ;
+    }
+
+    /**
+     * Finds an leads by phone. The phone is unique by country
+     *
+     * @param string $phone
+     *
+     * @return null|Lead
+     */
+    public function findByPhone(string $phone): ?Lead
+    {
+        return $this->getEntityManager()
+                    ->createQueryBuilder()
+                    ->select('l')
+                    ->from('ListBrokingAppBundle:Lead', 'l')
+                    ->where('l.phone = :phone')
+                    ->setParameter('phone', $phone)
+                    ->getQuery()
+                    ->getOneOrNullResult();
     }
 }

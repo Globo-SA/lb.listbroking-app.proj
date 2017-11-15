@@ -6,6 +6,7 @@
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 use ListBroking\AppBundle\Entity\Lead;
+use ListBroking\AppBundle\Entity\OppositionList;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Service\Base\BaseServiceInterface;
 
@@ -42,14 +43,24 @@ interface StagingServiceInterface extends BaseServiceInterface
     public function importOppositionList($type, \PHPExcel $file, $clearOld);
 
     /**
+     * @param string $type
+     * @param string $phone
+     *
+     * @return OppositionList
+     */
+    public function addPhoneToOppositionList(string $type, string $phone): OppositionList;
+
+    /**
      * Imports contacts from a file to the staging area
      * with optional default contact information
      *
      * @param \PHPExcel $file
-     * @param array     $extraFields
      * @param int       $batchSize
+     * @param array     $extraFields
+     *
+     * @return
      */
-    public function importStagingContacts(\PHPExcel $file, array $extraFields = [], $batchSize);
+    public function importStagingContacts(\PHPExcel $file, $batchSize, array $extraFields = []);
 
     /**
      * Loads validated contacts from the staging area
@@ -73,11 +84,11 @@ interface StagingServiceInterface extends BaseServiceInterface
      * Loads an updated contact from the staging area
      * to the Lead and Contact tables
      *
-     * @param StagingContact $staging_contact
+     * @param StagingContact $stagingContact
      *
      * @return mixed
      */
-    public function loadUpdatedContact(StagingContact $staging_contact);
+    public function loadUpdatedContact(StagingContact $stagingContact);
 
     /**
      * Syncs the Opposition table with the Leads

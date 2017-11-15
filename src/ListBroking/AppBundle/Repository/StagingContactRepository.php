@@ -94,7 +94,7 @@ class StagingContactRepository extends EntityRepository
      *
      * @return \ListBroking\AppBundle\Entity\StagingContact
      */
-    public function addStagingContact ($data_array)
+    public function addStagingContact ($data_array): StagingContact
     {
         $staging_contact = new StagingContact();
         foreach ( $data_array as $field => $value )

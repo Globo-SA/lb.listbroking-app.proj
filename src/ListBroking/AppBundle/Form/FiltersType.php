@@ -326,29 +326,6 @@ class FiltersType extends AbstractType
                         'filter_type'          => LeadFilterInterface::BASIC_TYPE,
                         'has_exclusion_filter' => false,
                         'table'                => 'lead',
-                        'field'                => 'in_opposition',
-                        'field_type'           => self::FIELD_TYPE_CHOICE,
-                        'type'                 => 'choice',
-                        'options'              => array(
-                            'placeholder' => false,
-                            'choices'     => array(
-                                self::FIELD_TYPE_CHOICE_NO   => 'No',
-                                self::FIELD_TYPE_CHOICE_YES  => 'Yes',
-                                self::FIELD_TYPE_CHOICE_BOTH => 'Both'
-                            ),
-                            'data'        => 'no', // Default value, remove then the filter is enabled
-                            'read_only'   => true,
-                            'disabled'    => false,
-                            'attr'        => array(
-                                'class' => 'form-control'
-                            ),
-                            'label'       => 'In Opposition Lists'
-                        )
-                    ),
-                    array(
-                        'filter_type'          => LeadFilterInterface::BASIC_TYPE,
-                        'has_exclusion_filter' => false,
-                        'table'                => 'lead',
                         'field'                => 'is_sms_ok',
                         'field_type'           => self::FIELD_TYPE_CHOICE,
                         'type'                 => 'choice',

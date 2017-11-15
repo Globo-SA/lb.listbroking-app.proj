@@ -92,11 +92,11 @@ class StagingContactImportConsumer implements ConsumerInterface
 
             $this->s_service->importStagingContacts(
                 $file,
+                $batch_size,
                 [
                     'owner'      => $owner,
                     'for_update' => $update ? 1 : 0
-                ],
-                $batch_size
+                ]
             );
 
             $this->m_system->unlockProducer($producer_id);

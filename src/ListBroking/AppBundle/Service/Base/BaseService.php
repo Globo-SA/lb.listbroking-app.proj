@@ -25,7 +25,7 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * @var EntityManager
      */
-    public $entity_manager;
+    protected $entityManager;
 
     /**
      * @var Cache
@@ -57,9 +57,9 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function clearEntityManager ()
     {
-        $this->entity_manager->clear();
-        $this->entity_manager->getConnection()->close();
-        $this->entity_manager->getConnection()->connect();
+        $this->entityManager->clear();
+        $this->entityManager->getConnection()->close();
+        $this->entityManager->getConnection()->connect();
     }
 
     /**
@@ -90,14 +90,14 @@ abstract class BaseService implements BaseServiceInterface
     public function findEntities ($repo_name)
     {
         // Get Cache ID
-        $meta = $this->entity_manager->getClassMetadata($repo_name);
+        $meta = $this->entityManager->getClassMetadata($repo_name);
         $class = new $meta->name;
         $cache_id = $class::CACHE_ID;
 
         // Check if there's cache
         if ( ! $this->doctrine_cache->contains($cache_id) )
         {
-            $repo = $this->entity_manager->getRepository($repo_name);
+            $repo = $this->entityManager->getRepository($repo_name);
             $entities = $repo->createQueryBuilder('e')
                              ->getQuery()
                              ->getResult(Query::HYDRATE_ARRAY)
@@ -119,14 +119,14 @@ abstract class BaseService implements BaseServiceInterface
     public function findEntity ($repo_name, $id)
     {
         // Get Cache ID
-        $meta = $this->entity_manager->getClassMetadata($repo_name);
+        $meta = $this->entityManager->getClassMetadata($repo_name);
         $class = new $meta->name;
         $cache_id = $class::CACHE_ID . '_' . $id;
 
         // Check if there's cache
         if ( ! $this->doctrine_cache->contains($cache_id) )
         {
-            $repo = $this->entity_manager->getRepository($repo_name);
+            $repo = $this->entityManager->getRepository($repo_name);
             $entity = $repo->find($id);
             if ( $entity )
             {
@@ -144,8 +144,8 @@ abstract class BaseService implements BaseServiceInterface
     public function findExceptions ($limit)
     {
 
-        return $this->entity_manager->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
-                                    ->findLastExceptions($limit)
+        return $this->entityManager->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog')
+                                   ->findLastExceptions($limit)
             ;
     }
 
@@ -164,7 +164,7 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function flushAll ()
     {
-        $this->entity_manager->flush();
+        $this->entityManager->flush();
     }
 
     /**
@@ -206,9 +206,9 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * @inheritdoc
      */
-    public function setEntityManager ($entity_manager)
+    public function setEntityManager ($entityManager)
     {
-        $this->entity_manager = $entity_manager;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -253,7 +253,7 @@ abstract class BaseService implements BaseServiceInterface
         if ( $entity )
         {
             $this->attachToEntityManager($entity);
-            $this->entity_manager->flush();
+            $this->entityManager->flush();
         }
     }
 
@@ -318,11 +318,11 @@ abstract class BaseService implements BaseServiceInterface
      */
     private function attachToEntityManager (&$entity)
     {
-        if ( $this->entity_manager->getUnitOfWork()
-                                  ->getEntityState($entity) == UnitOfWork::STATE_DETACHED
+        if ( $this->entityManager->getUnitOfWork()
+                                 ->getEntityState($entity) == UnitOfWork::STATE_DETACHED
         )
         {
-            $entity = $this->entity_manager->merge($entity);
+            $entity = $this->entityManager->merge($entity);
         }
     }
 

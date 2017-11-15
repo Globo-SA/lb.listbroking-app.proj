@@ -86,7 +86,7 @@ class DatabaseCleanupCommand extends ContainerAwareCommand
         $minDateStr = $minDate->format('Y-m-d');
         $this->extractionService->logInfo("Exception_log: Locating records older than {$minDateStr} for cleaning.");
 
-        $repository = $this->extractionService->entity_manager->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog');
+        $repository = $this->extractionService->entityManager->getRepository('ListBrokingExceptionHandlerBundle:ExceptionLog');
         $id = $repository->locateIdOnDate($minDate);
         if (!$id)
         {
@@ -106,7 +106,7 @@ class DatabaseCleanupCommand extends ContainerAwareCommand
         $minDateStr = $minDate->format('Y-m-d');
         $this->extractionService->logInfo("Lock: Locating records older than {$minDateStr} for cleaning.");
 
-        $repository = $this->extractionService->entity_manager->getRepository('ListBrokingAppBundle:Lock');
+        $repository = $this->extractionService->entityManager->getRepository('ListBrokingAppBundle:Lock');
         $id = $repository->locateIdOnDate($minDate);
         if (!$id)
         {
@@ -126,7 +126,7 @@ class DatabaseCleanupCommand extends ContainerAwareCommand
         $minDateStr = $minDate->format('Y-m-d');
         $this->extractionService->logInfo("StagingContactDQP: Locating records older than {$minDateStr} for cleaning.");
 
-        $repository = $this->extractionService->entity_manager->getRepository('ListBrokingAppBundle:StagingContactDQP');
+        $repository = $this->extractionService->entityManager->getRepository('ListBrokingAppBundle:StagingContactDQP');
         $id = $repository->locateIdOnDate($minDate);
         if (!$id)
         {
@@ -146,7 +146,7 @@ class DatabaseCleanupCommand extends ContainerAwareCommand
         $minDateStr = $minDate->format('Y-m-d');
         $this->extractionService->logInfo("StagingContactProcessed: Locating records older than {$minDateStr} for cleaning.");
 
-        $repository = $this->extractionService->entity_manager->getRepository('ListBrokingAppBundle:StagingContactProcessed');
+        $repository = $this->extractionService->entityManager->getRepository('ListBrokingAppBundle:StagingContactProcessed');
         $id = $repository->locateIdOnDate($minDate);
         if (!$id)
         {
@@ -171,7 +171,7 @@ class DatabaseCleanupCommand extends ContainerAwareCommand
         $minDateStr = $minDate->format('Y-m-d');
         $this->extractionService->logInfo("Extraction: Locating records older than {$minDateStr} for cleaning.");
 
-        $repository = $this->extractionService->entity_manager->getRepository('ListBrokingAppBundle:Extraction');
+        $repository = $this->extractionService->entityManager->getRepository('ListBrokingAppBundle:Extraction');
 
         //this table is very small, so if we query it by an unindexed field it's not too slow.
         $extraction = $repository->findLastExtractionBeforeDate($minDateStr);
@@ -183,13 +183,13 @@ class DatabaseCleanupCommand extends ContainerAwareCommand
         $extractionId = $extraction->getId();
         $this->extractionService->logInfo("Extraction: Cleaning tables until #{ $extractionId }" );
 
-        $eLogRepository = $this->extractionService->entity_manager->getRepository('ListBrokingAppBundle:ExtractionLog');
+        $eLogRepository = $this->extractionService->entityManager->getRepository('ListBrokingAppBundle:ExtractionLog');
         $eLogRepository->cleanUp($extractionId);
 
-        $eContactRepository = $this->extractionService->entity_manager->getRepository('ListBrokingAppBundle:ExtractionContact');
+        $eContactRepository = $this->extractionService->entityManager->getRepository('ListBrokingAppBundle:ExtractionContact');
         $eContactRepository->cleanUp($extractionId);
 
-        $eDeduplicationRepository = $this->extractionService->entity_manager->getRepository('ListBrokingAppBundle:ExtractionDeduplication');
+        $eDeduplicationRepository = $this->extractionService->entityManager->getRepository('ListBrokingAppBundle:ExtractionDeduplication');
         $eDeduplicationRepository->cleanUp($extractionId);
         $this->extractionService->logInfo("Extraction: successfully wiped out old extractions.");
     }

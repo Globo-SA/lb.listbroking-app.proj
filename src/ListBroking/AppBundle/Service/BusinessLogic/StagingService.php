@@ -9,8 +9,16 @@
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 use ListBroking\AppBundle\Engine\ValidatorEngine;
+use ListBroking\AppBundle\Entity\Lead;
+use ListBroking\AppBundle\Entity\OppositionList;
 use ListBroking\AppBundle\Entity\StagingContact;
+use ListBroking\AppBundle\Exception\Validation\OppositionListException;
+use ListBroking\AppBundle\Repository\LeadRepository;
+use ListBroking\AppBundle\Repository\OppositionListRepository;
+use ListBroking\AppBundle\Repository\StagingContactRepository;
 use ListBroking\AppBundle\Service\Base\BaseService;
+use ListBroking\AppBundle\Service\Factory\OppositionListFactory;
+use Symfony\Component\Validator\Validator\RecursiveValidator;
 
 /**
  * ListBroking\AppBundle\Service\BusinessLogic\StagingService
@@ -23,13 +31,54 @@ class StagingService extends BaseService implements StagingServiceInterface
     protected $validatorEngine;
 
     /**
+     * @var OppositionListFactory $oppositionListFactory
+     */
+    protected $oppositionListFactory;
+
+    /**
+     * @var RecursiveValidator $validator
+     */
+    protected $validator;
+
+    /**
+     * @var OppositionListRepository $oppositionListRepository
+     */
+    protected $oppositionListRepository;
+
+    /**
+     * @var StagingContactRepository $stagingContactRepository
+     */
+    protected $stagingContactRepository;
+
+    /**
+     * @var LeadRepository $leadRepository
+     */
+    protected $leadRepository;
+
+    /**
      * StagingService constructor.
      *
-     * @param ValidatorEngine $validatorEngine
+     * @param ValidatorEngine          $validatorEngine
+     * @param OppositionListFactory    $oppositionListFactory
+     * @param RecursiveValidator       $validator
+     * @param OppositionListRepository $oppositionListRepository
+     * @param StagingContactRepository $stagingContactRepository
+     * @param LeadRepository           $leadRepository
      */
-    public function __construct(ValidatorEngine $validatorEngine)
-    {
-        $this->validatorEngine = $validatorEngine;
+    public function __construct(
+        ValidatorEngine $validatorEngine,
+        OppositionListFactory $oppositionListFactory,
+        RecursiveValidator $validator,
+        OppositionListRepository $oppositionListRepository,
+        StagingContactRepository $stagingContactRepository,
+        LeadRepository $leadRepository
+    ) {
+        $this->validatorEngine          = $validatorEngine;
+        $this->oppositionListFactory    = $oppositionListFactory;
+        $this->validator                = $validator;
+        $this->oppositionListRepository = $oppositionListRepository;
+        $this->stagingContactRepository = $stagingContactRepository;
+        $this->leadRepository           = $leadRepository;
     }
 
     /**
@@ -37,8 +86,13 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     public function addStagingContact(array $dataArray)
     {
-        return $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                                    ->addStagingContact($dataArray);
+        $stagingContact = $this->stagingContactRepository->addStagingContact($dataArray);
+
+        if ($this->oppositionListRepository->isPhoneInOppositionList($dataArray['phone'])) {
+            $stagingContact->setInOpposition(true);
+        }
+
+        return $stagingContact;
     }
 
     /**
@@ -46,8 +100,7 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     public function findAndLockContactsToValidate($limit = 50)
     {
-        return $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                                    ->findAndLockContactsToValidate($limit);
+        return $this->stagingContactRepository->findAndLockContactsToValidate($limit);
     }
 
     /**
@@ -57,28 +110,37 @@ class StagingService extends BaseService implements StagingServiceInterface
     {
         $config = $this->findConfig('opposition_list.config');
 
-        $this->entity_manager->getRepository('ListBrokingAppBundle:OppositionList')
-                             ->importOppositionListFile($type, $config[$type], $file, $clearOld);
+        $this->oppositionListRepository->importOppositionListFile($type, $config[$type], $file, $clearOld);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function importStagingContacts(\PHPExcel $file, array $extraFields = [], $batchSize)
+    public function addPhoneToOppositionList(string $type, string $phone): OppositionList
     {
-        $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                             ->importStagingContactsFile($file, $extraFields, $batchSize);
+        $opposition = $this->createOpposition($type, $phone);
+        $this->markLeadAsInOpposition($opposition);
+        $this->entityManager->flush();
+
+        return $opposition;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function loadValidatedContact(StagingContact $staging_contact)
+    public function importStagingContacts(\PHPExcel $file, $batchSize, array $extraFields = [])
     {
-        $dimensions = $this->loadStagingContactDimensions($staging_contact);
+        $this->stagingContactRepository->importStagingContactsFile($file, $extraFields, $batchSize);
+        $this->leadRepository->syncLeadsWithOppositionLists();
+    }
 
-        $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                             ->loadValidatedContact($staging_contact, $dimensions);
+    /**
+     * {@inheritdoc}
+     */
+    public function loadValidatedContact(StagingContact $stagingContact)
+    {
+        $dimensions = $this->loadStagingContactDimensions($stagingContact);
+        $this->stagingContactRepository->loadValidatedContact($stagingContact, $dimensions);
     }
 
     /**
@@ -86,18 +148,16 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     public function moveInvalidContactsToDQP($limit)
     {
-        $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                             ->moveInvalidContactsToDQP($limit);
+        $this->stagingContactRepository->moveInvalidContactsToDQP($limit);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function loadUpdatedContact(StagingContact $staging_contact)
+    public function loadUpdatedContact(StagingContact $stagingContact)
     {
-        $dimensions = $this->loadStagingContactDimensions($staging_contact);
-        $this->entity_manager->getRepository('ListBrokingAppBundle:StagingContact')
-                             ->loadUpdatedContact($staging_contact, $dimensions);
+        $dimensions = $this->loadStagingContactDimensions($stagingContact);
+        $this->stagingContactRepository->loadUpdatedContact($stagingContact, $dimensions);
     }
 
     /**
@@ -105,16 +165,15 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     public function syncContactsWithOppositionLists()
     {
-        $this->entity_manager->getRepository('ListBrokingAppBundle:Lead')
-                             ->syncLeadsWithOppositionLists();
+        $this->leadRepository->syncLeadsWithOppositionLists();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function validateStagingContact(StagingContact $staging_contact)
+    public function validateStagingContact(StagingContact $stagingContact)
     {
-        $this->validatorEngine->run($staging_contact);
+        $this->validatorEngine->run($stagingContact);
     }
 
     /**
@@ -122,8 +181,7 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     public function findLeadsWithExpiredInitialLock($limit)
     {
-        return $this->entity_manager->getRepository('ListBrokingAppBundle:Lead')
-                                    ->findLeadsWithExpiredInitialLock($limit);
+        return $this->leadRepository->findLeadsWithExpiredInitialLock($limit);
     }
 
     /**
@@ -147,7 +205,7 @@ class StagingService extends BaseService implements StagingServiceInterface
             'district'     => $this->findDimension('ListBrokingAppBundle:District', $stagingContact->getDistrict()),
             'county'       => $this->findDimension('ListBrokingAppBundle:County', $stagingContact->getCounty()),
             'parish'       => $this->findDimension('ListBrokingAppBundle:Parish', $stagingContact->getParish()),
-            'country'      => $this->findDimension('ListBrokingAppBundle:Country', $stagingContact->getCountry())
+            'country'      => $this->findDimension('ListBrokingAppBundle:Country', $stagingContact->getCountry()),
         ];
     }
 
@@ -161,7 +219,57 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     private function findDimension($repoName, $name)
     {
-        return $this->entity_manager->getRepository($repoName)
-                                    ->findOneBy(['name' => $name]);
+        return $this->entityManager->getRepository($repoName)
+                                   ->findOneBy(['name' => $name]);
+    }
+
+    /**
+     * @param string $type
+     * @param string $phone
+     *
+     * @return OppositionList
+     */
+    private function createOpposition(string $type, string $phone): OppositionList
+    {
+        $opposition = $this->oppositionListFactory->create($type, $phone);
+        $errors = $this->validator->validate($opposition);
+
+        if (count($errors) > 0) {
+            foreach ($errors as $error) {
+                $this->logger->info($error);
+            }
+
+            throw new OppositionListException();
+        }
+
+        $this->entityManager->persist($opposition);
+
+        return $opposition;
+    }
+
+    /**
+     * @param OppositionList $opposition
+     */
+    private function markLeadAsInOpposition(OppositionList $opposition)
+    {
+        $lead = $this->leadRepository->findByPhone($opposition->getPhone());
+        if ($lead === null) {
+            $this->logger->info(
+                sprintf(
+                    'Lead with phone %s does not exist on the system',
+                    $opposition->getPhone()
+                )
+            );
+
+            return;
+        }
+        $lead->setInOpposition(true);
+        $this->entityManager->persist($lead);
+        $this->logger->info(
+            sprintf(
+                'Lead with phone %s marked as in opposition list',
+                $opposition->getPhone()
+            )
+        );
     }
 }

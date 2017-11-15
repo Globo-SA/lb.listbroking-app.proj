@@ -86,4 +86,22 @@ SQL;
         $em->clear();
     }
 
+    /**
+     * @param string $phone
+     *
+     * @return bool
+     */
+    public function isPhoneInOppositionList(string $phone): bool
+    {
+        $opposition = $this->getEntityManager()
+                    ->createQueryBuilder()
+                    ->select('ol')
+                    ->from('ListBrokingAppBundle:OppositionList', 'ol')
+                    ->where('ol.phone = :phone')
+                    ->setParameter('phone', $phone)
+                    ->getQuery()
+                    ->getResult();
+
+        return !empty($opposition);
+    }
 }

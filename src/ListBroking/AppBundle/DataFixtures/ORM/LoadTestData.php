@@ -26,6 +26,7 @@ use ListBroking\AppBundle\Entity\Owner;
 use ListBroking\AppBundle\Entity\Parish;
 use ListBroking\AppBundle\Entity\Source;
 use ListBroking\AppBundle\Entity\SubCategory;
+use ListBroking\AppBundle\Service\Factory\OppositionListFactory;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -233,6 +234,18 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
             }
             $manager->persist($lead);
         }
+
+        // This data will be used on functional tests
+        $lead = new Lead();
+        $lead->setCountry($countries[array_rand($countries, 1)]);
+        $lead->setPhone(919191919);
+        $lead->setIsMobile(true);
+        $lead->setInOpposition(0);
+        $manager->persist($lead);
+
+        $oppositionListFactory = new OppositionListFactory();
+        $opposition            = $oppositionListFactory->create('ADCLICK', '919999999');
+        $manager->persist($opposition);
 
         $manager->flush();
     }

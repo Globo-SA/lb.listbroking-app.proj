@@ -9,3 +9,8 @@ services:
   validator_engine:
     class: ListBroking\AppBundle\Engine\ValidatorEngine
     arguments: ["@doctrine", "@guzzle.client", "@app"]
+
+  app.authentication.fos_user:
+    class: ListBroking\AppBundle\Service\Authentication\FosUserAuthenticationService
+    arguments:
+      - '@fos_user.user_manager.default'

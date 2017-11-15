@@ -29,9 +29,9 @@ class StatisticsService extends BaseService implements StatisticsServiceInterfac
         {
             return $this->doctrine_cache->fetch($cache_id);
         }
-        $qb = $this->entity_manager->getRepository('ListBrokingAppBundle:Contact')
-                                   ->createQueryBuilder('c')
-                                   ->select('count(c.id) as total')
+        $qb = $this->entityManager->getRepository('ListBrokingAppBundle:Contact')
+                                  ->createQueryBuilder('c')
+                                  ->select('count(c.id) as total')
         ;
         $fields = array();
         foreach ( $data as $key => $values )
