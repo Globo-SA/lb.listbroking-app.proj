@@ -2,6 +2,7 @@
 
 namespace ListBroking\Tests\AppBundle\Functional;
 
+use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Exception\Validation\OppositionListException;
 use ListBroking\AppBundle\Repository\LeadRepository;
 use ListBroking\AppBundle\Repository\StagingContactRepository;
@@ -72,7 +73,13 @@ class OppositionRightTest extends KernelTestCase
         } catch (OppositionListException $exception) {
         }
 
-        $lead = $this->leadRepository->findByPhone($phone);
-        Assert::assertTrue($lead->getInOpposition());
+        $leads = $this->leadRepository->findByPhone($phone);
+
+        array_map(
+            function (Lead $lead) {
+                Assert::assertTrue($lead->getInOpposition());
+            },
+            $leads
+        );
     }
 }

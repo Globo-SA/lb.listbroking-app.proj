@@ -12,6 +12,7 @@ use Doctrine\DBAL\Statement;
 use Doctrine\ORM\EntityRepository;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\Lock;
+use Symfony\Component\Validator\Constraints\Date;
 
 class LeadRepository extends EntityRepository
 {
@@ -74,9 +75,9 @@ SQL;
      *
      * @param string $phone
      *
-     * @return null|Lead
+     * @return Lead[]
      */
-    public function findByPhone(string $phone): ?Lead
+    public function findByPhone(string $phone): array
     {
         return $this->getEntityManager()
                     ->createQueryBuilder()
@@ -85,6 +86,28 @@ SQL;
                     ->where('l.phone = :phone')
                     ->setParameter('phone', $phone)
                     ->getQuery()
-                    ->getOneOrNullResult();
+                    ->getResult();
+    }
+
+    /**
+     * Updates Lead 'in_opposition' field by phone
+     *
+     * @param string $phone
+     * @param bool   $inOpposition
+     *
+     * @return int
+     */
+    public function updateInOppositionByPhone(string $phone, bool $inOpposition)
+    {
+        return $this->getEntityManager()
+                    ->createQueryBuilder()
+                    ->update('ListBrokingAppBundle:Lead', 'l')
+                    ->set('l.in_opposition', ':in_opposition')
+                    ->set('l.updated_at', 'CURRENT_TIMESTAMP()')
+                    ->where('l.phone = :phone')
+                    ->setParameter('in_opposition', $inOpposition)
+                    ->setParameter('phone', $phone)
+                    ->getQuery()
+                    ->getResult();
     }
 }

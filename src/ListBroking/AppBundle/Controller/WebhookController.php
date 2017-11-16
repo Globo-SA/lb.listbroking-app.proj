@@ -76,7 +76,6 @@ class WebhookController
      */
     public function unsubscribeFromLeadcentreAction(Request $request): JsonResponse
     {
-
         try {
             $this->fosUserAuthenticationService->checkCredentials($request);
         } catch (AccessDeniedException $exception) {

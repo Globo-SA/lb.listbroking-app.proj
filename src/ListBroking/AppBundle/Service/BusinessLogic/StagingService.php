@@ -9,7 +9,6 @@
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 use ListBroking\AppBundle\Engine\ValidatorEngine;
-use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\OppositionList;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Exception\Validation\OppositionListException;
@@ -118,9 +117,18 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     public function addPhoneToOppositionList(string $type, string $phone): OppositionList
     {
-        $opposition = $this->createOpposition($type, $phone);
-        $this->markLeadAsInOpposition($opposition);
-        $this->entityManager->flush();
+        $this->entityManager->beginTransaction();
+        try{
+            $opposition = $this->createOpposition($type, $phone);
+            $leadsUpdated = $this->leadRepository->updateInOppositionByPhone($opposition->getPhone(), true);
+            $this->logger->info(
+                sprintf('%s leads marked as in opposition list with phone %s', $leadsUpdated, $phone)
+            );
+            $this->entityManager->commit();
+        } catch (\Exception $exception){
+            $this->entityManager->rollback();
+            throw new OppositionListException();
+        }
 
         return $opposition;
     }
@@ -243,33 +251,8 @@ class StagingService extends BaseService implements StagingServiceInterface
         }
 
         $this->entityManager->persist($opposition);
+        $this->entityManager->flush();
 
         return $opposition;
-    }
-
-    /**
-     * @param OppositionList $opposition
-     */
-    private function markLeadAsInOpposition(OppositionList $opposition)
-    {
-        $lead = $this->leadRepository->findByPhone($opposition->getPhone());
-        if ($lead === null) {
-            $this->logger->info(
-                sprintf(
-                    'Lead with phone %s does not exist on the system',
-                    $opposition->getPhone()
-                )
-            );
-
-            return;
-        }
-        $lead->setInOpposition(true);
-        $this->entityManager->persist($lead);
-        $this->logger->info(
-            sprintf(
-                'Lead with phone %s marked as in opposition list',
-                $opposition->getPhone()
-            )
-        );
     }
 }

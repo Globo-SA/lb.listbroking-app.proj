@@ -20,7 +20,7 @@ class ExtractionAdminController extends CRUDController
     public function cloneAction ()
     {
         // Services
-        $e_service = $this->get('extraction');
+        $e_service = $this->get('app.service.extraction');
 
         $id = $this->get('request')
                    ->get($this->admin->getIdParameter())
@@ -143,7 +143,7 @@ class ExtractionAdminController extends CRUDController
 
         // Services
         $a_service = $this->get('app');
-        $e_service = $this->get('extraction');
+        $e_service = $this->get('app.service.extraction');
         $m_service = $this->get('messaging');
 
         // Current Extraction
@@ -220,7 +220,7 @@ class ExtractionAdminController extends CRUDController
         {
             // Services
             $a_service = $this->get('app');
-            $e_service = $this->get('extraction');
+            $e_service = $this->get('app.service.extraction');
             $m_service = $this->get('messaging');
 
             // Sonata doesn't not maintain the same form uniqid when changing pages

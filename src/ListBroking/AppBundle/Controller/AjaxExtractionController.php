@@ -38,7 +38,7 @@ class AjaxExtractionController extends Controller
         {
             $a_service->validateAjaxRequest($request);
 
-            $e_service = $this->get('extraction');
+            $e_service = $this->get('app.service.extraction');
 
             $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
 
@@ -69,7 +69,7 @@ class AjaxExtractionController extends Controller
             $a_service->validateAjaxRequest($request);
 
             // Service
-            $e_service = $this->get('extraction');
+            $e_service = $this->get('app.service.extraction');
 
             // Current Extraction
             $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
@@ -113,7 +113,7 @@ class AjaxExtractionController extends Controller
             $format = $request->get('format', 'html');
 
             // Service
-            $e_service = $this->get('extraction');
+            $e_service = $this->get('app.service.extraction');
 
             // Current Extraction
             $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
@@ -162,7 +162,7 @@ class AjaxExtractionController extends Controller
             $format = $request->get('format', 'html');
 
             // Service
-            $e_service = $this->get('extraction');
+            $e_service = $this->get('app.service.extraction');
 
             // Current Extraction
             $extraction = $e_service->findEntity('ListBrokingAppBundle:Extraction', $extraction_id);
@@ -232,7 +232,7 @@ class AjaxExtractionController extends Controller
             $remove_old_deduplication = isset($data['remove_old_deduplication']) ? $data['remove_old_deduplication'] : false;
             if ($remove_old_deduplication)
             {
-                $extraction_service = $this->get('extraction');
+                $extraction_service = $this->get('app.service.extraction');
                 $extraction_service->logExtractionAction($extraction, 'Removing previous \'deduplications\'');
                 $extraction_service->removeDeduplications($extraction);
             }
