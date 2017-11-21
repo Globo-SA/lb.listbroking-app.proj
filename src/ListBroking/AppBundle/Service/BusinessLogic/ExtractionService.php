@@ -333,4 +333,18 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $extractionRepository = $this->entityManager->getRepository('ListBrokingAppBundle:Extraction');
         return $extractionRepository->getRevenue($start_date, $end_date, $page, $limit);
     }
+
+    /**
+     * Return all extractions
+     *
+     * @param string $name
+     *
+     * @return array
+     */
+    public function findExtractionsByName(string $name)
+    {
+        $extractionRepository = $this->entityManager->getRepository('ListBrokingAppBundle:Extraction');
+
+        return $extractionRepository->findExtractionsByName($name);
+    }
 }

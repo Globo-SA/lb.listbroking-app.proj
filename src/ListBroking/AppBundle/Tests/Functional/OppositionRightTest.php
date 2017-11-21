@@ -2,10 +2,13 @@
 
 namespace ListBroking\Tests\AppBundle\Functional;
 
+use ListBroking\AppBundle\Entity\Extraction;
+use ListBroking\AppBundle\Entity\ExtractionContact;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Exception\Validation\OppositionListException;
 use ListBroking\AppBundle\Repository\LeadRepository;
 use ListBroking\AppBundle\Repository\StagingContactRepository;
+use ListBroking\AppBundle\Service\BusinessLogic\ExtractionServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\StagingServiceInterface;
 use ListBroking\AppBundle\Service\Factory\LeadFactory;
 use PHPUnit\Framework\Assert;
@@ -38,6 +41,11 @@ class OppositionRightTest extends KernelTestCase
     private $leadFactory;
 
     /**
+     * @var ExtractionServiceInterface $extractionService
+     */
+    private $extractionService;
+
+    /**
      * {@inheritdoc}
      */
     public function setUp()
@@ -45,6 +53,7 @@ class OppositionRightTest extends KernelTestCase
         static::bootKernel();
         $container                      = static::$kernel->getContainer();
         $this->stagingService           = $container->get('app.service.staging');
+        $this->extractionService        = $container->get('app.service.extraction');
         $this->leadFactory              = $container->get('app.service.factory.lead');
         $this->stagingContactRepository = $container->get('app.repository.staging_contact');
         $this->leadRepository           = $container->get('app.repository.lead');
@@ -80,6 +89,31 @@ class OppositionRightTest extends KernelTestCase
                 Assert::assertTrue($lead->getInOpposition());
             },
             $leads
+        );
+    }
+
+
+    /**
+     * Asserts that a lead in opposition is not extracted
+     */
+    public function testInOppositionNotExtracted()
+    {
+        $extractions = $this->extractionService->findExtractionsByName('Test');
+
+        array_map(
+            function (Extraction $extraction) {
+                Assert::assertTrue($this->extractionService->runExtraction($extraction));
+
+                $extractionContacts = $this->extractionService->findExtractionContacts($extraction);
+
+                array_map(
+                    function (ExtractionContact $extractionContact) {
+                        Assert::assertTrue(!$extractionContact->getContact()->getLead()->getInOpposition());
+                    },
+                    $extractionContacts
+                );
+            },
+            $extractions
         );
     }
 }

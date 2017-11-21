@@ -20,6 +20,7 @@ use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Country;
 use ListBroking\AppBundle\Entity\County;
 use ListBroking\AppBundle\Entity\District;
+use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\Gender;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\Owner;
@@ -246,6 +247,14 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
         $oppositionListFactory = new OppositionListFactory();
         $opposition            = $oppositionListFactory->create('ADCLICK', '919999999');
         $manager->persist($opposition);
+
+        $extraction = new Extraction();
+        $extraction->setName('Test');
+        $extraction->setCampaign($campaign);
+        $extraction->setQuantity(100);
+        $extraction->setPayout(0.1);
+        $extraction->setFilters([]);
+        $manager->persist($extraction);
 
         $manager->flush();
     }

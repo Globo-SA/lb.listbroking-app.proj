@@ -45,7 +45,7 @@ class DatabaseCleanupCommand extends ContainerAwareCommand
         $this->output = $output;
         $selectedTable = strtolower($input->getOption('table'));
         $container = $this->getContainer();
-        $this->extractionService = $container->get('extraction');
+        $this->extractionService = $container->get('app.service.extraction');
         $this->expiration = $this->extractionService->findConfig('cleanup_expire');
         switch ($selectedTable)
         {

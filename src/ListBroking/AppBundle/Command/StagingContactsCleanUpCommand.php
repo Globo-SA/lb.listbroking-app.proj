@@ -51,7 +51,7 @@ class StagingContactsCleanUpCommand extends ContainerAwareCommand
             $limit = $input->getOption('limit');
 
             /** @var StagingService $s_service */
-            $s_service = $this->getContainer()->get('staging');
+            $s_service = $this->getContainer()->get('app.service.staging');
 
             $this->service->write('Sending invalid contacts to the Data Quality Profile table (DQP)');
             $s_service->moveInvalidContactsToDQP($limit);

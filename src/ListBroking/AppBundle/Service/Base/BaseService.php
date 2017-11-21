@@ -25,7 +25,7 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * @var EntityManager
      */
-    protected $entityManager;
+    public $entityManager;
 
     /**
      * @var Cache

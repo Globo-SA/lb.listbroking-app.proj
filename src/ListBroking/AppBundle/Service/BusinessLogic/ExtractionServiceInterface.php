@@ -34,6 +34,15 @@ interface ExtractionServiceInterface extends BaseServiceInterface
     public function findExtraction ($id);
 
     /**
+     * Return all extractions
+     *
+     * @param string $name
+     *
+     * @return Extraction[]
+     */
+    public function findExtractionsByName(string $name);
+
+    /**
      * Clones a given extraction and resets it's status
      *
      * @param Extraction $extraction

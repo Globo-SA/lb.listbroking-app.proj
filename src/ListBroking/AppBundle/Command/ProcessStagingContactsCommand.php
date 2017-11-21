@@ -47,7 +47,7 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
     {
         $container = $this->getContainer();
         $this->service = $container->get('task');
-        $this->staging_service = $container->get('staging');
+        $this->staging_service = $container->get('app.service.staging');
         try
         {
             if ( ! $this->service->start($this, $input, $output, self::MAX_RUNNING) )

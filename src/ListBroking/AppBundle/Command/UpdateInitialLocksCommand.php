@@ -53,7 +53,7 @@ class UpdateInitialLocksCommand extends ContainerAwareCommand
 
             /** @var StagingService $s_service */
             $s_service = $this->getContainer()
-                              ->get('staging')
+                              ->get('app.service.staging')
             ;
 
             $leads = $s_service->findLeadsWithExpiredInitialLock($limit);

@@ -251,4 +251,22 @@ SQL;
             return null;
         }
     }
+
+    /**
+     * Returns all extractions in filtering state
+     *
+     * @param string $name
+     *
+     * @return array
+     *
+     */
+    public function findExtractionsByName(string $name): array
+    {
+        return $this->createQueryBuilder('e')
+                    ->select('e')
+                    ->where('e.name = :name')
+                    ->getQuery()
+                    ->setParameter('name', $name)
+                    ->getResult();
+    }
 }
