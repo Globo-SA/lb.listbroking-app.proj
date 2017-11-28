@@ -54,6 +54,8 @@ class SourceAdmin extends Admin
         $formMapper
             ->add('name')
             ->add('external_id')
+            ->add('country')
+            ->add('owner')
         ;
     }
 

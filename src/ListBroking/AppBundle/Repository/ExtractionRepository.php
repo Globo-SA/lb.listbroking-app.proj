@@ -15,6 +15,7 @@ use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\Campaign;
 use ListBroking\AppBundle\Entity\ExtractionContact;
+use ListBroking\AppBundle\Entity\Owner;
 use ListBroking\AppBundle\Entity\Source;
 
 class ExtractionRepository extends EntityRepository
@@ -200,13 +201,15 @@ SQL;
                 //'cl.external_id as client_id',
                 'cl.name as client_name',
                 's.external_id as source_id',
-                's.name as source_name'
+                's.name as source_name',
+                'o.name as owner_name'
             )
             ->innerJoin(Campaign::class, 'ca', Expr\Join::WITH, 'ca = e.campaign')
             ->innerJoin(Client::class, 'cl', Expr\Join::WITH, 'cl = ca.client')
             ->innerJoin(ExtractionContact::class, 'ec', Expr\Join::WITH, 'e = ec.extraction')
             ->innerJoin(Contact::class, 'co', Expr\Join::WITH, 'co = ec.contact')
             ->innerJoin(Source::class, 's', Expr\Join::WITH, 's = co.source')
+            ->innerJoin(Owner::class, 'o', Expr\Join::WITH, 'o = s.owner')
             ->where('e.status = 3')
             ->andWhere('e.sold_at BETWEEN :date1 AND :date2')
             ->groupBy('e.id, s.name')

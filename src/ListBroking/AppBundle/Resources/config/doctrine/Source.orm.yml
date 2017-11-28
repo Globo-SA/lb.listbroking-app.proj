@@ -13,8 +13,8 @@ ListBroking\AppBundle\Entity\Source:
             column: name
             unique: true
         external_id:
-            type:   integer
-            nullable: true
+            type:   string
+            nullable: false
             column: external_id
 # Timestampable
         created_at:
@@ -33,12 +33,14 @@ ListBroking\AppBundle\Entity\Source:
             inversedBy:   sources
             joinColumn:
                 name:                 owner_id
+                nullable: false
                 referencedColumnName: id
                 onDelete:             restrict
         country:
             targetEntity: ListBroking\AppBundle\Entity\Country
             joinColumn:
                 name:                 country_id
+                nullable: false
                 referencedColumnName: id
                 onDelete:             restrict
     oneToMany:

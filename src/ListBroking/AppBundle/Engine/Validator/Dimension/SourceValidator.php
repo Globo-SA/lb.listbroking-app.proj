@@ -62,6 +62,10 @@ class SourceValidator implements ValidatorInterface {
             'name' => $field
         ));
 
+        if ($source->getOwner() !== $contact->getOwner()){
+            throw new DimensionValidationException('Owner of Source is not same as the Owner');
+        }
+
         // If Source doesn't exist create it
         if(!$source){
 
