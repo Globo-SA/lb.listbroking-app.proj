@@ -8,7 +8,7 @@ install:
 	make cache;
 
 data:
-	mysql -uroot -hlistbroking.mysql < database/struct.sql;
+	mysql -uroot -hadclick.mysql57 < database/struct.sql;
 	bin/console doctrine:migrations:migrate --no-interaction
 	bin/console doctrine:fixtures:load --no-interaction
 

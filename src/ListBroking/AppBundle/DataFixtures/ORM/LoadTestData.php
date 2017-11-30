@@ -103,13 +103,15 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
         }
 
         // Some sources
-        $sources = array();
-        $sources_names = array('ncursos.pt', 'e-konomista.com', 'sapo.pt', 'google.pl');
-        foreach ($sources_names as $source_name) {
+        $sources      = [];
+        $sourcesNames = ['ncursos.pt', 'e-konomista.com', 'sapo.pt', 'google.pl'];
+
+        foreach ($sourcesNames as $sourceName) {
             $source = new Source();
-            $source->setName($source_name);
+            $source->setName($sourceName);
             $source->setCountry($countries[array_rand($countries, 1)]);
             $source->setOwner($owners[array_rand($owners, 1)]);
+            $source->setExternalId(sprintf('ext_%s', $sourceName));
 
             $manager->persist($source);
 
