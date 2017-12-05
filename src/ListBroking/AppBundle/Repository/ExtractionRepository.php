@@ -30,21 +30,20 @@ class ExtractionRepository extends EntityRepository
      */
     public function cloneExtraction (Extraction $extraction)
     {
-        $clonedObject = clone $extraction;
+        $clonedObject = new Extraction();
 
-        $clonedObject->setName($extraction->getName() . ' (duplicate)');
-        $clonedObject->setStatus(Extraction::STATUS_FILTRATION);
-        $clonedObject->setSoldAt(null);
-        $clonedObject->getExtractionContacts()
-                     ->clear()
-        ;
-        $clonedObject->getExtractionDeduplications()
-                     ->clear()
-        ;
-        $clonedObject->setDeduplicationType(null);
-        $clonedObject->setQuery(null);
-        $clonedObject->setIsAlreadyExtracted(false);
-        $clonedObject->setIsDeduplicating(false);
+        $clonedObject->setCampaign($extraction->getCampaign())
+                     ->setName($extraction->getName() . ' (duplicate)')
+                     ->setStatus(Extraction::STATUS_FILTRATION)
+                     ->setQuantity($extraction->getQuantity())
+                     ->setFilters($extraction->getFilters())
+                     ->setReadableFilters($extraction->getReadableFilters())
+                     ->setPayout($extraction->getPayout())
+                     ->setIsAlreadyExtracted(false)
+                     ->setIsDeduplicating(false)
+                     ->setIsLocking(false)
+                     ->setIsDelivering(false)
+                     ->setDeduplicationType($extraction->getDeduplicationType());
 
         return $clonedObject;
     }
