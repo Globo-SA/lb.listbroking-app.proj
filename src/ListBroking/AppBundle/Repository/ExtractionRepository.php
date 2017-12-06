@@ -42,8 +42,7 @@ class ExtractionRepository extends EntityRepository
                      ->setIsAlreadyExtracted(false)
                      ->setIsDeduplicating(false)
                      ->setIsLocking(false)
-                     ->setIsDelivering(false)
-                     ->setDeduplicationType($extraction->getDeduplicationType());
+                     ->setIsDelivering(false);
 
         return $clonedObject;
     }
