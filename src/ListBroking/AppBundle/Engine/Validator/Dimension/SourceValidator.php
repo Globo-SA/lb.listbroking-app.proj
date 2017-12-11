@@ -58,11 +58,12 @@ class SourceValidator implements ValidatorInterface {
             throw new DimensionValidationException('Empty Source field');
         }
 
+        /** @var Source $source */
         $source = $this->em->getRepository('ListBrokingAppBundle:Source')->findOneBy(array(
             'name' => $field
         ));
 
-        if ($source->getOwner() !== $contact->getOwner()){
+        if ($source->getOwner()->getName() !== $contact->getOwner()) {
             throw new DimensionValidationException('Owner of Source is not same as the Owner');
         }
 
