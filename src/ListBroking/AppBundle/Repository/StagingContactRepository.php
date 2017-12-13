@@ -241,7 +241,7 @@ class StagingContactRepository extends EntityRepository
      * Loads Updated StagingContacts to the
      * Contact table
      *
-     * @param StagingContact $staging_cntact
+     * @param StagingContact $staging_contact
      * @param array          $dimensions
      */
     public function loadUpdatedContact (StagingContact $staging_contact, array $dimensions)

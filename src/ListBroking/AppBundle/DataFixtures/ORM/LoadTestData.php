@@ -48,20 +48,20 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
      */
     public function load(ObjectManager $manager)
     {
-        $campaigns = array();
-        $clients = array();
-        $clients_names = array('Metlife', 'Tentugals');
-        foreach ($clients_names as $client_name) {
+        $campaigns    = [];
+        $clients      = [];
+        $clientsNames = ['Metlife', 'Tentugals'];
 
+        foreach ($clientsNames as $clientName) {
             $client = new Client();
-            $client->setName($client_name);
-            $client->setAccountName('Account '.$client_name);
-            $client->setEmailAddress($client_name.'@'.$client_name.'.com');
+            $client->setName($clientName);
+            $client->setAccountName('Account '.$clientName);
+            $client->setEmailAddress($clientName.'@'.$clientName.'.com');
             $client->setPhone($this->getUniquePhone());
 
             for ($i = 0; $i < 2; $i++) {
                 $campaign = new Campaign();
-                $campaign->setName($client_name.' Campaign '.$i);
+                $campaign->setName($clientName.' Campaign '.$i);
                 $campaign->setClient($client);
                 $campaign->setDescription('coiso');
 
@@ -76,76 +76,72 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
         }
 
         // Some countries...
-        $countries = array();
-        $countries_names = array('PT', 'ES', 'FR');
-        foreach ($countries_names as $iso_id) {
+        $countries      = [];
+        $countriesNames = ['PT', 'ES', 'FR'];
+
+        foreach ($countriesNames as $isoId) {
             $country = new Country();
-            $country->setName($iso_id);
+            $country->setName($isoId);
 
             $manager->persist($country);
 
             $countries[] = $country;
         }
 
-        // Some owners
-        $owners = array();
-        $owners_names = array('adclick', 'that_guy');
-        foreach ($owners_names as $owner_name) {
+        // Some owners and sources
+        $ownersSources = [
+            'adclick'  => ['ncursos.pt', 'e-konomista.com', 'sapo.pt', 'google.pl'],
+            'that_guy' => []
+        ];
+
+        $owners  = [];
+        $sources = [];
+
+        foreach ($ownersSources as $ownerName => $sourceNames) {
             $owner = new Owner();
-            $owner->setName($owner_name);
-            $owner->setEmail($owner_name.'@'.$owner_name.'.com');
+            $owner->setName($ownerName);
+            $owner->setEmail(sprintf('%s@%s.com', $ownerName, $ownerName));
             $owner->setPhone($this->getUniquePhone());
             $owner->setCountry($countries[array_rand($countries, 1)]);
 
             $manager->persist($owner);
 
             $owners[] = $owner;
-        }
 
-        // Some sources
-        $sources      = [];
-        $sourcesNames = ['ncursos.pt', 'e-konomista.com', 'sapo.pt', 'google.pl'];
+            foreach ($sourceNames as $sourceName) {
+                $source = new Source();
+                $source->setName($sourceName);
+                $source->setCountry($countries[array_rand($countries, 1)]);
+                $source->setOwner($owner);
+                $source->setExternalId(sprintf('ext_%s', $sourceName));
 
-        foreach ($sourcesNames as $sourceName) {
-            $source = new Source();
-            $source->setName($sourceName);
-            $source->setCountry($countries[array_rand($countries, 1)]);
-            $source->setOwner($owners[array_rand($owners, 1)]);
-            $source->setExternalId(sprintf('ext_%s', $sourceName));
+                $manager->persist($source);
 
-            $manager->persist($source);
-
-            $sources[] = $source;
+                $sources[] = $source;
+            }
         }
 
         // Some Categories and Sub Categories
-        $categories = array();
-        $sub_categories = array();
-        $categories_names = array(
-            'Finance' => array(
-                'credit',
-                'cards',
-                'consolidation',
-            ),
-            'Education' => array(),
-            'Insurance' => array(
-                'personal',
-                'car',
-                'home',
-            ),
-        );
-        foreach ($categories_names as $category_name => $sub_categories_names) {
-            $category = new Category();
-            $category->setName($category_name);
+        $categories      = [];
+        $subCategories   = [];
+        $categoriesNames = [
+            'Finance'   => ['credit', 'cards', 'consolidation'],
+            'Education' => [],
+            'Insurance' => ['personal', 'car', 'home'],
+        ];
 
-            foreach ($sub_categories_names as $sub_category_name) {
+        foreach ($categoriesNames as $categoryName => $subCategoriesNames) {
+            $category = new Category();
+            $category->setName($categoryName);
+
+            foreach ($subCategoriesNames as $subCategoryName) {
                 $sub_category = new SubCategory();
-                $sub_category->setName($sub_category_name);
+                $sub_category->setName($subCategoryName);
                 $sub_category->setCategory($category);
 
                 $manager->persist($sub_category);
 
-                $sub_categories[] = $sub_category;
+                $subCategories[] = $sub_category;
             }
 
             $manager->persist($category);
@@ -154,11 +150,12 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
         }
 
         // Some Genders
-        $genders = array();
-        $genders_names = array('M', 'F');
-        foreach ($genders_names as $gender_id) {
+        $genders      = [];
+        $gendersNames = ['M', 'F'];
+
+        foreach ($gendersNames as $genderId) {
             $gender = new Gender();
-            $gender->setName($gender_id);
+            $gender->setName($genderId);
 
             $manager->persist($gender);
 
@@ -166,11 +163,12 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
         }
 
         // Some Parishes
-        $parishes = array();
-        $parishes_names = array('Ramalde', 'Aldoar', 'Paranhos');
-        foreach ($parishes_names as $parish_name) {
+        $parishes      = [];
+        $parishesNames = ['Ramalde', 'Aldoar', 'Paranhos'];
+
+        foreach ($parishesNames as $parishName) {
             $parish = new Parish();
-            $parish->setName($parish_name);
+            $parish->setName($parishName);
 
             $manager->persist($parish);
 
@@ -178,11 +176,12 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
         }
 
         // Some Counties
-        $counties = array();
-        $counties_names = array('Porto');
-        foreach ($counties_names as $county_name) {
+        $counties      = [];
+        $countiesNames = ['Porto'];
+
+        foreach ($countiesNames as $countyName) {
             $county = new County();
-            $county->setName($county_name);
+            $county->setName($countyName);
 
             $manager->persist($county);
 
@@ -190,11 +189,12 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
         }
 
         // Some District
-        $districts = array();
-        $districts_names = array('Porto');
-        foreach ($districts_names as $district_name) {
+        $districts      = [];
+        $districtsNames = ['Porto'];
+
+        foreach ($districtsNames as $districtName) {
             $district = new District();
-            $district->setName($district_name);
+            $district->setName($districtName);
 
             $manager->persist($district);
 
@@ -202,10 +202,11 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
         }
 
         // Random Leads
-        $phone_indicatives = array(9, 5, 2);
-        for ($i = 0; $i < 1; $i++) {
+        $phoneIndicatives = [9, 5, 2];
 
-            $indicative = $phone_indicatives[array_rand($phone_indicatives, 1)];
+        for ($i = 0; $i < 1; $i++) {
+            $indicative = $phoneIndicatives[array_rand($phoneIndicatives, 1)];
+
             $lead = new Lead();
             $lead->setCountry($countries[array_rand($countries, 1)]);
             $lead->setPhone($this->getUniquePhone());
@@ -214,7 +215,7 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
 
             for ($j = 0; $j < 2; $j++) {
                 $contact = new Contact();
-                $contact->setSubCategory($sub_categories[array_rand($sub_categories, 1)]);
+                $contact->setSubCategory($subCategories[array_rand($subCategories, 1)]);
                 $contact->setGender($genders[array_rand($genders, 1)]);
                 $contact->setParish($parishes[array_rand($parishes, 1)]);
                 $contact->setCounty($counties[array_rand($counties, 1)]);

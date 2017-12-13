@@ -139,7 +139,6 @@ class StagingService extends BaseService implements StagingServiceInterface
     public function importStagingContacts(\PHPExcel $file, $batchSize, array $extraFields = [])
     {
         $this->stagingContactRepository->importStagingContactsFile($file, $extraFields, $batchSize);
-        $this->leadRepository->syncLeadsWithOppositionLists();
     }
 
     /**

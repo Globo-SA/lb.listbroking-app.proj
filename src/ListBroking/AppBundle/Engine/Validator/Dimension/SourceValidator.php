@@ -43,54 +43,49 @@ class SourceValidator implements ValidatorInterface {
 
     /**
      * Validates the contact against a set of rules
+     *
      * @param StagingContact $contact
-     * @param $validations
+     * @param array          $validations
+     *
      * @throws DimensionValidationException
-     * @return mixed
      */
     public function validate(StagingContact $contact, &$validations)
     {
-        $field = strtoupper($contact->getSourceName());
-        if(empty($field)){
-            if(!$this->is_required){
-                return;
-            }
-            throw new DimensionValidationException('Empty Source field');
+        $externalId = strtoupper($contact->getSourceExternalId());
+
+        if (empty($externalId)) {
+            throw new DimensionValidationException('Empty Source external id field');
         }
 
         /** @var Source $source */
-        $source = $this->em->getRepository('ListBrokingAppBundle:Source')->findOneBy(array(
-            'name' => $field
-        ));
+        $source = $this->em->getRepository('ListBrokingAppBundle:Source')
+                           ->findOneBy(['external_id' => $externalId]);
 
-        if ($source->getOwner()->getName() !== $contact->getOwner()) {
+        if ($source instanceof Source &&
+            strtoupper($source->getOwner()->getName()) !== strtoupper($contact->getOwner())
+        ) {
             throw new DimensionValidationException('Owner of Source is not same as the Owner');
         }
 
         // If Source doesn't exist create it
-        if(!$source){
+        if (!$source) {
+            $sourceCountry = strtoupper($contact->getSourceCountry());
 
-            $source_country = strtoupper($contact->getSourceCountry());
-            if(empty($source_country)){
+            if (empty($sourceCountry)) {
                 throw new DimensionValidationException('Empty Source.country field');
             }
 
-            $country = $this->em->getRepository('ListBrokingAppBundle:Country')->findOneBy(array(
-                    'name' => $source_country
-            ));
+            $country = $this->em->getRepository('ListBrokingAppBundle:Country')->findOneBy(['name' => $sourceCountry]);
+            $owner   = $this->em->getRepository('ListBrokingAppBundle:Owner')->findOneBy(['name' => $contact->getOwner()]);
 
-            $owner = $this->em->getRepository('ListBrokingAppBundle:Owner')->findOneBy(array(
-                'name' => $contact->getOwner()
-                )
-            );
-            if(empty($owner)){
+            if (empty($owner)) {
                 throw new DimensionValidationException('Empty owner field');
             }
 
             // Create new Source Country
-            if(!$country){
+            if (!$country) {
                 $country = new Country();
-                $country->setName($source_country);
+                $country->setName($sourceCountry);
 
                 $this->em->persist($country);
                 $this->em->flush($country);
@@ -100,9 +95,9 @@ class SourceValidator implements ValidatorInterface {
 
             // Create new Source
             $source = new Source();
-            $source->setName($field);
+            $source->setName($contact->getSourceName());
             $source->setCountry($country);
-            $source->setExternalId($contact->getSourceExternalId());
+            $source->setExternalId($externalId);
             $source->setOwner($owner);
 
             $this->em->persist($source);
@@ -116,8 +111,8 @@ class SourceValidator implements ValidatorInterface {
      * Gets the name of the validator
      * @return string
      */
-    public function getName(){
+    public function getName()
+    {
         return 'source_validator';
     }
-
 }

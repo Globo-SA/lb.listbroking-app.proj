@@ -104,6 +104,9 @@ class StagingContact
 
     protected $country;
 
+    /**
+     * @var string
+     */
     protected $owner;
 
     protected $source_name;
@@ -435,17 +438,17 @@ class StagingContact
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getOwner ()
+    public function getOwner()
     {
         return $this->owner;
     }
 
     /**
-     * @param mixed $owner
+     * @param string $owner
      */
-    public function setOwner ($owner)
+    public function setOwner($owner)
     {
         $this->owner = $owner;
     }

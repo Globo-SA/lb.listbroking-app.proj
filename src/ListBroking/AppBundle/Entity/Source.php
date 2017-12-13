@@ -20,6 +20,9 @@ class Source
 
     protected $id;
 
+    /**
+     * @var Owner
+     */
     protected $owner;
 
     protected $country;
@@ -97,17 +100,17 @@ class Source
     }
 
     /**
-     * @return mixed
+     * @return Owner
      */
-    public function getOwner ()
+    public function getOwner()
     {
         return $this->owner;
     }
 
     /**
-     * @param mixed $owner
+     * @param Owner $owner
      */
-    public function setOwner ($owner)
+    public function setOwner($owner)
     {
         $this->owner = $owner;
     }
@@ -128,4 +131,4 @@ class Source
     {
         $this->contacts->removeElement($contact);
     }
-} 
+}

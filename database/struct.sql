@@ -19,10 +19,6 @@
 -- Table structure for table `acl_classes`
 --
 
-CREATE DATABASE IF NOT EXISTS `listbroking` CHARACTER SET utf8mb4;
-
-use `listbroking`;
-
 DROP TABLE IF EXISTS `acl_classes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -1343,3 +1339,6 @@ CREATE TABLE `tmp_zizabi_20160607` (
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2017-08-18 16:33:52
+
+-- Drop migrations table
+DROP TABLE IF EXISTS `migration_versions`;

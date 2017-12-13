@@ -18,7 +18,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ProcessStagingContactsCommand extends ContainerAwareCommand
 {
-
     const MAX_RUNNING      = 10;
 
     const MAX_WAITING_TIME = 30;
@@ -33,34 +32,44 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
     /**
      * @var StagingServiceInterface
      */
-    private $staging_service;
+    private $stagingService;
 
+    /**
+     * {@inheritdoc}
+     */
     protected function configure ()
     {
         $this->setName('listbroking:staging:process')
              ->setDescription('Processes StagingContacts and send them to the prod env')
-             ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Max contacts to validate per task iteration', 100)
-        ;
+             ->addOption(
+                 'limit',
+                 'l',
+                 InputOption::VALUE_OPTIONAL,
+                 'Max contacts to validate per task iteration',
+                 100
+             );
     }
 
-    protected function execute (InputInterface $input, OutputInterface $output)
+    /**
+     * {@inheritdoc}
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $container = $this->getContainer();
-        $this->service = $container->get('task');
-        $this->staging_service = $container->get('app.service.staging');
-        try
-        {
-            if ( ! $this->service->start($this, $input, $output, self::MAX_RUNNING) )
-            {
+        $container            = $this->getContainer();
+        $this->service        = $container->get('task');
+        $this->stagingService = $container->get('app.service.staging');
+
+        try {
+            if (! $this->service->start($this, $input, $output, self::MAX_RUNNING)) {
                 $this->service->write('Task is Already Running');
 
                 return;
             }
 
-            $limit = $input->getOption('limit');
+            $limit    = $input->getOption('limit');
             $contacts = $this->findContactsToProcess($limit);
-            if ( ! $contacts )
-            {
+
+            if (! $contacts) {
                 $this->service->write('No contacts to process');
                 $this->service->finish();
 
@@ -69,23 +78,29 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
 
             // Iterate staging contacts
             $this->service->write('Stating contact Validation');
-            foreach ( $contacts as $staging_contact )
-            {
-                if ( $staging_contact->getUpdate() )
-                {
-                    $this->service->write(sprintf("Loading StagingContact: id:%s, contact_id: %s", $staging_contact->getId(), $staging_contact->getContactId()));
-                    $this->staging_service->loadUpdatedContact($staging_contact);
+
+            foreach ($contacts as $stagingContact) {
+                if ($stagingContact->getUpdate()) {
+                    $this->service->write(
+                        sprintf(
+                            'Loading StagingContact: id: %s, contact_id: %s',
+                            $stagingContact->getId(),
+                            $stagingContact->getContactId()
+                        )
+                    );
+                    $this->stagingService->loadUpdatedContact($stagingContact);
+
                     continue;
                 }
 
-                $this->staging_service->validateStagingContact($staging_contact);
-                $this->loadValidContact($staging_contact);
+                $this->stagingService->validateStagingContact($stagingContact);
+                $this->loadValidContact($stagingContact);
             }
 
+            $this->stagingService->syncContactsWithOppositionLists();
+
             $this->service->finish();
-        }
-        catch ( \Exception $e )
-        {
+        } catch (\Exception $e) {
             $this->service->throwError($e);
             $this->service->write($e->getTraceAsString());
         }
@@ -103,23 +118,24 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
     {
         $start = time();
         $this->service->write('Trying to lock module');
-        while ( $this->staging_service->isExecutionLocked(self::LOCK_MODULE) )
-        {
+
+        while ($this->stagingService->isExecutionLocked(self::LOCK_MODULE)) {
             $now = time();
-            if ( ($now - $start) > self::MAX_WAITING_TIME )
-            {
+
+            if (($now - $start) > self::MAX_WAITING_TIME) {
                 $this->service->write('Could not get a lock');
 
                 return null;
             }
+
             sleep(1);
         }
 
         $this->service->write('Selecting contacts');
-        $this->staging_service->lockExecution(self::LOCK_MODULE);
+        $this->stagingService->lockExecution(self::LOCK_MODULE);
 
-        $contacts = $this->staging_service->findAndLockContactsToValidate($limit);
-        $this->staging_service->releaseExecution(self::LOCK_MODULE);
+        $contacts = $this->stagingService->findAndLockContactsToValidate($limit);
+        $this->stagingService->releaseExecution(self::LOCK_MODULE);
 
         return $contacts;
     }
@@ -132,11 +148,9 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
     private function loadValidContact (StagingContact $staging_contact)
     {
         // Load validated contact
-        if ( $staging_contact->getValid() && $staging_contact->getProcessed() )
-        {
+        if ( $staging_contact->getValid() && $staging_contact->getProcessed() ) {
             $this->service->write("Loading StagingContact: {$staging_contact->getId()}");
-
-            $this->staging_service->loadValidatedContact($staging_contact);
+            $this->stagingService->loadValidatedContact($staging_contact);
         }
     }
 }

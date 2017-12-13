@@ -49,6 +49,8 @@ class LoadUserData extends AbstractFixture implements ContainerAwareInterface, O
         $user->setEnabled(true);
         $user->setSuperAdmin(true);
         $user->setLocked(false);
+        $user->setRoles(['ROLE_API_USER']);
+        $user->setToken('Fs40QpNIMIIv');
 
         $manager->updateUser($user);
     }
