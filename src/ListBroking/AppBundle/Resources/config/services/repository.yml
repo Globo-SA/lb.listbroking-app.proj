@@ -16,3 +16,9 @@ services:
         factory: ["@doctrine", getRepository]
         arguments:
             - 'ListBroking\AppBundle\Entity\Lead'
+
+    app.repository.source:
+        class: ListBroking\AppBundle\Repository\SourceRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\Source'

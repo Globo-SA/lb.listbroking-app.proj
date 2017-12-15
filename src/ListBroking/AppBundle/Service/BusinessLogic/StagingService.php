@@ -14,6 +14,7 @@ use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Exception\Validation\OppositionListException;
 use ListBroking\AppBundle\Repository\LeadRepository;
 use ListBroking\AppBundle\Repository\OppositionListRepository;
+use ListBroking\AppBundle\Repository\SourceRepositoryInterface;
 use ListBroking\AppBundle\Repository\StagingContactRepository;
 use ListBroking\AppBundle\Service\Base\BaseService;
 use ListBroking\AppBundle\Service\Factory\OppositionListFactory;
@@ -55,14 +56,20 @@ class StagingService extends BaseService implements StagingServiceInterface
     protected $leadRepository;
 
     /**
+     * @var SourceRepositoryInterface
+     */
+    protected $sourceRepository;
+
+    /**
      * StagingService constructor.
      *
-     * @param ValidatorEngine          $validatorEngine
-     * @param OppositionListFactory    $oppositionListFactory
-     * @param RecursiveValidator       $validator
-     * @param OppositionListRepository $oppositionListRepository
-     * @param StagingContactRepository $stagingContactRepository
-     * @param LeadRepository           $leadRepository
+     * @param ValidatorEngine           $validatorEngine
+     * @param OppositionListFactory     $oppositionListFactory
+     * @param RecursiveValidator        $validator
+     * @param OppositionListRepository  $oppositionListRepository
+     * @param StagingContactRepository  $stagingContactRepository
+     * @param LeadRepository            $leadRepository,
+     * @param SourceRepositoryInterface $sourceRepository
      */
     public function __construct(
         ValidatorEngine $validatorEngine,
@@ -70,7 +77,8 @@ class StagingService extends BaseService implements StagingServiceInterface
         RecursiveValidator $validator,
         OppositionListRepository $oppositionListRepository,
         StagingContactRepository $stagingContactRepository,
-        LeadRepository $leadRepository
+        LeadRepository $leadRepository,
+        SourceRepositoryInterface $sourceRepository
     ) {
         $this->validatorEngine          = $validatorEngine;
         $this->oppositionListFactory    = $oppositionListFactory;
@@ -78,6 +86,7 @@ class StagingService extends BaseService implements StagingServiceInterface
         $this->oppositionListRepository = $oppositionListRepository;
         $this->stagingContactRepository = $stagingContactRepository;
         $this->leadRepository           = $leadRepository;
+        $this->sourceRepository         = $sourceRepository;
     }
 
     /**
@@ -200,9 +209,11 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     private function loadStagingContactDimensions(StagingContact $stagingContact)
     {
+        $source = $this->sourceRepository->getByExternalId($stagingContact->getSourceExternalId());
+
         //Dimension Tables
         return [
-            'source'       => $this->findDimension('ListBrokingAppBundle:Source', $stagingContact->getSourceName()),
+            'source'       => $source,
             'owner'        => $this->findDimension('ListBrokingAppBundle:Owner', $stagingContact->getOwner()),
             'sub_category' => $this->findDimension(
                 'ListBrokingAppBundle:SubCategory',

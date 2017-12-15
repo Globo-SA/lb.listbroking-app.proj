@@ -47,6 +47,7 @@ services:
         - "@app.repository.opposition_list"
         - "@app.repository.staging_contact"
         - "@app.repository.lead"
+        - "@app.repository.source"
 
   hurry:
     class: ListBroking\AppBundle\Service\External\HurryService

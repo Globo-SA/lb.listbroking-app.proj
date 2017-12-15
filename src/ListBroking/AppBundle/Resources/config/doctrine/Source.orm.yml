@@ -1,6 +1,7 @@
 ListBroking\AppBundle\Entity\Source:
     type: entity
     table: source
+    repositoryClass: ListBroking\AppBundle\Repository\SourceRepository
     id:
         id:
             type: bigint
