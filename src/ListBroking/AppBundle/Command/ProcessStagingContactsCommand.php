@@ -18,11 +18,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ProcessStagingContactsCommand extends ContainerAwareCommand
 {
-    const MAX_RUNNING      = 10;
+    const MAX_RUNNING = 200;
 
     const MAX_WAITING_TIME = 30;
 
-    const LOCK_MODULE      = 'find_and_lock_contacts';
+    const LOCK_MODULE = 'find_and_lock_contacts';
 
     /**
      * @var TaskServiceInterface
@@ -37,7 +37,7 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure ()
+    protected function configure()
     {
         $this->setName('listbroking:staging:process')
              ->setDescription('Processes StagingContacts and send them to the prod env')
@@ -56,12 +56,14 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $container            = $this->getContainer();
+        $logger               = $container->get('logger');
         $this->service        = $container->get('task');
         $this->stagingService = $container->get('app.service.staging');
+        $logger->info('Start execution');
 
         try {
-            if (! $this->service->start($this, $input, $output, self::MAX_RUNNING)) {
-                $this->service->write('Task is Already Running');
+            if (!$this->service->start($this, $input, $output, self::MAX_RUNNING)) {
+                $logger->info('Cant continue.. MAX_RUNNING');
 
                 return;
             }
@@ -69,32 +71,35 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
             $limit    = $input->getOption('limit');
             $contacts = $this->findContactsToProcess($limit);
 
-            if (! $contacts) {
-                $this->service->write('No contacts to process');
+            if (!$contacts) {
+                $logger->info('No contacts to process');
                 $this->service->finish();
 
                 return;
             }
 
             // Iterate staging contacts
-            $this->service->write('Stating contact Validation');
-
+            $logger->info('Stating contact Validation');
             foreach ($contacts as $stagingContact) {
+
+                $logger->info('Start processing Staging contact_id:' . $stagingContact->getId());
                 if ($stagingContact->getUpdate()) {
-                    $this->service->write(
+                    $logger->info(
                         sprintf(
-                            'Loading StagingContact: id: %s, contact_id: %s',
+                            'Going to Process staging Id %s Update in Contact id %s',
                             $stagingContact->getId(),
                             $stagingContact->getContactId()
                         )
                     );
                     $this->stagingService->loadUpdatedContact($stagingContact);
 
+                    $logger->info(sprintf('Staging Id %s as been updated', $stagingContact->getId()));
                     continue;
                 }
 
                 $this->stagingService->validateStagingContact($stagingContact);
                 $this->loadValidContact($stagingContact);
+                $logger->info(sprintf('Staging Id %s as been processed', $stagingContact->getId()));
             }
 
             $this->stagingService->syncContactsWithOppositionLists();
@@ -114,7 +119,7 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
      *
      * @return \ListBroking\AppBundle\Entity\StagingContact[]
      */
-    private function findContactsToProcess ($limit)
+    private function findContactsToProcess($limit)
     {
         $start = time();
         $this->service->write('Trying to lock module');
@@ -127,8 +132,6 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
 
                 return null;
             }
-
-            sleep(1);
         }
 
         $this->service->write('Selecting contacts');
@@ -145,10 +148,10 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
      *
      * @param StagingContact $staging_contact
      */
-    private function loadValidContact (StagingContact $staging_contact)
+    private function loadValidContact(StagingContact $staging_contact)
     {
         // Load validated contact
-        if ( $staging_contact->getValid() && $staging_contact->getProcessed() ) {
+        if ($staging_contact->getValid() && $staging_contact->getProcessed()) {
             $this->service->write("Loading StagingContact: {$staging_contact->getId()}");
             $this->stagingService->loadValidatedContact($staging_contact);
         }
