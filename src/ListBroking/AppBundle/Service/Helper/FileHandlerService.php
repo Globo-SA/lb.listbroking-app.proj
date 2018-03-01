@@ -156,6 +156,7 @@ class FileHandlerService implements FileHandlerServiceInterface
         $reader = \PHPExcel_IOFactory::createReader(\PHPExcel_IOFactory::identify($filename));
         $fileinfo = pathinfo($filename);
         if(strtoupper($fileinfo['extension']) == 'CSV'){
+            $reader = new \PHPExcel_Reader_CSV();
             $delimiter = $this->findCsvDelimiter($filename);
             if($delimiter){
                 $reader->setDelimiter($delimiter);

@@ -138,7 +138,7 @@ class Extraction
     private $campaign;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var ArrayCollection
      */
     private $extraction_log;
 

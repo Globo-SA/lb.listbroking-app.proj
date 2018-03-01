@@ -25,7 +25,7 @@ ListBroking\AppBundle\Entity\ExtractionLog:
     manyToOne:
         extraction:
             targetEntity:             ListBroking\AppBundle\Entity\Extraction
-            inversedBy:               extraction_deduplications
+            inversedBy:               extraction_log
             joinColumn:
                 name:                 extraction_id
                 referencedColumnName: id
