@@ -6,6 +6,7 @@
 
 namespace ListBroking\AppBundle\Consumer;
 
+use Adclick\Components\GDPR\Mailer\MailerGdpr;
 use ListBroking\AppBundle\Entity\Extraction;
 use Listbroking\AppBundle\Monolog\Processor\ServiceLogTaskIdentifierInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ExtractionServiceInterface;
@@ -40,6 +41,11 @@ class DeliverExtractionConsumer implements ConsumerInterface
     protected $logger;
 
     /**
+     * @var MailerGdpr
+     */
+    protected $mailer;
+
+    /**
      * DeliverExtractionConsumer constructor.
      *
      * @param AppServiceInterface               $a_service
@@ -47,18 +53,21 @@ class DeliverExtractionConsumer implements ConsumerInterface
      * @param FileHandlerServiceInterface       $f_service
      * @param LoggerInterface                   $logger
      * @param ServiceLogTaskIdentifierInterface $serviceLogTaskIdentifier
+     * @param MailerGdpr                        $mailer
      */
     public function __construct(
         AppServiceInterface $a_service,
         ExtractionServiceInterface $e_service,
         FileHandlerServiceInterface $f_service,
         LoggerInterface $logger,
-        ServiceLogTaskIdentifierInterface $serviceLogTaskIdentifier
+        ServiceLogTaskIdentifierInterface $serviceLogTaskIdentifier,
+        MailerGdpr $mailer
     ) {
         $this->a_service = $a_service;
         $this->e_service = $e_service;
         $this->f_service = $f_service;
         $this->logger    = $logger;
+        $this->mailer    = $mailer;
 
         $serviceLogTaskIdentifier->setLogIdentifier(self::LOGGER_IDENTIFIER);
     }
@@ -88,24 +97,20 @@ class DeliverExtractionConsumer implements ConsumerInterface
 
             $batch_size = $this->e_service->findConfig("batch_sizes")['deliver'];
 
-            list($filepath, $password) =  $this->e_service->exportExtractionContacts($this->f_service, $extraction, $template, $batch_size);
+            list($path, $filename, $password) =  $this->e_service->exportExtractionContacts($this->f_service, $extraction, $template, $batch_size);
 
             $this->logger->info(
                 'Exported contacts to file',
-                ['extraction_id' => $extraction->getId(), 'filepath' => $filepath]
+                ['extraction_id' => $extraction->getId(), 'path' => $path]
             );
 
-            // Send the Extraction by Email
-            $email_template = '@ListBrokingApp/KitEmail/deliver_extraction.html.twig';
-            $email_subject = sprintf('LB Extraction - %s', $extraction->getName());
-            $result = $this->a_service->deliverEmail(
-                $email_template,
-                array('extraction' => $extraction, 'filepath' => $filepath, 'password' => $password),
-                $email_subject,
-                $msg_body['email']
+            $this->mailer->sendAttachmentWithPassword(
+                [$msg_body['email'] => $msg_body['email']],
+                $extraction->getName(),
+                $path,
+                $filename,
+                $password
             );
-
-            $this->a_service->flushSpool();
 
             $this->logger->info('Extraction email sent', ['extraction_id' => $extraction->getId()]);
 
@@ -117,20 +122,9 @@ class DeliverExtractionConsumer implements ConsumerInterface
 
             $this->e_service->logExtractionAction(
                 $extraction,
-                sprintf(
-                    'Ending "deliverExtraction", email deliver result: %s to %s',
-                    $result ? 'YES' : 'NO',
-                    $msg_body['email']
-                )
+                sprintf('Ending "deliverExtraction", email processed to %s', $msg_body['email'])
             );
-            $this->logger->info(
-                sprintf(
-                    'Ending "deliverExtraction", email deliver result: %s to %s',
-                    $result ? 'YES' : 'NO',
-                    $msg_body['email']
-                ),
-                ['extraction_id' => $extraction->getId()]
-            );
+
         } catch (\Exception $exception) {
             if ($extraction instanceof Extraction) {
                 $this->e_service->logExtractionAction($extraction, sprintf('Error "deliverExtraction"'));

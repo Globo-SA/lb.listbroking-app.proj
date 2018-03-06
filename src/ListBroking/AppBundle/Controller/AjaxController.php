@@ -8,7 +8,6 @@
 
 namespace ListBroking\AppBundle\Controller;
 
-use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Exception\InvalidExtractionException;
 use ListBroking\AppBundle\Service\Helper\MessagingServiceInterface;
@@ -182,14 +181,14 @@ class AjaxController extends Controller
         $a_service = $this->get('app');
         $f_service = $this->get('file_handler');
 
-        list($filename, $password) = $f_service->generateFileFromArray(
+        list($path, $filename, $password) = $f_service->generateFileFromArray(
             StagingContact::IMPORT_TEMPLATE_FILENAME,
             StagingContact::IMPORT_TEMPLATE_FILE_EXTENSION,
             array(StagingContact::$import_template),
             false,
             false);
 
-        return $a_service->createAttachmentResponse($filename);
+        return $a_service->createAttachmentResponse($path.$filename);
     }
 
     /**

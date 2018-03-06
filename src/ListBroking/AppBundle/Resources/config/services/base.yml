@@ -21,12 +21,12 @@ services:
       projectRootDir:    "%kernel.root_dir%"
       filesystem:        "@oneup_flysystem.aws_s3_filesystem"
       filesystem_config: {type: %filesystem_type%, url: %filesystem_url%}
-
+      zipService:        "@adclick.components.service.zip"
 
   app:
     class: ListBroking\AppBundle\Service\Helper\AppService
     parent: base
-    arguments: ["@mailer", "@swiftmailer.spool", "@swiftmailer.transport.real", "@twig"]
+    arguments: ["@swiftmailer.mailer", "@twig"]
 
   statistics:
     class: ListBroking\AppBundle\Service\Helper\StatisticsService

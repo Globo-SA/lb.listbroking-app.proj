@@ -30,20 +30,6 @@ interface FileHandlerServiceInterface
     public function saveFormFile (Form $form);
 
     /**
-     * Generates a file using a Query object
-     *
-     * @param string $name
-     * @param string $extension
-     * @param Query  $query
-     * @param array  $headers
-     * @param bool   $zipped
-     * @param bool   $upload
-     *
-     * @return array
-     */
-    public function generateFileFromQuery($name, $extension, Query $query, $headers, $zipped = true, $upload = true);
-
-    /**
      * Generates a file using an Array
      *
      * @param string $name

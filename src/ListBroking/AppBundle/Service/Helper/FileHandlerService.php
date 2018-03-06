@@ -8,6 +8,7 @@
 
 namespace ListBroking\AppBundle\Service\Helper;
 
+use Adclick\Components\GDPR\Service\ZipFileServiceInterface;
 use Doctrine\ORM\Query;
 use Exporter\Handler;
 use Exporter\Source\ArraySourceIterator;
@@ -57,11 +58,22 @@ class FileHandlerService implements FileHandlerServiceInterface
      */
     private $filepath;
 
-    public function __construct(string $projectRootDir, Filesystem $filesystem, $filesystem_config)
+    /**
+     * @var ZipFileServiceInterface
+     */
+    private $zipService;
+
+    public function __construct(
+        string $projectRootDir,
+        Filesystem $filesystem,
+        $filesystem_config,
+        ZipFileServiceInterface $zipService
+    )
     {
         $this->projectRootDir    = $projectRootDir;
         $this->filesystem        = $filesystem;
         $this->filesystem_config = $filesystem_config;
+        $this->zipService        = $zipService;
 
         //Set APC to cache cells
         $cacheMethod = \PHPExcel_CachedObjectStorageFactory::cache_to_sqlite3;
@@ -71,39 +83,20 @@ class FileHandlerService implements FileHandlerServiceInterface
     /**
      * @inheritdoc
      */
-    public function generateFileFromQuery ($name, $extension, Query $query, $headers, $zipped = true, $upload = true)
-    {
-        // Generate File
-        $filepath = $this->generateFilename($name, $extension, true, self::INTERNAL_EXPORTS_FOLDER);
-
-        // Export and store
-        $this->exportByQuery($filepath, $extension, $headers, $query);
-
-        $file_info = array($filepath, '');
-        if($upload){
-            $file_info = $this->store(self::EXTERNAL_EXPORTS_FOLDER, $filepath, $zipped);
-        }
-
-        return $file_info;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function generateFileFromArray ($name, $extension, $array, $zipped = true, $upload = true)
     {
         // Generate File
-        $filepath = $this->generateFilename($name, $extension, true, self::INTERNAL_EXPORTS_FOLDER);
+        $filePath = $this->generateFilename($name, $extension, true, self::INTERNAL_EXPORTS_FOLDER);
 
         // Export and store
-        $this->exportByArray($filepath, $extension, $array);
+        $this->exportByArray($filePath, $extension, $array);
 
-        $file_info = array($filepath, '');
+        $fileInfo = [dirname($filePath), basename($filePath), ''];
         if($upload){
-            $file_info = $this->store(self::EXTERNAL_EXPORTS_FOLDER, $filepath, $zipped);
+            $fileInfo = $this->store(self::EXTERNAL_EXPORTS_FOLDER, $filePath, $zipped);
         }
 
-        return $file_info;
+        return $fileInfo;
     }
 
     /**
@@ -295,58 +288,29 @@ class FileHandlerService implements FileHandlerServiceInterface
     /**
      * Zips a given file with optional password protection
      *
-     * @param      $path
-     * @param bool $with_password
+     * @param $path
+     * @param $filename
+     * @param $zipped
      *
      * @return array
      */
-    private function zipFile ($path, $with_password = true)
+    private function store($path, $filename, $zipped)
     {
-        $path_info = pathinfo($path);
-        $zipped_path = $path_info['dirname'] . '/' . $path_info['filename'] . '.zip';
-
-        if ( $with_password )
-        {
-            $password = $this->generatePassword();
-            exec(sprintf("zip -j --password %s %s %s", $password, $zipped_path, $path));
-
-            // Remove the original File
-            unlink($path);
-
-            return array($zipped_path, $password);
-        }
-        exec(sprintf("zip -j %s %s", $zipped_path, $path));
-
-        // Remove the original File
-        unlink($path);
-
-        return array($zipped_path, null);
-    }
-
-    /**
-     * @param string  $path
-     * @param string  $filename
-     * @param    bool $zipped
-     *
-     * @return string
-     */
-    private function store ($path, $filename, $zipped)
-    {
-        $file_info = array($filename, '');
-        if ( $zipped )
-        {
-            $file_info = $this->zipFile($filename, true);
+        $fileInfo = [$path, $filename, ''];
+        if ($zipped) {
+            $fileInfo = $this->zipService->compressFile($filename, true);
         }
 
-        $s3_path = $path . pathinfo($file_info[0], PATHINFO_BASENAME);
-        $stream = fopen($file_info[0], 'r+');
-        $this->filesystem->writeStream($s3_path, $stream, array('ACL' => 'public-read'));
+        $localFilePath = sprintf('%s/%s', $fileInfo[0], $fileInfo[1]);
+        $s3Path        = sprintf('%s%s', $path, pathinfo($fileInfo[1], PATHINFO_BASENAME));
+        $stream        = fopen($localFilePath, 'r+');
+        $this->filesystem->writeStream($s3Path, $stream, ['ACL' => 'public-read']);
         fclose($stream);
 
-        unlink($file_info[0]);
-        $file_info[0] = $this->generateFilesystemURL($s3_path);
+        unlink($localFilePath);
+        $fileInfo[0] = rtrim($this->generateFilesystemURL($s3Path), $fileInfo[1]);
 
-        return $file_info;
+        return $fileInfo;
     }
 
     private function cleanUpName ($name, $extension = null)
@@ -355,7 +319,7 @@ class FileHandlerService implements FileHandlerServiceInterface
 
         if ( ! $extension )
         {
-            $extension = $fileinfo['extension'];
+            $extension = isset($fileinfo['extension']) ?: '';
         }
 
         $filename = preg_replace('/\s/i', '-', $fileinfo['filename']);

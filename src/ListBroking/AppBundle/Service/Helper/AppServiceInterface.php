@@ -51,12 +51,6 @@ interface AppServiceInterface extends BaseServiceInterface
     public function deliverEmail ($template, $parameters, $subject, $emails, $filename = null);
 
     /**
-     * Flushes the Mailer Spool
-     * @return mixed
-     */
-    public function flushSpool();
-
-    /**
      * Generates a Json Response
      *
      * @param     $response

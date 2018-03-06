@@ -19,6 +19,10 @@
         {
             "url": "git@github.com:adclick/devops.php-standards.conf.git",
             "type": "git"
+        },
+        {
+            "url": "git@github.com:adclick/shared.gdpr.cmp.git",
+            "type": "git"
         }
     ],
     "autoload": {

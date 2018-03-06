@@ -17,6 +17,8 @@ imports:
     - { resource: bundles/sonata_user.yml }
     - { resource: bundles/sonata_admin.yml }
     - { resource: bundles/sonata_block.yml }
+    - { resource: ../../vendor/adclick/components-gdpr/Resources/config/symfony2/services.yaml }
+    - { resource: ../../vendor/adclick/components-gdpr/Resources/config/symfony2/twig.yaml }
 
 # Doctrine Configuration
 doctrine:

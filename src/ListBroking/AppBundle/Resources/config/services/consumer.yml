@@ -19,7 +19,13 @@ services:
 
   app.consumer.deliver_extraction:
     class: ListBroking\AppBundle\Consumer\DeliverExtractionConsumer
-    arguments: ["@app", "@app.service.extraction", "@file_handler", "@logger", "@listbroking.app.monolog.processor.service_log_task_identifier"]
+    arguments:
+      - "@app"
+      - "@app.service.extraction"
+      - "@file_handler"
+      - "@logger"
+      - "@listbroking.app.monolog.processor.service_log_task_identifier"
+      - "@adclick.components.mailer_gdpr"
     tags:
         - { name: monolog.logger, channel: service }
 
