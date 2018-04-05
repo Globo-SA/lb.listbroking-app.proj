@@ -70,7 +70,7 @@ interface FileHandlerServiceInterface
     /**
      * Closes a given Writer
      *
-     * @param bool            $zipped
+     * @param bool $zipped
      *
      * @return string
      */

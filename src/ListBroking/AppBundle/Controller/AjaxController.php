@@ -184,9 +184,10 @@ class AjaxController extends Controller
         list($path, $filename, $password) = $f_service->generateFileFromArray(
             StagingContact::IMPORT_TEMPLATE_FILENAME,
             StagingContact::IMPORT_TEMPLATE_FILE_EXTENSION,
-            array(StagingContact::$import_template),
+            [StagingContact::$import_template],
             false,
-            false);
+            false
+        );
 
         return $a_service->createAttachmentResponse($path.$filename);
     }

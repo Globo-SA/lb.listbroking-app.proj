@@ -18,10 +18,8 @@ services:
   file_handler:
     class: ListBroking\AppBundle\Service\Helper\FileHandlerService
     arguments:
-      projectRootDir:    "%kernel.root_dir%"
-      filesystem:        "@oneup_flysystem.aws_s3_filesystem"
-      filesystem_config: {type: %filesystem_type%, url: %filesystem_url%}
-      zipService:        "@adclick.components.service.zip"
+      projectRootDir: "%kernel.root_dir%"
+      zipService:     "@adclick.components.service.zip"
 
   app:
     class: ListBroking\AppBundle\Service\Helper\AppService

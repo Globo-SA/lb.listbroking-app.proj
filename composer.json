@@ -81,12 +81,13 @@
 
         "adclick/authorization-client-bundle": "1.*",
         "adclick/api-abstraction-bundle": "1.*",
-        "adclick/task-controller-bundle": "1.*"
+        "adclick/task-controller-bundle": "1.*",
+
+        "adclick/components-gdpr": "~1.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.0",
         "sensio/generator-bundle": "^3.0",
-
         "doctrine/doctrine-fixtures-bundle": "^2.3",
         "fzaninotto/faker": "^1.5",
         "adclick/php-standards": "1.*"

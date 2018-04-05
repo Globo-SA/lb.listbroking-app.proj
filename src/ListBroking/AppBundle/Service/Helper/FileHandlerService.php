@@ -16,7 +16,6 @@ use Exporter\Writer\JsonWriter;
 use Exporter\Writer\WriterInterface;
 use Exporter\Writer\XlsWriter;
 use Exporter\Writer\XmlExcelWriter;
-use League\Flysystem\Filesystem;
 use ListBroking\AppBundle\Exporter\Exporter\CsvWriter;
 use ListBroking\AppBundle\Exporter\Source\DoctrineORMQuerySourceIterator;
 use Symfony\Component\Form\Form;
@@ -39,16 +38,6 @@ class FileHandlerService implements FileHandlerServiceInterface
     private $projectRootDir;
 
     /**
-     * @var Filesystem
-     */
-    private $filesystem;
-
-    /**
-     * @var array
-     */
-    private $filesystem_config;
-
-    /**
      * @var WriterInterface
      */
     private $writer;
@@ -63,19 +52,12 @@ class FileHandlerService implements FileHandlerServiceInterface
      */
     private $zipService;
 
-    public function __construct(
-        string $projectRootDir,
-        Filesystem $filesystem,
-        $filesystem_config,
-        ZipFileServiceInterface $zipService
-    )
+    public function __construct(string $projectRootDir, ZipFileServiceInterface $zipService)
     {
         $this->projectRootDir    = $projectRootDir;
-        $this->filesystem        = $filesystem;
-        $this->filesystem_config = $filesystem_config;
         $this->zipService        = $zipService;
 
-        //Set APC to cache cells
+        // Set APC to cache cells
         $cacheMethod = \PHPExcel_CachedObjectStorageFactory::cache_to_sqlite3;
         \PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
     }
@@ -265,27 +247,6 @@ class FileHandlerService implements FileHandlerServiceInterface
     }
 
     /**
-     * Simple password generator
-     *
-     * @param int $length
-     *
-     * @return string
-     */
-    private function generatePassword ($length = 10)
-    {
-        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        $count = mb_strlen($chars);
-
-        for ( $i = 0, $result = ''; $i < $length; $i++ )
-        {
-            $index = rand(0, $count - 1);
-            $result .= mb_substr($chars, $index, 1);
-        }
-
-        return $result;
-    }
-
-    /**
      * Zips a given file with optional password protection
      *
      * @param $path
@@ -297,18 +258,13 @@ class FileHandlerService implements FileHandlerServiceInterface
     private function store($path, $filename, $zipped)
     {
         $fileInfo = [$path, $filename, ''];
+
         if ($zipped) {
+
+            // replace original file by zipped
             $fileInfo = $this->zipService->compressFile($filename, true);
+            unlink($filename);
         }
-
-        $localFilePath = sprintf('%s/%s', $fileInfo[0], $fileInfo[1]);
-        $s3Path        = sprintf('%s%s', $path, pathinfo($fileInfo[1], PATHINFO_BASENAME));
-        $stream        = fopen($localFilePath, 'r+');
-        $this->filesystem->writeStream($s3Path, $stream, ['ACL' => 'public-read']);
-        fclose($stream);
-
-        unlink($localFilePath);
-        $fileInfo[0] = rtrim($this->generateFilesystemURL($s3Path), $fileInfo[1]);
 
         return $fileInfo;
     }
@@ -329,11 +285,6 @@ class FileHandlerService implements FileHandlerServiceInterface
 
         // uniqid() used to make sure the file is unique
         return strtolower(sprintf('%s-%s-%s.%s', $filename, uniqid(), date('Y-m-d'), $extension));
-    }
-
-    private function generateFilesystemURL ($path)
-    {
-        return(sprintf('%s/%s', $this->filesystem_config['url'], $path));
     }
 
     /**

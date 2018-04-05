@@ -97,7 +97,12 @@ class DeliverExtractionConsumer implements ConsumerInterface
 
             $batch_size = $this->e_service->findConfig("batch_sizes")['deliver'];
 
-            list($path, $filename, $password) =  $this->e_service->exportExtractionContacts($this->f_service, $extraction, $template, $batch_size);
+            list($path, $filename, $password) = $this->e_service->exportExtractionContacts(
+                $this->f_service,
+                $extraction,
+                $template,
+                $batch_size
+            );
 
             $this->logger->info(
                 'Exported contacts to file',
@@ -113,6 +118,9 @@ class DeliverExtractionConsumer implements ConsumerInterface
             );
 
             $this->logger->info('Extraction email sent', ['extraction_id' => $extraction->getId()]);
+
+            // erase the extracted file
+            unlink(sprintf('%s/%s', $path, $filename));
 
             // Set the Extraction as delivered
             $extraction->setIsDelivering(false);
