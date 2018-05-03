@@ -49,4 +49,4 @@ services:
 
   hurry:
     class: ListBroking\AppBundle\Service\External\HurryService
-    arguments: [ %hurry_api_url%, %hurry_api_token%, "@logger" ]
+    arguments: [ "%hurry_api_url%", "%hurry_api_token%", "@logger" ]

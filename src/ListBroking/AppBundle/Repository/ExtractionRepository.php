@@ -162,41 +162,37 @@ SQL;
     }
 
     /**
-     * @param \DateTime|string $start_date
-     * @param \DateTime|string $end_date
-     * @param int $page
-     * @param int $limit
+     * Get revenue between two dates
+     *
+     * @param \DateTime|string $startDate
+     * @param \DateTime|string $endDate
      *
      * @return array|null
      */
-    public function getRevenue($start_date, $end_date, $page = 1, $limit = 50)
+    public function getRevenue($startDate, $endDate)
     {
-        if ($start_date instanceof \DateTime)
-        {
-            $start_date = $start_date->format('Y-m-d 0:0:0');
+        if ($startDate instanceof \DateTime) {
+            $startDate = $startDate->format('Y-m-d 0:0:0');
         }
-        if ($end_date instanceof \DateTime)
-        {
-            $end_date = $end_date->format('Y-m-d 23:59:59');
+
+        if ($endDate instanceof \DateTime) {
+            $endDate = $endDate->format('Y-m-d 23:59:59');
         }
-        if (!is_string($start_date) || !is_string($end_date))
-        {
+
+        if (!is_string($startDate) || !is_string($endDate)) {
+
             return null;
         }
 
-        $queryBuilder = $this->createQueryBuilder('e');
-        $queryBuilder
+        return $this->createQueryBuilder('e')
             ->select(
-                //'e.id as extraction_id',
                 'DATE(e.sold_at) as date',
                 'e.payout * COUNT(e.id) as revenue',
-                //'e.payout as payout',
                 'COUNT(e.id) as quantity',
                 'ca.id as campaign_id',
                 'ca.name as campaign_name',
                 'ca.account_id as account_id',
                 'ca.account_name as account_name',
-                //'cl.external_id as client_id',
                 'cl.name as client_name',
                 's.external_id as source_id',
                 's.name as source_name',
@@ -211,13 +207,10 @@ SQL;
             ->where('e.status = 3')
             ->andWhere('e.sold_at BETWEEN :date1 AND :date2')
             ->groupBy('e.id, s.name')
-            ->setParameter('date1', $start_date)
-            ->setParameter('date2', $end_date)
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-        ;
-
-        return $queryBuilder->getQuery()->getArrayResult();
+            ->setParameter('date1', $startDate)
+            ->setParameter('date2', $endDate)
+            ->getQuery()
+            ->getArrayResult();
     }
 
     /**

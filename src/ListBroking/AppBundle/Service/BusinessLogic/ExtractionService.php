@@ -12,6 +12,7 @@ use ListBroking\AppBundle\Engine\FilterEngine;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionLog;
 use ListBroking\AppBundle\Form\FiltersType;
+use ListBroking\AppBundle\Repository\ExtractionRepository;
 use ListBroking\AppBundle\Service\Base\BaseService;
 use ListBroking\AppBundle\Service\Helper\FileHandlerServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -321,17 +322,14 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     }
 
     /**
-     * @param \DateTime|string $start_date
-     * @param \DateTime|string $end_date
-     * @param int $page
-     * @param int $limit
-     *
-     * @return array|null
+     * {@inheritdoc}
      */
-    public function getRevenue($start_date, $end_date, $page, $limit)
+    public function getRevenue($startDate, $endDate)
     {
+        /** @var ExtractionRepository $extractionRepository */
         $extractionRepository = $this->entityManager->getRepository('ListBrokingAppBundle:Extraction');
-        return $extractionRepository->getRevenue($start_date, $end_date, $page, $limit);
+
+        return $extractionRepository->getRevenue($startDate, $endDate);
     }
 
     /**

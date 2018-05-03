@@ -8,6 +8,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\AdminBundle\Validator\ErrorElement;
 
 class CampaignAdmin extends Admin
 {
@@ -28,8 +29,7 @@ class CampaignAdmin extends Admin
         $datagridMapper
             ->add('id')
             ->add('client')
-            ->add('name')
-        ;
+            ->add('name');
     }
 
     /**
@@ -44,14 +44,17 @@ class CampaignAdmin extends Admin
             ->add('account_name')
             ->add('created_by')
             ->add('updated_at')
-            ->add('_action', 'actions', array(
-                'actions' => array(
-                    'show' => array(),
-                    'edit' => array(),
-                    'delete' => array(),
-                )
-            ))
-        ;
+            ->add(
+                '_action',
+                'actions',
+                [
+                    'actions' => [
+                        'show'   => [],
+                        'edit'   => [],
+                        'delete' => [],
+                    ]
+                ]
+            );
     }
 
     /**
@@ -63,9 +66,8 @@ class CampaignAdmin extends Admin
             ->add('client')
             ->add('name')
             ->add('description')
-            ->add('account_name', null, array('required' => true))
-            ->add('account_id')
-        ;
+            ->add('account_name', 'text', ['read_only' => true, 'required' => true])
+            ->add('account_id', 'text', ['read_only' => true, 'required' => true]);
     }
 
     /**
@@ -81,7 +83,21 @@ class CampaignAdmin extends Admin
             ->add('account_name')
             ->add('account_id')
             ->add('created_at')
-            ->add('updated_at')
+            ->add('updated_at');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validate(ErrorElement $errorElement, $object)
+    {
+        $errorElement
+            ->with('account_id')
+                ->assertNotBlank()
+            ->end()
+            ->with('account_name')
+                ->assertNotBlank()
+            ->end()
         ;
     }
 }

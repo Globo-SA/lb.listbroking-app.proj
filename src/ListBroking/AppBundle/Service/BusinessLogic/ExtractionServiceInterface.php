@@ -34,6 +34,16 @@ interface ExtractionServiceInterface extends BaseServiceInterface
     public function findExtraction ($id);
 
     /**
+     * Get revenue
+     *
+     * @param \DateTime|string $startDate
+     * @param \DateTime|string $endDate
+     *
+     * @return array|null
+     */
+    public function getRevenue($startDate, $endDate);
+
+    /**
      * Return all extractions
      *
      * @param string $name

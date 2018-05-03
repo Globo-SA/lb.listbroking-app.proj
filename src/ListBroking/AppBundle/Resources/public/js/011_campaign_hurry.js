@@ -1,19 +1,18 @@
 (function ($, App) {
     $(function() {
-        var form = $('.content form[role="form"]');
-        var field_prefix = /[\?&]uniqid=([\w\d]+)($|&)/.exec(form.prop('action'))[1];
-        var inputAccountName, inputAccountId, selectedClient, accounts = [],
-            divClient = form.find('#sonata-ba-field-container-'+field_prefix+'_client'),
+        var form = $('.content form[role="form"]'),
+            field_prefix = /[\?&]uniqid=([\w\d]+)($|&)/.exec(form.prop('action'))[1],
+            selectedClient,
+            accounts = [],
+            divClient = form.find('#sonata-ba-field-container-' + field_prefix + '_client'),
             $div_out = $("<div>").addClass("form-group"),
             $div_in = $("<div>").addClass("sonata-ba-field sonata-ba-field-standard-natural"),
             $label = $("<label>").addClass("control-label").text("Account"),
-            $selectAccount = $("<select>");
+            $selectAccount = $("<select>"),
+            inputAccountName = form.find('#sonata-ba-field-container-' + field_prefix + '_account_name').find("input"),
+            inputAccountId = form.find('#sonata-ba-field-container-' + field_prefix + '_account_id').find("input");
 
-
-        function hideHurryFields()
-        {
-            inputAccountName = form.find('#sonata-ba-field-container-' + field_prefix + '_account_name').hide().find("input");
-            inputAccountId = form.find('#sonata-ba-field-container-'+field_prefix+'_account_id').hide().find("input");
+        function showAccountDropdown() {
             $div_out.append($label).insertAfter(divClient);
             $div_in.append($selectAccount).appendTo($div_out);
             $selectAccount.select2({width:"100%"});
@@ -57,7 +56,7 @@
             $selectAccount.trigger("change", selectedAcc);
         }
 
-        divClient.on("change","select",function(ev) {
+        divClient.on("change", "select", function (ev) {
             $selectAccount.empty();
             selectedClient = $(ev.target).find("option[value='"+ev.val+"']").text();
             populateAccountSelect(accounts);
@@ -72,7 +71,7 @@
             inputAccountName.val($(ev.target).find("option[value='"+ev.val+"']").text());
         });
 
-        hideHurryFields();
+        showAccountDropdown();
         hurryAccountRequest();
     })
 })(jQuery, ListBroking);

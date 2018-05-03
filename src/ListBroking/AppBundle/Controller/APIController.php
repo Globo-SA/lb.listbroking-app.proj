@@ -138,33 +138,46 @@ class APIController extends Controller
      */
     public function getExtractionsRevenueAction(Request $request)
     {
-        try
-        {
+        try {
             $this->fosUserAuthenticationService->checkCredentials($request);
 
-            $end_date = $request->get('end_date');
-            $start_date = $request->get('start_date');
-            if ($start_date == null)
-            {
-                if ($end_date != null)
-                {
-                    return $this->createJsonResponse(['error' => 'end date can\'t be defined without a start date'], self::HTTP_BAD_REQUEST_CODE);
+            $startDate = $request->get('start_date');
+            $endDate   = $request->get('end_date');
+
+            if ($startDate == null) {
+                if ($endDate != null) {
+
+                    return $this->createJsonResponse(
+                        ['error' => 'end date can\'t be defined without a start date'],
+                        self::HTTP_BAD_REQUEST_CODE
+                    );
                 }
-                $start_date = date('Y-m-1');
+
+                $startDate = date('Y-m-1');
             }
-            if ($end_date == null)
-            {
-                $end_date = date('Y-m-t');
+
+            if ($endDate == null) {
+                $endDate = date('Y-m-t');
             }
-            $data = $this->extractionService->getRevenue($start_date, $end_date, $request->get('page', 1), $request->get('page_size', self::HTTP_SERVER_ERROR_CODE));
-            if ($data === null)
-            {
+
+            $data = $this->extractionService->getRevenue($startDate, $endDate);
+
+            if ($data === null) {
                 return $this->createJsonResponse(['error' => 'invalid request'], self::HTTP_BAD_REQUEST_CODE);
             }
+
             return $this->createJsonResponse($data);
-        } catch (\Exception $e)
-        {
-            $this->logger->error(sprintf('API Active Campaigns error: %s start_date: %s end_date: %s trace: %s', $e->getMessage(), $request->get('start_date'), $request->get('end_date'), $e->getTraceAsString()));
+        } catch (\Exception $e) {
+            $this->logger->error(
+                sprintf(
+                    'API Active Campaigns error: %s start_date: %s end_date: %s trace: %s',
+                    $e->getMessage(),
+                    $request->get('start_date'),
+                    $request->get('end_date'),
+                    $e->getTraceAsString()
+                )
+            );
+
             return $this->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
