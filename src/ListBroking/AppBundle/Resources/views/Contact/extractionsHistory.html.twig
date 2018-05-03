@@ -1,0 +1,36 @@
+{% extends base_template %}
+
+{% block actions %}
+    <li>{% include 'SonataAdminBundle:Button:list_button.html.twig' %}</li>
+{% endblock %}
+
+{% block tab_menu_navbar_header %}
+    <div class="navbar-header">
+        <span class="navbar-brand">{{ email }}</span>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="sonata-ba-view">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <td>{{ 'action_extractionsHistory_date'|trans }}</td>
+                <td>{{ 'action_extractionsHistory_name'|trans }}</td>
+                <td>{{ 'action_extractionsHistory_campaign'|trans }}</td>
+                <td>{{ 'action_extractionsHistory_sold_at'|trans }}</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for extraction in extractions %}
+                <tr>
+                    <td>{{ extraction.date|date('Y-m-d') }}</td>
+                    <td>{{ extraction.name }}</td>
+                    <td>{{ extraction.campaign }}</td>
+                    <td>{{ extraction.sold_at }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

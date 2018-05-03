@@ -1,3 +1,8 @@
 title_filtering: 'Extract "%name%"'
 action_filtering: Extract
 action_clone: Duplicate
+action_extractionsHistory: 'Extractions History'
+action_extractionsHistory_date: 'Acquisition date'
+action_extractionsHistory_name: 'Extraction'
+action_extractionsHistory_campaign: 'Campaign'
+action_extractionsHistory_sold_at: 'Sold At'
