@@ -22,3 +22,9 @@ services:
         factory: ["@doctrine", getRepository]
         arguments:
             - 'ListBroking\AppBundle\Entity\Source'
+
+    app.repository.extraction_contact:
+        class: ListBroking\AppBundle\Repository\ExtractionContactRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\ExtractionContact'

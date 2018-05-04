@@ -61,9 +61,11 @@ services:
           - {name: sonata.admin, manager_type: orm, group: Lead, label: Lead}
   listbroking.admin.contact:
       class: ListBroking\AppBundle\Admin\ContactAdmin
-      arguments: [~, ListBroking\AppBundle\Entity\Contact, SonataAdminBundle:CRUD]
+      arguments: [~, ListBroking\AppBundle\Entity\Contact, ListBrokingAppBundle:ContactAdmin]
       tags:
           - {name: sonata.admin, manager_type: orm, group: Lead, label: Contact}
+      calls:
+          - [ setTemplate, [extractionsHistory, ListBrokingAppBundle:Contact:extractionsHistory.html.twig]]
   listbroking.admin.country:
       class: ListBroking\AppBundle\Admin\CountryAdmin
       arguments: [~, ListBroking\AppBundle\Entity\Country, SonataAdminBundle:CRUD]
@@ -96,11 +98,6 @@ services:
           - {name: sonata.admin, manager_type: orm, group: Extraction, label: Extraction}
       calls:
           - [ setTemplate, [edit, ListBrokingAppBundle:Extraction:edit.html.twig]]
-  listbroking.admin.extraction_contact:
-      class: ListBroking\AppBundle\Admin\ExtractionContactAdmin
-      arguments: [~, ListBroking\AppBundle\Entity\ExtractionContact, SonataAdminBundle:CRUD]
-      tags:
-          - {name: sonata.admin, manager_type: orm, group: Extraction, label: ExtractionContact}
   listbroking.admin.extraction_template:
       class: ListBroking\AppBundle\Admin\ExtractionTemplateAdmin
       arguments: [~, ListBroking\AppBundle\Entity\ExtractionTemplate, SonataAdminBundle:CRUD]

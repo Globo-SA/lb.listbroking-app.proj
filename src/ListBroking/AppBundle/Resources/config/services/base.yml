@@ -47,6 +47,11 @@ services:
         - "@app.repository.lead"
         - "@app.repository.source"
 
+  app.service.extraction_contact:
+    class: ListBroking\AppBundle\Service\BusinessLogic\ExtractionContactService
+    arguments:
+        - "@app.repository.extraction_contact"
+
   hurry:
     class: ListBroking\AppBundle\Service\External\HurryService
     arguments: [ %hurry_api_url%, %hurry_api_token%, "@logger" ]

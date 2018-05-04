@@ -10,9 +10,11 @@ use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
+use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Extraction;
+use PDO;
 
-class ExtractionContactRepository extends EntityRepository
+class ExtractionContactRepository extends EntityRepository implements ExtractionContactRepositoryInterface
 {
 
     /**
@@ -184,5 +186,21 @@ SQL;
                     ->setParameter('extraction', $maxExtractionId)
                     ->getQuery()
                     ->execute();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findContactExtractions(Contact $contact): array
+    {
+        return $this->createQueryBuilder('ec')
+            ->select('co.date, e.name AS name, e.sold_at, ca.name AS campaign')
+            ->innerJoin('ec.extraction', 'e')
+            ->innerJoin('e.campaign', 'ca')
+            ->innerJoin('ec.contact', 'co')
+            ->where('ec.contact = :contactId')
+            ->setParameter('contactId', $contact->getId())
+            ->getQuery()
+            ->execute(null, Query::HYDRATE_ARRAY);
     }
 }
