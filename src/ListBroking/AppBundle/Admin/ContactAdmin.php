@@ -2,19 +2,26 @@
 
 namespace ListBroking\AppBundle\Admin;
 
-use Doctrine\DBAL\Query\QueryBuilder;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
-use Sonata\DoctrineORMAdminBundle\Datagrid\ProxyQuery;
 
 class ContactAdmin extends Admin
 {
     protected $datagridValues = array(
         '_sort_order' => 'DESC'
     );
+
+    /**
+     * @param RouteCollection $collection
+     */
+    protected function configureRoutes(RouteCollection $collection)
+    {
+        $collection->add('extractionsHistory', $this->getRouterIdParameter() . '/extractionsHistory');
+    }
 
     /**
      * @param DatagridMapper $datagridMapper
@@ -61,6 +68,9 @@ class ContactAdmin extends Admin
                     'show' => array(),
                     'edit' => array(),
                     'delete' => array(),
+                    'extractionsHistory' => [
+                        'template' => 'ListBrokingAppBundle:Contact:CRUD/list__action_extractionsHistory.html.twig'
+                    ],
                 )
             ))
         ;
