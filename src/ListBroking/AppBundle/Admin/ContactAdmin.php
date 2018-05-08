@@ -11,7 +11,21 @@ use Sonata\AdminBundle\Show\ShowMapper;
 
 class ContactAdmin extends Admin
 {
+    /**
+     * Type "3" means that Sonata will make an EXACT MATCH to the filters that are given
+     * instead of using a 'LIKE' search
+     *
+     * @var array
+     */
     protected $datagridValues = array(
+        'email' => [
+            'type'  => 3,
+            'value' => ''
+        ],
+        'lead.phone' => [
+            'type'  => 3,
+            'value' => ''
+        ],
         '_sort_order' => 'DESC'
     );
 
