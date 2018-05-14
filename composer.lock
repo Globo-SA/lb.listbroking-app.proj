@@ -12,7 +12,7 @@
             "target-dir": "Adclick/ApiAbstractionBundle",
             "source": {
                 "type": "git",
-                "url": "git@git.adclick.pt:bundles/api-abstraction-bundle.git",
+                "url": "git@github.com:adclick/shared.api-abstraction.bndl.git",
                 "reference": "debb8f74ae8c13f319c256abfec9d6acdb67cb26"
             },
             "require": {
@@ -51,7 +51,7 @@
             "target-dir": "Adclick/AuthorizationClientBundle",
             "source": {
                 "type": "git",
-                "url": "git@git.adclick.pt:bundles/authorization-client-bundle.git",
+                "url": "git@github.com:adclick/shared.authorization-client.bndl.git",
                 "reference": "f33bcd2572124c13be821bfd60371b285c48026b"
             },
             "require": {
@@ -137,7 +137,7 @@
             "target-dir": "Adclick/TaskControllerBundle",
             "source": {
                 "type": "git",
-                "url": "git@git.adclick.pt:bundles/task-controller-bundle.git",
+                "url": "git@github.com:adclick/shared.task-controller.bundle.git",
                 "reference": "716e52638927c8c15dfc20a52fd80923cf206c79"
             },
             "require": {

@@ -5,15 +5,15 @@
     "description": "Here we centralize the information to distribute it",
     "repositories": [
         {
-            "url": "git@git.adclick.pt:bundles/api-abstraction-bundle.git",
+            "url": "git@github.com:adclick/shared.api-abstraction.bndl.git",
             "type": "git"
         },
         {
-            "url": "git@git.adclick.pt:bundles/task-controller-bundle.git",
+            "url": "git@github.com:adclick/shared.task-controller.bundle.git",
             "type": "git"
         },
         {
-            "url": "git@git.adclick.pt:bundles/authorization-client-bundle.git",
+            "url": "git@github.com:adclick/shared.authorization-client.bndl.git",
             "type": "git"
         },
         {
