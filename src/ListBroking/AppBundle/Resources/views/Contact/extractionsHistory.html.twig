@@ -27,7 +27,7 @@
                     <td>{{ extraction.date|date('Y-m-d') }}</td>
                     <td>{{ extraction.name }}</td>
                     <td>{{ extraction.campaign }}</td>
-                    <td>{{ extraction.sold_at }}</td>
+                    <td>{% if extraction.sold_at is null%}-{% else %}{{ extraction.sold_at|date('Y-m-d') }}{% endif %}</td>
                 </tr>
             {% endfor %}
             </tbody>
