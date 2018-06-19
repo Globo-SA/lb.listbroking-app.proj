@@ -6,6 +6,7 @@ services:
             - '@app.service.staging'
             - '@app.service.extraction'
             - '@app.authentication.fos_user'
+            - '@app.service.contact_obfuscation'
 
     app.controller.webhook:
         class: ListBroking\AppBundle\Controller\WebhookController

@@ -16,6 +16,8 @@ class Contact
 {
     use TimestampableEntityBehavior;
 
+    const EMAIL_KEY = 'email';
+
     /**
      * @var integer
      */

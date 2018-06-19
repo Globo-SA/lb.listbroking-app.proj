@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "029c509923da69e24d92341846de6afd",
+    "content-hash": "dd16520dff6bbb1473d92764ade78ad5",
     "packages": [
         {
             "name": "adclick/api-abstraction-bundle",
@@ -88,11 +88,11 @@
         },
         {
             "name": "adclick/components-gdpr",
-            "version": "v1.1.2",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:adclick/shared.gdpr.cmp.git",
-                "reference": "f4d175a157a29dd621161bcea150a1a78fe47e6c"
+                "reference": "7be548605d874bab80dd13c73f1cd3d0ba00a157"
             },
             "require": {
                 "composer/installers": "~1.0",
@@ -129,7 +129,7 @@
             "keywords": [
                 "adclick"
             ],
-            "time": "2018-04-04T22:02:20+00:00"
+            "time": "2018-06-20T15:37:12+00:00"
         },
         {
             "name": "adclick/task-controller-bundle",
@@ -4959,6 +4959,7 @@
                 "compression",
                 "minification"
             ],
+            "abandoned": "symfony/webpack-encore-pack",
             "time": "2017-07-14T07:26:46+00:00"
         },
         {

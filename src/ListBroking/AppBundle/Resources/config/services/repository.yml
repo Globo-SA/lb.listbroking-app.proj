@@ -28,3 +28,27 @@ services:
         factory: ["@doctrine", getRepository]
         arguments:
             - 'ListBroking\AppBundle\Entity\ExtractionContact'
+
+    app.repository.contact:
+        class: ListBroking\AppBundle\Repository\ContactRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\Contact'
+
+    app.repository.extraction_deduplication:
+        class: ListBroking\AppBundle\Repository\ExtractionContactRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\ExtractionDeduplication'
+
+    app.repository.staging_contact_processed:
+        class: ListBroking\AppBundle\Repository\StagingContactProcessedRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\StagingContactProcessed'
+
+    app.repository.staging_contact_dqp:
+        class: ListBroking\AppBundle\Repository\StagingContactDQPRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\StagingContactDQP'

@@ -1,28 +1,14 @@
 <?php
-/**
- *
- * @author     Samuel Castro <samuel.castro@adclick.pt>
- * @copyright  2015 Adclick
- * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
- * [LISTBROKING_DISCLAIMER]
- */
 
 namespace ListBroking\AppBundle\Repository;
-
 
 use Doctrine\ORM\EntityRepository;
 use ListBroking\AppBundle\Entity\OppositionList;
 
-class OppositionListRepository extends EntityRepository  {
+class OppositionListRepository extends EntityRepository implements OppositionListRepositoryInterface {
 
     /**
-     * Imports an Opposition list file by type, clears old values by default
-     * @param $type
-     * @param $config
-     * @param $file
-     * @param bool $clear_old
-     * @throws \Doctrine\DBAL\DBALException
+     *{@inheritdoc}
      */
     public function importOppositionListFile($type, $config, $file, $clear_old = true){
 
@@ -87,9 +73,7 @@ SQL;
     }
 
     /**
-     * @param string $phone
-     *
-     * @return bool
+     *{@inheritdoc}
      */
     public function isPhoneInOppositionList(string $phone): bool
     {
@@ -103,5 +87,17 @@ SQL;
                     ->getResult();
 
         return !empty($opposition);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByPhone(string $phone)
+    {
+        return $this->createQueryBuilder('ol')
+            ->where('ol.phone = :phone')
+            ->setParameter('phone', $phone)
+            ->getQuery()
+            ->execute();
     }
 }

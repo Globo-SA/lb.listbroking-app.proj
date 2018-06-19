@@ -15,7 +15,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class Lead {
 
-    const CACHE_ID = 'lead';
+    const CACHE_ID  = 'lead';
+    const PHONE_KEY = 'phone';
 
     use TimestampableEntityBehavior;
 

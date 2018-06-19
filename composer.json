@@ -83,7 +83,7 @@
         "adclick/api-abstraction-bundle": "1.*",
         "adclick/task-controller-bundle": "1.*",
 
-        "adclick/components-gdpr": "~1.1"
+        "adclick/components-gdpr": "~1.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.0",

@@ -1,16 +1,17 @@
 <?php
-/**
- * @author     Samuel Castro <samuel.castro@adclick.pt>
- * @copyright  2015 Adclick
- */
 
 namespace ListBroking\AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use ListBroking\AppBundle\Entity\Contact;
-use ListBroking\AppBundle\Entity\Lock;
 
-class ContactRepository extends EntityRepository
+class ContactRepository extends EntityRepository implements ContactRepositoryInterface
 {
-
+    /**
+     * {@inheritdoc}
+     */
+    public function findContactByEmail(string $email)
+    {
+        return $this->findOneBy([Contact::EMAIL_KEY => $email]);
+    }
 }
