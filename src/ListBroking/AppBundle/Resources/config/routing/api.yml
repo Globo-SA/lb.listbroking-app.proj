@@ -9,3 +9,7 @@ api_campaigns_get_active:
 api_campaigns_get_revenue:
     path: /v1/campaigns/revenue
     defaults: { _controller: app.controller.api:getExtractionsRevenueAction }
+
+api_erase_contact:
+    path: /v1/contact/erasure
+    defaults: { _controller: app.controller.api:contactErasureAction }

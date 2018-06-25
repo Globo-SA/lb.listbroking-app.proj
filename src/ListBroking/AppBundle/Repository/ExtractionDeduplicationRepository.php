@@ -1,28 +1,15 @@
 <?php
-/**
- * @author     Samuel Castro <samuel.castro@adclick.pt>
- * @copyright  2014 Adclick
- * @license    [LISTBROKING_URL_LICENSE_HERE]
- * [LISTBROKING_DISCLAIMER]
- */
 
 namespace ListBroking\AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use ListBroking\AppBundle\Entity\Extraction;
 
-class ExtractionDeduplicationRepository extends EntityRepository
+class ExtractionDeduplicationRepository extends EntityRepository implements ExtractionDeduplicationRepositoryInterface
 {
 
     /**
-     * Adds multiple deduplications
-     *
-     * @param      $extraction Extraction
-     * @param      $file       \PHPExcel
-     * @param      $field
-     *
-     * @throws \Doctrine\DBAL\DBALException
-     * @return mixed
+     * {@inheritdoc}
      */
     public function uploadDeduplicationsByFile(Extraction $extraction, \PHPExcel $file, $field, $batch_size)
     {
@@ -82,9 +69,7 @@ SQL;
     }
 
     /**
-     * Remove deduplications from an extraction
-     *
-     * @param Extraction $extraction
+     * {@inheritdoc}
      */
     public function removeDeduplications($extraction)
     {
@@ -128,11 +113,7 @@ SQL;
     }
 
     /**
-     * Cleanup records from $maxExtractionId or older.
-     *
-     * @param $maxExtractionId
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function cleanUp($maxExtractionId)
     {
@@ -142,5 +123,18 @@ SQL;
                     ->setParameter('extraction', $maxExtractionId)
                     ->getQuery()
                     ->execute();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByContactIdOrLeadId(int $contactId, int $leadId)
+    {
+        return $this->createQueryBuilder('ed')
+            ->where('ed.contact_id = :contactId OR ed.lead_id = :leadId')
+            ->setParameter('contactId', $contactId)
+            ->setParameter('leadId', $leadId)
+            ->getQuery()
+            ->execute();
     }
 }

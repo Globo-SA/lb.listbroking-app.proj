@@ -1,10 +1,4 @@
 <?php
-/**
- * @author     Samuel Castro <samuel.castro@adclick.pt>
- * @copyright  2014 Adclick
- * @license    [LISTBROKING_URL_LICENSE_HERE]
- * [LISTBROKING_DISCLAIMER]
- */
 
 namespace ListBroking\AppBundle\Repository;
 
@@ -12,14 +6,12 @@ use Doctrine\DBAL\Statement;
 use Doctrine\ORM\EntityRepository;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\Lock;
-use Symfony\Component\Validator\Constraints\Date;
 
-class LeadRepository extends EntityRepository
+class LeadRepository extends EntityRepository implements LeadRepositoryInterface
 {
 
     /**
-     * Synchronizes Leads with opposition lists
-     * @throws \Doctrine\DBAL\DBALException
+     * {@inheritdoc}
      */
     public function syncLeadsWithOppositionLists ()
     {
@@ -41,11 +33,7 @@ SQL;
     }
 
     /**
-     * Finds Leads with expired TYPE_INITIAL_LOCK
-     *
-     * @param integer    $limit
-     *
-     * @return \ListBroking\AppBundle\Entity\Lead[]
+     * {@inheritdoc}
      */
     public function findLeadsWithExpiredInitialLock ($limit)
     {
@@ -71,11 +59,7 @@ SQL;
     }
 
     /**
-     * Finds an leads by phone. The phone is unique by country
-     *
-     * @param string $phone
-     *
-     * @return Lead[]
+     * {@inheritdoc}
      */
     public function findByPhone(string $phone): array
     {
@@ -90,12 +74,7 @@ SQL;
     }
 
     /**
-     * Updates Lead 'in_opposition' field by phone
-     *
-     * @param string $phone
-     * @param bool   $inOpposition
-     *
-     * @return int
+     * {@inheritdoc}
      */
     public function updateInOppositionByPhone(string $phone, bool $inOpposition)
     {
@@ -109,5 +88,13 @@ SQL;
                     ->setParameter('phone', $phone)
                     ->getQuery()
                     ->getResult();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findLeadByPhone(string $phone)
+    {
+        return $this->findOneBy([Lead::PHONE_KEY => $phone]);
     }
 }

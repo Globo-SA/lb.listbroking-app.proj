@@ -1,10 +1,4 @@
 <?php
-/**
- * @author     Samuel Castro <samuel.castro@adclick.pt>
- * @copyright  2014 Adclick
- * @license    [LISTBROKING_URL_LICENSE_HERE]
- * [LISTBROKING_DISCLAIMER]
- */
 
 namespace ListBroking\AppBundle\Repository;
 
@@ -21,15 +15,11 @@ use ListBroking\AppBundle\Entity\StagingContactDQP;
 use ListBroking\AppBundle\Entity\StagingContactProcessed;
 use ListBroking\AppBundle\Parser\DateTimeParser;
 
-class StagingContactRepository extends EntityRepository
+class StagingContactRepository extends EntityRepository implements StagingContactRepositoryInterface
 {
 
     /**
-     * Imports an Database file
-     *
-     * @param \PHPExcel $file
-     * @param array     $extra_fields
-     * @param           $batch_size
+     * {@inheritdoc}
      */
     public function importStagingContactsFile (\PHPExcel $file, array $extra_fields = [], $batch_size)
     {
@@ -88,11 +78,7 @@ class StagingContactRepository extends EntityRepository
     }
 
     /**
-     * Persists a new Staging Contact using and array
-     *
-     * @param $data_array
-     *
-     * @return \ListBroking\AppBundle\Entity\StagingContact
+     * {@inheritdoc}
      */
     public function addStagingContact ($data_array): StagingContact
     {
@@ -124,9 +110,7 @@ class StagingContactRepository extends EntityRepository
     }
 
     /**
-     * Moves invalid contacts to the DQP table
-     *
-     * @param $limit
+     * {@inheritdoc}
      */
     public function moveInvalidContactsToDQP ($limit)
     {
@@ -158,11 +142,7 @@ class StagingContactRepository extends EntityRepository
     }
 
     /**
-     * Loads validated contacts from the staging area
-     * to the Lead and Contact tables
-     *
-     * @param StagingContact $staging_contact
-     * @param array          $dimensions
+     * {@inheritdoc}
      */
     public function loadValidatedContact (StagingContact $staging_contact, array $dimensions)
     {
@@ -238,11 +218,7 @@ class StagingContactRepository extends EntityRepository
     }
 
     /**
-     * Loads Updated StagingContacts to the
-     * Contact table
-     *
-     * @param StagingContact $staging_contact
-     * @param array          $dimensions
+     * {@inheritdoc}
      */
     public function loadUpdatedContact (StagingContact $staging_contact, array $dimensions)
     {
@@ -278,13 +254,7 @@ class StagingContactRepository extends EntityRepository
     }
 
     /**
-     * Finds contacts that need validation and lock them
-     * to the current process
-     *
-     * @param int $limit
-     *
-     * @return StagingContact[]
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * {@inheritdoc}
      */
     public function findAndLockContactsToValidate ($limit = 50)
     {
@@ -406,6 +376,23 @@ SQL;
         }
 
         return is_numeric($value) || is_bool($value) ? $value : $connection->quote($value);
+    }
+
+    /**
+     * @param string $email
+     * @param string $phone
+     *
+     * @return mixed
+     */
+    public function deleteContactByEmailOrPhone(string $email, string $phone)
+    {
+        return $this->createQueryBuilder('scd')
+            ->delete('ListBrokingAppBundle:StagingContactProcessed' ,'scd')
+            ->where('scd.email = :email OR scd.phone = :phone')
+            ->setParameter('email', $email)
+            ->setParameter('phone', $phone)
+            ->getQuery()
+            ->execute();
     }
 }
 
