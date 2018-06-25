@@ -88,11 +88,11 @@
         },
         {
             "name": "adclick/components-gdpr",
-            "version": "v1.2.0",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:adclick/shared.gdpr.cmp.git",
-                "reference": "7be548605d874bab80dd13c73f1cd3d0ba00a157"
+                "reference": "8bb528c0530eccf4078bc813bd57e6bc0c73cf2c"
             },
             "require": {
                 "composer/installers": "~1.0",
@@ -129,7 +129,7 @@
             "keywords": [
                 "adclick"
             ],
-            "time": "2018-06-20T15:37:12+00:00"
+            "time": "2018-06-25T16:14:58+00:00"
         },
         {
             "name": "adclick/task-controller-bundle",
