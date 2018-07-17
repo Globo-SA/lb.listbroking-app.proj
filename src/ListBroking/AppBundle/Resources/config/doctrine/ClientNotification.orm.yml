@@ -1,0 +1,40 @@
+ListBroking\AppBundle\Entity\ClientNotification:
+    type: entity
+    table: client_notification
+    repositoryClass: ListBroking\AppBundle\Repository\ClientNotificationRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        type:
+            type: string
+            length: 255
+        campaigns:
+            type: string
+            length: 255
+# Timestampable
+        createdAt:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: create } }
+    manyToOne:
+        client:
+            targetEntity: ListBroking\AppBundle\Entity\Client
+            inversedBy: clientNotifications
+            joinColumn:
+                name: client_id
+                referencedColumnName: id
+                onDelete: restrict
+                nullable: false
+        lead:
+            targetEntity: ListBroking\AppBundle\Entity\Lead
+            inversedBy: clientNotifications
+            joinColumn:
+                name: lead_id
+                referencedColumnName: id
+                onDelete: restrict
+                nullable: false
+    lifecycleCallbacks: {  }

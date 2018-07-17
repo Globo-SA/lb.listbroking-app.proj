@@ -128,12 +128,24 @@ SQL;
     /**
      * {@inheritdoc}
      */
-    public function findByContactIdOrLeadId(int $contactId, int $leadId)
+    public function getByContactIdOrLeadId(int $contactId, int $leadId)
     {
         return $this->createQueryBuilder('ed')
             ->where('ed.contact_id = :contactId OR ed.lead_id = :leadId')
             ->setParameter('contactId', $contactId)
             ->setParameter('leadId', $leadId)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getByPhone(string $phone)
+    {
+        return $this->createQueryBuilder('ed')
+            ->where('ed.phone = :phone')
+            ->setParameter('phone', $phone)
             ->getQuery()
             ->execute();
     }

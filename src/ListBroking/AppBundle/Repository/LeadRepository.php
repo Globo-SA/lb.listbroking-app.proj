@@ -61,7 +61,7 @@ SQL;
     /**
      * {@inheritdoc}
      */
-    public function findByPhone(string $phone): array
+    public function getByPhone(string $phone): array
     {
         return $this->getEntityManager()
                     ->createQueryBuilder()
@@ -88,13 +88,5 @@ SQL;
                     ->setParameter('phone', $phone)
                     ->getQuery()
                     ->getResult();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findLeadByPhone(string $phone)
-    {
-        return $this->findOneBy([Lead::PHONE_KEY => $phone]);
     }
 }

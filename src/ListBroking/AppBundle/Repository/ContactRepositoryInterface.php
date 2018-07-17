@@ -7,7 +7,7 @@ interface ContactRepositoryInterface
     /**
      * @param string $email
      *
-     * @return mixed
+     * @return array
      */
-    public function findContactByEmail(string $email);
+    public function findByEmail(string $email): array;
 }

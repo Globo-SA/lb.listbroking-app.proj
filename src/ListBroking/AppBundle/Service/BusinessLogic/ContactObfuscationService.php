@@ -6,8 +6,6 @@ use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\ExtractionDeduplication;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\OppositionList;
-use ListBroking\AppBundle\Repository\ContactRepositoryInterface;
-use ListBroking\AppBundle\Repository\LeadRepositoryInterface;
 use ListBroking\AppBundle\Repository\ExtractionDeduplicationRepositoryInterface;
 use ListBroking\AppBundle\Repository\OppositionListRepositoryInterface;
 use ListBroking\AppBundle\Repository\StagingContactDQPRepositoryInterface;
@@ -17,24 +15,13 @@ use ListBroking\AppBundle\Service\Base\BaseService;
 
 class ContactObfuscationService extends BaseService implements ContactObfuscationServiceInterface
 {
-    const OBFUSCATION_ENCRYPTION_ALGORITHM      = 'sha256';
-    const EMAIL_NOT_FOUND_MESSAGE               = 'Email Not found';
-    const PHONE_NOT_FOUND_MESSAGE               = 'Phone Not found';
-    const NOT_FOUND_ERROR_CODE                  = 404;
-    const EMAIL_ALREADY_OBFUSCATED_MESSAGE      = 'Email Already erased';
-    const PHONE_ALREADY_OBFUSCATED_MESSAGE      = 'Phone Already erased';
-    const ALREADY_FORGOTTEN_ERROR_CODE          = 400;
-    const ERROR_MESSAGE_FORMAT                  = '%s: %s';
-
-    /**
-     * @var ContactRepositoryInterface
-     */
-    private $contactRepository;
-
-    /**
-     * @var LeadRepositoryInterface
-     */
-    private $leadRepository;
+    private const OBFUSCATION_ENCRYPTION_ALGORITHM             = 'sha256';
+    private const ERASE_CONTACT_ERROR_MESSAGE                  = '#LB-0041# Unable to erase contact';
+    private const OBFUSCATING_CONTACT_MESSAGE                  = 'Obfuscating Contact';
+    private const OBFUSCATING_LEAD_MESSAGE                     = 'Obfuscating Lead';
+    private const OBFUSCATING_EXTRACTION_DEDUPLICATION_MESSAGE = 'Obfuscating ExtractionDeduplication';
+    private const OBFUSCATING_OPPOSITION_LIST_MESSAGE          = 'Obfuscating OppositionList';
+    private const DELETING_STAGING_CONTACTS_MESSAGE            = 'Deleting staging contacts';
 
     /**
      * @var ExtractionDeduplicationRepositoryInterface
@@ -62,11 +49,6 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
     private $stagingContactDQPRepository;
 
     /**
-     * @var ClientNotificationServiceInterface
-     */
-    private $clientNotificationService;
-
-    /**
      * @var string
      */
     private $emailInvalidDomain;
@@ -74,177 +56,145 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
     /**
      * ContactObfuscationService constructor.
      *
-     * @param ContactRepositoryInterface $contactRepository
-     * @param LeadRepositoryInterface $leadRepository
      * @param ExtractionDeduplicationRepositoryInterface $extractionDeduplicationRepository
-     * @param OppositionListRepositoryInterface $oppositionListRepository
-     * @param StagingContactRepositoryInterface $stagingContactRepository
+     * @param OppositionListRepositoryInterface          $oppositionListRepository
+     * @param StagingContactRepositoryInterface          $stagingContactRepository
      * @param StagingContactProcessedRepositoryInterface $stagingContactProcessedRepository
-     * @param StagingContactDQPRepositoryInterface $stagingContactDQPRepository
-     * @param ClientNotificationServiceInterface $clientNotificationService
-     * @param string $emailInvalidDomain
+     * @param StagingContactDQPRepositoryInterface       $stagingContactDQPRepository
+     * @param string                                     $emailInvalidDomain
      */
     public function __construct(
-        ContactRepositoryInterface $contactRepository,
-        LeadRepositoryInterface $leadRepository,
         ExtractionDeduplicationRepositoryInterface $extractionDeduplicationRepository,
         OppositionListRepositoryInterface $oppositionListRepository,
         StagingContactRepositoryInterface $stagingContactRepository,
         StagingContactProcessedRepositoryInterface $stagingContactProcessedRepository,
         StagingContactDQPRepositoryInterface $stagingContactDQPRepository,
-        ClientNotificationServiceInterface $clientNotificationService,
         string $emailInvalidDomain
     ) {
-        $this->contactRepository                    = $contactRepository;
-        $this->leadRepository                       = $leadRepository;
-        $this->extractionDeduplicationRepository    = $extractionDeduplicationRepository;
-        $this->oppositionListRepository             = $oppositionListRepository;
-        $this->stagingContactRepository             = $stagingContactRepository;
-        $this->stagingContactProcessedRepository    = $stagingContactProcessedRepository;
-        $this->stagingContactDQPRepository          = $stagingContactDQPRepository;
-        $this->clientNotificationService            = $clientNotificationService;
-        $this->emailInvalidDomain                   = $emailInvalidDomain;
+        $this->extractionDeduplicationRepository = $extractionDeduplicationRepository;
+        $this->oppositionListRepository          = $oppositionListRepository;
+        $this->stagingContactRepository          = $stagingContactRepository;
+        $this->stagingContactProcessedRepository = $stagingContactProcessedRepository;
+        $this->stagingContactDQPRepository       = $stagingContactDQPRepository;
+        $this->emailInvalidDomain                = $emailInvalidDomain;
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @throws \Exception
      */
-    public function obfuscateContactByEmail(string $email, bool $notifyClient = true): void
+    public function isPhoneObfuscatedInOppositionList(string $phone): bool
     {
-        if ($email == ''){
-            return;
-        }
+        $obfuscatedPhone = $this->encrypt($phone);
 
-        $contact = $this->findContactByEmail($email);
-
-        $lead = $contact->getLead();
-        if (!($lead instanceof Lead)) {
-            throw new \Exception(static::EMAIL_NOT_FOUND_MESSAGE, static::NOT_FOUND_ERROR_CODE);
-        }
-
-        // Notify clients before obfuscating the contact
-        if ($notifyClient === true){
-            $this->clientNotificationService->notifyClientToObfuscateLead($lead);
-        }
-
-        $this->obfuscate($lead);
+        return $this->oppositionListRepository->isPhoneInOppositionList($obfuscatedPhone);
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @throws \Exception
      */
-    public function obfuscateContactByPhone(string $phone, bool $notifyClient = true): void
+    public function obfuscateAllContactData(array $leads, string $email, string $phone): bool
     {
-        if ($phone == ''){
-            return;
+        try {
+            $this->entityManager->beginTransaction();
+
+            $this->obfuscateByLeads($leads);
+            $this->obfuscateByEmailOrPhone($email, $phone);
+
+            $this->entityManager->flush();
+            $this->entityManager->commit();
+
+            return true;
+
+        } catch (\Exception $exception) {
+            $this->logger->critical(static::ERASE_CONTACT_ERROR_MESSAGE, ['message' => $exception->getMessage()]);
+            $this->entityManager->rollback();
+
+            return false;
         }
-
-        $lead = $this->findLeadByPhone($phone);
-
-        // Notify clients before obfuscating the contact
-        if ($notifyClient === true){
-            $this->clientNotificationService->notifyClientToObfuscateLead($lead);
-        }
-
-        $this->obfuscate($lead);
     }
 
     /**
+     * Obfuscate data from a collection of Leads
+     *
+     * @param Lead[] $leads
+     *
+     * @return void
+     */
+    private function obfuscateByLeads(array $leads): void
+    {
+        foreach ($leads as $lead) {
+            $this->obfuscateByLead($lead);
+        }
+    }
+
+    /**
+     * Obfuscate data from a given email or phone
+     *
      * @param string $email
-     *
-     * @return Contact
-     * @throws \Exception
-     */
-    private function findContactByEmail(string $email): Contact
-    {
-        $contact = $this->contactRepository->findContactByEmail($email);
-
-        if (!($contact instanceof Contact)) {
-            $encryptedEmail = $this->encryptEmail($email);
-
-            $contact = $this->contactRepository->findContactByEmail($encryptedEmail);
-            if (!($contact instanceof Contact)) {
-                throw new \Exception(
-                    sprintf(static::ERROR_MESSAGE_FORMAT, static::EMAIL_NOT_FOUND_MESSAGE, $encryptedEmail),
-                    static::NOT_FOUND_ERROR_CODE
-                );
-            }
-
-            throw new \Exception(
-                sprintf(static::ERROR_MESSAGE_FORMAT, static::EMAIL_ALREADY_OBFUSCATED_MESSAGE, $encryptedEmail),
-                static::ALREADY_FORGOTTEN_ERROR_CODE
-            );
-        }
-
-        return $contact;
-    }
-
-    /**
      * @param string $phone
      *
-     * @return Lead
-     * @throws \Exception
+     * @return void
      */
-    private function findLeadByPhone(string $phone): Lead
+    private function obfuscateByEmailOrPhone(string $email, string $phone): void
     {
-        $lead = $this->leadRepository->findLeadByPhone($phone);
+        $extractionDeduplications = $this->extractionDeduplicationRepository->getByPhone($phone);
+        $oppositionLists          = $this->oppositionListRepository->getByPhone($phone);
 
-        if (!($lead instanceof Lead)) {
-            $encryptedPhone = $this->encrypt($phone);
-
-            $lead = $this->leadRepository->findLeadByPhone($encryptedPhone);
-            if (!($lead instanceof Lead)) {
-                throw new \Exception(
-                    sprintf(static::ERROR_MESSAGE_FORMAT, static::PHONE_NOT_FOUND_MESSAGE, $encryptedPhone),
-                    static::NOT_FOUND_ERROR_CODE
-                );
-            }
-
-            throw new \Exception(
-                sprintf(static::ERROR_MESSAGE_FORMAT, static::PHONE_ALREADY_OBFUSCATED_MESSAGE, $encryptedPhone),
-                static::ALREADY_FORGOTTEN_ERROR_CODE
-            );
-        }
-
-        return $lead;
+        $this->obfuscateExtractionDeduplications($extractionDeduplications);
+        $this->obfuscateOppositionLists($oppositionLists);
+        $this->deleteAllStagingContactByEmailOrPhone($email, $phone);
     }
 
     /**
-     * Obfuscates all information about the Lead
+     * Obfuscate data from a given Lead
      *
      * @param Lead $lead
      *
-     * @return Lead
+     * @return void
      */
-    private function obfuscate(Lead $lead): Lead
+    private function obfuscateByLead(Lead $lead): void
     {
-        $phone = $lead->getPhone();
-
-        /** @var Contact $contact */
-        foreach ($lead->getContacts() as $contact){
-            $email = $contact->getEmail();
-
-            $this->obfuscateContact($contact);
-            $this->obfuscateExtractionDeduplications($contact, $lead);
-            $this->obfuscateOppositionList($phone);
-            $this->stagingContactDQPRepository->deleteContactByEmailOrPhone($email, $phone);
-            $this->stagingContactProcessedRepository->deleteContactByEmailOrPhone($email, $phone);
-            $this->stagingContactRepository->deleteContactByEmailOrPhone($email, $phone);
+        foreach ($lead->getContacts() as $contact) {
+            $this->obfuscateByLeadAndContact($lead, $contact);
         }
 
         $this->obfuscateLead($lead);
-
-        return $lead;
     }
 
     /**
+     * Obfuscate data from a given Lead and Contact
+     *
+     * @param Lead    $lead
      * @param Contact $contact
+     *
+     * @return void
      */
-    private function obfuscateContact(Contact $contact)
+    private function obfuscateByLeadAndContact(Lead $lead, Contact $contact): void
+    {
+        $phone = $lead->getPhone();
+        $email = $contact->getEmail();
+
+        $extractionDeduplications = $this->extractionDeduplicationRepository->getByContactIdOrLeadId(
+            $contact->getId(),
+            $lead->getId()
+        );
+
+        $oppositionLists = $this->oppositionListRepository->getByPhone($phone);
+
+        $this->obfuscateContact($contact);
+        $this->obfuscateExtractionDeduplications($extractionDeduplications);
+        $this->obfuscateOppositionLists($oppositionLists);
+        $this->deleteAllStagingContactByEmailOrPhone($email, $phone);
+    }
+
+    /**
+     * Obfuscate a specific Contact
+     *
+     * @param Contact $contact
+     *
+     * @return void
+     */
+    private function obfuscateContact(Contact $contact): void
     {
         $obfuscatedEmail       = $this->encryptEmail($contact->getEmail());
         $obfuscatedFirstName   = $this->encrypt($contact->getFirstname());
@@ -256,13 +206,19 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
         $contact->setLastname($obfuscatedLastName);
         $contact->setPostRequest([$obfuscatedPostRequest]);
 
-        $this->updateEntity($contact);
+        $this->entityManager->persist($contact);
+
+        $this->logger->info(static::OBFUSCATING_CONTACT_MESSAGE, ['contactId' => $contact->getId()]);
     }
 
     /**
+     * Obfuscate a specific Lead
+     *
      * @param Lead $lead
+     *
+     * @return void
      */
-    private function obfuscateLead(Lead $lead)
+    private function obfuscateLead(Lead $lead): void
     {
         $obfuscatedPhone = $this->encrypt($lead->getPhone());
 
@@ -270,61 +226,118 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
         $lead->setInOpposition(true);
         $lead->setIsReadyToUse(false);
 
-        $this->updateEntity($lead);
+        $this->entityManager->persist($lead);
+
+        $this->logger->info(static::OBFUSCATING_LEAD_MESSAGE, ['leadId' => $lead->getId()]);
     }
 
     /**
-     * @param Contact $contact
-     * @param Lead $lead
+     * Obfuscate a collection of ExtractionDeduplications
+     *
+     * @param ExtractionDeduplication[] $extractionDeduplications
+     *
+     * @return void
      */
-    private function obfuscateExtractionDeduplications(Contact $contact, Lead $lead)
+    private function obfuscateExtractionDeduplications(array $extractionDeduplications): void
     {
-        $extractionDeduplications = $this->extractionDeduplicationRepository->findByContactIdOrLeadId(
-            $contact->getId(),
-            $lead->getId()
-        );
-
-        /** @var ExtractionDeduplication $extractionDeduplication */
         foreach ($extractionDeduplications as $extractionDeduplication){
-            $obfuscatedPhone = $this->encrypt($extractionDeduplication->getPhone());
-
-            $extractionDeduplication->setPhone($obfuscatedPhone);
-
-            $this->updateEntity($extractionDeduplication);
+            $this->obfuscateExtractionDeduplication($extractionDeduplication);
         }
     }
 
     /**
-     * @param string $phone
+     * Obfuscate a specific ExtractionDeduplication
+     *
+     * @param ExtractionDeduplication $extractionDeduplication
+     *
+     * @return void
      */
-    private function obfuscateOppositionList(string $phone)
+    private function obfuscateExtractionDeduplication(ExtractionDeduplication $extractionDeduplication): void
     {
-        $obfuscatedPhone = $this->encrypt($phone);
-        $oppositionLists = $this->oppositionListRepository->findByPhone($phone);
+        $obfuscatedPhone = $this->encrypt($extractionDeduplication->getPhone());
 
-        /** @var OppositionList $oppositionList */
+        $extractionDeduplication->setPhone($obfuscatedPhone);
+
+        $this->entityManager->persist($extractionDeduplication);
+
+        $this->logger->info(
+            static::OBFUSCATING_EXTRACTION_DEDUPLICATION_MESSAGE,
+            ['extractionDeduplicationId' => $extractionDeduplication->getId()]
+        );
+    }
+
+    /**
+     * Obfuscate a collection a OppositionLists
+     *
+     * @param OppositionList[] $oppositionLists
+     *
+     * @return void
+     */
+    private function obfuscateOppositionLists(array $oppositionLists): void
+    {
         foreach ($oppositionLists as $oppositionList){
-            $oppositionList->setPhone($obfuscatedPhone);
-            $this->updateEntity($oppositionList);
+            $this->obfuscateOppositionList($oppositionList);
         }
     }
 
     /**
+     * Obfuscate a specific OppositionList
+     *
+     * @param OppositionList $oppositionList
+     *
+     * @return void
+     */
+    private function obfuscateOppositionList(OppositionList $oppositionList): void
+    {
+        $obfuscatedPhone = $this->encrypt($oppositionList->getPhone());
+
+        $oppositionList->setPhone($obfuscatedPhone);
+
+        $this->entityManager->persist($oppositionList);
+
+        $this->logger->info(
+            static::OBFUSCATING_OPPOSITION_LIST_MESSAGE,
+            ['oppositionListId' => $oppositionList->getId()]
+        );
+    }
+
+    /**
+     * Deletes all entries from stagingContacts
+     *
+     * @param string $email
+     * @param string $phone
+     *
+     * @return void
+     */
+    private function deleteAllStagingContactByEmailOrPhone(string $email, string $phone): void
+    {
+        $this->stagingContactDQPRepository->deleteContactByEmailOrPhone($email, $phone);
+        $this->stagingContactProcessedRepository->deleteContactByEmailOrPhone($email, $phone);
+        $this->stagingContactRepository->deleteContactByEmailOrPhone($email, $phone);
+
+        $this->logger->info(static::DELETING_STAGING_CONTACTS_MESSAGE);
+    }
+
+    /**
+     * Encrypts a given email
+     *
      * @param string $email
      *
      * @return string
      */
-    private function encryptEmail(string $email)
+    private function encryptEmail(string $email): string
     {
         return sprintf('%s@%s', $this->encrypt($email), $this->emailInvalidDomain);
     }
 
     /**
+     * Encrypts a given data
+     *
      * @param mixed $data
      *
      * @return string
      */
-    private function encrypt($data)
+    private function encrypt($data): string
     {
         return hash(static::OBFUSCATION_ENCRYPTION_ALGORITHM, $data);
     }

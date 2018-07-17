@@ -2,14 +2,14 @@
 
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
-use ListBroking\AppBundle\Entity\Lead;
-
 interface ClientNotificationServiceInterface
 {
     /**
-     * @param Lead $lead
+     * Notify each client about the collection of contacts that requested the right to be forgotten
      *
-     * @return mixed
+     * @param array $leads
+     *
+     * @return void
      */
-    public function notifyClientToObfuscateLead(Lead $lead);
+    public function notifyClientsToRemoveLeads(array $leads): void;
 }

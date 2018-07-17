@@ -29,7 +29,7 @@ interface LeadRepositoryInterface
      *
      * @return Lead[]
      */
-    public function findByPhone(string $phone): array;
+    public function getByPhone(string $phone): array;
 
     /**
      * Updates Lead 'in_opposition' field by phone
@@ -40,11 +40,4 @@ interface LeadRepositoryInterface
      * @return int
      */
     public function updateInOppositionByPhone(string $phone, bool $inOpposition);
-
-    /**
-     * @param string $phone
-     *
-     * @return mixed
-     */
-    public function findLeadByPhone(string $phone);
 }

@@ -43,7 +43,9 @@ doctrine:
                 interval: L
                 date: Application\Doctrine\DQL\Date
                 ANY_VALUE: Application\Doctrine\DQL\AnyValue
+                if: DoctrineExtensions\Query\Mysql\GroupConcat
             string_functions:
                 DAY: DoctrineExtensions\Query\Mysql\Day
                 MONTH: DoctrineExtensions\Query\Mysql\Month
                 YEAR: DoctrineExtensions\Query\Mysql\Year
+                group_concat: DoctrineExtensions\Query\Mysql\GroupConcat

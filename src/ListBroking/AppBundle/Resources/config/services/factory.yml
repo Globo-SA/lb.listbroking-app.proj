@@ -4,3 +4,6 @@ services:
 
   app.service.factory.opposition_list:
     class: ListBroking\AppBundle\Service\Factory\OppositionListFactory
+
+  app.factory.client_notification:
+    class: ListBroking\AppBundle\Service\Factory\ClientNotificationFactory

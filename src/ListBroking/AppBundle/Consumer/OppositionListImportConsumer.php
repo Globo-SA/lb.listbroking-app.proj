@@ -70,7 +70,6 @@ class OppositionListImportConsumer implements ConsumerInterface
     public function execute (AMQPMessage $msg)
     {
         $oppositionList = null;
-        $clearOld       = null;
         $filename       = null;
 
         $producer_id = MessagingServiceInterface::OPPOSITION_LIST_IMPORT_PRODUCER;
@@ -83,21 +82,19 @@ class OppositionListImportConsumer implements ConsumerInterface
             $msg_body = unserialize($msg->body);
 
             $oppositionList = $msg_body['opposition_list'];
-            $clearOld       = $msg_body['clear_old'];
             $filename       = $msg_body['filename'];
 
             $this->logger->info(
                 'Starting "importOppositionList"',
                 [
                     'opposition_list' => $oppositionList,
-                    'clear_old'       => $clearOld,
                     'filename'        => $filename
                 ]
             );
 
             $file = $this->f_service->loadExcelFile($filename);
 
-            $this->s_service->importOppositionList($oppositionList, $file, $clearOld);
+            $this->s_service->importOppositionList($oppositionList, $file);
 
             $this->s_service->syncContactsWithOppositionLists();
 
@@ -107,7 +104,6 @@ class OppositionListImportConsumer implements ConsumerInterface
                 'Ending "importOppositionList"',
                 [
                     'opposition_list' => $oppositionList,
-                    'clear_old'       => $clearOld,
                     'filename'        => $filename
                 ]
             );
@@ -120,7 +116,6 @@ class OppositionListImportConsumer implements ConsumerInterface
                 [
                     'message'         => $exception->getMessage(),
                     'opposition_list' => $oppositionList,
-                    'clear_old'       => $clearOld,
                     'filename'        => $filename
                 ]
             );

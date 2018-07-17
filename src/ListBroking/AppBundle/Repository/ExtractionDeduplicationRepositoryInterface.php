@@ -36,10 +36,21 @@ interface ExtractionDeduplicationRepositoryInterface
     public function cleanUp($maxExtractionId);
 
     /**
+     * Finds records by contact_id or lead_id
+     *
      * @param int $contactId
      * @param int $leadId
      *
      * @return mixed
      */
-    public function findByContactIdOrLeadId(int $contactId, int $leadId);
+    public function getByContactIdOrLeadId(int $contactId, int $leadId);
+
+    /**
+     * Finds records by phone
+     *
+     * @param string $phone
+     *
+     * @return array
+     */
+    public function getByPhone(string $phone);
 }

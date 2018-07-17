@@ -10,11 +10,10 @@ interface OppositionListRepositoryInterface
      * @param $type
      * @param $config
      * @param $file
-     * @param bool $clear_old
      *
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function importOppositionListFile($type, $config, $file, $clear_old = true);
+    public function importOppositionListFile($type, $config, $file);
 
     /**
      * @param string $phone
@@ -24,9 +23,11 @@ interface OppositionListRepositoryInterface
     public function isPhoneInOppositionList(string $phone): bool;
 
     /**
+     * Finds a record from a given phone
+     *
      * @param string $phone
      *
      * @return mixed
      */
-    public function findByPhone(string $phone);
+    public function getByPhone(string $phone);
 }
