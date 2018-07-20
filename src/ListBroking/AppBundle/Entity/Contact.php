@@ -59,12 +59,12 @@ class Contact
     private $address;
 
     /**
-     * @var integer
+     * @var string
      */
     private $postalcode1;
 
     /**
-     * @var integer
+     * @var string
      */
     private $postalcode2;
 
@@ -382,7 +382,7 @@ class Contact
 
     /**
      * Get postalcode1
-     * @return integer
+     * @return string
      */
     public function getPostalcode1 ()
     {
@@ -392,7 +392,7 @@ class Contact
     /**
      * Set postalcode1
      *
-     * @param integer $postalcode1
+     * @param string $postalcode1
      *
      * @return Contact
      */
@@ -405,7 +405,7 @@ class Contact
 
     /**
      * Get postalcode2
-     * @return integer
+     * @return string
      */
     public function getPostalcode2 ()
     {
@@ -415,7 +415,7 @@ class Contact
     /**
      * Set postalcode2
      *
-     * @param integer $postalcode2
+     * @param string $postalcode2
      *
      * @return Contact
      */
