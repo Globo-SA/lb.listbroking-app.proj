@@ -152,8 +152,7 @@ class AjaxController extends Controller
             // Publish Extraction to the Queue
             $m_service->publishMessage($producer_id, array(
                 'filename'        => $file->getRealPath(),
-                'opposition_list' => $data['type'],
-                'clear_old'       => $data['clear_old']
+                'opposition_list' => $data['type']
             ));
 
             $m_service->lockProducer($producer_id);

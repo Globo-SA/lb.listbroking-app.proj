@@ -40,7 +40,6 @@ class OppositionListImportType extends AbstractType
             ->add('upload_file', 'file', array(
                 'attr' => array('class' => 'form-control fileinput')
             ))
-            ->add('clear_old', 'checkbox', array('required' => false, 'data' => true))
         ;
     }
 

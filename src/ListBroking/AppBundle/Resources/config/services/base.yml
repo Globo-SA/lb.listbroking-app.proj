@@ -46,6 +46,7 @@ services:
         - "@app.repository.staging_contact"
         - "@app.repository.lead"
         - "@app.repository.source"
+        - "@app.service.contact_obfuscation"
 
   app.service.extraction_contact:
     class: ListBroking\AppBundle\Service\BusinessLogic\ExtractionContactService
@@ -60,19 +61,24 @@ services:
     class: ListBroking\AppBundle\Service\BusinessLogic\ContactObfuscationService
     parent: base
     arguments:
-        - "@app.repository.contact"
-        - "@app.repository.lead"
         - "@app.repository.extraction_deduplication"
         - "@app.repository.opposition_list"
         - "@app.repository.staging_contact"
         - "@app.repository.staging_contact_processed"
         - "@app.repository.staging_contact_dqp"
-        - "@app.service.client_notification"
         - "%email_invalid_domain%"
 
   app.service.client_notification:
     class: ListBroking\AppBundle\Service\BusinessLogic\ClientNotificationService
+    parent: base
     arguments:
+        - "@app.repository.client"
+        - "@app.repository.extraction_contact"
+        - "@app.factory.client_notification"
         - "@adclick.components.mailer_gdpr"
-        - "%kernel.environment%"
-        - "%mailer_to_email%"
+
+  app.service.lead:
+    class: ListBroking\AppBundle\Service\BusinessLogic\LeadService
+    arguments:
+        - "@app.repository.lead"
+        - "@app.repository.contact"

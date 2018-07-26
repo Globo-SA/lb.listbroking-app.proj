@@ -10,22 +10,7 @@ class OppositionListRepository extends EntityRepository implements OppositionLis
     /**
      *{@inheritdoc}
      */
-    public function importOppositionListFile($type, $config, $file, $clear_old = true){
-
-        $conn = $this->getEntityManager()->getConnection();
-
-        if ($clear_old){
-            $cleanup_sql = <<<SQL
-            DELETE
-            FROM opposition_list
-            WHERE type = :type
-SQL;
-            $clear_sql_params = array(
-                'type' => $type
-            );
-            $conn->prepare($cleanup_sql)
-                ->execute($clear_sql_params);
-        }
+    public function importOppositionListFile($type, $config, $file){
 
         $row_iterator = $file->getWorksheetIterator()->current()->getRowIterator();
 
@@ -92,7 +77,7 @@ SQL;
     /**
      * {@inheritdoc}
      */
-    public function findByPhone(string $phone)
+    public function getByPhone(string $phone)
     {
         return $this->createQueryBuilder('ol')
             ->where('ol.phone = :phone')

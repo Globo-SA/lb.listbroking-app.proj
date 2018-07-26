@@ -1,6 +1,7 @@
 ListBroking\AppBundle\Entity\Client:
     type: entity
     table: client
+    repositoryClass: ListBroking\AppBundle\Repository\ClientRepository
     id:
         id:
             type: bigint

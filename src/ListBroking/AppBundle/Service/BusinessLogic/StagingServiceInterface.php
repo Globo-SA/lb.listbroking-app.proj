@@ -38,9 +38,8 @@ interface StagingServiceInterface extends BaseServiceInterface
      *
      * @param string    $type
      * @param \PHPExcel $file
-     * @param boolean   $clearOld
      */
-    public function importOppositionList($type, \PHPExcel $file, $clearOld);
+    public function importOppositionList($type, \PHPExcel $file);
 
     /**
      * @param string $type

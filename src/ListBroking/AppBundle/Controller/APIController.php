@@ -7,8 +7,10 @@ use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Exception\Validation\LeadValidationException;
 use ListBroking\AppBundle\Service\Authentication\FosUserAuthenticationServiceInterface;
+use ListBroking\AppBundle\Service\BusinessLogic\ClientNotificationServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ContactObfuscationServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ExtractionServiceInterface;
+use ListBroking\AppBundle\Service\BusinessLogic\LeadServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\StagingServiceInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -23,12 +25,11 @@ class APIController extends Controller
 {
     const HTTP_SERVER_ERROR_CODE                    = 500;
     const HTTP_BAD_REQUEST_CODE                     = 400;
-    const HTTP_UNAUTHORIZED_CODE                    = 401;
+    const HTTP_NOT_FOUND_CODE                       = 404;
     const CONTACT_EMAIL_ERASURE_MESSAGE             = 'Contact has been erased';
-    const CODE_KEY                                  = 'code';
-    const MESSAGE_KEY                               = 'message';
-    const ERASE_CONTACT_ERROR_MESSAGE               = '#LB-0041# Unable to erase contact';
     const MISSING_EMAIL_OR_PHONE_PARAMETER_MESSAGE  = 'Missing email or phone parameter';
+    const CONTACTS_NOT_FOUND_MESSAGE                = 'Contacts not found. Nothing to do';
+    const COULD_NOT_ERASE_CONTACT_MESSAGE           = 'An error occurred while erasing contact.';
 
     /**
      * @var LoggerInterface $logger
@@ -56,6 +57,16 @@ class APIController extends Controller
     private $contactObfuscationService;
 
     /**
+     * @var LeadServiceInterface
+     */
+    private $leadService;
+
+    /**
+     * @var ClientNotificationServiceInterface
+     */
+    private $clientNotificationService;
+
+    /**
      * APIController constructor.
      *
      * @param LoggerInterface $logger
@@ -63,19 +74,25 @@ class APIController extends Controller
      * @param ExtractionServiceInterface $extractionService
      * @param FosUserAuthenticationServiceInterface $fosUserAuthenticationService
      * @param ContactObfuscationServiceInterface $contactObfuscationService
+     * @param LeadServiceInterface $leadService
+     * @param ClientNotificationServiceInterface $clientNotificationService
      */
     public function __construct(
         LoggerInterface $logger,
         StagingServiceInterface $stagingService,
         ExtractionServiceInterface $extractionService,
         FosUserAuthenticationServiceInterface $fosUserAuthenticationService,
-        ContactObfuscationServiceInterface $contactObfuscationService
+        ContactObfuscationServiceInterface $contactObfuscationService,
+        LeadServiceInterface $leadService,
+        ClientNotificationServiceInterface $clientNotificationService
     ) {
         $this->logger                       = $logger;
         $this->stagingService               = $stagingService;
         $this->extractionService            = $extractionService;
         $this->fosUserAuthenticationService = $fosUserAuthenticationService;
         $this->contactObfuscationService    = $contactObfuscationService;
+        $this->leadService                  = $leadService;
+        $this->clientNotificationService    = $clientNotificationService;
     }
 
 
@@ -204,7 +221,7 @@ class APIController extends Controller
      *
      * @return JsonResponse
      */
-    public function contactErasureAction(Request $request)
+    public function contactErasureAction(Request $request): JsonResponse
     {
         try {
             $this->fosUserAuthenticationService->checkCredentials($request);
@@ -214,39 +231,25 @@ class APIController extends Controller
 
         $email          = $request->get(Contact::EMAIL_KEY, '');
         $phone          = $request->get(Lead::PHONE_KEY, '');
-        $notifyClient   = $request->get(Client::NOTIFY_KEY, Client::NOTIFY_YES) == Client::NOTIFY_NO;
+        $notifyClient   = $request->get(Client::NOTIFY_KEY, Client::NOTIFY_YES);
 
-        if ($email == '' && $phone == ''){
-            return $this->createJsonResponse(
-                static::MISSING_EMAIL_OR_PHONE_PARAMETER_MESSAGE,
-                static::HTTP_BAD_REQUEST_CODE
-            );
+        // Find all leads from email and phone
+        $leads = $this->leadService->getLeads($email, $phone);
+
+        if (count($leads) <= 0) {
+            $this->logger->info(static::CONTACTS_NOT_FOUND_MESSAGE);
         }
 
-        // Obfuscate email
-        try {
-            $this->contactObfuscationService->obfuscateContactByEmail($email, $notifyClient);
-        } catch (\Exception $exception) {
-            $this->logger->error(
-                static::ERASE_CONTACT_ERROR_MESSAGE,
-                [
-                    static::CODE_KEY    => $exception->getCode(),
-                    static::MESSAGE_KEY => $exception->getMessage(),
-                ]
-            );
+        // Notify all clients before obfuscating
+        if ($notifyClient === Client::NOTIFY_YES) {
+            $this->clientNotificationService->notifyClientsToRemoveLeads($leads);
         }
 
-        // Obfuscate phone
-        try {
-            $this->contactObfuscationService->obfuscateContactByPhone($phone, $notifyClient);
-        } catch (\Exception $exception) {
-            $this->logger->error(
-                static::ERASE_CONTACT_ERROR_MESSAGE,
-                [
-                    static::CODE_KEY    => $exception->getCode(),
-                    static::MESSAGE_KEY => $exception->getMessage(),
-                ]
-            );
+        // Obfuscate all leads found
+        $obfuscated = $this->contactObfuscationService->obfuscateAllContactData($leads, $email, $phone);
+
+        if ($obfuscated === false) {
+            return $this->createJsonResponse(static::COULD_NOT_ERASE_CONTACT_MESSAGE, static::HTTP_SERVER_ERROR_CODE);
         }
 
         return $this->createJsonResponse(static::CONTACT_EMAIL_ERASURE_MESSAGE);

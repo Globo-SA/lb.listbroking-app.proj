@@ -5,18 +5,31 @@ namespace ListBroking\AppBundle\Service\BusinessLogic;
 interface ContactObfuscationServiceInterface
 {
     /**
-     * @param string $email
-     * @param bool $notifyClient
+     * Verify if phone is already obfuscated in an opposition list
      *
-     * @return void
+     * @param string $phone
+     *
+     * @return bool
      */
-    public function obfuscateContactByEmail(string $email, bool $notifyClient): void;
+    public function isPhoneObfuscatedInOppositionList(string $phone): bool;
 
     /**
-     * @param string $phone
-     * @param bool $notifyClient
+     * This will obfuscate:
+     * - All lead's information
+     * - All lead's contacts information
+     * - All contacts extraction deduplications
+     * - All contacts opposition lists
+     * - All emails/phone's opposition lists
      *
-     * @return void
+     * This will also delete:
+     * - All lead's staging contact information
+     * - All emails/phones's staging contact information
+     *
+     * @param array $leads
+     * @param string $email
+     * @param string $phone
+     *
+     * @return bool
      */
-    public function obfuscateContactByPhone(string $phone, bool $notifyClient): void;
+    public function obfuscateAllContactData(array $leads, string $email, string $phone): bool;
 }

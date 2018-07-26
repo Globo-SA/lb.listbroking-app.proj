@@ -10,8 +10,11 @@ use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
+use ListBroking\AppBundle\Entity\Campaign;
+use ListBroking\AppBundle\Entity\Client;
 use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Extraction;
+use ListBroking\AppBundle\Entity\Lead;
 use PDO;
 
 class ExtractionContactRepository extends EntityRepository implements ExtractionContactRepositoryInterface
@@ -200,6 +203,36 @@ SQL;
             ->innerJoin('ec.contact', 'co')
             ->where('ec.contact = :contactId')
             ->setParameter('contactId', $contact->getId())
+            ->getQuery()
+            ->execute(null, Query::HYDRATE_ARRAY);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLeadCampaignsGroupByClient(Lead $lead): array
+    {
+        $selectStatement = <<<SQL
+  cl.id as client_id,
+  l.phone as phone,
+  group_concat(c.email) as emails,
+  group_concat(ca.id) as campaigns_ids,
+  group_concat(
+    concat(ca.name, ' (Sold at: ', date(e.sold_at), ')')
+  ) as campaigns_names
+SQL;
+
+        return $this->createQueryBuilder('ec')
+            ->select($selectStatement)
+            ->innerJoin('ec.extraction', 'e')
+            ->innerJoin('e.campaign', 'ca')
+            ->innerJoin('ca.client', 'cl')
+            ->innerJoin('ec.contact', 'c')
+            ->innerJoin('c.lead', 'l')
+            ->where('l.id = (:leadId)')
+            ->andWhere('e.sold_at is not null')
+            ->groupBy('cl.id')
+            ->setParameter('leadId', $lead->getId())
             ->getQuery()
             ->execute(null, Query::HYDRATE_ARRAY);
     }

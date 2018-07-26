@@ -9,6 +9,7 @@
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 use ListBroking\AppBundle\Engine\ValidatorEngine;
+use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\OppositionList;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Exception\Validation\OppositionListException;
@@ -61,15 +62,21 @@ class StagingService extends BaseService implements StagingServiceInterface
     protected $sourceRepository;
 
     /**
+     * @var ContactObfuscationServiceInterface
+     */
+    protected $contactObfuscationService;
+
+    /**
      * StagingService constructor.
      *
-     * @param ValidatorEngine           $validatorEngine
-     * @param OppositionListFactory     $oppositionListFactory
-     * @param RecursiveValidator        $validator
-     * @param OppositionListRepository  $oppositionListRepository
-     * @param StagingContactRepository  $stagingContactRepository
-     * @param LeadRepository            $leadRepository,
+     * @param ValidatorEngine $validatorEngine
+     * @param OppositionListFactory $oppositionListFactory
+     * @param RecursiveValidator $validator
+     * @param OppositionListRepository $oppositionListRepository
+     * @param StagingContactRepository $stagingContactRepository
+     * @param LeadRepository $leadRepository ,
      * @param SourceRepositoryInterface $sourceRepository
+     * @param ContactObfuscationServiceInterface $contactObfuscationService
      */
     public function __construct(
         ValidatorEngine $validatorEngine,
@@ -78,15 +85,17 @@ class StagingService extends BaseService implements StagingServiceInterface
         OppositionListRepository $oppositionListRepository,
         StagingContactRepository $stagingContactRepository,
         LeadRepository $leadRepository,
-        SourceRepositoryInterface $sourceRepository
+        SourceRepositoryInterface $sourceRepository,
+        ContactObfuscationServiceInterface $contactObfuscationService
     ) {
-        $this->validatorEngine          = $validatorEngine;
-        $this->oppositionListFactory    = $oppositionListFactory;
-        $this->validator                = $validator;
-        $this->oppositionListRepository = $oppositionListRepository;
-        $this->stagingContactRepository = $stagingContactRepository;
-        $this->leadRepository           = $leadRepository;
-        $this->sourceRepository         = $sourceRepository;
+        $this->validatorEngine           = $validatorEngine;
+        $this->oppositionListFactory     = $oppositionListFactory;
+        $this->validator                 = $validator;
+        $this->oppositionListRepository  = $oppositionListRepository;
+        $this->stagingContactRepository  = $stagingContactRepository;
+        $this->leadRepository            = $leadRepository;
+        $this->sourceRepository          = $sourceRepository;
+        $this->contactObfuscationService = $contactObfuscationService;
     }
 
     /**
@@ -96,7 +105,10 @@ class StagingService extends BaseService implements StagingServiceInterface
     {
         $stagingContact = $this->stagingContactRepository->addStagingContact($dataArray);
 
-        if ($this->oppositionListRepository->isPhoneInOppositionList($dataArray['phone'])) {
+        if (
+            $this->oppositionListRepository->isPhoneInOppositionList($dataArray[Lead::PHONE_KEY]) ||
+            $this->contactObfuscationService->isPhoneObfuscatedInOppositionList($dataArray[Lead::PHONE_KEY])
+        ) {
             $stagingContact->setInOpposition(true);
         }
 
@@ -114,11 +126,11 @@ class StagingService extends BaseService implements StagingServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function importOppositionList($type, \PHPExcel $file, $clearOld)
+    public function importOppositionList($type, \PHPExcel $file)
     {
         $config = $this->findConfig('opposition_list.config');
 
-        $this->oppositionListRepository->importOppositionListFile($type, $config[$type], $file, $clearOld);
+        $this->oppositionListRepository->importOppositionListFile($type, $config[$type], $file);
     }
 
     /**

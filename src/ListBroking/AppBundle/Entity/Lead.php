@@ -61,7 +61,7 @@ class Lead {
     protected $country;
 
     /**
-     * @var ArrayCollection
+     * @var Contact[]
      */
     protected $contacts;
 
@@ -202,7 +202,7 @@ class Lead {
     }
 
     /**
-     * @return ArrayCollection
+     * @return Contact[]
      */
     public function getContacts()
     {

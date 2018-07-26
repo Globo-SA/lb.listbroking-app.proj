@@ -82,7 +82,7 @@ class OppositionRightTest extends KernelTestCase
         } catch (OppositionListException $exception) {
         }
 
-        $leads = $this->leadRepository->findByPhone($phone);
+        $leads = $this->leadRepository->getByPhone($phone);
 
         array_map(
             function (Lead $lead) {
