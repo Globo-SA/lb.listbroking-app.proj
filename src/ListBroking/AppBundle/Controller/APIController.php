@@ -229,9 +229,9 @@ class APIController extends Controller
             return $this->createJsonResponse($exception->getMessage(), $exception->getCode());
         }
 
-        $email          = $request->get(Contact::EMAIL_KEY, '');
-        $phone          = $request->get(Lead::PHONE_KEY, '');
-        $notifyClient   = $request->get(Client::NOTIFY_KEY, Client::NOTIFY_YES);
+        $email        = $request->request->get(Contact::EMAIL_KEY, '');
+        $phone        = $request->request->get(Lead::PHONE_KEY, '');
+        $notifyClient = $request->request->get(Client::NOTIFY_KEY, Client::NOTIFY_YES);
 
         // Find all leads from email and phone
         $leads = $this->leadService->getLeads($email, $phone);
