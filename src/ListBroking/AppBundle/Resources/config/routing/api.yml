@@ -13,3 +13,4 @@ api_campaigns_get_revenue:
 api_erase_contact:
     path: /v1/contact/erasure
     defaults: { _controller: app.controller.api:contactErasureAction }
+    methods: [POST]
