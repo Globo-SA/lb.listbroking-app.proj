@@ -432,7 +432,7 @@ class FiltersType extends AbstractType
                         'has_exclusion_filter' => true,
                         'table'                => 'contact',
                         'field'                => 'postalcode1',
-                        'field_type'           => self::FIELD_TYPE_RANGE,
+                        'field_type'           => self::FIELD_TYPE_INTEGER,
                         'type'                 => 'hidden',
                         'options'              => array(
                             'required' => false,
@@ -449,7 +449,7 @@ class FiltersType extends AbstractType
                         'has_exclusion_filter' => true,
                         'table'                => 'contact',
                         'field'                => 'postalcode2',
-                        'field_type'           => self::FIELD_TYPE_RANGE,
+                        'field_type'           => self::FIELD_TYPE_INTEGER,
                         'type'                 => 'hidden',
                         'options'              => array(
                             'required' => false,
