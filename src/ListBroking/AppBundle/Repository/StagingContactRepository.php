@@ -375,7 +375,7 @@ SQL;
             return 'NULL';
         }
 
-        return is_numeric($value) || is_bool($value) ? $value : $connection->quote($value);
+        return $connection->quote($value);
     }
 
     /**
