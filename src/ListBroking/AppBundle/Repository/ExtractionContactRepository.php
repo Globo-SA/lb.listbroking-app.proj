@@ -236,4 +236,26 @@ SQL;
             ->getQuery()
             ->execute(null, Query::HYDRATE_ARRAY);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getExtractionContactsSoldByLead(Lead $lead, bool $sold): array
+    {
+        $qb = $this->createQueryBuilder('ec')
+                   ->addSelect(['e', 'ca'])
+                   ->innerJoin('ec.extraction', 'e')
+                   ->innerJoin('e.campaign', 'ca')
+                   ->innerJoin('ec.contact', 'c')
+                   ->innerJoin('c.lead', 'l')
+                   ->where('l.id = (:leadId)');
+
+        if ($sold) {
+            $qb->andWhere('e.sold_at is not null');
+        }
+
+        return $qb->setParameter('leadId', $lead->getId())
+                  ->getQuery()
+                  ->execute();
+    }
 }

@@ -8,7 +8,8 @@ install:
 	make cache;
 
 data:
-	mysql -uroot -hadclick.mysql57 listbroking < database/struct.sql
+	bin/console doctrine:schema:drop --force
+	mysql -uroot -hadclick.mysql57 listbroking_dev < database/struct.sql
 	bin/console doctrine:migrations:migrate --no-interaction
 	bin/console doctrine:fixtures:load --no-interaction
 

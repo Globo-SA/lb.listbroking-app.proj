@@ -9,6 +9,7 @@ use ListBroking\AppBundle\Exception\Validation\LeadValidationException;
 use ListBroking\AppBundle\Service\Authentication\FosUserAuthenticationServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ClientNotificationServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ContactObfuscationServiceInterface;
+use ListBroking\AppBundle\Service\BusinessLogic\ExtractionContactServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ExtractionServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\LeadServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\StagingServiceInterface;
@@ -47,6 +48,11 @@ class APIController extends Controller
     private $extractionService;
 
     /**
+     * @var ExtractionContactServiceInterface
+     */
+    private $extractionContactService;
+
+    /**
      * @var FosUserAuthenticationServiceInterface $fosUserAuthenticationService
      */
     private $fosUserAuthenticationService;
@@ -69,18 +75,20 @@ class APIController extends Controller
     /**
      * APIController constructor.
      *
-     * @param LoggerInterface $logger
-     * @param StagingServiceInterface $stagingService
-     * @param ExtractionServiceInterface $extractionService
+     * @param LoggerInterface                       $logger
+     * @param StagingServiceInterface               $stagingService
+     * @param ExtractionServiceInterface            $extractionService
+     * @param ExtractionContactServiceInterface     $extractionContactService
      * @param FosUserAuthenticationServiceInterface $fosUserAuthenticationService
-     * @param ContactObfuscationServiceInterface $contactObfuscationService
-     * @param LeadServiceInterface $leadService
-     * @param ClientNotificationServiceInterface $clientNotificationService
+     * @param ContactObfuscationServiceInterface    $contactObfuscationService
+     * @param LeadServiceInterface                  $leadService
+     * @param ClientNotificationServiceInterface    $clientNotificationService
      */
     public function __construct(
         LoggerInterface $logger,
         StagingServiceInterface $stagingService,
         ExtractionServiceInterface $extractionService,
+        ExtractionContactServiceInterface $extractionContactService,
         FosUserAuthenticationServiceInterface $fosUserAuthenticationService,
         ContactObfuscationServiceInterface $contactObfuscationService,
         LeadServiceInterface $leadService,
@@ -89,6 +97,7 @@ class APIController extends Controller
         $this->logger                       = $logger;
         $this->stagingService               = $stagingService;
         $this->extractionService            = $extractionService;
+        $this->extractionContactService     = $extractionContactService;
         $this->fosUserAuthenticationService = $fosUserAuthenticationService;
         $this->contactObfuscationService    = $contactObfuscationService;
         $this->leadService                  = $leadService;
@@ -102,18 +111,17 @@ class APIController extends Controller
      * @param Request $request
      *
      * @throws LeadValidationException
+     *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function createStagingLeadAction (Request $request)
     {
-        try
-        {
+        try {
             $this->fosUserAuthenticationService->checkCredentials($request);
 
             $lead = $request->get('lead');
 
-            if ( ! $lead )
-            {
+            if (! $lead) {
                 throw new LeadValidationException('Lead is empty');
             }
 
@@ -122,9 +130,7 @@ class APIController extends Controller
             $this->stagingService->clearEntityManager();
 
             return $this->createJsonResponse('Lead added');
-        }
-        catch ( \Exception $e )
-        {
+        } catch (\Exception $e) {
             return $this->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
@@ -217,6 +223,58 @@ class APIController extends Controller
     }
 
     /**
+     * Get contact history
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function contactHistoryAction(Request $request): JsonResponse
+    {
+        try {
+            $this->fosUserAuthenticationService->checkCredentials($request);
+        } catch (\Exception $exception) {
+            return $this->createJsonResponse($exception->getMessage(), $exception->getCode());
+        }
+
+        $email = $request->get(Contact::EMAIL_KEY, '');
+        $phone = $request->get(Lead::PHONE_KEY, '');
+
+        // Find all leads from email and phone
+        $leads = $this->leadService->getLeads($email, $phone);
+
+        if (count($leads) <= 0) {
+            $this->logger->info(static::CONTACTS_NOT_FOUND_MESSAGE);
+        }
+
+        $responseData = [];
+
+        foreach ($leads as $lead) {
+            $extractionContacts = $this->extractionContactService->getContactHistoryByLead($lead);
+
+            foreach ($extractionContacts as $extractionContact) {
+                $extraction     = $extractionContact->getExtraction();
+                $campaign       = $extraction->getCampaign();
+                $responseData[] = [
+                    'lead_id'            => $lead->getId(),
+                    'contact_id'         => $extractionContact->getContact()->getId(),
+                    'client_id '         => $campaign->getClient()->getId(),
+                    'campaign'           => $campaign->getName(),
+                    'notification_email' => $campaign->getNotificationEmailAddress(),
+                    'extraction'         => $extraction->getName(),
+                    'sold_at'            => $extraction->getSoldAt() instanceof \DateTime
+                                                ? $extraction->getSoldAt()->format('Y-m-d')
+                                                : null
+                ];
+            }
+        }
+
+        return $this->createJsonResponse($responseData);
+    }
+
+    /**
+     * Request erasure contact
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -229,20 +287,14 @@ class APIController extends Controller
             return $this->createJsonResponse($exception->getMessage(), $exception->getCode());
         }
 
-        $email        = $request->request->get(Contact::EMAIL_KEY, '');
-        $phone        = $request->request->get(Lead::PHONE_KEY, '');
-        $notifyClient = $request->request->get(Client::NOTIFY_KEY, Client::NOTIFY_YES);
+        $email = $request->request->get(Contact::EMAIL_KEY, '');
+        $phone = $request->request->get(Lead::PHONE_KEY, '');
 
         // Find all leads from email and phone
         $leads = $this->leadService->getLeads($email, $phone);
 
         if (count($leads) <= 0) {
             $this->logger->info(static::CONTACTS_NOT_FOUND_MESSAGE);
-        }
-
-        // Notify all clients before obfuscating
-        if ($notifyClient === Client::NOTIFY_YES) {
-            $this->clientNotificationService->notifyClientsToRemoveLeads($leads);
         }
 
         // Obfuscate all leads found

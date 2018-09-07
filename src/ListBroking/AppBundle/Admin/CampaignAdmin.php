@@ -42,6 +42,7 @@ class CampaignAdmin extends Admin
             ->add('client')
             ->add('name')
             ->add('account_name')
+            ->add('notificationEmailAddress')
             ->add('created_by')
             ->add('updated_at')
             ->add(
@@ -67,7 +68,8 @@ class CampaignAdmin extends Admin
             ->add('name')
             ->add('description')
             ->add('account_name', 'text', ['read_only' => true, 'required' => true])
-            ->add('account_id', 'text', ['read_only' => true, 'required' => true]);
+            ->add('account_id', 'text', ['read_only' => true, 'required' => true])
+            ->add('notificationEmailAddress', 'text');
     }
 
     /**

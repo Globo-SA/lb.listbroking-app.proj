@@ -21,6 +21,7 @@ use ListBroking\AppBundle\Entity\Country;
 use ListBroking\AppBundle\Entity\County;
 use ListBroking\AppBundle\Entity\District;
 use ListBroking\AppBundle\Entity\Extraction;
+use ListBroking\AppBundle\Entity\ExtractionContact;
 use ListBroking\AppBundle\Entity\Gender;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\Owner;
@@ -64,6 +65,7 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
                 $campaign->setName($clientName.' Campaign '.$i);
                 $campaign->setClient($client);
                 $campaign->setDescription('coiso');
+                $campaign->setNotificationEmailAddress('teste@teste.com');
 
                 $manager->persist($campaign);
 
@@ -233,31 +235,59 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
                 $contact->setPostalcode1(rand(1000, 9999));
                 $contact->setPostalcode2(rand(100, 999));
                 $contact->setSource($sources[array_rand($sources, 1)]);
-
                 $manager->persist($contact);
             }
+
             $manager->persist($lead);
         }
 
         // This data will be used on functional tests
-        $lead = new Lead();
-        $lead->setCountry($countries[array_rand($countries, 1)]);
-        $lead->setPhone(919191919);
-        $lead->setIsMobile(true);
-        $lead->setInOpposition(0);
-        $manager->persist($lead);
+        $lead = $this->createLead($manager, $countries[array_rand($countries, 1)], 919191919);
+        $contact = $this->createContact(
+            $manager,
+            $lead,
+            'itn@test.com',
+            $subCategories[array_rand($subCategories, 1)],
+            $genders[array_rand($genders, 1)],
+            $parishes[array_rand($parishes, 1)],
+            $counties[array_rand($counties, 1)],
+            $districts[array_rand($districts, 1)],
+            $countries[array_rand($countries, 1)],
+            $owners[array_rand($owners, 1)],
+            $sources[array_rand($sources, 1)]
+        );
+
+        $extraction1 = $this->createExtraction($manager, 'Not Sold', $campaigns[0], false);
+        $extraction2 = $this->createExtraction($manager, 'Sold 1', $campaigns[1], true);
+        $extraction3 = $this->createExtraction($manager, 'Sold 2', $campaigns[0], true);
+
+        $this->addContactToExtraction($manager, $extraction1, $contact);
+        $this->addContactToExtraction($manager, $extraction2, $contact);
+        $this->addContactToExtraction($manager, $extraction3, $contact);
+
+        // This data will be used on functional tests
+        $lead = $this->createLead($manager, $countries[array_rand($countries, 1)], 920000001);
+        $contact = $this->createContact(
+            $manager,
+            $lead,
+            'maisumteste@test.com',
+            $subCategories[array_rand($subCategories, 1)],
+            $genders[array_rand($genders, 1)],
+            $parishes[array_rand($parishes, 1)],
+            $counties[array_rand($counties, 1)],
+            $districts[array_rand($districts, 1)],
+            $countries[array_rand($countries, 1)],
+            $owners[array_rand($owners, 1)],
+            $sources[array_rand($sources, 1)]
+        );
+
+        $this->addContactToExtraction($manager, $extraction1, $contact);
+        $this->addContactToExtraction($manager, $extraction2, $contact);
+        $this->addContactToExtraction($manager, $extraction3, $contact);
 
         $oppositionListFactory = new OppositionListFactory();
         $opposition            = $oppositionListFactory->create('ADCLICK', '919999999');
         $manager->persist($opposition);
-
-        $extraction = new Extraction();
-        $extraction->setName('Test');
-        $extraction->setCampaign($campaign);
-        $extraction->setQuantity(100);
-        $extraction->setPayout(0.1);
-        $extraction->setFilters([]);
-        $manager->persist($extraction);
 
         $manager->flush();
     }
@@ -281,5 +311,131 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
     public function setContainer(ContainerInterface $container = null)
     {
         // TODO: Implement setContainer() method.
+    }
+
+    /**
+     * Create lead
+     *
+     * @param ObjectManager $manager
+     * @param string        $country
+     * @param string        $phone
+     *
+     * @return Lead
+     */
+    private function createLead(ObjectManager $manager, $country, $phone)
+    {
+        // This data will be used on functional tests
+        $lead = new Lead();
+        $lead->setCountry($country);
+        $lead->setPhone($phone);
+        $lead->setIsMobile(true);
+        $lead->setInOpposition(0);
+        $manager->persist($lead);
+
+        return $lead;
+    }
+
+    /**
+     * Create Contact
+     *
+     * @param ObjectManager $manager
+     * @param Lead          $lead
+     * @param string        $email
+     * @param               $subcategory
+     * @param               $gender
+     * @param               $parish
+     * @param               $county
+     * @param               $district
+     * @param               $country
+     * @param               $owner
+     * @param               $source
+     *
+     * @return Contact
+     */
+    private function createContact(
+        ObjectManager $manager,
+        Lead $lead,
+        string $email,
+        $subcategory,
+        $gender,
+        $parish,
+        $county,
+        $district,
+        $country,
+        $owner,
+        $source
+    ) {
+        $contact = new Contact();
+        $contact->setSubCategory($subcategory);
+        $contact->setGender($gender);
+        $contact->setParish($parish);
+        $contact->setCounty($county);
+        $contact->setDistrict($district);
+        $contact->setCountry($country);
+        $contact->setOwner($owner);
+        $contact->setLead($lead);
+        $contact->setDate(new \DateTime(('2016'.'-0'.rand(1, 9).'-'.rand(10, 28))));
+        $contact->setEmail($email);
+        $contact->setBirthdate(new \DateTime(('19'.rand(50, 95).'-0'.rand(1, 9).'-'.rand(10, 28))));
+        $contact->setAddress('Rua '.rand(10000000, 99999999));
+        $contact->setFirstname('Dont care');
+        $contact->setLastname('Dont care again');
+        $contact->setIpaddress('127.0.0.1');
+        $contact->setPostalcode1(rand(1000, 9999));
+        $contact->setPostalcode2(rand(100, 999));
+        $contact->setSource($source);
+        $manager->persist($contact);
+
+        return $contact;
+    }
+
+    /**
+     * Create an extraction an persist it
+     *
+     * @param ObjectManager $manager
+     * @param string        $name
+     * @param Campaign      $campaign
+     * @param bool          $final
+     *
+     * @return Extraction
+     *
+     * @throws \Exception
+     */
+    private function createExtraction(ObjectManager $manager, string $name, Campaign $campaign, bool $final)
+    {
+        $extraction = new Extraction();
+        $extraction->setName($name);
+        $extraction->setCampaign($campaign);
+        $extraction->setQuantity(100);
+        $extraction->setPayout(0.2);
+        $extraction->setFilters([]);
+
+        if ($final) {
+            $extraction->setIsAlreadyExtracted(true);
+            $extraction->setStatus(Extraction::STATUS_FINAL);
+            $extraction->setSoldAt((new \DateTime())->sub(new \DateInterval('P1D')));
+        } else {
+            $extraction->setStatus(Extraction::STATUS_FILTRATION);
+        }
+
+        $manager->persist($extraction);
+
+        return $extraction;
+    }
+
+    /**
+     * Create an extraction an persist it
+     *
+     * @param ObjectManager $manager
+     * @param Extraction    $extraction
+     * @param Contact       $contact
+     */
+    private function addContactToExtraction(ObjectManager $manager, Extraction $extraction, Contact $contact)
+    {
+        $extractionContact = new ExtractionContact();
+        $extractionContact->setExtraction($extraction);
+        $extractionContact->setContact($contact);
+
+        $manager->persist($extractionContact);
     }
 }

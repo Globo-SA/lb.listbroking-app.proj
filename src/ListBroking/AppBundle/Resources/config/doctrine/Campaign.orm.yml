@@ -29,6 +29,9 @@ ListBroking\AppBundle\Entity\Campaign:
             type: bigint
             column: account_id
             nullable: true
+        notificationEmailAddress:
+            type: string
+            column: notification_email_address
 
 # Timestampable
         created_at:

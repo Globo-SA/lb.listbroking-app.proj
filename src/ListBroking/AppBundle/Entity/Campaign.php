@@ -36,6 +36,8 @@ class Campaign
 
     protected $account_id;
 
+    protected $notificationEmailAddress;
+
     protected $client;
 
     protected $extractions;
@@ -150,6 +152,26 @@ class Campaign
 
     /**
      * @return mixed
+     */
+    public function getNotificationEmailAddress()
+    {
+        return $this->notificationEmailAddress;
+    }
+
+    /**
+     * @param mixed $notificationEmailAddress
+     *
+     * @return Campaign
+     */
+    public function setNotificationEmailAddress($notificationEmailAddress)
+    {
+        $this->notificationEmailAddress = $notificationEmailAddress;
+
+        return $this;
+    }
+
+    /**
+     * @return Client
      */
     public function getClient()
     {

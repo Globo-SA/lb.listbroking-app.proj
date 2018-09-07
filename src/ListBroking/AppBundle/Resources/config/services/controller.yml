@@ -5,6 +5,7 @@ services:
             - '@logger'
             - '@app.service.staging'
             - '@app.service.extraction'
+            - '@app.service.extraction_contact'
             - '@app.authentication.fos_user'
             - '@app.service.contact_obfuscation'
             - '@app.service.lead'

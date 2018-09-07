@@ -19,10 +19,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class Client
 {
-    const CACHE_ID   = 'client';
-    const NOTIFY_KEY = 'notify';
-    const NOTIFY_YES = 'yes';
-    const NOTIFY_NO  = 'no';
+    const CACHE_ID = 'client';
 
     use TimestampableEntityBehavior,
         BlameableEntityBehavior;
@@ -167,4 +164,4 @@ class Client
 
 
 
-} 
+}

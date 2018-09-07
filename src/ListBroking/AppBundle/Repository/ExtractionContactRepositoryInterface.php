@@ -3,6 +3,7 @@
 namespace ListBroking\AppBundle\Repository;
 
 use ListBroking\AppBundle\Entity\Contact;
+use ListBroking\AppBundle\Entity\ExtractionContact;
 use ListBroking\AppBundle\Entity\Lead;
 
 interface ExtractionContactRepositoryInterface
@@ -24,4 +25,14 @@ interface ExtractionContactRepositoryInterface
      * @return array
      */
     public function getLeadCampaignsGroupByClient(Lead $lead): array;
+
+    /**
+     * Returns extraction contacts sold by lead
+     *
+     * @param Lead $lead
+     * @param bool $sold
+     *
+     * @return ExtractionContact[]
+     */
+    public function getExtractionContactsSoldByLead(Lead $lead, bool $sold): array;
 }
