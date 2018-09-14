@@ -22,6 +22,7 @@ class OwnerAdmin extends Admin
         $datagridMapper
             ->add('id')
             ->add('name')
+            ->add('notificationEmailAddress')
         ;
     }
 
@@ -33,6 +34,7 @@ class OwnerAdmin extends Admin
         $listMapper
             ->add('id')
             ->add('name')
+            ->add('notificationEmailAddress')
             ->add('updated_at')
             ->add('_action', 'actions', array(
                 'actions' => array(
@@ -51,7 +53,7 @@ class OwnerAdmin extends Admin
     {
         $formMapper
             ->add('name')
-        ;
+            ->add('notificationEmailAddress');
     }
 
     /**
@@ -62,6 +64,7 @@ class OwnerAdmin extends Admin
         $showMapper
             ->add('id')
             ->add('name')
+            ->add('notificationEmailAddress')
             ->add('created_at')
             ->add('updated_at')
         ;

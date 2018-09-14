@@ -32,6 +32,8 @@ class Owner
 
     protected $priority;
 
+    protected $notificationEmailAddress;
+
     protected $sources;
 
     protected $contacts;
@@ -177,6 +179,30 @@ class Owner
     }
 
     /**
+     * Set notificationEmailAddress
+     *
+     * @param string $notificationEmailAddress
+     *
+     * @return Owner
+     */
+    public function setNotificationEmailAddress($notificationEmailAddress)
+    {
+        $this->notificationEmailAddress = $notificationEmailAddress;
+
+        return $this;
+    }
+
+    /**
+     * Get notificationEmailAddress
+     *
+     * @return string
+     */
+    public function getNotificationEmailAddress()
+    {
+        return $this->notificationEmailAddress;
+    }
+
+    /**
      * @return mixed
      */
     public function getSources ()
@@ -195,4 +221,51 @@ class Owner
         $this->sources->removeElement($source);
     }
 
+    /**
+     * Add source
+     *
+     * @param \ListBroking\AppBundle\Entity\Source $source
+     *
+     * @return Owner
+     */
+    public function addSource(\ListBroking\AppBundle\Entity\Source $source)
+    {
+        $this->sources[] = $source;
+
+        return $this;
+    }
+
+    /**
+     * Remove source
+     *
+     * @param \ListBroking\AppBundle\Entity\Source $source
+     */
+    public function removeSource(\ListBroking\AppBundle\Entity\Source $source)
+    {
+        $this->sources->removeElement($source);
+    }
+
+    /**
+     * Add contact
+     *
+     * @param \ListBroking\AppBundle\Entity\Contact $contact
+     *
+     * @return Owner
+     */
+    public function addContact(\ListBroking\AppBundle\Entity\Contact $contact)
+    {
+        $this->contacts[] = $contact;
+
+        return $this;
+    }
+
+    /**
+     * Remove contact
+     *
+     * @param \ListBroking\AppBundle\Entity\Contact $contact
+     */
+    public function removeContact(\ListBroking\AppBundle\Entity\Contact $contact)
+    {
+        $this->contacts->removeElement($contact);
+    }
 }

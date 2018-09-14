@@ -235,6 +235,16 @@ class Contact
     }
 
     /**
+     * Get isClean
+     *
+     * @return boolean
+     */
+    public function getIsClean()
+    {
+        return $this->is_clean;
+    }
+
+    /**
      * @param boolean $is_clean
      */
     public function setIsClean ($is_clean)

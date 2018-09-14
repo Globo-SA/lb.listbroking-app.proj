@@ -12,6 +12,9 @@ ListBroking\AppBundle\Entity\Owner:
             type:   string
             column: name
             unique: true
+        notificationEmailAddress:
+            type: string
+            column: notification_email_address
 # Timestampable
         created_at:
             type:     datetime

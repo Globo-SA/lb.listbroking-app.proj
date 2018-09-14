@@ -246,4 +246,28 @@ class Lead {
     public function removeLock(Lock $lock){
         $this->locks->removeElement($lock);
     }
+
+    /**
+     * Add contact
+     *
+     * @param \ListBroking\AppBundle\Entity\Contact $contact
+     *
+     * @return Lead
+     */
+    public function addContact(\ListBroking\AppBundle\Entity\Contact $contact)
+    {
+        $this->contacts[] = $contact;
+
+        return $this;
+    }
+
+    /**
+     * Remove contact
+     *
+     * @param \ListBroking\AppBundle\Entity\Contact $contact
+     */
+    public function removeContact(\ListBroking\AppBundle\Entity\Contact $contact)
+    {
+        $this->contacts->removeElement($contact);
+    }
 }

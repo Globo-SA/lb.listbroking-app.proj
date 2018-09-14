@@ -102,6 +102,7 @@ class LoadTestData extends AbstractFixture implements ContainerAwareInterface, O
         foreach ($ownersSources as $ownerName => $sourceNames) {
             $owner = new Owner();
             $owner->setName($ownerName);
+            $owner->setNotificationEmailAddress('it-tools@adclick.pt');
             $owner->setEmail(sprintf('%s@%s.com', $ownerName, $ownerName));
             $owner->setPhone($this->getUniquePhone());
             $owner->setCountry($countries[array_rand($countries, 1)]);

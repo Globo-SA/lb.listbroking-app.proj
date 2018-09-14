@@ -206,4 +206,14 @@ class Campaign
         $this->extractions->removeElement($extraction);
         return $this;
     }
+
+    /**
+     * Get extractions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getExtractions()
+    {
+        return $this->extractions;
+    }
 }

@@ -255,16 +255,24 @@ class APIController extends Controller
             foreach ($extractionContacts as $extractionContact) {
                 $extraction     = $extractionContact->getExtraction();
                 $campaign       = $extraction->getCampaign();
+                $contact        = $extractionContact->getContact();
+                $owner          = $contact->getOwner();
                 $responseData[] = [
-                    'lead_id'            => $lead->getId(),
-                    'contact_id'         => $extractionContact->getContact()->getId(),
-                    'client_id '         => $campaign->getClient()->getId(),
-                    'campaign'           => $campaign->getName(),
-                    'notification_email' => $campaign->getNotificationEmailAddress(),
-                    'extraction'         => $extraction->getName(),
-                    'sold_at'            => $extraction->getSoldAt() instanceof \DateTime
-                                                ? $extraction->getSoldAt()->format('Y-m-d')
-                                                : null
+                    'lead_id'    => $lead->getId(),
+                    'contact_id' => $contact->getId(),
+                    'client_id ' => $campaign->getClient()->getId(),
+                    'campaign'   => [
+                        'name'               => $campaign->getName(),
+                        'notification_email' => $campaign->getNotificationEmailAddress(),
+                    ],
+                    'owner'      => [
+                        'name'               => $owner->getName(),
+                        'notification_email' => $owner->getNotificationEmailAddress(),
+                    ],
+                    'extraction' => $extraction->getName(),
+                    'sold_at'    => $extraction->getSoldAt() instanceof \DateTime
+                        ? $extraction->getSoldAt()->format('Y-m-d')
+                        : null,
                 ];
             }
         }

@@ -82,4 +82,28 @@ class District
     {
         $this->contacts->removeElement($contact);
     }
-} 
+
+    /**
+     * Add contact
+     *
+     * @param \ListBroking\AppBundle\Entity\Contact $contact
+     *
+     * @return District
+     */
+    public function addContact(\ListBroking\AppBundle\Entity\Contact $contact)
+    {
+        $this->contacts[] = $contact;
+
+        return $this;
+    }
+
+    /**
+     * Remove contact
+     *
+     * @param \ListBroking\AppBundle\Entity\Contact $contact
+     */
+    public function removeContact(\ListBroking\AppBundle\Entity\Contact $contact)
+    {
+        $this->contacts->removeElement($contact);
+    }
+}
