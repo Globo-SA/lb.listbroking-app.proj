@@ -54,11 +54,11 @@ interface FileHandlerServiceInterface
      * Iterates an array with a given Writer
      *
      * @param array $array
-     * @param array $keys_to_ignore
+     * @param array $keysToIgnore
      *
      * @return
      */
-    public function writeArray($array, $keys_to_ignore = array());
+    public function writeArray($array, $keysToIgnore = array());
 
     /**
      * Opens a given writer

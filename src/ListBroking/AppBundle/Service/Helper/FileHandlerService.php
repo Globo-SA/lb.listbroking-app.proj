@@ -54,8 +54,8 @@ class FileHandlerService implements FileHandlerServiceInterface
 
     public function __construct(string $projectRootDir, ZipFileServiceInterface $zipService)
     {
-        $this->projectRootDir    = $projectRootDir;
-        $this->zipService        = $zipService;
+        $this->projectRootDir = $projectRootDir;
+        $this->zipService     = $zipService;
 
         // Set APC to cache cells
         $cacheMethod = \PHPExcel_CachedObjectStorageFactory::cache_to_sqlite3;
@@ -65,7 +65,7 @@ class FileHandlerService implements FileHandlerServiceInterface
     /**
      * @inheritdoc
      */
-    public function generateFileFromArray ($name, $extension, $array, $zipped = true, $upload = true)
+    public function generateFileFromArray($name, $extension, $array, $zipped = true, $upload = true)
     {
         // Generate File
         $filePath = $this->generateFilename($name, $extension, true, self::INTERNAL_EXPORTS_FOLDER);
@@ -74,7 +74,7 @@ class FileHandlerService implements FileHandlerServiceInterface
         $this->exportByArray($filePath, $extension, $array);
 
         $fileInfo = [dirname($filePath), basename($filePath), ''];
-        if($upload){
+        if ($upload) {
             $fileInfo = $this->store(self::EXTERNAL_EXPORTS_FOLDER, $filePath, $zipped);
         }
 
@@ -95,11 +95,12 @@ class FileHandlerService implements FileHandlerServiceInterface
     /**
      * @inheritDoc
      */
-    public function writeArray($array, $keys_to_ignore = array())
+    public function writeArray($array, $keysToIgnore = [])
     {
-        foreach ($array as $row)
-        {
-            $this->writer->write(array_diff_key($row, array_flip($keys_to_ignore)));
+        foreach ($array as $row) {
+            $escapedRow = $this->escapeSpecialNumericValues($row);
+
+            $this->writer->write(array_diff_key($escapedRow, array_flip($keysToIgnore)));
         }
     }
 
@@ -128,12 +129,12 @@ class FileHandlerService implements FileHandlerServiceInterface
     public function loadExcelFile($filename)
     {
         /** @var \PHPExcel_Reader_Abstract $reader */
-        $reader = \PHPExcel_IOFactory::createReader(\PHPExcel_IOFactory::identify($filename));
+        $reader   = \PHPExcel_IOFactory::createReader(\PHPExcel_IOFactory::identify($filename));
         $fileinfo = pathinfo($filename);
-        if(strtoupper($fileinfo['extension']) == 'CSV'){
-            $reader = new \PHPExcel_Reader_CSV();
+        if (strtoupper($fileinfo['extension']) == 'CSV') {
+            $reader    = new \PHPExcel_Reader_CSV();
             $delimiter = $this->findCsvDelimiter($filename);
-            if($delimiter){
+            if ($delimiter) {
                 $reader->setDelimiter($delimiter);
             }
         }
@@ -147,13 +148,18 @@ class FileHandlerService implements FileHandlerServiceInterface
     /**
      * @inheritdoc
      */
-    public function saveFormFile (Form $form)
+    public function saveFormFile(Form $form)
     {
         // Handle Form
         $data = $form->getData();
         /** @var UploadedFile $uploaded_file */
         $uploaded_file = $data['upload_file'];
-        $path = $this->generateFilename($uploaded_file->getClientOriginalName(), null, true, self::INTERNAL_IMPORTS_FOLDER);
+        $path          = $this->generateFilename(
+            $uploaded_file->getClientOriginalName(),
+            null,
+            true,
+            self::INTERNAL_IMPORTS_FOLDER
+        );
 
         return $uploaded_file->move(self::EXTERNAL_IMPORTS_FOLDER, $path);
     }
@@ -168,33 +174,14 @@ class FileHandlerService implements FileHandlerServiceInterface
      *
      * @return string
      */
-    private function generateFilename ($name, $extension, $absolute = false, $dir = '/')
+    private function generateFilename($name, $extension, $absolute = false, $dir = '/')
     {
         $path = $dir . $this->cleanUpName($name, strtolower($extension));
-        if ( $absolute )
-        {
+        if ($absolute) {
             $path = $this->projectRootDir . $path;
         }
 
         return $path;
-    }
-
-    /**
-     * Used to export a file using a Query
-     *
-     * @param string $filename
-     * @param        $extension
-     * @param array  $headers
-     * @param Query  $query
-     */
-    private function exportByQuery ($filename, $extension, $headers, Query $query)
-    {
-        $source = new DoctrineORMQuerySourceIterator($query, $headers, 'Y-m-d');
-        $writer = $this->writerSelection($filename, $extension);
-
-        Handler::create($source, $writer)
-               ->export()
-        ;
     }
 
     /**
@@ -204,14 +191,13 @@ class FileHandlerService implements FileHandlerServiceInterface
      * @param $extension
      * @param $array
      */
-    private function exportByArray ($filename, $extension, $array)
+    private function exportByArray($filename, $extension, $array)
     {
         $source = new ArraySourceIterator($array);
         $writer = $this->writerSelection($filename, $extension);
 
         Handler::create($source, $writer)
-               ->export()
-        ;
+               ->export();
     }
 
     /**
@@ -224,8 +210,7 @@ class FileHandlerService implements FileHandlerServiceInterface
      */
     private function writerSelection($filename, $extension)
     {
-        switch ( strtoupper($extension) )
-        {
+        switch (strtoupper($extension)) {
             case 'CSV':
                 $writer = new CsvWriter($filename);
                 break;
@@ -269,12 +254,11 @@ class FileHandlerService implements FileHandlerServiceInterface
         return $fileInfo;
     }
 
-    private function cleanUpName ($name, $extension = null)
+    private function cleanUpName($name, $extension = null)
     {
         $fileinfo = pathinfo($name);
 
-        if ( ! $extension )
-        {
+        if (!$extension) {
             $extension = isset($fileinfo['extension']) ?: '';
         }
 
@@ -289,18 +273,18 @@ class FileHandlerService implements FileHandlerServiceInterface
 
     /**
      * Official Worldpress function to remove accents from strings
+     *
      * @param $string
      *
      * @return string
      */
-    private function removeAccents ($string)
+    private function removeAccents($string)
     {
-        if ( ! preg_match('/[\x80-\xff]/', $string) )
-        {
+        if (!preg_match('/[\x80-\xff]/', $string)) {
             return $string;
         }
 
-        $chars = array(
+        $chars = [
             // Decompositions for Latin-1 Supplement
             chr(195) . chr(128) => 'A',
             chr(195) . chr(129) => 'A',
@@ -485,8 +469,8 @@ class FileHandlerService implements FileHandlerServiceInterface
             chr(197) . chr(188) => 'z',
             chr(197) . chr(189) => 'Z',
             chr(197) . chr(190) => 'z',
-            chr(197) . chr(191) => 's'
-        );
+            chr(197) . chr(191) => 's',
+        ];
 
         $string = strtr($string, $chars);
 
@@ -495,6 +479,7 @@ class FileHandlerService implements FileHandlerServiceInterface
 
     /**
      * Finds the delimiter of a CSV file
+     *
      * @param     $filepath
      * @param int $checkLines
      *
@@ -502,23 +487,23 @@ class FileHandlerService implements FileHandlerServiceInterface
      */
     private function findCsvDelimiter($filepath, $checkLines = 2)
     {
-        $file = new \SplFileObject($filepath);
-        $delimiters = array(
+        $file       = new \SplFileObject($filepath);
+        $delimiters = [
             ',',
             '\t',
             ';',
             '|',
-            ':'
-        );
-        $results = array();
-        $i = 0;
-        while($file->valid() && $i <= $checkLines){
+            ':',
+        ];
+        $results    = [];
+        $i          = 0;
+        while ($file->valid() && $i <= $checkLines) {
             $line = $file->fgets();
-            foreach ($delimiters as $delimiter){
-                $regExp = '/['.$delimiter.']/';
+            foreach ($delimiters as $delimiter) {
+                $regExp = '/[' . $delimiter . ']/';
                 $fields = preg_split($regExp, $line);
-                if(count($fields) > 1){
-                    if(!empty($results[$delimiter])){
+                if (count($fields) > 1) {
+                    if (!empty($results[$delimiter])) {
                         $results[$delimiter]++;
                     } else {
                         $results[$delimiter] = 1;
@@ -535,5 +520,24 @@ class FileHandlerService implements FileHandlerServiceInterface
         $results = array_keys($results, max($results));
 
         return $results[0];
+    }
+
+    /**
+     * Escape numeric values started by zero since excel and open sheets remove it
+     *
+     * @param array $row
+     *
+     * @return mixed
+     */
+    private function escapeSpecialNumericValues(array $row)
+    {
+        foreach ($row as $key => $value)
+        {
+            if (is_numeric($value) && strpos($value, '0') === 0) {
+                $row[$key] = sprintf("'%s", $value);
+            }
+        }
+
+        return $row;
     }
 }
