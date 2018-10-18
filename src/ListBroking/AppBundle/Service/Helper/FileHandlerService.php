@@ -18,44 +18,39 @@ use Exporter\Writer\XlsWriter;
 use Exporter\Writer\XmlExcelWriter;
 use ListBroking\AppBundle\Exporter\Exporter\CsvWriter;
 use ListBroking\AppBundle\Exporter\Source\DoctrineORMQuerySourceIterator;
+use ListBroking\AppBundle\File\BaseFile;
+use ListBroking\AppBundle\File\FileIOInterface;
+use ListBroking\AppBundle\File\PhpSpreadsheetFileIO;
+use ListBroking\AppBundle\File\SonataExporterFileIO;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class FileHandlerService implements FileHandlerServiceInterface
+/**
+ * ListBroking\AppBundle\Service\Helper\FileHandlerService
+ */
+class FileHandlerService extends BaseFile implements FileHandlerServiceInterface
 {
-
-    const EXTERNAL_EXPORTS_FOLDER = 'exports/';
-
-    const EXTERNAL_IMPORTS_FOLDER = 'imports/';
-
-    const INTERNAL_EXPORTS_FOLDER = '/../web/exports/';
-
-    const INTERNAL_IMPORTS_FOLDER = '/../web/imports/';
-
-    /**
-     * @var string
-     */
-    private $projectRootDir;
-
-    /**
-     * @var WriterInterface
-     */
-    private $writer;
-
-    /**
-     * @var string
-     */
-    private $filepath;
-
     /**
      * @var ZipFileServiceInterface
      */
-    private $zipService;
+    protected $zipFileService;
 
-    public function __construct(string $projectRootDir, ZipFileServiceInterface $zipService)
+    /**
+     * @var FileIOInterface
+     */
+    protected $fileIO;
+
+    /**
+     * FileHandlerService constructor.
+     *
+     * @param string                  $projectRootDir
+     * @param ZipFileServiceInterface $zipFileService
+     */
+    public function __construct(string $projectRootDir, ZipFileServiceInterface $zipFileService)
     {
-        $this->projectRootDir = $projectRootDir;
-        $this->zipService     = $zipService;
+        parent::__construct($projectRootDir);
+
+        $this->zipFileService = $zipFileService;
 
         // Set APC to cache cells
         $cacheMethod = \PHPExcel_CachedObjectStorageFactory::cache_to_sqlite3;
@@ -63,7 +58,7 @@ class FileHandlerService implements FileHandlerServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateFileFromArray($name, $extension, $array, $zipped = true, $upload = true)
     {
@@ -74,57 +69,12 @@ class FileHandlerService implements FileHandlerServiceInterface
         $this->exportByArray($filePath, $extension, $array);
 
         $fileInfo = [dirname($filePath), basename($filePath), ''];
-        if ($upload) {
-            $fileInfo = $this->store(self::EXTERNAL_EXPORTS_FOLDER, $filePath, $zipped);
-        }
 
         return $fileInfo;
     }
 
     /**
-     * @inheritdoc
-     */
-    public function createFileWriter($name, $extension)
-    {
-        // Generate File
-        $this->filepath = $this->generateFilename($name, $extension, true, self::INTERNAL_EXPORTS_FOLDER);
-
-        $this->writer = $this->writerSelection($this->filepath, $extension);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function writeArray($array, $keysToIgnore = [])
-    {
-        foreach ($array as $row) {
-            $escapedRow = $this->escapeSpecialNumericValues($row);
-
-            $this->writer->write(array_diff_key($escapedRow, array_flip($keysToIgnore)));
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function openWriter()
-    {
-        $this->writer->open();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function closeWriter($zipped = true)
-    {
-        $this->writer->close();
-        $file_info = $this->store(self::EXTERNAL_EXPORTS_FOLDER, $this->filepath, $zipped);
-
-        return $file_info;
-    }
-
-    /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function loadExcelFile($filename)
     {
@@ -146,12 +96,13 @@ class FileHandlerService implements FileHandlerServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function saveFormFile(Form $form)
     {
         // Handle Form
         $data = $form->getData();
+
         /** @var UploadedFile $uploaded_file */
         $uploaded_file = $data['upload_file'];
         $path          = $this->generateFilename(
@@ -165,23 +116,44 @@ class FileHandlerService implements FileHandlerServiceInterface
     }
 
     /**
-     * Generates the filename and generate a filename for it
+     * Generates a file Writer
      *
-     * @param        $name
-     * @param        $extension
-     * @param bool   $absolute
-     * @param string $dir
-     *
-     * @return string
+     * @param string $name
+     * @param string $extension
      */
-    private function generateFilename($name, $extension, $absolute = false, $dir = '/')
+    public function createFileWriter($name, $extension)
     {
-        $path = $dir . $this->cleanUpName($name, strtolower($extension));
-        if ($absolute) {
-            $path = $this->projectRootDir . $path;
+        if ($extension === 'xls') {
+            $this->fileIO = new PhpSpreadsheetFileIO($this->projectRootDir, $this->zipFileService);
+        } else {
+            $this->fileIO = new SonataExporterFileIO($this->projectRootDir, $this->zipFileService);
         }
 
-        return $path;
+        $this->fileIO->createFileWriter($name, $extension);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function openWriter()
+    {
+        $this->fileIO->openWriter();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function writeArray($array, $keysToIgnore = [])
+    {
+        $this->fileIO->writeArray($array, $keysToIgnore);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function closeWriter($zipped = true)
+    {
+        return $this->fileIO->closeWriter($zipped);
     }
 
     /**
@@ -232,252 +204,6 @@ class FileHandlerService implements FileHandlerServiceInterface
     }
 
     /**
-     * Zips a given file with optional password protection
-     *
-     * @param $path
-     * @param $filename
-     * @param $zipped
-     *
-     * @return array
-     */
-    private function store($path, $filename, $zipped)
-    {
-        $fileInfo = [$path, $filename, ''];
-
-        if ($zipped) {
-
-            // replace original file by zipped
-            $fileInfo = $this->zipService->compressFile($filename, true);
-            unlink($filename);
-        }
-
-        return $fileInfo;
-    }
-
-    private function cleanUpName($name, $extension = null)
-    {
-        $fileinfo = pathinfo($name);
-
-        if (!$extension) {
-            $extension = isset($fileinfo['extension']) ?: '';
-        }
-
-        $filename = preg_replace('/\s/i', '-', $fileinfo['filename']);
-        $filename = preg_replace('/\(duplicate\)/i', '', $filename);
-        $filename = preg_replace("/[^[:alnum:]]/ui", '', $filename);
-        $filename = $this->removeAccents($filename);
-
-        // uniqid() used to make sure the file is unique
-        return strtolower(sprintf('%s-%s-%s.%s', $filename, uniqid(), date('Y-m-d'), $extension));
-    }
-
-    /**
-     * Official Worldpress function to remove accents from strings
-     *
-     * @param $string
-     *
-     * @return string
-     */
-    private function removeAccents($string)
-    {
-        if (!preg_match('/[\x80-\xff]/', $string)) {
-            return $string;
-        }
-
-        $chars = [
-            // Decompositions for Latin-1 Supplement
-            chr(195) . chr(128) => 'A',
-            chr(195) . chr(129) => 'A',
-            chr(195) . chr(130) => 'A',
-            chr(195) . chr(131) => 'A',
-            chr(195) . chr(132) => 'A',
-            chr(195) . chr(133) => 'A',
-            chr(195) . chr(135) => 'C',
-            chr(195) . chr(136) => 'E',
-            chr(195) . chr(137) => 'E',
-            chr(195) . chr(138) => 'E',
-            chr(195) . chr(139) => 'E',
-            chr(195) . chr(140) => 'I',
-            chr(195) . chr(141) => 'I',
-            chr(195) . chr(142) => 'I',
-            chr(195) . chr(143) => 'I',
-            chr(195) . chr(145) => 'N',
-            chr(195) . chr(146) => 'O',
-            chr(195) . chr(147) => 'O',
-            chr(195) . chr(148) => 'O',
-            chr(195) . chr(149) => 'O',
-            chr(195) . chr(150) => 'O',
-            chr(195) . chr(153) => 'U',
-            chr(195) . chr(154) => 'U',
-            chr(195) . chr(155) => 'U',
-            chr(195) . chr(156) => 'U',
-            chr(195) . chr(157) => 'Y',
-            chr(195) . chr(159) => 's',
-            chr(195) . chr(160) => 'a',
-            chr(195) . chr(161) => 'a',
-            chr(195) . chr(162) => 'a',
-            chr(195) . chr(163) => 'a',
-            chr(195) . chr(164) => 'a',
-            chr(195) . chr(165) => 'a',
-            chr(195) . chr(167) => 'c',
-            chr(195) . chr(168) => 'e',
-            chr(195) . chr(169) => 'e',
-            chr(195) . chr(170) => 'e',
-            chr(195) . chr(171) => 'e',
-            chr(195) . chr(172) => 'i',
-            chr(195) . chr(173) => 'i',
-            chr(195) . chr(174) => 'i',
-            chr(195) . chr(175) => 'i',
-            chr(195) . chr(177) => 'n',
-            chr(195) . chr(178) => 'o',
-            chr(195) . chr(179) => 'o',
-            chr(195) . chr(180) => 'o',
-            chr(195) . chr(181) => 'o',
-            chr(195) . chr(182) => 'o',
-            chr(195) . chr(182) => 'o',
-            chr(195) . chr(185) => 'u',
-            chr(195) . chr(186) => 'u',
-            chr(195) . chr(187) => 'u',
-            chr(195) . chr(188) => 'u',
-            chr(195) . chr(189) => 'y',
-            chr(195) . chr(191) => 'y',
-            // Decompositions for Latin Extended-A
-            chr(196) . chr(128) => 'A',
-            chr(196) . chr(129) => 'a',
-            chr(196) . chr(130) => 'A',
-            chr(196) . chr(131) => 'a',
-            chr(196) . chr(132) => 'A',
-            chr(196) . chr(133) => 'a',
-            chr(196) . chr(134) => 'C',
-            chr(196) . chr(135) => 'c',
-            chr(196) . chr(136) => 'C',
-            chr(196) . chr(137) => 'c',
-            chr(196) . chr(138) => 'C',
-            chr(196) . chr(139) => 'c',
-            chr(196) . chr(140) => 'C',
-            chr(196) . chr(141) => 'c',
-            chr(196) . chr(142) => 'D',
-            chr(196) . chr(143) => 'd',
-            chr(196) . chr(144) => 'D',
-            chr(196) . chr(145) => 'd',
-            chr(196) . chr(146) => 'E',
-            chr(196) . chr(147) => 'e',
-            chr(196) . chr(148) => 'E',
-            chr(196) . chr(149) => 'e',
-            chr(196) . chr(150) => 'E',
-            chr(196) . chr(151) => 'e',
-            chr(196) . chr(152) => 'E',
-            chr(196) . chr(153) => 'e',
-            chr(196) . chr(154) => 'E',
-            chr(196) . chr(155) => 'e',
-            chr(196) . chr(156) => 'G',
-            chr(196) . chr(157) => 'g',
-            chr(196) . chr(158) => 'G',
-            chr(196) . chr(159) => 'g',
-            chr(196) . chr(160) => 'G',
-            chr(196) . chr(161) => 'g',
-            chr(196) . chr(162) => 'G',
-            chr(196) . chr(163) => 'g',
-            chr(196) . chr(164) => 'H',
-            chr(196) . chr(165) => 'h',
-            chr(196) . chr(166) => 'H',
-            chr(196) . chr(167) => 'h',
-            chr(196) . chr(168) => 'I',
-            chr(196) . chr(169) => 'i',
-            chr(196) . chr(170) => 'I',
-            chr(196) . chr(171) => 'i',
-            chr(196) . chr(172) => 'I',
-            chr(196) . chr(173) => 'i',
-            chr(196) . chr(174) => 'I',
-            chr(196) . chr(175) => 'i',
-            chr(196) . chr(176) => 'I',
-            chr(196) . chr(177) => 'i',
-            chr(196) . chr(178) => 'IJ',
-            chr(196) . chr(179) => 'ij',
-            chr(196) . chr(180) => 'J',
-            chr(196) . chr(181) => 'j',
-            chr(196) . chr(182) => 'K',
-            chr(196) . chr(183) => 'k',
-            chr(196) . chr(184) => 'k',
-            chr(196) . chr(185) => 'L',
-            chr(196) . chr(186) => 'l',
-            chr(196) . chr(187) => 'L',
-            chr(196) . chr(188) => 'l',
-            chr(196) . chr(189) => 'L',
-            chr(196) . chr(190) => 'l',
-            chr(196) . chr(191) => 'L',
-            chr(197) . chr(128) => 'l',
-            chr(197) . chr(129) => 'L',
-            chr(197) . chr(130) => 'l',
-            chr(197) . chr(131) => 'N',
-            chr(197) . chr(132) => 'n',
-            chr(197) . chr(133) => 'N',
-            chr(197) . chr(134) => 'n',
-            chr(197) . chr(135) => 'N',
-            chr(197) . chr(136) => 'n',
-            chr(197) . chr(137) => 'N',
-            chr(197) . chr(138) => 'n',
-            chr(197) . chr(139) => 'N',
-            chr(197) . chr(140) => 'O',
-            chr(197) . chr(141) => 'o',
-            chr(197) . chr(142) => 'O',
-            chr(197) . chr(143) => 'o',
-            chr(197) . chr(144) => 'O',
-            chr(197) . chr(145) => 'o',
-            chr(197) . chr(146) => 'OE',
-            chr(197) . chr(147) => 'oe',
-            chr(197) . chr(148) => 'R',
-            chr(197) . chr(149) => 'r',
-            chr(197) . chr(150) => 'R',
-            chr(197) . chr(151) => 'r',
-            chr(197) . chr(152) => 'R',
-            chr(197) . chr(153) => 'r',
-            chr(197) . chr(154) => 'S',
-            chr(197) . chr(155) => 's',
-            chr(197) . chr(156) => 'S',
-            chr(197) . chr(157) => 's',
-            chr(197) . chr(158) => 'S',
-            chr(197) . chr(159) => 's',
-            chr(197) . chr(160) => 'S',
-            chr(197) . chr(161) => 's',
-            chr(197) . chr(162) => 'T',
-            chr(197) . chr(163) => 't',
-            chr(197) . chr(164) => 'T',
-            chr(197) . chr(165) => 't',
-            chr(197) . chr(166) => 'T',
-            chr(197) . chr(167) => 't',
-            chr(197) . chr(168) => 'U',
-            chr(197) . chr(169) => 'u',
-            chr(197) . chr(170) => 'U',
-            chr(197) . chr(171) => 'u',
-            chr(197) . chr(172) => 'U',
-            chr(197) . chr(173) => 'u',
-            chr(197) . chr(174) => 'U',
-            chr(197) . chr(175) => 'u',
-            chr(197) . chr(176) => 'U',
-            chr(197) . chr(177) => 'u',
-            chr(197) . chr(178) => 'U',
-            chr(197) . chr(179) => 'u',
-            chr(197) . chr(180) => 'W',
-            chr(197) . chr(181) => 'w',
-            chr(197) . chr(182) => 'Y',
-            chr(197) . chr(183) => 'y',
-            chr(197) . chr(184) => 'Y',
-            chr(197) . chr(185) => 'Z',
-            chr(197) . chr(186) => 'z',
-            chr(197) . chr(187) => 'Z',
-            chr(197) . chr(188) => 'z',
-            chr(197) . chr(189) => 'Z',
-            chr(197) . chr(190) => 'z',
-            chr(197) . chr(191) => 's',
-        ];
-
-        $string = strtr($string, $chars);
-
-        return $string;
-    }
-
-    /**
      * Finds the delimiter of a CSV file
      *
      * @param     $filepath
@@ -520,24 +246,5 @@ class FileHandlerService implements FileHandlerServiceInterface
         $results = array_keys($results, max($results));
 
         return $results[0];
-    }
-
-    /**
-     * Escape numeric values started by zero since excel and open sheets remove it
-     *
-     * @param array $row
-     *
-     * @return mixed
-     */
-    private function escapeSpecialNumericValues(array $row)
-    {
-        foreach ($row as $key => $value)
-        {
-            if (is_numeric($value) && strpos($value, '0') === 0) {
-                $row[$key] = sprintf("'%s", $value);
-            }
-        }
-
-        return $row;
     }
 }

@@ -33,16 +33,14 @@
             autoUpload: false,
             removeAfterUpload: false,
             add: function(e, data) {
-                var acceptFileTypes = /\.(xls|xlsx)/i;
-                var $errors = $('#fileuploaderror');
+                var acceptFileTypes = /\.(xls|csv)/i,
+                    $errors         = $('#fileuploaderror');
 
-                if(data.originalFiles[0]['name'].length && !acceptFileTypes.test(data.originalFiles[0]['name'])) {
-                    $errors
-                        .html('Only xls files are accepted')
-                        .fadeIn()
-                    ;
+                if (data.originalFiles[0]['name'].length && !acceptFileTypes.test(data.originalFiles[0]['name'])) {
+                    $errors.html('Only XLS or CSV files are accepted')
+                        .fadeIn();
                     $opposition_list_import_btn.attr('disabled', 'disabled');
-                }else{
+                } else {
                     $errors.fadeOut();
                     $opposition_list_import_btn.attr('disabled', null);
                 }

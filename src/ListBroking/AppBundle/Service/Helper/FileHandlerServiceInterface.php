@@ -5,10 +5,12 @@
  */
 namespace ListBroking\AppBundle\Service\Helper;
 
-use Doctrine\ORM\Query;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\File;
 
+/**
+ * Interface FileHandlerServiceInterface
+ */
 interface FileHandlerServiceInterface
 {
     /**
@@ -27,7 +29,7 @@ interface FileHandlerServiceInterface
      *
      * @return File
      */
-    public function saveFormFile (Form $form);
+    public function saveFormFile(Form $form);
 
     /**
      * Generates a file using an Array
@@ -40,25 +42,15 @@ interface FileHandlerServiceInterface
      *
      * @return array
      */
-    public function generateFileFromArray ($name, $extension, $array, $zipped = true, $upload = true);
+    public function generateFileFromArray($name, $extension, $array, $zipped = true, $upload = true);
 
     /**
      * Generates a file Writer
      *
-     * @param        $name
+     * @param string $name
      * @param string $extension
      */
     public function createFileWriter($name, $extension);
-
-    /**
-     * Iterates an array with a given Writer
-     *
-     * @param array $array
-     * @param array $keysToIgnore
-     *
-     * @return
-     */
-    public function writeArray($array, $keysToIgnore = array());
 
     /**
      * Opens a given writer
@@ -66,6 +58,14 @@ interface FileHandlerServiceInterface
      * @return mixed
      */
     public function openWriter();
+
+    /**
+     * Iterates an array with a given Writer
+     *
+     * @param array $array
+     * @param array $keysToIgnore
+     */
+    public function writeArray($array, $keysToIgnore = []);
 
     /**
      * Closes a given Writer
