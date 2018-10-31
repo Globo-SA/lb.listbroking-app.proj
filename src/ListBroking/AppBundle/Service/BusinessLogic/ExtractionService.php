@@ -141,7 +141,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
                 sprintf('BATCH: %s LIMIT: %s OFFSET: %s CONTACTS: %s', $i, $batch_size, $offset, $batch_extraction_contacts)
             );
 
-            $file_service->writeArray($extraction_contacts, array("extraction_contact_id"));
+            $file_service->writeArray($extraction_contacts, ['extraction_contact_id']);
 
             $last_of_batch = end($extraction_contacts);
             $offset = $last_of_batch['extraction_contact_id'];

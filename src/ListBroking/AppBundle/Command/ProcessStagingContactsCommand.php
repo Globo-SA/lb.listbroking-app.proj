@@ -102,8 +102,6 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
                 $logger->info(sprintf('Staging Id %s as been processed', $stagingContact->getId()));
             }
 
-            $this->stagingService->syncContactsWithOppositionLists();
-
             $this->service->finish();
         } catch (\Exception $e) {
             $this->service->throwError($e);

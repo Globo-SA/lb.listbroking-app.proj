@@ -60,6 +60,11 @@ class PhpSpreadsheetFileIO extends BaseFileIO implements FileIOInterface
 
             foreach ($row as $key => $value) {
 
+                if (in_array($key, $keysToIgnore)) {
+
+                    continue;
+                }
+
                 // define header row
                 if ($currentRow === 2) {
                     $cell = $this->sheet->getCellByColumnAndRow($currentColumn, 1);
