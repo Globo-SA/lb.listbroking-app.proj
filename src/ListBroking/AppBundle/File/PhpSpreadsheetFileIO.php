@@ -28,6 +28,11 @@ class PhpSpreadsheetFileIO extends BaseFileIO implements FileIOInterface
     private $filepath;
 
     /**
+     * @var int
+     */
+    private $currentRow;
+
+    /**
      * {@inheritdoc}
      */
     public function createFileWriter($name, $extension)
@@ -37,6 +42,9 @@ class PhpSpreadsheetFileIO extends BaseFileIO implements FileIOInterface
 
         $this->spreadsheet = new Spreadsheet();
         $this->sheet       = $this->spreadsheet->getActiveSheet();
+
+        // start at index 2, because header row is index 1
+        $this->currentRow = 2;
     }
 
     /**
@@ -52,9 +60,6 @@ class PhpSpreadsheetFileIO extends BaseFileIO implements FileIOInterface
      */
     public function writeArray($array, $keysToIgnore = [])
     {
-        // start at index 2, because header row is index 1
-        $currentRow = 2;
-
         foreach ($array as $row) {
             $currentColumn = 1;
 
@@ -66,12 +71,12 @@ class PhpSpreadsheetFileIO extends BaseFileIO implements FileIOInterface
                 }
 
                 // define header row
-                if ($currentRow === 2) {
+                if ($this->currentRow === 2) {
                     $cell = $this->sheet->getCellByColumnAndRow($currentColumn, 1);
                     $cell->setValue($key);
                 }
 
-                $cell = $this->sheet->getCellByColumnAndRow($currentColumn, $currentRow);
+                $cell = $this->sheet->getCellByColumnAndRow($currentColumn, $this->currentRow);
                 $cell->setValue($value);
 
                 // guarantee that leading zeros on numeric values are maintained
@@ -82,8 +87,8 @@ class PhpSpreadsheetFileIO extends BaseFileIO implements FileIOInterface
                 $currentColumn++;
             }
 
-            $currentRow++;
-        }
+            $this->currentRow++;
+        };
     }
 
     /**
