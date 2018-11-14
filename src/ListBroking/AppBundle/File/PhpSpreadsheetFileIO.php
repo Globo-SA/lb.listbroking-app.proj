@@ -5,7 +5,7 @@ namespace ListBroking\AppBundle\File;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 /**
  * ListBroking\AppBundle\File\PhpSpreadsheetFileIO
@@ -38,7 +38,7 @@ class PhpSpreadsheetFileIO extends BaseFileIO implements FileIOInterface
     public function createFileWriter($name, $extension)
     {
         // Generate File
-        $this->filepath = $this->generateFilename($name, 'xls', true, self::INTERNAL_EXPORTS_FOLDER);
+        $this->filepath = $this->generateFilename($name, 'xlsx', true, self::INTERNAL_EXPORTS_FOLDER);
 
         $this->spreadsheet = new Spreadsheet();
         $this->sheet       = $this->spreadsheet->getActiveSheet();
@@ -96,7 +96,7 @@ class PhpSpreadsheetFileIO extends BaseFileIO implements FileIOInterface
      */
     public function closeWriter($zipped = true)
     {
-        $writer = new Xls($this->spreadsheet);
+        $writer = new Xlsx($this->spreadsheet);
         $writer->save($this->filepath);
 
         $fileInfo = $this->store(self::EXTERNAL_EXPORTS_FOLDER, $this->filepath, $zipped);

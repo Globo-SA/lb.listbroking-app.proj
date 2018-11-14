@@ -123,7 +123,7 @@ class FileHandlerService extends BaseFile implements FileHandlerServiceInterface
      */
     public function createFileWriter($name, $extension)
     {
-        if ($extension === 'xls') {
+        if ($extension === 'xlsx') {
             $this->fileIO = new PhpSpreadsheetFileIO($this->projectRootDir, $this->zipFileService);
         } else {
             $this->fileIO = new SonataExporterFileIO($this->projectRootDir, $this->zipFileService);
