@@ -54,14 +54,14 @@
             autoUpload: false,
             removeAfterUpload: false,
             add: function (e, data) {
-                var acceptFileTypes = /\.(csv)/i;
+                var acceptFileTypes = /\.(csv|xls|xlsx)/i;
                 var $errors = $('#fileuploaderror');
                 var $extraction_deduplication_btn = $('#extraction_deduplication_upload_button');
 
                 if (data.originalFiles[0]['name'].length && !acceptFileTypes.test(data.originalFiles[0]['name'])) {
                     $extraction_deduplication_upload_button.find('i.loading').fadeOut();
                     $errors
-                        .html('Only csv files are accepted')
+                        .html('Only csv, xls or xlsx files are accepted')
                         .fadeIn()
                     ;
                     $extraction_deduplication_btn.attr('disabled', 'disabled');
