@@ -1,13 +1,11 @@
 <?php
-/**
- * @author     Samuel Castro <samuel.castro@adclick.pt>
- * @copyright  2015 Adclick
- */
+
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionLog;
+use ListBroking\AppBundle\Entity\RevenueFilter;
 use ListBroking\AppBundle\Service\Base\BaseServiceInterface;
 use ListBroking\AppBundle\Service\Helper\FileHandlerServiceInterface;
 
@@ -22,7 +20,7 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      *
      * @return ExtractionLog[]
      */
-    public function findLastExtractionLog (Extraction $extraction, $limit);
+    public function findLastExtractionLog(Extraction $extraction, $limit);
 
     /**
      * Find Extraction by id
@@ -31,17 +29,16 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      *
      * @return Extraction|null
      */
-    public function findExtraction ($id);
+    public function findExtraction($id);
 
     /**
      * Get revenue
      *
-     * @param \DateTime|string $startDate
-     * @param \DateTime|string $endDate
+     * @param RevenueFilter $filter
      *
      * @return array|null
      */
-    public function getRevenue($startDate, $endDate);
+    public function getRevenue(RevenueFilter $filter);
 
     /**
      * Return all extractions
@@ -59,7 +56,7 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      *
      * @return Extraction
      */
-    public function cloneExtraction (Extraction $extraction);
+    public function cloneExtraction(Extraction $extraction);
 
     /**
      * Returns the Query needed to find all the contacts of a given Extraction with
@@ -70,19 +67,23 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      *
      * @return Query
      */
-    public function getExtractionContactsQuery (Extraction $extraction, $fetch_mode = null);
+    public function getExtractionContactsQuery(Extraction $extraction, $fetch_mode = null);
 
     /**
      * Uses a FileHandlerService to export contacts of a given Extraction
      *
      * @param FileHandlerServiceInterface $file_service
-     * @param Extraction            $extraction
-     * @param array                 $template
-     * @param int                   $batch_size
-
+     * @param Extraction                  $extraction
+     * @param array                       $template
+     * @param int                         $batch_size
      *
      */
-    public function exportExtractionContacts(FileHandlerServiceInterface $file_service, Extraction $extraction, $template, $batch_size);
+    public function exportExtractionContacts(
+        FileHandlerServiceInterface $file_service,
+        Extraction $extraction,
+        $template,
+        $batch_size
+    );
 
     /**
      * Finds all the contacts of a given Extraction with
@@ -93,7 +94,7 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      *
      * @return mixed
      */
-    public function findExtractionContacts (Extraction $extraction, $limit = null);
+    public function findExtractionContacts(Extraction $extraction, $limit = null);
 
     /**
      * Finds the ExtractionSummary
@@ -102,7 +103,7 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      *
      * @return mixed
      */
-    public function findExtractionSummary (Extraction $extraction);
+    public function findExtractionSummary(Extraction $extraction);
 
     /**
      * Handles Extraction Filtration
@@ -114,7 +115,7 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      *
      * @return bool Returns true if the extraction is ready to be processed by a consumer
      */
-    public function handleFiltration (Extraction $extraction);
+    public function handleFiltration(Extraction $extraction);
 
     /**
      * Compile and run the Extraction
@@ -124,7 +125,7 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
      * @return boolean
      */
-    public function runExtraction (Extraction $extraction);
+    public function runExtraction(Extraction $extraction);
 
     /**
      * Persists Deduplications to the database, this function uses PHPExcel with APC
@@ -135,7 +136,7 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      *
      * @return void
      */
-    public function uploadDeduplicationsByFile (Extraction $extraction, \PHPExcel $file, $field);
+    public function uploadDeduplicationsByFile(Extraction $extraction, \PHPExcel $file, $field);
 
     /**
      * Removes Deduplications associated with a given Extraction from the database.
@@ -154,7 +155,7 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      *
      * @return void
      */
-    public function generateLocks (Extraction $extraction, $lock_types);
+    public function generateLocks(Extraction $extraction, $lock_types);
 
     /**
      * Logs an occurred action of a given Extraction
@@ -164,5 +165,5 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      *
      * @return ExtractionLog
      */
-    public function logExtractionAction (Extraction $extraction, $message);
+    public function logExtractionAction(Extraction $extraction, $message);
 }

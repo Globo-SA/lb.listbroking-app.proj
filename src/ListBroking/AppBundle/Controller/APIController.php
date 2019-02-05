@@ -2,7 +2,8 @@
 
 namespace ListBroking\AppBundle\Controller;
 
-use ListBroking\AppBundle\Entity\Client;
+use DateTime;
+use ListBroking\AppBundle\Builder\Entity\RevenueFilterEntityBuilder;
 use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Exception\Validation\LeadValidationException;
@@ -24,13 +25,13 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class APIController extends Controller
 {
-    const HTTP_SERVER_ERROR_CODE                    = 500;
-    const HTTP_BAD_REQUEST_CODE                     = 400;
-    const HTTP_NOT_FOUND_CODE                       = 404;
-    const CONTACT_EMAIL_ERASURE_MESSAGE             = 'Contact has been erased';
-    const MISSING_EMAIL_OR_PHONE_PARAMETER_MESSAGE  = 'Missing email or phone parameter';
-    const CONTACTS_NOT_FOUND_MESSAGE                = 'Contacts not found. Nothing to do';
-    const COULD_NOT_ERASE_CONTACT_MESSAGE           = 'An error occurred while erasing contact.';
+    const HTTP_SERVER_ERROR_CODE                   = 500;
+    const HTTP_BAD_REQUEST_CODE                    = 400;
+    const HTTP_NOT_FOUND_CODE                      = 404;
+    const CONTACT_EMAIL_ERASURE_MESSAGE            = 'Contact has been erased';
+    const MISSING_EMAIL_OR_PHONE_PARAMETER_MESSAGE = 'Missing email or phone parameter';
+    const CONTACTS_NOT_FOUND_MESSAGE               = 'Contacts not found. Nothing to do';
+    const COULD_NOT_ERASE_CONTACT_MESSAGE          = 'An error occurred while erasing contact.';
 
     /**
      * @var LoggerInterface $logger
@@ -114,14 +115,14 @@ class APIController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function createStagingLeadAction (Request $request)
+    public function createStagingLeadAction(Request $request)
     {
         try {
             $this->fosUserAuthenticationService->checkCredentials($request);
 
             $lead = $request->get('lead');
 
-            if (! $lead) {
+            if (!$lead) {
                 throw new LeadValidationException('Lead is empty');
             }
 
@@ -137,43 +138,62 @@ class APIController extends Controller
 
     /**
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function getActiveCampaignsAction(Request $request)
     {
-        try
-        {
+        try {
             $this->fosUserAuthenticationService->checkCredentials($request);
 
-            $end_date = $request->get('end_date');
+            $end_date   = $request->get('end_date');
             $start_date = $request->get('start_date');
-            if ($start_date == null)
-            {
-                if ($end_date != null)
-                {
-                    return $this->createJsonResponse(['error' => 'end date can\'t be defined without a start date'], self::HTTP_BAD_REQUEST_CODE);
+            if ($start_date == null) {
+                if ($end_date != null) {
+                    return $this->createJsonResponse(
+                        ['error' => 'end date can\'t be defined without a start date'],
+                        self::HTTP_BAD_REQUEST_CODE
+                    );
                 }
                 $start_date = date('Y-m-1');
             }
-            if ($end_date == null)
-            {
+            if ($end_date == null) {
                 $end_date = date('Y-m-t');
             }
-            $data = $this->extractionService->getActiveCampaigns($start_date, $end_date, $request->get('page', 1), $request->get('page_size', self::HTTP_SERVER_ERROR_CODE));
-            if ($data == null)
-            {
+            $data = $this->extractionService->getActiveCampaigns(
+                $start_date,
+                $end_date,
+                $request->get('page', 1),
+                $request->get(
+                    'page_size',
+                    self::HTTP_SERVER_ERROR_CODE
+                )
+            );
+            if ($data == null) {
                 return $this->createJsonResponse(['error' => 'invalid request'], self::HTTP_BAD_REQUEST_CODE);
             }
+
             return $this->createJsonResponse($data);
-        } catch (\Exception $e)
-        {
-            $this->logger->error(sprintf('API Active Campaigns error: %s start_date: %s end_date: %s trace: %s', $e->getMessage(), $request->get('start_date'), $request->get('end_date'), $e->getTraceAsString()));
+        } catch (\Exception $e) {
+            $this->logger->error(
+                sprintf(
+                    'API Active Campaigns error: %s start_date: %s end_date: %s trace: %s',
+                    $e->getMessage(),
+                    $request->get('start_date'),
+                    $request->get('end_date'),
+                    $e->getTraceAsString()
+                )
+            );
+
             return $this->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
         }
     }
 
     /**
+     * Requests the extractions revenue.
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function getExtractionsRevenueAction(Request $request)
@@ -181,26 +201,25 @@ class APIController extends Controller
         try {
             $this->fosUserAuthenticationService->checkCredentials($request);
 
-            $startDate = $request->get('start_date');
-            $endDate   = $request->get('end_date');
+            $startDate      = $request->get('start_date');
+            $endDate        = $request->get('end_date');
+            $excludedOwners = $request->get('excluded_owners');
 
-            if ($startDate == null) {
-                if ($endDate != null) {
+            $startDate      = is_string($startDate) ? $startDate : '';
+            $endDate        = is_string($endDate) ? $endDate : '';
+            $excludedOwners = is_array($excludedOwners) ? $excludedOwners : [];
 
-                    return $this->createJsonResponse(
-                        ['error' => 'end date can\'t be defined without a start date'],
-                        self::HTTP_BAD_REQUEST_CODE
-                    );
-                }
-
-                $startDate = date('Y-m-1');
+            if (!empty($endDate) && empty($startDate)) {
+                return $this->createJsonResponse(
+                    ['error' => 'end date can\'t be defined without a start date'],
+                    self::HTTP_BAD_REQUEST_CODE
+                );
             }
 
-            if ($endDate == null) {
-                $endDate = date('Y-m-t');
-            }
+            $filterBuilder = new RevenueFilterEntityBuilder($startDate, $endDate, $excludedOwners);
+            $filterBuilder->build();
 
-            $data = $this->extractionService->getRevenue($startDate, $endDate);
+            $data = $this->extractionService->getRevenue($filterBuilder->getRevenueFilter());
 
             if ($data === null) {
                 return $this->createJsonResponse(['error' => 'invalid request'], self::HTTP_BAD_REQUEST_CODE);
@@ -270,7 +289,7 @@ class APIController extends Controller
                         'notification_email' => $owner->getNotificationEmailAddress(),
                     ],
                     'extraction' => $extraction->getName(),
-                    'sold_at'    => $extraction->getSoldAt() instanceof \DateTime
+                    'sold_at'    => $extraction->getSoldAt() instanceof DateTime
                         ? $extraction->getSoldAt()->format('Y-m-d')
                         : null,
                 ];
@@ -323,11 +342,13 @@ class APIController extends Controller
      *
      * @return JsonResponse
      */
-    private function createJsonResponse ($response, $code = 200)
+    private function createJsonResponse($response, $code = 200)
     {
-        return new JsonResponse([
-            'code'     => $code,
-            'response' => $response
-        ], $code);
+        return new JsonResponse(
+            [
+                'code'     => $code,
+                'response' => $response,
+            ], $code
+        );
     }
 }

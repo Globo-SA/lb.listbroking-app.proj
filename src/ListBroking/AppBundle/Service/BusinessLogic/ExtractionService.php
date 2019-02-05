@@ -1,10 +1,4 @@
 <?php
-/**
- * @author     Samuel Castro <samuel.castro@adclick.pt>
- * @copyright  2014 Adclick
- * @license    [LISTBROKING_URL_LICENSE_HERE]
- * [LISTBROKING_DISCLAIMER]
- */
 
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
@@ -12,6 +6,7 @@ use ListBroking\AppBundle\Engine\FilterEngine;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionLog;
 use ListBroking\AppBundle\Form\FiltersType;
+use ListBroking\AppBundle\Entity\RevenueFilter;
 use ListBroking\AppBundle\Repository\ExtractionRepository;
 use ListBroking\AppBundle\Service\Base\BaseService;
 use ListBroking\AppBundle\Service\Helper\FileHandlerServiceInterface;
@@ -324,12 +319,12 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     /**
      * {@inheritdoc}
      */
-    public function getRevenue($startDate, $endDate)
+    public function getRevenue(RevenueFilter $filter)
     {
         /** @var ExtractionRepository $extractionRepository */
         $extractionRepository = $this->entityManager->getRepository('ListBrokingAppBundle:Extraction');
 
-        return $extractionRepository->getRevenue($startDate, $endDate);
+        return $extractionRepository->getRevenue($filter);
     }
 
     /**
