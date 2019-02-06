@@ -187,11 +187,9 @@ SQL;
                   ->setParameter('excluded_owners', implode(',', $filter->getExcludedOwners()));
         }
 
-        $query->groupBy('e.id, s.name')
-              ->getQuery()
-              ->getArrayResult();
-
-        return $query;
+        return $query->groupBy('e.id, s.name')
+                     ->getQuery()
+                     ->getArrayResult();
     }
 
     /**
