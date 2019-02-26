@@ -12,6 +12,7 @@ use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\Query\Expr\Composite;
 use Doctrine\ORM\QueryBuilder;
 use ListBroking\AppBundle\Engine\Filter\ContactFilterInterface;
+use ListBroking\AppBundle\Enum\ConditionOperatorEnum;
 use ListBroking\AppBundle\Form\FiltersType;
 
 class BasicContactFilter implements ContactFilterInterface
@@ -33,7 +34,7 @@ class BasicContactFilter implements ContactFilterInterface
 
             switch ( $filter['opt'] )
             {
-                case FiltersType::EQUAL_OPERATION:
+                case ConditionOperatorEnum::CONDITION_OPERATOR_NAME_EQUAL:
 
                     $name = str_replace('.', '_', sprintf("in_filter_%s_%s", $filter['filter_operation'], $filter['field']));
 
@@ -56,7 +57,7 @@ class BasicContactFilter implements ContactFilterInterface
                     $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['parameter_id'] = $name;
                     $exp_bucket[$filter['field']][$filter['opt']][$filter['filter_operation']]['values'][] = $filter['value'];
                     break;
-                case FiltersType::BETWEEN_OPERATION:
+                case ConditionOperatorEnum::CONDITION_OPERATOR_NAME_BETWEEN:
 
                     foreach ( $filter['value'] as $key => $value )
                     {
@@ -171,7 +172,7 @@ class BasicContactFilter implements ContactFilterInterface
     {
         switch ( $operation )
         {
-            case FiltersType::EQUAL_OPERATION:
+            case ConditionOperatorEnum::CONDITION_OPERATOR_NAME_EQUAL:
 
                 if ( count($values) == 1 )
                 {
@@ -187,7 +188,7 @@ class BasicContactFilter implements ContactFilterInterface
                     $qb->setParameter($parameter_id, $final_values);
                 }
                 break;
-            case FiltersType::BETWEEN_OPERATION:
+            case ConditionOperatorEnum::CONDITION_OPERATOR_NAME_BETWEEN:
                 foreach ( $parameter_id as $id )
                 {
                     $qb->setParameter($id, $values[$id]);
@@ -195,5 +196,4 @@ class BasicContactFilter implements ContactFilterInterface
                 break;
         }
     }
-
 }

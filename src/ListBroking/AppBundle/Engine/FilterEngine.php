@@ -13,6 +13,8 @@ use Doctrine\ORM\QueryBuilder;
 use ListBroking\AppBundle\Engine\Filter\ContactFilter\BasicContactFilter;
 use ListBroking\AppBundle\Engine\Filter\ContactFilter\RequiredContactFilter;
 use ListBroking\AppBundle\Engine\Filter\ContactFilterInterface;
+use ListBroking\AppBundle\Engine\Filter\ContactCampaignFilter\NotSoldMoreThanXTimesAfterDateContactCampaignFilter;
+use ListBroking\AppBundle\Engine\Filter\ContactCampaignFilterInterface;
 use ListBroking\AppBundle\Engine\Filter\LeadFilter\BasicLeadFilter;
 use ListBroking\AppBundle\Engine\Filter\LeadFilterInterface;
 use ListBroking\AppBundle\Engine\Filter\LockFilter\CampaignLockFilter;
@@ -45,27 +47,42 @@ class FilterEngine
      */
     private $lead_filter_types;
 
-    public function __construct (EntityManagerInterface $entityManager)
+    /**
+     * @var ContactCampaignFilterInterface[]
+     */
+    private $contact_campaign_filter_types;
+
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->em = $entityManager;
 
-        $this->lock_filter_types = array(
+        $this->lock_filter_types = [
             LockFilterInterface::NO_LOCKS_TYPE          => new NoLocksLockFilter(Lock::TYPE_NO_LOCKS),
             LockFilterInterface::RESERVED_LOCK_TYPE     => new ReservedLockFilter(Lock::TYPE_RESERVED),
             LockFilterInterface::CLIENT_LOCK_TYPE       => new ClientLockFilter(Lock::TYPE_CLIENT),
-            LockFilterInterface::CAMPAIGN_LOCK_TYPE     => new CampaignLockFilter(Lock::TYPE_CAMPAIGN, Lock::TYPE_CLIENT),
+            LockFilterInterface::CAMPAIGN_LOCK_TYPE     => new CampaignLockFilter(
+                Lock::TYPE_CAMPAIGN, Lock::TYPE_CLIENT
+            ),
             LockFilterInterface::CATEGORY_LOCK_TYPE     => new CategoryLockFilter(Lock::TYPE_CATEGORY),
-            LockFilterInterface::SUB_CATEGORY_LOCK_TYPE => new SubCategoryLockFilter(Lock::TYPE_SUB_CATEGORY, Lock::TYPE_CATEGORY)
-        );
+            LockFilterInterface::SUB_CATEGORY_LOCK_TYPE => new SubCategoryLockFilter(
+                Lock::TYPE_SUB_CATEGORY,
+                Lock::TYPE_CATEGORY
+            ),
+        ];
 
-        $this->contact_filter_types = array(
+        $this->contact_filter_types = [
             ContactFilterInterface::BASIC_TYPE    => new BasicContactFilter(),
             ContactFilterInterface::REQUIRED_TYPE => new RequiredContactFilter(),
-        );
+        ];
 
-        $this->lead_filter_types = array(
-            LeadFilterInterface::BASIC_TYPE => new BasicLeadFilter()
-        );
+        $this->lead_filter_types = [
+            LeadFilterInterface::BASIC_TYPE => new BasicLeadFilter(),
+        ];
+
+        $this->contact_campaign_filter_types = [
+            ContactCampaignFilterInterface::NOT_SOLD_MORE_THAN_X_TIMES_AFTER_DATE_TYPE => new NotSoldMoreThanXTimesAfterDateContactCampaignFilter(
+            ),
+        ];
     }
 
     /**
@@ -73,10 +90,11 @@ class FilterEngine
      *
      * @param Extraction $extraction
      *
-     * @throws InvalidFilterObjectException
      * @return QueryBuilder
+     * @throws InvalidFilterObjectException
+     * @throws \ListBroking\AppBundle\Exception\InvalidFilterTypeException
      */
-    public function compileFilters (Extraction $extraction)
+    public function compileFilters(Extraction $extraction)
     {
 
         /**
@@ -96,48 +114,48 @@ class FilterEngine
         $lead_qb = $this->em->createQueryBuilder()
                             ->select('leads.id as lead_id, ANY_VALUE(contacts.id) as contact_id')
                             ->from('ListBrokingAppBundle:Lead', 'leads')
-                            ->where('leads.in_opposition = 0');
-        ;
+                            ->where('leads.in_opposition = 0');;
 
         // Check if there are Contact Deduplications
-        if ( $extraction->getDeduplicationType() )
-        {
+        if ($extraction->getDeduplicationType()) {
 
             $dedup_and = $lead_qb->expr()
                                  ->andX()
-                                 ->add($lead_qb->expr()
-                                               ->eq('dedup.phone', 'leads.phone'))
-                                 ->add($lead_qb->expr()
-                                               ->eq('dedup.extraction', ":extraction"))
-            ;
+                                 ->add(
+                                     $lead_qb->expr()
+                                             ->eq('dedup.phone', 'leads.phone')
+                                 )
+                                 ->add(
+                                     $lead_qb->expr()
+                                             ->eq('dedup.extraction', ":extraction")
+                                 );
             $lead_qb->setParameter('extraction', $extraction);
             $lead_qb->leftJoin('ListBroking\AppBundle\Entity\ExtractionDeduplication', 'dedup', 'WITH', $dedup_and);
 
             // Remove ExtractionDeduplications
-            if ( $extraction->getDeduplicationType() == Extraction::EXCLUDE_DEDUPLICATION_TYPE )
-            {
-                $lead_qb->andWhere($lead_qb->expr()
-                                           ->isNull('dedup.id'));
+            if ($extraction->getDeduplicationType() == Extraction::EXCLUDE_DEDUPLICATION_TYPE) {
+                $lead_qb->andWhere(
+                    $lead_qb->expr()
+                            ->isNull('dedup.id')
+                );
             }
 
             // Include ExtractionDeduplications
-            if ( $extraction->getDeduplicationType() == Extraction::INCLUDE_DEDUPLICATION_TYPE )
-            {
-                $lead_qb->andWhere($lead_qb->expr()
-                                           ->isNotNull('dedup.id'));
+            if ($extraction->getDeduplicationType() == Extraction::INCLUDE_DEDUPLICATION_TYPE) {
+                $lead_qb->andWhere(
+                    $lead_qb->expr()
+                            ->isNotNull('dedup.id')
+                );
             }
         }
 
         // Check if there are Lock filters
-        if ( array_key_exists('lock', $filters) && ! empty($filters['lock']) )
-        {
+        if (array_key_exists('lock', $filters) && !empty($filters['lock'])) {
             $locksAndX = $lead_qb->expr()
-                                 ->andX()
-            ;
+                                 ->andX();
 
             // Iterate over Lock Filter Types
-            foreach ( $filters['lock'] as $type => $lock_filters )
-            {
+            foreach ($filters['lock'] as $type => $lock_filters) {
                 /** @var LockFilterInterface $lock_filter_type */
                 $lock_filter_type = $this->lock_filter_types[$type];
                 $lock_filter_type->addFilter($locksAndX, $lead_qb, $lock_filters);
@@ -149,45 +167,56 @@ class FilterEngine
         }
 
         // Check if there are Contact filters
-        if ( array_key_exists('contact', $filters) && ! empty($filters['contact']) )
-        {
+        if (array_key_exists('contact', $filters) && !empty($filters['contact'])) {
             $contactsAndX = $lead_qb->expr()
-                                    ->andX()
-            ;
+                                    ->andX();
 
             // Iterate over Contact Filter Types
-            foreach ( $filters['contact'] as $type => $contact_filters )
-            {
+            foreach ($filters['contact'] as $type => $contact_filters) {
                 /** @var ContactFilterInterface $contact_filter_type */
                 $contact_filter_type = $this->contact_filter_types[$type];
                 $contact_filter_type->addFilter($contactsAndX, $lead_qb, $contact_filters);
             }
 
-            if ( $contactsAndX->getParts() )
-            {
+            if ($contactsAndX->getParts()) {
                 $lead_qb->join('leads.contacts', 'contacts', 'WITH', $contactsAndX);
             };
-        }
-        else
-        {
+        } else {
             $lead_qb->join('leads.contacts', 'contacts');
         }
 
         // Check if there are Lead filters
-        if ( array_key_exists('lead', $filters) && ! empty($filters['lead']) )
-        {
+        if (array_key_exists('lead', $filters) && !empty($filters['lead'])) {
             $leadsAndX = $lead_qb->expr()
-                                 ->andX()
-            ;
+                                 ->andX();
 
             // Iterate over Lead Filter Types
-            foreach ( $filters['lead'] as $type => $lead_filters )
-            {
+            foreach ($filters['lead'] as $type => $lead_filters) {
                 /** @var leadFilterInterface $lead_filter_type */
                 $lead_filter_type = $this->lead_filter_types[$type];
                 $lead_filter_type->addFilter($leadsAndX, $lead_qb, $lead_filters);
             }
             $lead_qb->andWhere($leadsAndX);
+        }
+
+        // Check if there are ContactCampaign filters
+        if (array_key_exists('contact_campaign', $filters) && !empty($filters['contact_campaign'])) {
+            $contactCampaignsAndX = $lead_qb->expr()
+                                            ->andX();
+
+            // Iterate over Lead Filter Types
+            foreach ($filters['contact_campaign'] as $type => $contactCampaignFilters) {
+                /** @var ContactCampaignFilterInterface $contactCampaignFilterType */
+                $contactCampaignFilterType = $this->contact_campaign_filter_types[$type];
+                $contactCampaignFilterType->addFilter($contactCampaignsAndX, $lead_qb, $contactCampaignFilters);
+            }
+
+            // LEFT OUTER JOIN
+            $contactCampaignsAndX->add(
+                $lead_qb->expr()->andX('contact_campaigns.campaign = :contact_campaigns_campaign_id')
+            );
+            $lead_qb->setParameter('contact_campaigns_campaign_id', $extraction->getCampaign()->getId());
+            $lead_qb->leftJoin('contacts.contact_campaigns', 'contact_campaigns', 'WITH', $contactCampaignsAndX);
         }
 
         // Group by Lead to get only

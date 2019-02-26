@@ -68,6 +68,9 @@ class LockExtractionConsumer implements ConsumerInterface
             // Generate locks
             $this->e_service->generateLocks($extraction, $msg_body['lock_types']);
 
+            // Generate contact campaign history
+            $this->e_service->generateContactCampaignHistory($extraction);
+
             // Close extraction
             $extraction->setIsLocking(false);
 

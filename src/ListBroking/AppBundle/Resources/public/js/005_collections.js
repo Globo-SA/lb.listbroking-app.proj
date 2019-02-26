@@ -23,6 +23,7 @@
             }
         });
         initDateRangePickers($('form'));
+        initDatePickers($('form'));
 
         /**
          * Adds a new collection
@@ -44,6 +45,7 @@
             $("[data-mask]").inputmask();
 
             initDateRangePickers($collectionHolder);
+            initDatePickers($collectionHolder);
             addControls($collectionHolder);
         }
 
@@ -177,6 +179,19 @@
                     });
 
                 $(this).next('.help-block').html('Range: ' + $(this).data('daterangepicker').chosenLabel);
+            });
+        }
+
+        /**
+         * Starts the Date Pickers
+         * @param $this
+         */
+        function initDatePickers($this) {
+            // Datepickers
+            $this.find('[data-toggle=datepicker]').each(function () {
+                $(this).datepicker({
+                    format: 'YYYY/MM/DD',
+                });
             });
         }
     });

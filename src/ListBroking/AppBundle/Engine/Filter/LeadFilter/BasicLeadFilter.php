@@ -1,20 +1,11 @@
 <?php
-/**
- * 
- * @author     Samuel Castro <samuel.castro@adclick.pt>
- * @copyright  2014 Adclick
- * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
- * [LISTBROKING_DISCLAIMER]
- */
 
 namespace ListBroking\AppBundle\Engine\Filter\LeadFilter;
 
-
 use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\QueryBuilder;
-
 use ListBroking\AppBundle\Engine\Filter\LeadFilterInterface;
+use ListBroking\AppBundle\Enum\ConditionOperatorEnum;
 use ListBroking\AppBundle\Exception\InvalidFilterObjectException;
 use ListBroking\AppBundle\Exception\InvalidFilterTypeException;
 use ListBroking\AppBundle\Form\FiltersType;
@@ -42,8 +33,7 @@ class BasicLeadFilter implements LeadFilterInterface {
             $uid = uniqid();
 
             switch($filter['opt']){
-                case FiltersType::EQUAL_OPERATION:
-
+                case ConditionOperatorEnum::CONDITION_OPERATOR_NAME_EQUAL:
 
                     $name =  "in_filter_{$uid}";
 
@@ -65,7 +55,7 @@ class BasicLeadFilter implements LeadFilterInterface {
                     $qb->setParameter($name, $filter['value']);
 
                     break;
-                case FiltersType::BETWEEN_OPERATION:
+                case ConditionOperatorEnum::CONDITION_OPERATOR_NAME_BETWEEN:
 
                     $name_x =  "between_filter_x_{$uid}";
                     $name_y =  "between_filter_y_{$uid}";
@@ -109,6 +99,4 @@ class BasicLeadFilter implements LeadFilterInterface {
             }
         }
     }
-
-
 }

@@ -188,7 +188,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     public function runExtraction (Extraction $extraction)
     {
         // if the Extraction is closed don't run
-        if ($extraction->getStatus() === Extraction::STATUS_FINAL) {
+        if ($extraction->isFinished()) {
 
             return false;
         }
@@ -235,6 +235,65 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     }
 
     /**
+     * @param \DateTime|string $start_date
+     * @param \DateTime|string $end_date
+     * @param int $page
+     * @param int $limit
+     *
+     * @return array|null
+     */
+    public function getActiveCampaigns($start_date, $end_date, $page, $limit)
+    {
+        $extractionRepository = $this->entityManager->getRepository('ListBrokingAppBundle:Extraction');
+        return $extractionRepository->getActiveCampaigns($start_date, $end_date, $page, $limit);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRevenue(RevenueFilter $filter)
+    {
+        /** @var ExtractionRepository $extractionRepository */
+        $extractionRepository = $this->entityManager->getRepository('ListBrokingAppBundle:Extraction');
+
+        return $extractionRepository->getRevenue($filter);
+    }
+
+    /**
+     * Return all extractions
+     *
+     * @param string $name
+     *
+     * @return array
+     */
+    public function findExtractionsByName(string $name)
+    {
+        $extractionRepository = $this->entityManager->getRepository('ListBrokingAppBundle:Extraction');
+
+        return $extractionRepository->findExtractionsByName($name);
+    }
+
+    /**
+     * @param Extraction $extraction
+     *
+     * @return mixed
+     */
+    public function generateContactCampaignHistory(Extraction $extraction)
+    {
+        $this->logger->info(
+            sprintf(
+                'Generating Contact Campaign History for: Extraction %s | Campaign %s',
+                $extraction->getId(),
+                $extraction->getCampaign()->getId()
+            )
+        );
+
+        $this->entityManager->getRepository('ListBrokingAppBundle:ContactCampaign')->generateHistory(
+            $extraction->getId()
+        );
+    }
+
+    /**
      * Executes the filtering engine and adds the contacts
      * to the Extraction
      *
@@ -242,6 +301,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      *
      * @return void
      * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
+     * @throws \ListBroking\AppBundle\Exception\InvalidFilterTypeException
      */
     private function executeFilterEngine (Extraction $extraction)
     {
@@ -300,44 +360,5 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $extraction->setQuery(json_encode($query));
 
         $this->updateEntity($extraction);
-    }
-
-    /**
-     * @param \DateTime|string $start_date
-     * @param \DateTime|string $end_date
-     * @param int $page
-     * @param int $limit
-     *
-     * @return array|null
-     */
-    public function getActiveCampaigns($start_date, $end_date, $page, $limit)
-    {
-        $extractionRepository = $this->entityManager->getRepository('ListBrokingAppBundle:Extraction');
-        return $extractionRepository->getActiveCampaigns($start_date, $end_date, $page, $limit);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRevenue(RevenueFilter $filter)
-    {
-        /** @var ExtractionRepository $extractionRepository */
-        $extractionRepository = $this->entityManager->getRepository('ListBrokingAppBundle:Extraction');
-
-        return $extractionRepository->getRevenue($filter);
-    }
-
-    /**
-     * Return all extractions
-     *
-     * @param string $name
-     *
-     * @return array
-     */
-    public function findExtractionsByName(string $name)
-    {
-        $extractionRepository = $this->entityManager->getRepository('ListBrokingAppBundle:Extraction');
-
-        return $extractionRepository->findExtractionsByName($name);
     }
 }

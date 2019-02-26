@@ -32,6 +32,16 @@ interface ExtractionServiceInterface extends BaseServiceInterface
     public function findExtraction($id);
 
     /**
+     * @param $start_date
+     * @param $end_date
+     * @param $page
+     * @param $limit
+     *
+     * @return mixed
+     */
+    public function getActiveCampaigns($start_date, $end_date, $page, $limit);
+
+    /**
      * Get revenue
      *
      * @param RevenueFilter $filter
@@ -166,4 +176,11 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      * @return ExtractionLog
      */
     public function logExtractionAction(Extraction $extraction, $message);
+
+    /**
+     * @param Extraction $extraction
+     *
+     * @return mixed
+     */
+    public function generateContactCampaignHistory(Extraction $extraction);
 }

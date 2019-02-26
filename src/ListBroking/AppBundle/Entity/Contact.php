@@ -94,6 +94,11 @@ class Contact
     private $extraction_contacts;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $contact_campaigns;
+
+    /**
      * @var Lead
      */
     private $lead;
@@ -138,12 +143,15 @@ class Contact
      */
     private $country;
 
-    function __construct ()
+    function __construct()
     {
         $this->extractions = new ArrayCollection();
     }
 
-    function __toString ()
+    /**
+     * @return string
+     */
+    function __toString(): string
     {
         return $this->firstname . ' ' . $this->lastname;
     }
@@ -152,16 +160,16 @@ class Contact
      * Updates the dimensions of the Contact
      *
      * @param $dimensions
+     *
+     * @throws \ReflectionException
      */
-    public function updateContactDimensions ($dimensions)
+    public function updateContactDimensions($dimensions)
     {
-        foreach ( $dimensions as $dimension )
-        {
-            if ( empty($dimension) )
-            {
+        foreach ($dimensions as $dimension) {
+            if (empty($dimension)) {
                 continue;
             }
-            $reflect = new \ReflectionClass($dimension);
+            $reflect    = new \ReflectionClass($dimension);
             $set_method = 'set' . $reflect->getShortName();
             $this->$set_method($dimension);
         }
@@ -171,45 +179,42 @@ class Contact
      * Updates the Facts of the contact using a StagingContact
      *
      * @param StagingContact $s_contact
+     *
+     * @throws \Exception
      */
-    public function updateContactFacts (StagingContact $s_contact)
+    public function updateContactFacts(StagingContact $s_contact)
     {
         $birthdate = trim($s_contact->getBirthdate());
-        $fields = array(
-            'email'           => $s_contact->getEmail(),
-            'external_id'     => $s_contact->getExternalId(),
-            'firstname'       => $s_contact->getFirstname(),
-            'lastname'        => $s_contact->getLastname(),
-            'birthdate'       => empty($birthdate) ? null : new \DateTime($s_contact->getBirthdate()),
-            'address'         => $s_contact->getAddress(),
-            'postalcode1'     => $s_contact->getPostalcode1(),
-            'postalcode2'     => $s_contact->getPostalcode2(),
-            'ipaddress'       => $s_contact->getIpaddress(),
-            'date'            => empty($s_contact->getDate()) ? null : $s_contact->getDate(),
-            'post_request'    => $s_contact->getPostRequest()
-        );
+        $fields    = [
+            'email'        => $s_contact->getEmail(),
+            'external_id'  => $s_contact->getExternalId(),
+            'firstname'    => $s_contact->getFirstname(),
+            'lastname'     => $s_contact->getLastname(),
+            'birthdate'    => empty($birthdate) ? null : new \DateTime($s_contact->getBirthdate()),
+            'address'      => $s_contact->getAddress(),
+            'postalcode1'  => $s_contact->getPostalcode1(),
+            'postalcode2'  => $s_contact->getPostalcode2(),
+            'ipaddress'    => $s_contact->getIpaddress(),
+            'date'         => empty($s_contact->getDate()) ? null : $s_contact->getDate(),
+            'post_request' => $s_contact->getPostRequest(),
+        ];
 
         // If there's a new postalcode1 value,
         // reset the old values before adding the new ones
-        if ( ! empty($fields['postalcode1']) )
-        {
+        if (!empty($fields['postalcode1'])) {
             $this->postalcode1 = null;
             $this->postalcode2 = null;
-        }
-        else
-        {
+        } else {
             // If there isn't a postalcode1, postalcode2
             // doesn't make sense
             $fields['postalcode2'] = null;
         }
 
-        foreach ( $fields as $field => $new_value )
-        {
+        foreach ($fields as $field => $new_value) {
             $inflector = new Inflector();
             $setMethod = 'set' . $inflector->classify($field);
 
-            if ( empty($new_value) )
-            {
+            if (empty($new_value)) {
                 continue;
             }
 
@@ -219,9 +224,10 @@ class Contact
 
     /**
      * Get id
+     *
      * @return integer
      */
-    public function getId ()
+    public function getId()
     {
         return $this->id;
     }
@@ -229,7 +235,7 @@ class Contact
     /**
      * @return boolean
      */
-    public function isClean ()
+    public function isClean()
     {
         return $this->is_clean;
     }
@@ -246,17 +252,21 @@ class Contact
 
     /**
      * @param boolean $is_clean
+     *
+     * @return Contact
      */
-    public function setIsClean ($is_clean)
+    public function setIsClean($is_clean): Contact
     {
         $this->is_clean = $is_clean;
+
+        return $this;
     }
 
     /**
      * Get externalId
      * @return string
      */
-    public function getExternalId ()
+    public function getExternalId()
     {
         return $this->external_id;
     }
@@ -268,7 +278,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setExternalId ($externalId)
+    public function setExternalId($externalId): Contact
     {
         $this->external_id = $externalId;
 
@@ -279,7 +289,7 @@ class Contact
      * Get email
      * @return string
      */
-    public function getEmail ()
+    public function getEmail()
     {
         return $this->email;
     }
@@ -291,7 +301,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setEmail ($email)
+    public function setEmail($email): Contact
     {
         $this->email = $email;
 
@@ -302,7 +312,7 @@ class Contact
      * Get firstname
      * @return string
      */
-    public function getFirstname ()
+    public function getFirstname()
     {
         return $this->firstname;
     }
@@ -314,7 +324,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setFirstname ($firstname)
+    public function setFirstname($firstname): Contact
     {
         $this->firstname = $firstname;
 
@@ -325,7 +335,7 @@ class Contact
      * Get lastname
      * @return string
      */
-    public function getLastname ()
+    public function getLastname()
     {
         return $this->lastname;
     }
@@ -337,7 +347,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setLastname ($lastname)
+    public function setLastname($lastname): Contact
     {
         $this->lastname = $lastname;
 
@@ -348,7 +358,7 @@ class Contact
      * Get birthdate
      * @return \DateTime
      */
-    public function getBirthdate ()
+    public function getBirthdate()
     {
         return $this->birthdate;
     }
@@ -360,7 +370,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setBirthdate ($birthdate)
+    public function setBirthdate($birthdate): Contact
     {
         $this->birthdate = $birthdate;
 
@@ -371,7 +381,7 @@ class Contact
      * Get address
      * @return string
      */
-    public function getAddress ()
+    public function getAddress()
     {
         return $this->address;
     }
@@ -383,7 +393,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setAddress ($address)
+    public function setAddress($address): Contact
     {
         $this->address = $address;
 
@@ -394,7 +404,7 @@ class Contact
      * Get postalcode1
      * @return string
      */
-    public function getPostalcode1 ()
+    public function getPostalcode1()
     {
         return $this->postalcode1;
     }
@@ -406,7 +416,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setPostalcode1 ($postalcode1)
+    public function setPostalcode1($postalcode1): Contact
     {
         $this->postalcode1 = $postalcode1;
 
@@ -417,7 +427,7 @@ class Contact
      * Get postalcode2
      * @return string
      */
-    public function getPostalcode2 ()
+    public function getPostalcode2()
     {
         return $this->postalcode2;
     }
@@ -429,7 +439,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setPostalcode2 ($postalcode2)
+    public function setPostalcode2($postalcode2): Contact
     {
         $this->postalcode2 = $postalcode2;
 
@@ -440,7 +450,7 @@ class Contact
      * Get ipaddress
      * @return string
      */
-    public function getIpaddress ()
+    public function getIpaddress()
     {
         return $this->ipaddress;
     }
@@ -452,7 +462,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setIpaddress ($ipaddress)
+    public function setIpaddress($ipaddress): Contact
     {
         $this->ipaddress = $ipaddress;
 
@@ -463,7 +473,7 @@ class Contact
      * Get date
      * @return \DateTime
      */
-    public function getDate ()
+    public function getDate()
     {
         return $this->date;
     }
@@ -475,7 +485,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setDate ($date)
+    public function setDate($date): Contact
     {
         $this->date = $date;
 
@@ -486,7 +496,7 @@ class Contact
      * Get postRequest
      * @return array
      */
-    public function getPostRequest ()
+    public function getPostRequest()
     {
         return $this->post_request;
     }
@@ -498,7 +508,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setPostRequest ($postRequest)
+    public function setPostRequest($postRequest): Contact
     {
         $this->post_request = $postRequest;
 
@@ -509,7 +519,7 @@ class Contact
      * Get validations
      * @return array
      */
-    public function getValidations ()
+    public function getValidations()
     {
         return $this->validations;
     }
@@ -521,7 +531,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setValidations ($validations)
+    public function setValidations($validations): Contact
     {
         $this->validations = $validations;
 
@@ -535,7 +545,7 @@ class Contact
      *
      * @return Contact
      */
-    public function addExtractionContact (ExtractionContact $extractionContact)
+    public function addExtractionContact(ExtractionContact $extractionContact): Contact
     {
         $this->extraction_contacts[] = $extractionContact;
 
@@ -547,7 +557,7 @@ class Contact
      *
      * @param ExtractionContact $extractionContact
      */
-    public function removeExtractionContact (ExtractionContact $extractionContact)
+    public function removeExtractionContact(ExtractionContact $extractionContact)
     {
         $this->extraction_contacts->removeElement($extractionContact);
     }
@@ -556,16 +566,49 @@ class Contact
      * Get extractionContacts
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getExtractionContacts ()
+    public function getExtractionContacts()
     {
         return $this->extraction_contacts;
+    }
+
+    /**
+     * Add contactCampaign
+     *
+     * @param ContactCampaign $contactCampaign
+     *
+     * @return Contact
+     */
+    public function addContactCampaign(ContactCampaign $contactCampaign): Contact
+    {
+        $this->contact_campaigns[] = $contactCampaign;
+
+        return $this;
+    }
+
+    /**
+     * Remove contactCampaign
+     *
+     * @param ContactCampaign $contactCampaign
+     */
+    public function removeContactCampaign(ContactCampaign $contactCampaign)
+    {
+        $this->contact_campaigns->removeElement($contactCampaign);
+    }
+
+    /**
+     * Get contactCampaign
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getContactCampaigns()
+    {
+        return $this->contact_campaigns;
     }
 
     /**
      * Get lead
      * @return Lead
      */
-    public function getLead ()
+    public function getLead()
     {
         return $this->lead;
     }
@@ -577,7 +620,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setLead (Lead $lead)
+    public function setLead(Lead $lead): Contact
     {
         $this->lead = $lead;
 
@@ -588,7 +631,7 @@ class Contact
      * Get source
      * @return Source
      */
-    public function getSource ()
+    public function getSource()
     {
         return $this->source;
     }
@@ -600,7 +643,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setSource (Source $source)
+    public function setSource(Source $source): Contact
     {
         $this->source = $source;
 
@@ -611,7 +654,7 @@ class Contact
      * Get owner
      * @return Owner
      */
-    public function getOwner ()
+    public function getOwner()
     {
         return $this->owner;
     }
@@ -623,7 +666,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setOwner (Owner $owner)
+    public function setOwner(Owner $owner): Contact
     {
         $this->owner = $owner;
 
@@ -634,7 +677,7 @@ class Contact
      * Get subCategory
      * @return SubCategory
      */
-    public function getSubCategory ()
+    public function getSubCategory()
     {
         return $this->sub_category;
     }
@@ -646,7 +689,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setSubCategory (SubCategory $subCategory)
+    public function setSubCategory(SubCategory $subCategory): Contact
     {
         $this->sub_category = $subCategory;
 
@@ -657,7 +700,7 @@ class Contact
      * Get gender
      * @return Gender
      */
-    public function getGender ()
+    public function getGender()
     {
         return $this->gender;
     }
@@ -669,7 +712,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setGender (Gender $gender)
+    public function setGender(Gender $gender): Contact
     {
         $this->gender = $gender;
 
@@ -680,7 +723,7 @@ class Contact
      * Get district
      * @return District
      */
-    public function getDistrict ()
+    public function getDistrict()
     {
         return $this->district;
     }
@@ -692,7 +735,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setDistrict (District $district = null)
+    public function setDistrict(District $district = null): Contact
     {
         $this->district = $district;
 
@@ -703,7 +746,7 @@ class Contact
      * Get county
      * @return County
      */
-    public function getCounty ()
+    public function getCounty()
     {
         return $this->county;
     }
@@ -715,7 +758,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setCounty (County $county = null)
+    public function setCounty(County $county = null): Contact
     {
         $this->county = $county;
 
@@ -726,7 +769,7 @@ class Contact
      * Get parish
      * @return Parish
      */
-    public function getParish ()
+    public function getParish()
     {
         return $this->parish;
     }
@@ -738,7 +781,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setParish (Parish $parish = null)
+    public function setParish(Parish $parish = null): Contact
     {
         $this->parish = $parish;
 
@@ -749,7 +792,7 @@ class Contact
      * Get country
      * @return Country
      */
-    public function getCountry ()
+    public function getCountry()
     {
         return $this->country;
     }
@@ -761,7 +804,7 @@ class Contact
      *
      * @return Contact
      */
-    public function setCountry (Country $country)
+    public function setCountry(Country $country): Contact
     {
         $this->country = $country;
 

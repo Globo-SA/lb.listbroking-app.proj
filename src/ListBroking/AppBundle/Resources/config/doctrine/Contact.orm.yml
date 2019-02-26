@@ -91,6 +91,10 @@ ListBroking\AppBundle\Entity\Contact:
             targetEntity: ListBroking\AppBundle\Entity\ExtractionContact
             mappedBy:     contact
             cascade:      [all]
+        contact_campaigns:
+            targetEntity: ListBroking\AppBundle\Entity\ContactCampaign
+            mappedBy:     contact
+            cascade:      [all]
     manyToOne:
         lead:
             targetEntity: ListBroking\AppBundle\Entity\Lead

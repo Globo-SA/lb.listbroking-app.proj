@@ -35,9 +35,9 @@ class Extraction
     const INCLUDE_DEDUPLICATION_TYPE = 'include';
 
     public static $status_names = array(
-        1 => 'Filtration',
-        2 => 'Confirmation',
-        3 => 'Finished'
+        self::STATUS_FILTRATION => 'Filtration',
+        self::STATUS_CONFIRMATION => 'Confirmation',
+        self::STATUS_FINAL => 'Finished'
     );
 
     public static $deduplication_names = array(
@@ -583,10 +583,20 @@ class Extraction
     /**
      * Get extraction_log
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getExtractionLog()
     {
         return $this->extraction_log;
+    }
+
+    /**
+     * Returns true if extraction is finished, false if it isn't
+     *
+     * @return bool
+     */
+    public function isFinished() : bool
+    {
+        return $this->status === Extraction::STATUS_FINAL;
     }
 }
