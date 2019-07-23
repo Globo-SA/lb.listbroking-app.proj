@@ -82,9 +82,8 @@
         "adclick/authorization-client-bundle": "1.*",
         "adclick/api-abstraction-bundle": "1.*",
         "adclick/task-controller-bundle": "1.*",
-
-        "adclick/components-gdpr": "~1.2",
-        "phpoffice/phpspreadsheet": "^1.4"
+        "phpoffice/phpspreadsheet": "^1.4",
+        "adclick/components-gdpr": "^1.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.0",
