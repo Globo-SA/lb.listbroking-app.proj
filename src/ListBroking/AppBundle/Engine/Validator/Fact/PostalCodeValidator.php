@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * @author     Samuel Castro <samuel.castro@adclick.pt>
  * @copyright  2014 Adclick
  * @license    [LISTBROKING_URL_LICENSE_HERE]
@@ -16,10 +16,11 @@ use Guzzle\Service\Client;
 use ListBroking\AppBundle\Engine\Validator\ValidatorInterface;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Exception\Validation\DimensionValidationException;
+use ListBroking\AppBundle\Model\PostalCodeResponse;
 
 class PostalCodeValidator implements ValidatorInterface {
 
-    const POSTALCODE_API_PT_URL = 'http://postalcode.adctools.com';
+    const POSTALCODE_API_PT_URL = 'https://postalcode.adctools.com/api/postalcode/%s/information?country=%s';
 
     /**
      * @var EntityManager
@@ -80,17 +81,19 @@ class PostalCodeValidator implements ValidatorInterface {
             throw new DimensionValidationException('Empty postalcode1 and postalcode2 fields');
         }
 
-        $postalcode_info = $this->getPostalCodeDetails($country, $field1, $field2);
-        if(!empty($postalcode_info)){
-            if(!empty($postalcode_info['district'])){
-                $contact->setDistrict($postalcode_info['district']);
-            }
-            if(!empty($postalcode_info['county'])){
-                $contact->setCounty($postalcode_info['county']);
-            }
-            if(!empty($postalcode_info['parish'])){
-                $contact->setParish($postalcode_info['parish']);
-            }
+        $postalcodeInfo = $this->getPostalCodeDetails($country, $field1, $field2);
+        if ($postalcodeInfo == null || $postalcodeInfo->wasSuccessful() === false) {
+            return;
+        }
+
+        if(!empty($postalcodeInfo['district'])){
+            $contact->setDistrict($postalcodeInfo->getDistrictName());
+        }
+        if(!empty($postalcodeInfo['county'])){
+            $contact->setCounty($postalcodeInfo->getCityName());
+        }
+        if(!empty($postalcodeInfo['parish'])){
+            $contact->setParish($postalcodeInfo->getParishName());
         }
     }
 
@@ -103,30 +106,28 @@ class PostalCodeValidator implements ValidatorInterface {
         return 'postalcode_validator';
     }
 
-    private function getPostalCodeDetails($country, $postalcode1, $postalcode2){
-
-        $info = null;
-        switch($country){
+    /**
+     * @param $country
+     * @param $postalcode1
+     * @param $postalcode2
+     *
+     * @return PostalCodeResponse|null
+     */
+    private function getPostalCodeDetails($country, $postalcode1, $postalcode2)
+    {
+        switch ($country) {
             case 'PT':
-                $request = $this->guzzle->get(self::POSTALCODE_API_PT_URL, null, array('query'=> array(
-                    'postal' => array('cp1' => $postalcode1, 'cp2' =>  $postalcode2)
-                )));
-                $response =  $request->send();
-                $results = json_decode($response->getBody(true), true);
-                if($results['code'] == 200){
+            case 'PL':
+                $fullPostalcode = sprintf('%s-%s', $postalcode1, $postalcode2);
 
-                    // Mapping from the API
-                    $info['district'] = $results['result'][0]['distrito'];
-                    $info['county'] = $results['result'][0]['localidade'];
-                    $info['parish'] = $results['result'][0]['localidade'];
-                }
-                break;
+                $url = sprintf(self::POSTALCODE_API_PT_URL, $fullPostalcode, $country);
+
+                $request  = $this->guzzle->get($url);
+                $response = $request->send();
+
+                return new PostalCodeResponse($response);
             default:
-                break;
+                return null;
         }
-
-        return $info;
     }
-
-
-} 
+}

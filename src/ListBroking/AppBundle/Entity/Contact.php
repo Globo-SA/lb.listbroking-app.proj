@@ -178,25 +178,25 @@ class Contact
     /**
      * Updates the Facts of the contact using a StagingContact
      *
-     * @param StagingContact $s_contact
+     * @param StagingContact $stagingContact
      *
      * @throws \Exception
      */
-    public function updateContactFacts(StagingContact $s_contact)
+    public function updateContactFacts(StagingContact $stagingContact)
     {
-        $birthdate = trim($s_contact->getBirthdate());
+        $birthdate = trim($stagingContact->getBirthdate());
         $fields    = [
-            'email'        => $s_contact->getEmail(),
-            'external_id'  => $s_contact->getExternalId(),
-            'firstname'    => $s_contact->getFirstname(),
-            'lastname'     => $s_contact->getLastname(),
-            'birthdate'    => empty($birthdate) ? null : new \DateTime($s_contact->getBirthdate()),
-            'address'      => $s_contact->getAddress(),
-            'postalcode1'  => $s_contact->getPostalcode1(),
-            'postalcode2'  => $s_contact->getPostalcode2(),
-            'ipaddress'    => $s_contact->getIpaddress(),
-            'date'         => empty($s_contact->getDate()) ? null : $s_contact->getDate(),
-            'post_request' => $s_contact->getPostRequest(),
+            'email'        => $stagingContact->getEmail(),
+            'external_id'  => $stagingContact->getExternalId(),
+            'firstname'    => $stagingContact->getFirstname(),
+            'lastname'     => $stagingContact->getLastname(),
+            'birthdate'    => empty($birthdate) ? null : new \DateTime($stagingContact->getBirthdate()),
+            'address'      => $stagingContact->getAddress(),
+            'postalcode1'  => $stagingContact->getPostalcode1(),
+            'postalcode2'  => $stagingContact->getPostalcode2(),
+            'ipaddress'    => $stagingContact->getIpaddress(),
+            'date'         => empty($stagingContact->getDate()) ? null : $stagingContact->getDate(),
+            'post_request' => $stagingContact->getPostRequest(),
         ];
 
         // If there's a new postalcode1 value,
@@ -204,10 +204,6 @@ class Contact
         if (!empty($fields['postalcode1'])) {
             $this->postalcode1 = null;
             $this->postalcode2 = null;
-        } else {
-            // If there isn't a postalcode1, postalcode2
-            // doesn't make sense
-            $fields['postalcode2'] = null;
         }
 
         foreach ($fields as $field => $new_value) {

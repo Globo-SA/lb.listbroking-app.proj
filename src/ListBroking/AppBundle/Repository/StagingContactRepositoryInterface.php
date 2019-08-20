@@ -2,6 +2,7 @@
 
 namespace ListBroking\AppBundle\Repository;
 
+use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\StagingContact;
 
 interface StagingContactRepositoryInterface
@@ -41,15 +42,6 @@ interface StagingContactRepositoryInterface
     public function loadValidatedContact (StagingContact $staging_contact, array $dimensions);
 
     /**
-     * Loads Updated StagingContacts to the
-     * Contact table
-     *
-     * @param StagingContact $staging_contact
-     * @param array          $dimensions
-     */
-    public function loadUpdatedContact (StagingContact $staging_contact, array $dimensions);
-
-    /**
      * Finds contacts that need validation and lock them
      * to the current process
      *
@@ -68,4 +60,21 @@ interface StagingContactRepositoryInterface
      * @return mixed
      */
     public function deleteContactByEmailOrPhone(string $email, string $phone);
+
+    /**
+     * @param StagingContact $stagingContact
+     */
+    public function moveStagingContactToDQP(StagingContact $stagingContact): void;
+
+    /**
+     * @param StagingContact $stagingContact
+     */
+    public function moveStagingContactToProcessed(StagingContact $stagingContact): void;
+
+    /**
+     * @param StagingContact $staging_contact
+     *
+     * @return Contact
+     */
+    public function getNotCleanedContactById(StagingContact $staging_contact);
 }

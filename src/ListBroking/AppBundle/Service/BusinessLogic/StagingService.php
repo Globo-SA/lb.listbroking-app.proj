@@ -12,6 +12,7 @@ use ListBroking\AppBundle\Engine\ValidatorEngine;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\OppositionList;
 use ListBroking\AppBundle\Entity\StagingContact;
+use ListBroking\AppBundle\Enum\ErrorCodesEnum;
 use ListBroking\AppBundle\Exception\Validation\OppositionListException;
 use ListBroking\AppBundle\Repository\LeadRepository;
 use ListBroking\AppBundle\Repository\OppositionListRepository;
@@ -184,8 +185,42 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     public function loadUpdatedContact(StagingContact $stagingContact)
     {
+        $this->logger->debug(sprintf('Loading Staging Contact %s for Update', $stagingContact->getId()));
+
         $dimensions = $this->loadStagingContactDimensions($stagingContact);
-        $this->stagingContactRepository->loadUpdatedContact($stagingContact, $dimensions);
+        if (!empty($stagingContact->getContactId())) {
+            $this->logger->warning(ErrorCodesEnum::WARNING_MESSAGE_COULD_NOT_LOAD_CONTACT);
+
+            return;
+        }
+
+        $this->logger->debug(
+            sprintf(
+                'Updating Contact %s with Staging Contact %s',
+                $stagingContact->getContactId(),
+                $stagingContact->getId()
+            )
+        );
+
+        $contact = $this->stagingContactRepository->getNotCleanedContactById($stagingContact);
+        if (!$contact) {
+            $this->stagingContactRepository->moveStagingContactToDQP($stagingContact);
+
+            $this->logger->error(ErrorCodesEnum::ERROR_MESSAGE_CONTACT_NOT_FOUND_STAGING_PROCESS);
+
+            return;
+        }
+
+        $this->logger->debug(sprintf('Update Contact %s Facts', $stagingContact->getContactId()));
+        $contact->updateContactFacts($stagingContact);
+
+        $this->logger->debug(sprintf('Update Contact %s Dimensions', $stagingContact->getContactId()));
+        $contact->updateContactDimensions(array_values($dimensions));
+
+        $contact->setIsClean(true);
+
+        $this->logger->debug(sprintf('Move Staging Contact %s to Processed', $stagingContact->getId()));
+        $this->stagingContactRepository->moveStagingContactToProcessed($stagingContact);
     }
 
     /**
@@ -201,6 +236,8 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     public function validateStagingContact(StagingContact $stagingContact)
     {
+        $this->logger->debug(sprintf('Validate Staging Contact %s', $stagingContact->getId()));
+
         $this->validatorEngine->run($stagingContact);
     }
 
@@ -221,6 +258,8 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     private function loadStagingContactDimensions(StagingContact $stagingContact)
     {
+        $this->logger->debug(sprintf('Loading Dimensions for contact %s', $stagingContact->getId()));
+
         $source = $this->sourceRepository->getByExternalId($stagingContact->getSourceExternalId());
 
         //Dimension Tables
@@ -249,6 +288,8 @@ class StagingService extends BaseService implements StagingServiceInterface
      */
     private function findDimension($repoName, $name)
     {
+        $this->logger->debug(sprintf('Find %s with name %s', $repoName, $name));
+
         return $this->entityManager->getRepository($repoName)
                                    ->findOneBy(['name' => $name]);
     }

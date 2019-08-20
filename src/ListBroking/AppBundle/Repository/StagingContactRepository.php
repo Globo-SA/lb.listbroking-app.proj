@@ -116,7 +116,6 @@ class StagingContactRepository extends EntityRepository implements StagingContac
     {
         // Only remove StagingContacts processed more than 5 minutes ago
         $updated_before = (new \DateTime('- 5 minutes'))->format('Y-m-d H:t:s');
-        $entity_manager = $this->getEntityManager();
 
         $staging_contacts_to_move = $this->createQueryBuilder('s')
                                          ->andWhere('s.valid = :valid')
@@ -135,10 +134,8 @@ class StagingContactRepository extends EntityRepository implements StagingContac
 
         while ( ($staging_contact = $staging_contacts_to_move->next()) !== false )
         {
-            $this->moveStagingContact($staging_contact[0], new StagingContactDQP());
+            $this->moveStagingContactToDQP($staging_contact[0]);
         }
-
-        $entity_manager->flush();
     }
 
     /**
@@ -211,46 +208,8 @@ class StagingContactRepository extends EntityRepository implements StagingContac
         $staging_contact->setContactId($contact->getId());
 
         // Move StagingContact
-        $this->moveStagingContact($staging_contact, new StagingContactProcessed());
+        $this->moveStagingContactToProcessed($staging_contact);
 
-        $em->flush();
-
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function loadUpdatedContact (StagingContact $staging_contact, array $dimensions)
-    {
-        $em = $this->getEntityManager();
-        $contact_id = $staging_contact->getContactId();
-        if ( ! empty($contact_id) )
-        {
-
-            $contact = $em->getRepository('ListBrokingAppBundle:Contact')
-                          ->findOneBy(array(
-                              'id'       => $staging_contact->getContactId(),
-                              'is_clean' => 0
-                          ))
-            ;
-            if ( ! $contact )
-            {
-                $this->moveStagingContact($staging_contact, new StagingContactDQP());
-                $em->flush();
-
-                return;
-            }
-
-            $contact->updateContactFacts($staging_contact);
-            $contact->updateContactDimensions(array_values($dimensions));
-
-            $contact->setIsClean(true);
-
-            // Move StagingContact
-            $this->moveStagingContact($staging_contact, new StagingContactProcessed());
-
-            $em->flush();
-        }
     }
 
     /**
@@ -287,6 +246,48 @@ class StagingContactRepository extends EntityRepository implements StagingContac
         $entity_manager->commit();
 
         return $staging_contacts;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function moveStagingContactToDQP(StagingContact $stagingContact): void
+    {
+        $em = $this->getEntityManager();
+
+        $this->moveStagingContact($stagingContact, new StagingContactDQP());
+
+        $em->flush();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function moveStagingContactToProcessed(StagingContact $stagingContact): void
+    {
+        $em = $this->getEntityManager();
+
+        $this->moveStagingContact($stagingContact, new StagingContactProcessed());
+
+        $em->flush();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getNotCleanedContactById(StagingContact $staging_contact)
+    {
+        $em      = $this->getEntityManager();
+
+        $contact = $em->getRepository('ListBrokingAppBundle:Contact')
+                      ->findOneBy(
+                          [
+                              'id'       => $staging_contact->getContactId(),
+                              'is_clean' => 0
+                          ]
+                      );
+
+        return $contact;
     }
 
     /**

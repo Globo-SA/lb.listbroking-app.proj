@@ -48,6 +48,7 @@ class SourceValidator implements ValidatorInterface {
      * @param array          $validations
      *
      * @throws DimensionValidationException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function validate(StagingContact $contact, &$validations)
     {

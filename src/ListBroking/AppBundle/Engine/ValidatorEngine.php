@@ -30,6 +30,7 @@ use ListBroking\AppBundle\Engine\Validator\Fact\RepeatedValidator;
 use ListBroking\AppBundle\Engine\Validator\ValidatorInterface;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Service\Helper\AppServiceInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -62,19 +63,26 @@ class ValidatorEngine
      */
     protected $appService;
 
+    /** @var LoggerInterface */
+    protected $logger;
+
     /**
      * ValidatorEngine constructor.
      *
      * @param RegistryInterface   $doctrine
      * @param Client              $guzzle
      * @param AppServiceInterface $a_service
+     * @param LoggerInterface     $logger
+     *
+     * @throws \Exception
      */
-    public function __construct(RegistryInterface $doctrine, Client $guzzle, AppServiceInterface $a_service)
+    public function __construct(RegistryInterface $doctrine, Client $guzzle, AppServiceInterface $a_service, LoggerInterface $logger)
     {
         $this->doctrine   = $doctrine;
         $this->em         = $doctrine->getManager();
         $this->guzzle     = $guzzle;
         $this->appService = $a_service;
+        $this->logger     = $logger;
 
         $this->validators = [
 
@@ -88,7 +96,7 @@ class ValidatorEngine
             new CategoryValidator($this->em, true),
             new OwnerValidator($this->em, true),
             new SourceValidator($this->em, true),
-            new GenderValidator($this->em, true), // Dimension with fixed values
+            new GenderValidator($this->em, true),
 
             // Fact validations
             new EmailValidator($this->em, true),
@@ -105,16 +113,21 @@ class ValidatorEngine
      * StagingContacts
      *
      * @param StagingContact $contact
+     *
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function run($contact)
     {
         $validations = [];
 
         foreach ($this->validators as $validator) {
+            $this->logger->debug(sprintf('Run Validator: %s', $validator->getName()));
+
             try {
-                // Validate
                 $validator->validate($contact, $validations);
             } catch (\Exception $e) {
+                $this->logger->warning(sprintf('Contact failed over %s validation. Error: %s', $validator->getName(), $e->getMessage()));
+
                 $validations['errors'][$validator->getName()][] = $e->getMessage() . ', line:' . $e->getLine();
             }
         }

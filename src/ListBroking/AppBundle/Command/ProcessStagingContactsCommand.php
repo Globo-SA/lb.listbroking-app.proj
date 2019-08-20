@@ -11,6 +11,7 @@ namespace ListBroking\AppBundle\Command;
 use Adclick\TaskControllerBundle\Service\TaskServiceInterface;
 use ListBroking\AppBundle\Entity\StagingContact;
 use ListBroking\AppBundle\Service\BusinessLogic\StagingServiceInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -27,12 +28,17 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
     /**
      * @var TaskServiceInterface
      */
-    private $service;
+    private $taskService;
 
     /**
      * @var StagingServiceInterface
      */
-    private $stagingService;
+    private $stagingContactService;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * {@inheritdoc}
@@ -55,57 +61,56 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $container            = $this->getContainer();
-        $logger               = $container->get('logger');
-        $this->service        = $container->get('task');
-        $this->stagingService = $container->get('app.service.staging');
-        $logger->info('Start execution');
+        $container                   = $this->getContainer();
+        $this->logger                = $container->get('logger');
+        $this->taskService           = $container->get('task');
+        $this->stagingContactService = $container->get('app.service.staging');
+
+        $this->logger->info('Start execution');
 
         try {
-            if (!$this->service->start($this, $input, $output, self::MAX_RUNNING)) {
-                $logger->info('Cant continue.. MAX_RUNNING');
+            if (!$this->taskService->start($this, $input, $output, self::MAX_RUNNING)) {
+                $this->logger->info('Cant continue.. MAX_RUNNING');
 
                 return;
             }
 
-            $limit    = $input->getOption('limit');
-            $contacts = $this->findContactsToProcess($limit);
+            $this->logger->info('Find staging contacts to process');
 
-            if (!$contacts) {
-                $logger->info('No contacts to process');
-                $this->service->finish();
+            $limit           = $input->getOption('limit');
+            $stagingContacts = $this->findContactsToProcess($limit);
+
+            if (!$stagingContacts) {
+                $this->logger->info('No staging contacts to process');
+                $this->taskService->finish();
 
                 return;
             }
 
             // Iterate staging contacts
-            $logger->info('Stating contact Validation');
-            foreach ($contacts as $stagingContact) {
+            $this->logger->info('Start staging contacts process');
+            foreach ($stagingContacts as $stagingContact) {
 
-                $logger->info('Start processing Staging contact_id:' . $stagingContact->getId());
+                $this->logger->debug('Process staging contact id:' . $stagingContact->getId());
                 if ($stagingContact->getUpdate()) {
-                    $logger->info(
-                        sprintf(
-                            'Going to Process staging Id %s Update in Contact id %s',
-                            $stagingContact->getId(),
-                            $stagingContact->getContactId()
-                        )
-                    );
-                    $this->stagingService->loadUpdatedContact($stagingContact);
+                    $this->stagingContactService->loadUpdatedContact($stagingContact);
 
-                    $logger->info(sprintf('Staging Id %s as been updated', $stagingContact->getId()));
+                    $this->logger->debug(sprintf('Staging Id %s as been processed', $stagingContact->getId()));
+
                     continue;
                 }
 
-                $this->stagingService->validateStagingContact($stagingContact);
+                $this->stagingContactService->validateStagingContact($stagingContact);
                 $this->loadValidContact($stagingContact);
-                $logger->info(sprintf('Staging Id %s as been processed', $stagingContact->getId()));
+                $this->logger->debug(sprintf('Staging Id %s as been processed', $stagingContact->getId()));
             }
 
-            $this->service->finish();
+            $this->logger->info('End of staging contacts process');
+
+            $this->taskService->finish();
         } catch (\Exception $e) {
-            $this->service->throwError($e);
-            $this->service->write($e->getTraceAsString());
+            $this->taskService->throwError($e);
+            $this->taskService->write($e->getTraceAsString());
         }
     }
 
@@ -120,38 +125,40 @@ class ProcessStagingContactsCommand extends ContainerAwareCommand
     private function findContactsToProcess($limit)
     {
         $start = time();
-        $this->service->write('Trying to lock module');
+        $this->logger->info('Trying to lock module');
 
-        while ($this->stagingService->isExecutionLocked(self::LOCK_MODULE)) {
+        while ($this->stagingContactService->isExecutionLocked(self::LOCK_MODULE)) {
             $now = time();
 
             if (($now - $start) > self::MAX_WAITING_TIME) {
-                $this->service->write('Could not get a lock');
+                $this->logger->error('Could not get a lock');
 
                 return null;
             }
         }
 
-        $this->service->write('Selecting contacts');
-        $this->stagingService->lockExecution(self::LOCK_MODULE);
+        $this->logger->info('Selecting contacts. Obtain LOCK');
+        $this->stagingContactService->lockExecution(self::LOCK_MODULE);
 
-        $contacts = $this->stagingService->findAndLockContactsToValidate($limit);
-        $this->stagingService->releaseExecution(self::LOCK_MODULE);
+        $stagingContacts = $this->stagingContactService->findAndLockContactsToValidate($limit);
 
-        return $contacts;
+        $this->logger->info('Contacts found. Release LOCK');
+        $this->stagingContactService->releaseExecution(self::LOCK_MODULE);
+
+        return $stagingContacts;
     }
 
     /**
      * Loads valid StagingContacts
      *
-     * @param StagingContact $staging_contact
+     * @param StagingContact $stagingContact
      */
-    private function loadValidContact(StagingContact $staging_contact)
+    private function loadValidContact(StagingContact $stagingContact)
     {
         // Load validated contact
-        if ($staging_contact->getValid() && $staging_contact->getProcessed()) {
-            $this->service->write("Loading StagingContact: {$staging_contact->getId()}");
-            $this->stagingService->loadValidatedContact($staging_contact);
+        if ($stagingContact->getValid() && $stagingContact->getProcessed()) {
+            $this->taskService->write("Loading StagingContact: {$stagingContact->getId()}");
+            $this->stagingContactService->loadValidatedContact($stagingContact);
         }
     }
 }
