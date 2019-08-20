@@ -216,6 +216,10 @@
                 $preview_table.find('i.icon-huge').addClass('hidden');
 
                 callback();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                var response = jqXHR.responseJSON;
+                console.log(response);
             }
         });
     };
