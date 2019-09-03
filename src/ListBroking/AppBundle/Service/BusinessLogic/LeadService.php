@@ -15,20 +15,38 @@ class LeadService implements LeadServiceInterface
     private $leadRepository;
 
     /**
+     * @var LeadRepositoryInterface
+     */
+    private $leadHistRepository;
+
+    /**
      * @var ContactRepositoryInterface
      */
     private $contactRepository;
 
     /**
+     * @var ContactRepositoryInterface
+     */
+    private $contactHistRepository;
+
+    /**
      * LeadService constructor.
      *
-     * @param LeadRepositoryInterface $leadRepository
+     * @param LeadRepositoryInterface    $leadRepository
+     * @param LeadRepositoryInterface    $leadHistRepository
      * @param ContactRepositoryInterface $contactRepository
+     * @param ContactRepositoryInterface $contactHistRepository
      */
-    public function __construct(LeadRepositoryInterface $leadRepository, ContactRepositoryInterface $contactRepository)
-    {
-        $this->leadRepository       = $leadRepository;
-        $this->contactRepository    = $contactRepository;
+    public function __construct(
+        LeadRepositoryInterface $leadRepository,
+        LeadRepositoryInterface $leadHistRepository,
+        ContactRepositoryInterface $contactRepository,
+        ContactRepositoryInterface $contactHistRepository
+    ) {
+        $this->leadRepository        = $leadRepository;
+        $this->leadHistRepository    = $leadHistRepository;
+        $this->contactRepository     = $contactRepository;
+        $this->contactHistRepository = $contactHistRepository;
     }
 
     /**
@@ -37,7 +55,9 @@ class LeadService implements LeadServiceInterface
     public function getLeads(string $email, string $phone): array
     {
         $leads    = $this->leadRepository->getByPhone($phone);
+        $leads    = array_merge($leads, $this->leadHistRepository->getByPhone($phone));
         $contacts = $this->contactRepository->findByEmail($email);
+        $contacts = array_merge($contacts, $this->contactRepository->findByEmail($email));
 
         /** @var Contact $contact */
         foreach ($contacts as $contact) {
@@ -61,7 +81,7 @@ class LeadService implements LeadServiceInterface
      *
      * @return bool
      */
-    private function isLeadInList (Lead $lead, array $list): bool
+    private function isLeadInList(Lead $lead, array $list): bool
     {
         /** @var Lead $item */
         foreach ($list as $item) {

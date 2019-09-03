@@ -1,0 +1,69 @@
+ListBroking\AppBundle\Entity\LeadHist:
+    type:   entity
+    table:  lead_hist
+    repositoryClass: ListBroking\AppBundle\Repository\LeadHistRepository
+    id:
+        id:
+            type: bigint
+            id:   true
+            generator:
+                strategy: AUTO
+    indexes:
+        phone_index:
+          columns: [ phone ]
+    uniqueConstraints:
+        unique_idx:
+          columns: [ phone, country_id ]
+    fields:
+        phone:
+            type:     string
+            column:   phone
+        is_mobile:
+            type:     boolean
+            column:   is_mobile
+            nullable: false
+            options:
+                default: 0
+        in_opposition:
+            type:     boolean
+            column:   in_opposition
+            nullable: false
+            options:
+                default: 0
+        is_ready_to_use:
+          type: boolean
+          column: is_ready_to_use
+        is_sms_ok:
+          type: boolean
+          column: is_sms_ok
+          nullable: false
+          options:
+            default: 0
+# Timestampable
+        created_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: create } }
+
+        updated_at:
+            type: datetime
+            nullable: true
+            gedmo: { timestampable: { on: update } }
+# End of Timestampable
+    manyToOne:
+        country:
+            targetEntity: ListBroking\AppBundle\Entity\Country
+            joinColumn:
+                name:                 country_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
+    oneToMany:
+        contacts:
+            targetEntity: ListBroking\AppBundle\Entity\ContactHist
+            mappedBy:     leadHist
+            cascade:      [all]
+        locks:
+            targetEntity: ListBroking\AppBundle\Entity\Lock
+            mappedBy:     leadHist
+            cascade:      [all]
