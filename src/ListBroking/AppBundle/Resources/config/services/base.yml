@@ -81,6 +81,6 @@ services:
     class: ListBroking\AppBundle\Service\BusinessLogic\LeadService
     arguments:
         - "@app.repository.lead"
-        - "@app.repository.lead"
+        - "@app.repository.lead_hist"
         - "@app.repository.contact"
-        - "@app.repository.contact"
+        - "@app.repository.contact_hist"

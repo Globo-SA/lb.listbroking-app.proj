@@ -17,6 +17,12 @@ services:
         arguments:
             - 'ListBroking\AppBundle\Entity\Lead'
 
+    app.repository.lead_hist:
+        class: ListBroking\AppBundle\Repository\LeadHistRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\LeadHist'
+
     app.repository.source:
         class: ListBroking\AppBundle\Repository\SourceRepository
         factory: ["@doctrine", getRepository]
@@ -29,11 +35,23 @@ services:
         arguments:
             - 'ListBroking\AppBundle\Entity\ExtractionContact'
 
+    app.repository.extraction_contact_hist:
+        class: ListBroking\AppBundle\Repository\ExtractionContactHistRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\ExtractionContactHist'
+
     app.repository.contact:
         class: ListBroking\AppBundle\Repository\ContactRepository
         factory: ["@doctrine", getRepository]
         arguments:
             - 'ListBroking\AppBundle\Entity\Contact'
+
+    app.repository.contact_hist:
+        class: ListBroking\AppBundle\Repository\ContactHistRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\ContactHist'
 
     app.repository.extraction_deduplication:
         class: ListBroking\AppBundle\Repository\ExtractionContactRepository

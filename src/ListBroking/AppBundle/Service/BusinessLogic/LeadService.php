@@ -4,6 +4,7 @@ namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Lead;
+use ListBroking\AppBundle\Entity\LeadHist;
 use ListBroking\AppBundle\Repository\ContactRepositoryInterface;
 use ListBroking\AppBundle\Repository\LeadRepositoryInterface;
 
@@ -55,15 +56,35 @@ class LeadService implements LeadServiceInterface
     public function getLeads(string $email, string $phone): array
     {
         $leads    = $this->leadRepository->getByPhone($phone);
-        $leads    = array_merge($leads, $this->leadHistRepository->getByPhone($phone));
         $contacts = $this->contactRepository->findByEmail($email);
-        $contacts = array_merge($contacts, $this->contactRepository->findByEmail($email));
 
         /** @var Contact $contact */
         foreach ($contacts as $contact) {
             $contactLead = $contact->getLead();
 
             if ($this->isLeadInList($contactLead, $leads)) {
+                continue;
+            }
+
+            $leads[] = $contactLead;
+        }
+
+        return $leads;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLeadsHist(string $email, string $phone): array
+    {
+        $leads    = $this->leadHistRepository->getByPhone($phone);
+        $contacts = $this->contactHistRepository->findByEmail($email);
+
+        /** @var Contact $contact */
+        foreach ($contacts as $contact) {
+            $contactLead = $contact->getLeadHist();
+
+            if ($this->isLeadHistInList($contactLead, $leads)) {
                 continue;
             }
 
@@ -82,6 +103,26 @@ class LeadService implements LeadServiceInterface
      * @return bool
      */
     private function isLeadInList(Lead $lead, array $list): bool
+    {
+        /** @var Lead $item */
+        foreach ($list as $item) {
+            if ($item->getId() === $lead->getId()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a specific Lead is in a list of Leads
+     *
+     * @param LeadHist $lead
+     * @param array    $list
+     *
+     * @return bool
+     */
+    private function isLeadHistInList(LeadHist $lead, array $list): bool
     {
         /** @var Lead $item */
         foreach ($list as $item) {

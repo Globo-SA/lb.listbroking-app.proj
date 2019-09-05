@@ -1,0 +1,34 @@
+ListBroking\AppBundle\Entity\ContactCampaignHist:
+    type: entity
+    table: contact_campaign_hist
+    repositoryClass: ListBroking\AppBundle\Repository\ContactCampaignHistRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    indexes:
+        date_index:
+            columns: [ created_at ]
+    fields:
+        created_at:
+            type: datetime
+            column: created_at
+            gedmo:
+                timestampable:
+                    on: create
+    manyToOne:
+        contact:
+            targetEntity: ListBroking\AppBundle\Entity\ContactHist
+            inversedBy: contacts_hist
+            joinColumn:
+                name: contact_id
+                referencedColumnName: id
+        campaign:
+            targetEntity: ListBroking\AppBundle\Entity\Campaign
+            inversedBy: campaigns
+            joinColumn:
+                name: campaign_id
+                referencedColumnName: id
+    lifecycleCallbacks: {  }

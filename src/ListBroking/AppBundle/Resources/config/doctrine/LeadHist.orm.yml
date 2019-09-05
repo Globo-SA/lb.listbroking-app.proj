@@ -61,9 +61,9 @@ ListBroking\AppBundle\Entity\LeadHist:
     oneToMany:
         contacts:
             targetEntity: ListBroking\AppBundle\Entity\ContactHist
-            mappedBy:     leadHist
+            mappedBy:     lead_hist
             cascade:      [all]
         locks:
             targetEntity: ListBroking\AppBundle\Entity\Lock
-            mappedBy:     leadHist
+            mappedBy:     lead
             cascade:      [all]

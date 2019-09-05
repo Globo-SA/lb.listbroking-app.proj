@@ -320,14 +320,20 @@ class APIController extends Controller
         // Find all leads from email and phone
         $leads = $this->leadService->getLeads($email, $phone);
 
-        if (count($leads) <= 0) {
+        // Find all leads historic from email and phone
+        $leadsHist = $this->leadService->getLeadsHist($email, $phone);
+
+        if (count($leads) <= 0 || count($leadsHist) <= 0) {
             $this->logger->info(static::CONTACTS_NOT_FOUND_MESSAGE);
         }
 
         // Obfuscate all leads found
         $obfuscated = $this->contactObfuscationService->obfuscateAllContactData($leads, $email, $phone);
 
-        if ($obfuscated === false) {
+        // Obfuscate all leads found on historic
+        $obfuscatedHist = $this->contactObfuscationService->obfuscateAllContactHistData($leadsHist, $email, $phone);
+
+        if ($obfuscated === false || $obfuscatedHist === false) {
             return $this->createJsonResponse(static::COULD_NOT_ERASE_CONTACT_MESSAGE, static::HTTP_SERVER_ERROR_CODE);
         }
 

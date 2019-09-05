@@ -4,7 +4,6 @@ namespace ListBroking\AppBundle\Repository;
 
 use Doctrine\DBAL\Statement;
 use Doctrine\ORM\EntityRepository;
-use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Entity\Lock;
 
 class LeadRepository extends EntityRepository implements LeadRepositoryInterface

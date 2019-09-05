@@ -3,8 +3,10 @@
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 use ListBroking\AppBundle\Entity\Contact;
+use ListBroking\AppBundle\Entity\ContactHist;
 use ListBroking\AppBundle\Entity\ExtractionDeduplication;
 use ListBroking\AppBundle\Entity\Lead;
+use ListBroking\AppBundle\Entity\LeadHist;
 use ListBroking\AppBundle\Entity\OppositionList;
 use ListBroking\AppBundle\Repository\ExtractionDeduplicationRepositoryInterface;
 use ListBroking\AppBundle\Repository\OppositionListRepositoryInterface;
@@ -114,6 +116,32 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function obfuscateAllContactHistData(array $leadsHist, string $email, string $phone): bool
+    {
+        try {
+            $this->entityManager->beginTransaction();
+
+            // Obfuscate by lead hist
+            foreach ($leadsHist as $leadHist) {
+                $this->obfuscateByLeadHist($leadHist);
+            }
+
+            $this->entityManager->flush();
+            $this->entityManager->commit();
+
+            return true;
+
+        } catch (\Exception $exception) {
+            $this->logger->critical(static::ERASE_CONTACT_ERROR_MESSAGE, ['message' => $exception->getMessage()]);
+            $this->entityManager->rollback();
+
+            return false;
+        }
+    }
+
+    /**
      * Obfuscate data from a collection of Leads
      *
      * @param Lead[] $leads
@@ -162,12 +190,24 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
     }
 
     /**
+     * Obfuscate data from a given LeadHist
+     *
+     * @param LeadHist $leadHist
+     */
+    private function obfuscateByLeadHist(LeadHist $leadHist): void
+    {
+        foreach ($leadHist->getContacts() as $contact) {
+            $this->obfuscateContactHist($contact);
+        }
+
+        $this->obfuscateLeadHist($leadHist);
+    }
+
+    /**
      * Obfuscate data from a given Lead and Contact
      *
      * @param Lead    $lead
      * @param Contact $contact
-     *
-     * @return void
      */
     private function obfuscateByLeadAndContact(Lead $lead, Contact $contact): void
     {
@@ -212,6 +252,28 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
     }
 
     /**
+     * Obfuscate a specific Contact
+     *
+     * @param ContactHist $contactHist
+     */
+    private function obfuscateContactHist(ContactHist $contactHist): void
+    {
+        $obfuscatedEmail       = $this->encryptEmail($contactHist->getEmail());
+        $obfuscatedFirstName   = $this->encrypt($contactHist->getFirstname());
+        $obfuscatedLastName    = $this->encrypt($contactHist->getFirstname());
+        $obfuscatedPostRequest = $this->encrypt(json_encode($contactHist->getPostRequest()));
+
+        $contactHist->setEmail($obfuscatedEmail);
+        $contactHist->setFirstname($obfuscatedFirstName);
+        $contactHist->setLastname($obfuscatedLastName);
+        $contactHist->setPostRequest([$obfuscatedPostRequest]);
+
+        $this->entityManager->persist($contactHist);
+
+        $this->logger->info(static::OBFUSCATING_CONTACT_MESSAGE, ['contactId' => $contactHist->getId()]);
+    }
+
+    /**
      * Obfuscate a specific Lead
      *
      * @param Lead $lead
@@ -232,6 +294,24 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
     }
 
     /**
+     * Obfuscate a specific LeadHist
+     *
+     * @param LeadHist $leadHist
+     */
+    private function obfuscateLeadHist(LeadHist $leadHist): void
+    {
+        $obfuscatedPhone = $this->encrypt($leadHist->getPhone());
+
+        $leadHist->setPhone($obfuscatedPhone);
+        $leadHist->setInOpposition(true);
+        $leadHist->setIsReadyToUse(false);
+
+        $this->entityManager->persist($leadHist);
+
+        $this->logger->info(static::OBFUSCATING_LEAD_MESSAGE, ['leadId' => $leadHist->getId()]);
+    }
+
+    /**
      * Obfuscate a collection of ExtractionDeduplications
      *
      * @param ExtractionDeduplication[] $extractionDeduplications
@@ -240,7 +320,7 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
      */
     private function obfuscateExtractionDeduplications(array $extractionDeduplications): void
     {
-        foreach ($extractionDeduplications as $extractionDeduplication){
+        foreach ($extractionDeduplications as $extractionDeduplication) {
             $this->obfuscateExtractionDeduplication($extractionDeduplication);
         }
     }
@@ -275,7 +355,7 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
      */
     private function obfuscateOppositionLists(array $oppositionLists): void
     {
-        foreach ($oppositionLists as $oppositionList){
+        foreach ($oppositionLists as $oppositionList) {
             $this->obfuscateOppositionList($oppositionList);
         }
     }
