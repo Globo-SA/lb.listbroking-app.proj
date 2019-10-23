@@ -323,7 +323,7 @@ class APIController extends Controller
         // Find all leads historic from email and phone
         $leadsHist = $this->leadService->getLeadsHist($email, $phone);
 
-        if (count($leads) <= 0 || count($leadsHist) <= 0) {
+        if (count($leads) <= 0 && count($leadsHist) <= 0) {
             $this->logger->info(static::CONTACTS_NOT_FOUND_MESSAGE);
         }
 
