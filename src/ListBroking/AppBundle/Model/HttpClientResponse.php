@@ -2,7 +2,7 @@
 
 namespace ListBroking\AppBundle\Model;
 
-use \Psr\Http\Message\ResponseInterface;
+use Guzzle\Http\Message\Response;
 
 /**
  * HttpClientResponse
@@ -95,9 +95,9 @@ abstract class HttpClientResponse
     /**
      * Fills class fields based on the given $originalResponse
      *
-     * @param ResponseInterface $originalResponse
+     * @param Response $originalResponse
      *
      * @return void
      */
-    protected abstract function setFieldsFromDecodedResponse(ResponseInterface $originalResponse);
+    protected abstract function setFieldsFromDecodedResponse(Response $originalResponse);
 }

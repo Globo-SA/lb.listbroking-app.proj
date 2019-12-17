@@ -2,7 +2,7 @@
 
 namespace ListBroking\AppBundle\Model;
 
-use Psr\Http\Message\ResponseInterface;
+use Guzzle\Http\Message\Response;
 
 class PostalCodeResponse extends HttpClientResponse
 {
@@ -150,11 +150,11 @@ class PostalCodeResponse extends HttpClientResponse
     /**
      * Fills class fields based on the given $originalResponse
      *
-     * @param ResponseInterface $originalResponse
+     * @param Response $originalResponse
      *
      * @return void
      */
-    protected function setFieldsFromDecodedResponse(ResponseInterface $originalResponse)
+    protected function setFieldsFromDecodedResponse(Response $originalResponse)
     {
         $decodedResponse = json_decode($originalResponse->getBody(), true);
 

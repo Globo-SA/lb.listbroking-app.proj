@@ -86,13 +86,13 @@ class PostalCodeValidator implements ValidatorInterface {
             return;
         }
 
-        if(!empty($postalcodeInfo['district'])){
+        if(!empty($postalcodeInfo->getDistrictName())){
             $contact->setDistrict($postalcodeInfo->getDistrictName());
         }
-        if(!empty($postalcodeInfo['county'])){
+        if(!empty($postalcodeInfo->getCityName())){
             $contact->setCounty($postalcodeInfo->getCityName());
         }
-        if(!empty($postalcodeInfo['parish'])){
+        if(!empty($postalcodeInfo->getParishName())){
             $contact->setParish($postalcodeInfo->getParishName());
         }
     }
