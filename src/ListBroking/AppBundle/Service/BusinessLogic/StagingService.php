@@ -188,7 +188,7 @@ class StagingService extends BaseService implements StagingServiceInterface
         $this->logger->debug(sprintf('Loading Staging Contact %s for Update', $stagingContact->getId()));
 
         $dimensions = $this->loadStagingContactDimensions($stagingContact);
-        if (!empty($stagingContact->getContactId())) {
+        if (empty($stagingContact->getContactId())) {
             $this->logger->warning(ErrorCodesEnum::WARNING_MESSAGE_COULD_NOT_LOAD_CONTACT);
 
             return;
