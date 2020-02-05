@@ -1,0 +1,14 @@
+doctrine_cache:
+  providers:
+    metadata_cache:
+      namespace: metadata_cache_ns_%domain%
+      predis:
+        host: %redis_host%
+        port: %redis_port%
+        password: %redis_password%
+    query_cache:
+      namespace: query_cache_ns_%domain%
+      predis:
+        host: %redis_host%
+        port: %redis_port%
+        password: %redis_password%

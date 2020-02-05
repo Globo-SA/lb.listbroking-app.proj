@@ -1,6 +1,12 @@
-<!--
-    Before you open an issue, make sure this one does not already exist.
-    Please also read the "guidelines for contributing" link above before posting.
--->
+**Version:**
+[ ] **0.x.x**
 
-### NOT IN USE
+**I'm submitting a ...**
+[ ] bug report
+[ ] feature request
+
+**Current behavior:**
+<!-- Describe the current behaviour here -->
+
+**Expected behavior:**
+<!-- Describe what the behavior would be -->

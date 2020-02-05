@@ -1,0 +1,30 @@
+ListBroking\AppBundle\Entity\ExtractionContactHist:
+    type: entity
+    table: extraction_contact_hist
+    repositoryClass: ListBroking\AppBundle\Repository\ExtractionContactHistRepository
+    id:
+        id:
+            type: bigint
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        createdAt:
+            column: created_at
+            type: datetime
+            gedmo: { timestampable: { on: create } }
+            options:
+                default: CURRENT_TIMESTAMP
+    manyToOne:
+        extraction:
+            targetEntity: ListBroking\AppBundle\Entity\Extraction
+            inversedBy: extraction_contacts
+            joinColumn:
+                name: extraction_id
+                referencedColumnName: id
+        contact:
+            targetEntity: ListBroking\AppBundle\Entity\ContactHist
+            inversedBy: extraction_contacts_hist
+            joinColumn:
+                name: contact_id
+                referencedColumnName: id

@@ -1,0 +1,1 @@
+FROM adclick/base:latest-mysql5.7

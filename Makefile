@@ -1,60 +1,120 @@
+# use tabs, not spaces
+
+SHELL = /bin/bash
+
+CURRENT_FILENAME := $(lastword $(MAKEFILE_LIST))
+SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+include $(SELF_DIR)versions.mk
+export $(shell sed 's/=.*//' $(SELF_DIR)versions.mk)
+
+include $(SELF_DIR)config.mk
+
+.PHONY: help
 help:
-	@echo "do a cat!"
+	@echo "You can use one of these commands:";
+	@$(MAKE) -s list
 
-install:
-	composer install;
-	make data;
-	make assets;
-	make cache;
+.PHONY: project-new
+project-new:
+	@$(MAKE) -s check-requirements
+	@sed -i '' 's/PROJECT_SLUG/$(PROJECT_SLUG)/g' ./docker/nginx/conf/default.conf
+	@sed -i '' 's/PROJECT_DOMAIN_DEV/$(PROJECT_DOMAIN_DEV)/g' ./docker/nginx/conf/default.conf
+	@sed -i '' 's/PROJECT_DOMAIN_PROD/$(PROJECT_DOMAIN_PROD)/g' ./docker/nginx/conf/default.conf
 
-data:
-	bin/console doctrine:schema:drop --force
-	mysql -uroot -hadclick.mysql57 listbroking < database/struct.sql
-	bin/console doctrine:migrations:migrate --no-interaction
-	bin/console doctrine:fixtures:load --no-interaction
+	@sed -i '' 's/PROJECT_SLUG/$(PROJECT_SLUG)/g' ./project/pm2.json
 
-queues:
-	rabbitmqadmin --host listbroking.rabbitmq declare exchange name=deliver-extraction type=direct --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare exchange name=run-extraction type=direct --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare exchange name=deduplicate-extraction type=direct --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare exchange name=lock-extraction type=direct --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare exchange name=opposition-list-import type=direct --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare exchange name=staging-contact-import type=direct --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare queue name=deliver-extraction durable=true --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare queue name=run-extraction durable=true --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare queue name=deduplicate-extraction durable=true --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare queue name=lock-extraction durable=true --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare queue name=opposition-list-import durable=true --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare queue name=staging-contact-import durable=true --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare binding source=deliver-extraction destination_type="queue" destination=deliver-extraction routing_key=""  --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare binding source=run-extraction destination_type="queue" destination=run-extraction routing_key=""  --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare binding source=deduplicate-extraction destination_type="queue" destination=deduplicate-extraction routing_key=""  --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare binding source=lock-extraction destination_type="queue" destination=lock-extraction routing_key=""  --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare binding source=opposition-list-import destination_type="queue" destination=opposition-list-import routing_key=""  --username=admin --password=admin
-	rabbitmqadmin --host listbroking.rabbitmq declare binding source=staging-contact-import destination_type="queue" destination=staging-contact-import routing_key=""  --username=admin --password=admin
+	@sed -i '' 's/PROJECT_SLUG/$(PROJECT_SLUG)/g' ./versions.mk
 
-assets:
-	bin/console assets:install --symlink
-	bin/console assetic:dump
-	npm install
+	@sed -i '' 's/PROJECT_SLUG/$(PROJECT_SLUG)/g' ./docker-compose.yml
+	@sed -i '' 's/PROJECT_DOMAIN_DEV/$(PROJECT_DOMAIN_DEV)/g' ./docker-compose.yml
+	@sed -i '' 's/PROJECT_DOMAIN_PROD/$(PROJECT_DOMAIN_PROD)/g' ./docker-compose.yml
 
-cache:
-	bin/console cache:clear
-	bin/console cache:warmup
+	@sed -i '' 's/PROJECT_SLUG/$(PROJECT_SLUG)/g' ./docker-compose-prod.yml
+	@sed -i '' 's/PROJECT_DOMAIN_DEV/$(PROJECT_DOMAIN_DEV)/g' ./docker-compose-prod.yml
+	@sed -i '' 's/PROJECT_DOMAIN_PROD/$(PROJECT_DOMAIN_PROD)/g' ./docker-compose-prod.yml
 
-up:
-	composer install --dev
-	make data
-	make assets
-	make cache
+	@mv ./docker/nginx/conf/default.conf ./docker/nginx/conf/$(PROJECT_SLUG).conf
 
-tests:
-	bin/console doctrine:schema:validate
-	make spec
-	make unit
+	@cp .env.dist .env
 
-unit:
-	vendor/phpunit/phpunit/phpunit --configuration app/phpunit.xml.dist
+	@rm -rf .git
 
-spec:
-	./bin/phpspec run -c phpspec.yml
+.PHONY: toolset
+toolset:
+	@$(MAKE) -s check-requirements
+	@$(MAKE) -s network-create
+	@docker run -v $$(pwd)/project:/var/www/html -w="/var/www/html" -e USER_ID="$$(id -u)" -e GROUP_ID="$$(id -g)" \
+		--env SSH_AUTH_SOCK=/ssh-agent --rm --network $(NETWORK) -ti $(DOCKER_IMAGE_TOOLSET)
+
+.PHONY: up-dev
+up-dev:
+	@$(MAKE) -s check-requirements
+	@$(MAKE) -s network-create
+	@$(shell cat $(SELF_DIR)versions.mk) docker-compose up -d
+
+.PHONY: down-dev
+down-dev:
+	@$(MAKE) -s check-requirements
+	@$(shell cat $(SELF_DIR)versions.mk) docker-compose down
+
+.PHONY: up-prod
+up-prod:
+	@$(MAKE) -s check-requirements
+	@$(MAKE) -s network-create
+	@$(shell cat $(SELF_DIR)versions.mk) docker-compose -f docker-compose-prod.yml up -d
+
+.PHONY: down-prod
+down-prod:
+	@$(MAKE) -s check-requirements
+	@$(shell cat $(SELF_DIR)versions.mk) docker-compose -f docker-compose-prod.yml down
+
+.PHONY: network-create
+network-create:
+	@$(MAKE) -s check-requirements
+	@docker network ls|grep $(NETWORK) > /dev/null || docker network create --driver bridge $(NETWORK)
+
+.PHONY: network-delete
+network-delete:
+	@$(MAKE) -s check-requirements
+	@docker network rm $(NETWORK)
+
+# build
+@$(shell docker-compose -f docker-compose.yml config --services | sed 's/^/build-/'):
+	@$(shell cat $(SELF_DIR)versions.mk) docker-compose build $(shell echo $@ | sed -e s/build-//g )
+	@$(shell sed 's/=.*/=latest/' $(SELF_DIR)versions.mk) docker-compose -f docker-compose.yml \
+		build $(shell echo $@ | sed -e s/build-//g )
+
+# push
+@$(shell docker-compose -f docker-compose.yml config --services | sed 's/^/push-/'):
+	@$(shell cat $(SELF_DIR)versions.mk) docker-compose push $(shell echo $@ | sed -e s/push-//g )
+	@$(shell sed 's/=.*/=latest/' $(SELF_DIR)versions.mk) docker-compose -f docker-compose.yml \
+		push $(shell echo $@ | sed -e s/push-//g )
+
+.PHONY: build-all
+build-all:
+	@$(MAKE) -s check-requirements
+	@$(shell cat $(SELF_DIR)versions.mk) docker-compose build
+	@$(shell sed 's/=.*/=latest/' $(SELF_DIR)versions.mk) docker-compose build
+
+.PHONY: push-all
+push-all:
+	@$(MAKE) -s check-requirements
+	@$(shell cat $(SELF_DIR)versions.mk) docker-compose push
+	@$(shell sed 's/=.*/=latest/' $(SELF_DIR)versions.mk) docker-compose push
+
+
+.PHONY: build-and-push-all
+build-and-push-all:
+	@$(MAKE) -s build-all
+	@$(MAKE) -s push-all
+
+.PHONY: check-requirements
+check-requirements:
+	@[ "${PROJECT_SLUG}" ] || ( echo ">> PROJECT_SLUG is not set. Edit config.mk"; exit 1 )
+	@[ "${PROJECT_DOMAIN_DEV}" ] || ( echo ">> PROJECT_DOMAIN_DEV is not set. Edit config.mk"; exit 1 )
+	@[ "${PROJECT_DOMAIN_PROD}" ] || ( echo ">> PROJECT_DOMAIN_PROD is not set. Edit config.mk"; exit 1 )
+
+.PHONY: list
+list:
+	@$(MAKE) -pRrq -f $(lastword $(CURRENT_FILENAME)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# \
+		Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'

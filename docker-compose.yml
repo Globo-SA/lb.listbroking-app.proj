@@ -1,0 +1,109 @@
+version: "3"
+
+services:
+
+  listbroking-app-nginx:
+    container_name: listbroking-app-nginx
+    image: adclick/proj.listbroking-app:${VERSION_NGINX-latest}-nginx
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    volumes:
+      - ./project:/var/www/html:cached
+    ports:
+      - '${NGINX_EXTERNAL_PORT:-8081}:80'
+    depends_on:
+      - listbroking-app-fpm
+    restart: unless-stopped
+    labels:
+      - "traefik.frontend.rule=Host:dev.adc-lb.eu"
+      - "traefik.docker.network=web"
+      - "traefik.enable=true"
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.port=80"
+    networks:
+      - listbroking-app-net
+      - web
+
+  listbroking-app-fpm:
+    container_name: listbroking-app-fpm
+    image: adclick/proj.listbroking-app:${VERSION_FPM-latest}-fpm
+    build:
+      context: .
+      dockerfile: ./docker/php/fpm/Dockerfile
+    volumes:
+      - ./project:/var/www/html:cached
+    restart: unless-stopped
+    networks:
+      - listbroking-app-net
+
+  listbroking-app-cli:
+    container_name: listbroking-app-cli
+    image: adclick/proj.listbroking-app:${VERSION_CLI-latest}-cli
+    build:
+      context: .
+      dockerfile: ./docker/php/cli/Dockerfile
+    volumes:
+      - ./project:/var/www/html:cached
+    networks:
+      - listbroking-app-net
+
+  listbroking-app-db:
+    container_name: listbroking-app-db
+    image: adclick/proj.listbroking-app:${VERSION_DB-latest}-db
+    build:
+      context: .
+      dockerfile: ./docker/mysql/Dockerfile
+    volumes:
+      - listbroking-app_db_data:/var/lib/mysql:cached
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - '${MYSQL_EXTERNAL_PORT:-3306}:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-listbroking-apppassword}
+      - MYSQL_USER=${MYSQL_USER:-listbroking-appuser}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-listbroking-apppassword}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-listbroking-appdb}
+    networks:
+      - listbroking-app-net
+
+  listbroking-app-rabbitmq:
+    image:          rabbitmq:3.6.1-management
+    container_name: listbroking-app-rabbitmq
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "mycookie"
+      RABBITMQ_DEFAULT_USER:  "admin"
+      RABBITMQ_DEFAULT_PASS:  "admin"
+    ports:
+      - 15672:15672
+    networks:
+      - listbroking-app-net
+
+  listbroking-app-redis:
+    container_name: listbroking-app-redis
+    image:          redis:3.0.7
+    command:        ["redis-server", "--appendonly yes"]
+    networks:
+      - listbroking-app-net
+
+  listbroking-app-toolset-php:
+    container_name: listbroking-app-toolset-php73
+    image: adclick/proj.listbroking-app:${VERSION_TOOLSET_PHP73-latest}-adc-base-toolset-php73
+    build:
+      context: .
+      dockerfile: docker/toolset/php/Dockerfile
+    volumes:
+      - ./project:/var/www/html:cached
+    networks:
+      - listbroking-app-net
+
+volumes:
+  listbroking-app_db_data: {}
+
+networks:
+  listbroking-app-net:
+    external: true
+    # to avoid auto prefix by docker
+  web:
+    external: true

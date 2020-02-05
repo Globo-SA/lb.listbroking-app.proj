@@ -1,8 +1,0 @@
-doctrine_cache:
-  providers:
-    memcached_query_cache:
-      memcached:
-        servers:
-          memcached01.ss:
-            host: %memcached_host%
-            port: %memcached_port%

@@ -1,0 +1,59 @@
+version: "3"
+
+services:
+
+  listbroking-app-nginx:
+    container_name: listbroking-app-nginx
+    image: adclick/proj.listbroking-app:${VERSION_NGINX-latest}-nginx
+    depends_on:
+      - listbroking-app-fpm
+    restart: unless-stopped
+    labels:
+      - "traefik.frontend.rule=Host:dev.adc-lb.eu"
+      - "traefik.docker.network=web"
+      - "traefik.enable=true"
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.port=80"
+    networks:
+      - listbroking-app-net
+      - web
+
+  listbroking-app-fpm:
+    container_name: listbroking-app-fpm
+    image: adclick/proj.listbroking-app:${VERSION_FPM-latest}-fpm
+    restart: unless-stopped
+    networks:
+      - listbroking-app-net
+
+  listbroking-app-cli:
+    container_name: listbroking-app-cli
+    image: adclick/proj.listbroking-app:${VERSION_CLI-latest}-cli
+    networks:
+      - listbroking-app-net
+
+  listbroking-app-node-pm2:
+    container_name: listbroking-app-node-pm2
+    image: adclick/proj.listbroking-app:${VERSION_NODEPM2-latest}-node-pm2
+    restart: unless-stopped
+    networks:
+      - listbroking-app-net
+
+  listbroking-app-db:
+    container_name: listbroking-app-db
+    image: adclick/proj.listbroking-app:${VERSION_DB-latest}-db
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-listbroking-apppassword}
+      - MYSQL_USER=${MYSQL_USER:-listbroking-appuser}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-listbroking-apppassword}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-listbroking-appdb}
+    networks:
+      - listbroking-app-net
+
+networks:
+  listbroking-app-net:
+    external: true
+    # to avoid auto prefix by docker
+  web:
+    external: true

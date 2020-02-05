@@ -1,0 +1,30 @@
+# Project dependencies, version and configuration data
+package.json
+/config/
+
+# Deployment & containers
+Dockerfile
+/.build/
+
+# contrib files
+CONTRIBUTING.md
+AUTHORS
+
+# Backend
+/apps/
+/src/
+
+# Repo config & CI
+/.github/
+/.circleci/
+
+# Releases
+CHANGELOG.md
+
+# Test suit & linting
+jest.config.js
+/test/
+.eslintrc.json
+.prettierrc
+
+yarn.lock
