@@ -121,7 +121,7 @@ class PostalCodeValidator implements ValidatorInterface {
                 $fullPostalcode = sprintf('%s-%s', $postalcode1, $postalcode2);
 
                 // Hack to enable postal-codes without postalcode2
-                $prefixFallback = $postalcode2 === '000';
+                $prefixFallback = empty($postalcode2) || $postalcode2 === '000' ? 1 : 0;
 
                 $url = sprintf(self::POSTALCODE_API_PT_URL, $fullPostalcode, $prefixFallback, $country);
 
