@@ -20,7 +20,7 @@ use ListBroking\AppBundle\Model\PostalCodeResponse;
 
 class PostalCodeValidator implements ValidatorInterface {
 
-    const POSTALCODE_API_PT_URL = 'https://postalcode.adctools.com/api/postalcode/%s/information?country=%s';
+    const POSTALCODE_API_PT_URL = 'https://postalcode.adctools.com/api/postalcode/%s/information?prefix_fallback=%s&country=%s';
 
     /**
      * @var EntityManager
@@ -120,7 +120,10 @@ class PostalCodeValidator implements ValidatorInterface {
             case 'PL':
                 $fullPostalcode = sprintf('%s-%s', $postalcode1, $postalcode2);
 
-                $url = sprintf(self::POSTALCODE_API_PT_URL, $fullPostalcode, $country);
+                // Hack to enable postal-codes without postalcode2
+                $prefixFallback = empty($postalcode2) || $postalcode2 === '000' ? 1 : 0;
+
+                $url = sprintf(self::POSTALCODE_API_PT_URL, $fullPostalcode, $prefixFallback, $country);
 
                 $request  = $this->guzzle->get($url);
                 $response = $request->send();
