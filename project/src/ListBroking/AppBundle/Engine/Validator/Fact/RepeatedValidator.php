@@ -1,16 +1,6 @@
 <?php
-/**
- * 
- * @author     Samuel Castro <samuel.castro@adclick.pt>
- * @copyright  2014 Adclick
- * @license    [LISTBROKING_URL_LICENSE_HERE]
- *
- * [LISTBROKING_DISCLAIMER]
- */
 
 namespace ListBroking\AppBundle\Engine\Validator\Fact;
-
-
 
 use Doctrine\ORM\EntityManager;
 use ListBroking\AppBundle\Engine\Validator\ValidatorInterface;
@@ -41,16 +31,21 @@ class RepeatedValidator implements ValidatorInterface {
 
     /**
      * Validates the contact against a set of rules
+     *
      * @param StagingContact $contact
-     * @param $validations
-     * @throws DimensionValidationException
+     * @param                $validations
+     *
      * @return mixed
+     * @throws DimensionValidationException
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function validate(StagingContact $contact, &$validations)
     {
         $staging_phone = $contact->getPhone();
         $staging_email = $contact->getEmail();
         $staging_owner = strtoupper($contact->getOwner());
+        $staging_source_external_id = $contact->getSourceExternalId();
+        $staging_date = $contact->getDate();
 
         $country = $this->em->getRepository('ListBrokingAppBundle:Country')->findOneBy(array(
                 'name' => $contact->getCountry()
@@ -65,7 +60,7 @@ class RepeatedValidator implements ValidatorInterface {
          * A Lead is only FULLY REPEATED if:
          *  . phone number exists
          *  . and email address exists associated with the phone
-         *  . and email and phone combination already exist for the given owner
+         *  . and email and phone combination already exist for the given owner, source and date
          */
 
         // Lead_X exists
@@ -76,12 +71,17 @@ class RepeatedValidator implements ValidatorInterface {
             /** @var Contact $owner_contact */
             $owner_contact = $this->em->getRepository('ListBrokingAppBundle:Contact')->createQueryBuilder('c')
                 ->join('c.owner', 'o')
+                ->join('c.source', 's')
                 ->where('c.lead = :lead')
                 ->andWhere('c.email = :staging_email')
                 ->andWhere('o.name = :staging_contact_owner')
+                ->andWhere('s.external_id = :staging_contact_external_source')
+                ->andWhere('c.date >= :staging_contact_date')
                 ->setParameter('lead', $lead)
                 ->setParameter('staging_email', $staging_email)
                 ->setParameter('staging_contact_owner', $staging_owner)
+                ->setParameter('staging_contact_external_source', $staging_source_external_id)
+                ->setParameter('staging_contact_date', $staging_date)
                 ->getQuery()
                 ->getOneOrNullResult()
             ;
@@ -111,4 +111,4 @@ class RepeatedValidator implements ValidatorInterface {
     }
 
 
-} 
+}
