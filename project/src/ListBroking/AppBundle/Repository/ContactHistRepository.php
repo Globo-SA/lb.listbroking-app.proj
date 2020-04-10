@@ -31,7 +31,7 @@ class ContactHistRepository extends EntityRepository implements ContactRepositor
     /**
      * {@inheritdoc}
      */
-    public function findByIdAndLead($id, int $leadId)
+    public function findByIdAndLead($id, $leadId)
     {
         throw new MethodNotImplementedException();
     }
@@ -39,7 +39,7 @@ class ContactHistRepository extends EntityRepository implements ContactRepositor
     /**
      * {@inheritdoc}
      */
-    public function findByLeadAndEmailAndOwner(int $leadId, string $email, string $owner)
+    public function findByLeadAndEmailAndOwner($leadId, $email, $owner)
     {
         throw new MethodNotImplementedException();
     }

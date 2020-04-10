@@ -17,7 +17,7 @@ interface ContactRepositoryInterface
      *
      * @return mixed
      */
-    public function findByIdAndLead($id, int $leadId);
+    public function findByIdAndLead($id, $leadId);
 
-    public function findByLeadAndEmailAndOwner(int $leadId, string $email, string $owner);
+    public function findByLeadAndEmailAndOwner($leadId, $email, $owner);
 }

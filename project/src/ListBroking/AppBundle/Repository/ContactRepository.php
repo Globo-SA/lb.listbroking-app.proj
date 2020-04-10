@@ -24,7 +24,7 @@ class ContactRepository extends EntityRepository implements ContactRepositoryInt
     /**
      * {@inheritdoc}
      */
-    public function findByIdAndLead($id, int $leadId)
+    public function findByIdAndLead($id, $leadId)
     {
         return $this->getEntityManager()
                     ->createQueryBuilder()
@@ -41,7 +41,7 @@ class ContactRepository extends EntityRepository implements ContactRepositoryInt
     /**
      * {@inheritdoc}
      */
-    public function findByLeadAndEmailAndOwner(int $leadId, string $email, string $owner)
+    public function findByLeadAndEmailAndOwner($leadId, $email, $owner)
     {
         return $this->getEntityManager()
                     ->createQueryBuilder()
