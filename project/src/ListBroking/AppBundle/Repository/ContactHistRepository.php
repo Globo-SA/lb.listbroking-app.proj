@@ -3,6 +3,7 @@
 namespace ListBroking\AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Intl\Exception\MethodNotImplementedException;
 
 /**
  * ContactHistRepository
@@ -25,5 +26,21 @@ class ContactHistRepository extends EntityRepository implements ContactRepositor
                     ->setParameter('email', $email)
                     ->getQuery()
                     ->getResult();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByIdAndLead($id, int $leadId)
+    {
+        throw new MethodNotImplementedException();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByLeadAndEmailAndOwner(int $leadId, string $email, string $owner)
+    {
+        throw new MethodNotImplementedException();
     }
 }
