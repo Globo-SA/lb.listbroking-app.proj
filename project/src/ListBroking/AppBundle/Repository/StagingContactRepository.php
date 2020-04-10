@@ -164,16 +164,25 @@ class StagingContactRepository extends EntityRepository implements StagingContac
 
         }
 
+        // find contact by id and lead_id for the cases of after cleaning import
         $contact = $em->getRepository('ListBrokingAppBundle:Contact')
-                      ->findOneBy(array(
-                          'id'   => $staging_contact->getContactId(),
-                          'lead' => $lead
-                      ))
-        ;
+                      ->findByIdAndLead(
+                          $staging_contact->getContactId(),
+                          $lead->getId()
+                      );
+
+        // if not found, search for the contact with same phone, email and owner
+        if (!$contact) {
+            $contact = $em->getRepository('ListBrokingAppBundle:Contact')
+                          ->findByLeadAndEmailAndOwner(
+                              $lead->getId(),
+                              $staging_contact->getEmail(),
+                              $staging_contact->getOwner()
+                          );
+        }
 
         // If the contact doesn't exist create a new one
-        if ( ! $contact )
-        {
+        if (!$contact) {
             $contact = new Contact();
             $contact->setLead($lead);
 
