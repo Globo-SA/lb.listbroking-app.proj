@@ -3,11 +3,14 @@
 namespace ListBroking\AppBundle\Controller;
 
 use DateTime;
+use Doctrine\DBAL\DBALException;
 use ListBroking\AppBundle\Builder\Entity\RevenueFilterEntityBuilder;
+use ListBroking\AppBundle\Entity\Campaign;
 use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Exception\Validation\LeadValidationException;
 use ListBroking\AppBundle\Service\Authentication\FosUserAuthenticationServiceInterface;
+use ListBroking\AppBundle\Service\BusinessLogic\CampaignServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ClientNotificationServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ContactObfuscationServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ExtractionContactServiceInterface;
@@ -27,11 +30,12 @@ class APIController extends Controller
 {
     const HTTP_SERVER_ERROR_CODE                   = 500;
     const HTTP_BAD_REQUEST_CODE                    = 400;
-    const HTTP_NOT_FOUND_CODE                      = 404;
+
     const CONTACT_EMAIL_ERASURE_MESSAGE            = 'Contact has been erased';
-    const MISSING_EMAIL_OR_PHONE_PARAMETER_MESSAGE = 'Missing email or phone parameter';
     const CONTACTS_NOT_FOUND_MESSAGE               = 'Contacts not found. Nothing to do';
     const COULD_NOT_ERASE_CONTACT_MESSAGE          = 'An error occurred while erasing contact.';
+    const CAMPAIGN_CREATED_MESSAGE                 = 'Campaign with id %s was created';
+    const CAMPAIGN_NOT_CREATED_MESSAGE             = 'There was an error creating the campaign. Please contact support';
 
     /**
      * @var LoggerInterface $logger
@@ -74,6 +78,11 @@ class APIController extends Controller
     private $clientNotificationService;
 
     /**
+     * @var CampaignServiceInterface
+     */
+    private $campaignService;
+
+    /**
      * APIController constructor.
      *
      * @param LoggerInterface                       $logger
@@ -84,6 +93,7 @@ class APIController extends Controller
      * @param ContactObfuscationServiceInterface    $contactObfuscationService
      * @param LeadServiceInterface                  $leadService
      * @param ClientNotificationServiceInterface    $clientNotificationService
+     * @param CampaignServiceInterface              $campaignService
      */
     public function __construct(
         LoggerInterface $logger,
@@ -93,7 +103,8 @@ class APIController extends Controller
         FosUserAuthenticationServiceInterface $fosUserAuthenticationService,
         ContactObfuscationServiceInterface $contactObfuscationService,
         LeadServiceInterface $leadService,
-        ClientNotificationServiceInterface $clientNotificationService
+        ClientNotificationServiceInterface $clientNotificationService,
+        CampaignServiceInterface $campaignService
     ) {
         $this->logger                       = $logger;
         $this->stagingService               = $stagingService;
@@ -103,6 +114,7 @@ class APIController extends Controller
         $this->contactObfuscationService    = $contactObfuscationService;
         $this->leadService                  = $leadService;
         $this->clientNotificationService    = $clientNotificationService;
+        $this->campaignService              = $campaignService;
     }
 
 
@@ -341,6 +353,56 @@ class APIController extends Controller
     }
 
     /**
+     * Create campaign based on request data
+     * Returns created campaign's id
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function createCampaignAction(Request $request): JsonResponse
+    {
+        try {
+            $this->fosUserAuthenticationService->checkCredentials($request);
+        } catch (AccessDeniedException $exception) {
+            return $this->createJsonResponse($exception->getMessage(), $exception->getCode());
+        }
+
+        // get post data
+        $clientId                 = $request->request->get(Campaign::CLIENT_ID);
+        $name                     = $request->request->get(Campaign::NAME);
+        $description              = $request->request->get(Campaign::DESCRIPTION);
+        $externalCampaignId       = $request->request->get(Campaign::EXTERNAL_ID);
+        $notificationEmailAddress = $request->request->get(Campaign::NOTIFICATION_EMAIL_ADDRESS);
+
+        try {
+            $this->checkRequiredFields([Campaign::CLIENT_ID => $clientId, Campaign::NAME => $name]);
+
+            $campaignData = [
+                Campaign::CLIENT_ID                  => $clientId,
+                Campaign::NAME                       => $name,
+                Campaign::DESCRIPTION                => $description,
+                Campaign::EXTERNAL_ID                => $externalCampaignId,
+                Campaign::NOTIFICATION_EMAIL_ADDRESS => $notificationEmailAddress,
+            ];
+
+            $newCampaign = $this->campaignService->addCampaign($campaignData);
+        } catch (DBALException $exception){
+            return $this->createJsonResponse(
+                self::CAMPAIGN_NOT_CREATED_MESSAGE,
+                self::HTTP_SERVER_ERROR_CODE
+            );
+        } catch (\Exception $exception) {
+            return $this->createJsonResponse(
+                $exception->getMessage(),
+                self::HTTP_BAD_REQUEST_CODE
+            );
+        }
+
+        return $this->createJsonResponse(sprintf(static::CAMPAIGN_CREATED_MESSAGE, $newCampaign->getId()));
+    }
+
+    /**
      * Generates a Json Response
      *
      * @param     $response
@@ -356,5 +418,30 @@ class APIController extends Controller
                 'response' => $response,
             ], $code
         );
+    }
+
+    /**
+     * Check required fields and return true if all of them are present
+     *
+     * @param array $requiredFields
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    private function checkRequiredFields(array $requiredFields): bool
+    {
+        $missingFields = [];
+
+        foreach ($requiredFields as $fieldName => $requiredField) {
+            if ($requiredField === null) {
+                $missingFields[] = $fieldName;
+            }
+        }
+
+        if (!empty($missingFields)) {
+            throw new \Exception(sprintf('Missing required fields: %s', implode(', ', $missingFields)));
+        }
+
+        return true;
     }
 }

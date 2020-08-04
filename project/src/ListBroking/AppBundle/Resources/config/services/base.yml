@@ -84,3 +84,10 @@ services:
         - "@app.repository.lead_hist"
         - "@app.repository.contact"
         - "@app.repository.contact_hist"
+
+  app.service.campaign:
+    class: ListBroking\AppBundle\Service\BusinessLogic\CampaignService
+    parent: base
+    arguments:
+        - "@app.repository.campaign"
+        - "@app.repository.client"

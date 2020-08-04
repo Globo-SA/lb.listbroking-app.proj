@@ -19,7 +19,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Campaign
 {
 
-    const CACHE_ID = 'campaign';
+    const CACHE_ID                   = 'campaign';
+    const CLIENT_ID                  = 'client_id';
+    const DESCRIPTION                = 'description';
+    const EXTERNAL_ID                = 'external_id';
+    const NAME                       = 'name';
+    const NOTIFICATION_EMAIL_ADDRESS = 'notification_email_address';
 
     use TimestampableEntityBehavior,
         BlameableEntityBehavior;

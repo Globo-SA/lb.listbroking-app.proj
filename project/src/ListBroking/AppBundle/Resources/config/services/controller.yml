@@ -10,6 +10,7 @@ services:
             - '@app.service.contact_obfuscation'
             - '@app.service.lead'
             - '@app.service.client_notification'
+            - '@app.service.campaign'
 
     app.controller.webhook:
         class: ListBroking\AppBundle\Controller\WebhookController

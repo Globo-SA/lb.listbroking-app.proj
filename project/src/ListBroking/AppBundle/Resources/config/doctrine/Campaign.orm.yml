@@ -1,6 +1,7 @@
 ListBroking\AppBundle\Entity\Campaign:
     type: entity
     table: campaign
+    repositoryClass: ListBroking\AppBundle\Repository\CampaignRepository
     id:
         id:
             type: bigint

@@ -19,3 +19,8 @@ api_contact_erase:
     path: /v1/contact/erasure
     defaults: { _controller: app.controller.api:contactErasureAction }
     methods: [POST]
+
+api_campaign_creation:
+    path: /v1/campaign
+    defaults: { _controller: app.controller.api:createCampaignAction }
+    methods: [POST]
