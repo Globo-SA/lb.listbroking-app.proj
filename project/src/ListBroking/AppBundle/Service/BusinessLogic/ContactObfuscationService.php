@@ -282,7 +282,7 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
      */
     private function obfuscateLead(Lead $lead): void
     {
-        $obfuscatedPhone = $this->encrypt($lead->getPhone());
+        $obfuscatedPhone = $this->encryptPhone($lead->getPhone());
 
         $lead->setPhone($obfuscatedPhone);
         $lead->setInOpposition(true);
@@ -300,7 +300,7 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
      */
     private function obfuscateLeadHist(LeadHist $leadHist): void
     {
-        $obfuscatedPhone = $this->encrypt($leadHist->getPhone());
+        $obfuscatedPhone = $this->encryptPhone($leadHist->getPhone());
 
         $leadHist->setPhone($obfuscatedPhone);
         $leadHist->setInOpposition(true);
@@ -334,7 +334,7 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
      */
     private function obfuscateExtractionDeduplication(ExtractionDeduplication $extractionDeduplication): void
     {
-        $obfuscatedPhone = $this->encrypt($extractionDeduplication->getPhone());
+        $obfuscatedPhone = $this->encryptPhone($extractionDeduplication->getPhone());
 
         $extractionDeduplication->setPhone($obfuscatedPhone);
 
@@ -369,7 +369,7 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
      */
     private function obfuscateOppositionList(OppositionList $oppositionList): void
     {
-        $obfuscatedPhone = $this->encrypt($oppositionList->getPhone());
+        $obfuscatedPhone = $this->encryptPhone($oppositionList->getPhone());
 
         $oppositionList->setPhone($obfuscatedPhone);
 
@@ -407,7 +407,19 @@ class ContactObfuscationService extends BaseService implements ContactObfuscatio
      */
     private function encryptEmail(string $email): string
     {
-        return sprintf('%s@%s', $this->encrypt($email), $this->emailInvalidDomain);
+        return sprintf('%s_%s@%s', $this->encrypt($email), time(), $this->emailInvalidDomain);
+    }
+
+    /**
+     * Encrypts a given phone
+     *
+     * @param string $phone
+     *
+     * @return string
+     */
+    private function encryptPhone(string $phone): string
+    {
+        return sprintf('%s_%s', $this->encrypt($phone), time());
     }
 
     /**
