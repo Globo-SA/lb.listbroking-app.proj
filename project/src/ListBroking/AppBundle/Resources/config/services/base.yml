@@ -26,9 +26,12 @@ services:
     parent: base
     arguments: ["@swiftmailer.mailer", "@twig"]
 
-  statistics:
+  app.service.statistics:
     class: ListBroking\AppBundle\Service\Helper\StatisticsService
     parent: base
+    arguments:
+        - "@app.repository.contact"
+        - "@app.repository.audiences_stats"
 
   app.service.extraction:
     class: ListBroking\AppBundle\Service\BusinessLogic\ExtractionService

@@ -100,7 +100,7 @@
  * Removed all Gender validations
     * M - All male contacts
     * F - All female contacts
-    * N/a - All empty or invalid gender fields
+    * NA - All empty or invalid gender fields
 
 ### 2.11.16
 * Changed way contacts are updated

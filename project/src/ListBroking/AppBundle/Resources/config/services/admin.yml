@@ -17,7 +17,7 @@ services:
           - "sonata.block.service.statistics"
           - "@request_stack"
           - "@app"
-          - "@statistics"
+          - "@app.service.statistics"
           - "@templating"
           - "@doctrine.orm.default_entity_manager"
 

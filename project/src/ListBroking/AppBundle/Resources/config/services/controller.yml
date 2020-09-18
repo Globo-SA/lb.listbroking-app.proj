@@ -11,6 +11,7 @@ services:
             - '@app.service.lead'
             - '@app.service.client_notification'
             - '@app.service.campaign'
+            - '@app.service.statistics'
 
     app.controller.webhook:
         class: ListBroking\AppBundle\Controller\WebhookController

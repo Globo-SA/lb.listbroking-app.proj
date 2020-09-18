@@ -17,7 +17,7 @@ class Gender
 
     const CACHE_ID    = 'gender';
 
-    const EMPTY_FIELD = 'N/A';
+    const EMPTY_FIELD = 'NA';
 
     const MALE        = 'M';
 

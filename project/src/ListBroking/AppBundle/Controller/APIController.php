@@ -9,6 +9,7 @@ use ListBroking\AppBundle\Entity\Campaign;
 use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Lead;
 use ListBroking\AppBundle\Exception\Validation\LeadValidationException;
+use ListBroking\AppBundle\Model\AudiencesFilter;
 use ListBroking\AppBundle\Service\Authentication\FosUserAuthenticationServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\CampaignServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ClientNotificationServiceInterface;
@@ -17,6 +18,7 @@ use ListBroking\AppBundle\Service\BusinessLogic\ExtractionContactServiceInterfac
 use ListBroking\AppBundle\Service\BusinessLogic\ExtractionServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\LeadServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\StagingServiceInterface;
+use ListBroking\AppBundle\Service\Helper\StatisticsServiceInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
@@ -83,6 +85,11 @@ class APIController extends Controller
     private $campaignService;
 
     /**
+     * @var StatisticsServiceInterface
+     */
+    private $statisticsService;
+
+    /**
      * APIController constructor.
      *
      * @param LoggerInterface                       $logger
@@ -94,6 +101,7 @@ class APIController extends Controller
      * @param LeadServiceInterface                  $leadService
      * @param ClientNotificationServiceInterface    $clientNotificationService
      * @param CampaignServiceInterface              $campaignService
+     * @param StatisticsServiceInterface            $statisticsService
      */
     public function __construct(
         LoggerInterface $logger,
@@ -104,7 +112,8 @@ class APIController extends Controller
         ContactObfuscationServiceInterface $contactObfuscationService,
         LeadServiceInterface $leadService,
         ClientNotificationServiceInterface $clientNotificationService,
-        CampaignServiceInterface $campaignService
+        CampaignServiceInterface $campaignService,
+        StatisticsServiceInterface $statisticsService
     ) {
         $this->logger                       = $logger;
         $this->stagingService               = $stagingService;
@@ -115,6 +124,7 @@ class APIController extends Controller
         $this->leadService                  = $leadService;
         $this->clientNotificationService    = $clientNotificationService;
         $this->campaignService              = $campaignService;
+        $this->statisticsService            = $statisticsService;
     }
 
 
@@ -395,11 +405,55 @@ class APIController extends Controller
         } catch (\Exception $exception) {
             return $this->createJsonResponse(
                 $exception->getMessage(),
-                self::HTTP_BAD_REQUEST_CODE
+                $exception->getCode()
             );
         }
 
         return $this->createJsonResponse(sprintf(static::CAMPAIGN_CREATED_MESSAGE, $newCampaign->getId()));
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getAudiencesAction(Request $request): JsonResponse
+    {
+        try {
+            $this->fosUserAuthenticationService->checkCredentials($request);
+        } catch (AccessDeniedException $exception) {
+            return $this->createJsonResponse($exception->getMessage(), $exception->getCode());
+        }
+
+        try {
+            $filter = AudiencesFilter::buildAudiencesFilterFromRequest(
+                $request->get(AudiencesFilter::FILTER, null),
+                $request->get(AudiencesFilter::FIELDS, null)
+            );
+
+            $this->checkRequiredFields(
+                [AudiencesFilter::FILTER_OWNER => $filter->getOwner(), AudiencesFilter::FILTER_COUNTRY => $filter->getCountry()]
+            );
+
+            if (!$filter->isValid()) {
+                $errorMessage = [];
+                foreach ($filter->getInvalidations() as $invalidationField => $invalidationMessage) {
+                    $errorMessage [$invalidationField] = $invalidationMessage;
+                }
+
+                return $this->createJsonResponse($errorMessage, 400);
+            }
+
+            $audiences = $this->statisticsService->getAudiences($filter);
+
+        } catch (\Exception $exception) {
+            return $this->createJsonResponse(
+                $exception->getMessage(),
+                $exception->getCode()
+            );
+        }
+
+        return $this->createJsonResponse($audiences);
     }
 
     /**
@@ -439,7 +493,7 @@ class APIController extends Controller
         }
 
         if (!empty($missingFields)) {
-            throw new \Exception(sprintf('Missing required fields: %s', implode(', ', $missingFields)));
+            throw new \Exception(sprintf('Missing required fields: %s', implode(', ', $missingFields)), self::HTTP_BAD_REQUEST_CODE);
         }
 
         return true;

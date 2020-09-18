@@ -82,3 +82,9 @@ services:
         factory: ["@doctrine", getRepository]
         arguments:
             - 'ListBroking\AppBundle\Entity\Campaign'
+
+    app.repository.audiences_stats:
+        class: ListBroking\AppBundle\Repository\AudiencesStatsRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\AudiencesStats'

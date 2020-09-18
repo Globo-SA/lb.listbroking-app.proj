@@ -1,0 +1,50 @@
+ListBroking\AppBundle\Entity\AudiencesStats:
+    type: entity
+    table: audiences_stats
+    repositoryClass: ListBroking\AppBundle\Repository\AudiencesStatsRepository
+    id:
+        id:
+            type: bigint
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        gender:
+            type: text
+        age:
+            type: integer
+            nullable: true
+        is_mobile:
+            type: boolean
+        total:
+            type: bigint
+    manyToOne:
+        owner:
+            targetEntity: ListBroking\AppBundle\Entity\Owner
+            joinColumn:
+                name:                 owner_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
+        country:
+            targetEntity: ListBroking\AppBundle\Entity\Country
+            joinColumn:
+                name:                 country_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
+        district:
+            targetEntity: ListBroking\AppBundle\Entity\District
+            joinColumn:
+                name:                 district_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             true
+        sub_category:
+            targetEntity: ListBroking\AppBundle\Entity\SubCategory
+            joinColumn:
+                name:                 sub_category_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false
+    lifecycleCallbacks: {  }

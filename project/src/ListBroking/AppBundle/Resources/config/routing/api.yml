@@ -24,3 +24,8 @@ api_campaign_creation:
     path: /v1/campaign
     defaults: { _controller: app.controller.api:createCampaignAction }
     methods: [POST]
+
+api_get_audiences:
+    path: /v1/audiences
+    defaults: { _controller: app.controller.api:getAudiencesAction }
+    methods: [GET]
