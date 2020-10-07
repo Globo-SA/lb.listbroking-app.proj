@@ -7,9 +7,12 @@ use Doctrine\DBAL\DBALException;
 use ListBroking\AppBundle\Builder\Entity\RevenueFilterEntityBuilder;
 use ListBroking\AppBundle\Entity\Campaign;
 use ListBroking\AppBundle\Entity\Contact;
+use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\Lead;
+use ListBroking\AppBundle\Enum\HttpStatusCodeEnum;
 use ListBroking\AppBundle\Exception\Validation\LeadValidationException;
 use ListBroking\AppBundle\Model\AudiencesFilter;
+use ListBroking\AppBundle\Model\ExtractionFilter;
 use ListBroking\AppBundle\Service\Authentication\FosUserAuthenticationServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\CampaignServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ClientNotificationServiceInterface;
@@ -30,14 +33,15 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class APIController extends Controller
 {
-    const HTTP_SERVER_ERROR_CODE                   = 500;
-    const HTTP_BAD_REQUEST_CODE                    = 400;
-
-    const CONTACT_EMAIL_ERASURE_MESSAGE            = 'Contact has been erased';
-    const CONTACTS_NOT_FOUND_MESSAGE               = 'Contacts not found. Nothing to do';
-    const COULD_NOT_ERASE_CONTACT_MESSAGE          = 'An error occurred while erasing contact.';
-    const CAMPAIGN_CREATED_MESSAGE                 = 'Campaign with id %s was created';
-    const CAMPAIGN_NOT_CREATED_MESSAGE             = 'There was an error creating the campaign. Please contact support';
+    const CONTACT_EMAIL_ERASURE_MESSAGE    = 'Contact has been erased';
+    const CONTACTS_NOT_FOUND_MESSAGE       = 'Contacts not found. Nothing to do';
+    const COULD_NOT_ERASE_CONTACT_MESSAGE  = 'An error occurred while erasing contact.';
+    const CAMPAIGN_CREATED_MESSAGE         = 'Campaign was created';
+    const CAMPAIGN_NOT_CREATED_MESSAGE     = 'There was an error creating the campaign. Please contact support';
+    const EXTRACTION_CREATED_MESSAGE       = 'Extraction was created';
+    const EXTRACTION_NOT_CREATED_MESSAGE   = 'There was an error creating the extraction. Please contact support';
+    const INVALID_FILTER_MESSAGE           = 'The requested filter is invalid';
+    const AUDIENCE_DETAIL_OBTAINED_MESSAGE = 'Audience detail obtained';
 
     /**
      * @var LoggerInterface $logger
@@ -135,7 +139,6 @@ class APIController extends Controller
      *
      * @throws LeadValidationException
      *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function createStagingLeadAction(Request $request)
     {
@@ -154,7 +157,7 @@ class APIController extends Controller
 
             return $this->createJsonResponse('Lead added');
         } catch (\Exception $e) {
-            return $this->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
+            return $this->createJsonResponse($e->getMessage(), [], HttpStatusCodeEnum::HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -173,8 +176,9 @@ class APIController extends Controller
             if ($start_date == null) {
                 if ($end_date != null) {
                     return $this->createJsonResponse(
-                        ['error' => 'end date can\'t be defined without a start date'],
-                        self::HTTP_BAD_REQUEST_CODE
+                        'end date can\'t be defined without a start date',
+                        [],
+                        HttpStatusCodeEnum::HTTP_STATUS_CODE_BAD_REQUEST
                     );
                 }
                 $start_date = date('Y-m-1');
@@ -188,14 +192,14 @@ class APIController extends Controller
                 $request->get('page', 1),
                 $request->get(
                     'page_size',
-                    self::HTTP_SERVER_ERROR_CODE
+                    HttpStatusCodeEnum::HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR
                 )
             );
             if ($data == null) {
-                return $this->createJsonResponse(['error' => 'invalid request'], self::HTTP_BAD_REQUEST_CODE);
+                return $this->createJsonResponse('invalid request', [], HttpStatusCodeEnum::HTTP_STATUS_CODE_BAD_REQUEST);
             }
 
-            return $this->createJsonResponse($data);
+            return $this->createJsonResponse('List of active campaigns obtained', $data);
         } catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
@@ -207,7 +211,7 @@ class APIController extends Controller
                 )
             );
 
-            return $this->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
+            return $this->createJsonResponse($e->getMessage(), [], HttpStatusCodeEnum::HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -233,8 +237,9 @@ class APIController extends Controller
 
             if (!empty($endDate) && empty($startDate)) {
                 return $this->createJsonResponse(
-                    ['error' => 'end date can\'t be defined without a start date'],
-                    self::HTTP_BAD_REQUEST_CODE
+                    'end date can\'t be defined without a start date',
+                    [],
+                    HttpStatusCodeEnum::HTTP_STATUS_CODE_BAD_REQUEST
                 );
             }
 
@@ -244,10 +249,10 @@ class APIController extends Controller
             $data = $this->extractionService->getRevenue($filterBuilder->getRevenueFilter());
 
             if ($data === null) {
-                return $this->createJsonResponse(['error' => 'invalid request'], self::HTTP_BAD_REQUEST_CODE);
+                return $this->createJsonResponse('invalid request', [], HttpStatusCodeEnum::HTTP_STATUS_CODE_BAD_REQUEST);
             }
 
-            return $this->createJsonResponse($data);
+            return $this->createJsonResponse('Revenue detail obtained', $data);
         } catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
@@ -259,7 +264,7 @@ class APIController extends Controller
                 )
             );
 
-            return $this->createJsonResponse($e->getMessage(), self::HTTP_SERVER_ERROR_CODE);
+            return $this->createJsonResponse($e->getMessage(), [], HttpStatusCodeEnum::HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -275,7 +280,7 @@ class APIController extends Controller
         try {
             $this->fosUserAuthenticationService->checkCredentials($request);
         } catch (\Exception $exception) {
-            return $this->createJsonResponse($exception->getMessage(), $exception->getCode());
+            return $this->createJsonResponse($exception->getMessage(), [], $exception->getCode());
         }
 
         $email = $request->get(Contact::EMAIL_KEY, '');
@@ -318,7 +323,7 @@ class APIController extends Controller
             }
         }
 
-        return $this->createJsonResponse($responseData);
+        return $this->createJsonResponse('History detail obtained', $responseData);
     }
 
     /**
@@ -333,7 +338,7 @@ class APIController extends Controller
         try {
             $this->fosUserAuthenticationService->checkCredentials($request);
         } catch (AccessDeniedException $exception) {
-            return $this->createJsonResponse($exception->getMessage(), $exception->getCode());
+            return $this->createJsonResponse($exception->getMessage(), [], $exception->getCode());
         }
 
         $email = $request->request->get(Contact::EMAIL_KEY, '');
@@ -356,7 +361,7 @@ class APIController extends Controller
         $obfuscatedHist = $this->contactObfuscationService->obfuscateAllContactHistData($leadsHist, $email, $phone);
 
         if ($obfuscated === false || $obfuscatedHist === false) {
-            return $this->createJsonResponse(static::COULD_NOT_ERASE_CONTACT_MESSAGE, static::HTTP_SERVER_ERROR_CODE);
+            return $this->createJsonResponse(static::COULD_NOT_ERASE_CONTACT_MESSAGE, [], HttpStatusCodeEnum::HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR);
         }
 
         return $this->createJsonResponse(static::CONTACT_EMAIL_ERASURE_MESSAGE);
@@ -374,18 +379,14 @@ class APIController extends Controller
     {
         try {
             $this->fosUserAuthenticationService->checkCredentials($request);
-        } catch (AccessDeniedException $exception) {
-            return $this->createJsonResponse($exception->getMessage(), $exception->getCode());
-        }
 
-        // get post data
-        $clientId                 = $request->request->get(Campaign::CLIENT_ID);
-        $name                     = $request->request->get(Campaign::NAME);
-        $description              = $request->request->get(Campaign::DESCRIPTION);
-        $externalCampaignId       = $request->request->get(Campaign::EXTERNAL_ID);
-        $notificationEmailAddress = $request->request->get(Campaign::NOTIFICATION_EMAIL_ADDRESS);
+            // get post data
+            $clientId                 = $request->request->get(Campaign::CLIENT_ID);
+            $name                     = $request->request->get(Campaign::NAME);
+            $description              = $request->request->get(Campaign::DESCRIPTION);
+            $externalCampaignId       = $request->request->get(Campaign::EXTERNAL_ID);
+            $notificationEmailAddress = $request->request->get(Campaign::NOTIFICATION_EMAIL_ADDRESS);
 
-        try {
             $this->checkRequiredFields([Campaign::CLIENT_ID => $clientId, Campaign::NAME => $name]);
 
             $campaignData = [
@@ -396,20 +397,79 @@ class APIController extends Controller
                 Campaign::NOTIFICATION_EMAIL_ADDRESS => $notificationEmailAddress,
             ];
 
-            $newCampaign = $this->campaignService->addCampaign($campaignData);
+            $newCampaign = $this->campaignService->createCampaign($campaignData);
+        } catch (AccessDeniedException $exception) {
+            return $this->createJsonResponse($exception->getMessage(), [], $exception->getCode());
         } catch (DBALException $exception){
             return $this->createJsonResponse(
                 self::CAMPAIGN_NOT_CREATED_MESSAGE,
-                self::HTTP_SERVER_ERROR_CODE
+                [],
+                HttpStatusCodeEnum::HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR
             );
         } catch (\Exception $exception) {
             return $this->createJsonResponse(
                 $exception->getMessage(),
+                [],
                 $exception->getCode()
             );
         }
 
-        return $this->createJsonResponse(sprintf(static::CAMPAIGN_CREATED_MESSAGE, $newCampaign->getId()));
+        return $this->createJsonResponse(
+            static::CAMPAIGN_CREATED_MESSAGE,
+            ['id' => $newCampaign->getId()]
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function createExtractionAction(Request $request): JsonResponse
+    {
+        try {
+            $this->fosUserAuthenticationService->checkCredentials($request);
+
+            $extractionFilter = ExtractionFilter::buildExtractionFilterFromRequest($request->request->all());
+
+            $this->checkRequiredFields(
+                [
+                    Extraction::CAMPAIGN_ID         => $extractionFilter->getCampaignId(),
+                    Extraction::NAME                => $extractionFilter->getName(),
+                    Extraction::QUANTITY            => $extractionFilter->getQuantity(),
+                    Extraction::PAYOUT              => $extractionFilter->getPayout(),
+                    AudiencesFilter::FILTER_OWNER   => $extractionFilter->getOwner(),
+                    AudiencesFilter::FILTER_COUNTRY => $extractionFilter->getCountry()
+                ]
+            );
+
+            if (!$extractionFilter->isValid()) {
+                $errorMessage = [];
+                foreach ($extractionFilter->getInvalidations() as $invalidationField => $invalidationMessage) {
+                    $errorMessage [$invalidationField] = $invalidationMessage;
+                }
+
+                return $this->createJsonResponse(
+                    self::INVALID_FILTER_MESSAGE,
+                    $errorMessage,
+                    HttpStatusCodeEnum::HTTP_STATUS_CODE_BAD_REQUEST
+                );
+            }
+
+            $newExtraction  = $this->extractionService->createExtraction($extractionFilter);
+        } catch (AccessDeniedException $exception) {
+            return $this->createJsonResponse($exception->getMessage(), [], $exception->getCode());
+        } catch (DBALException $exception) {
+            return $this->createJsonResponse(
+                self::EXTRACTION_NOT_CREATED_MESSAGE,
+                [],
+                HttpStatusCodeEnum::HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR
+            );
+        } catch (\Exception $exception) {
+            return $this->createJsonResponse($exception->getMessage(), [], HttpStatusCodeEnum::HTTP_STATUS_CODE_BAD_REQUEST);
+        }
+
+        return $this->createJsonResponse(static::EXTRACTION_CREATED_MESSAGE, ['id' => $newExtraction->getId()]);
     }
 
     /**
@@ -421,11 +481,7 @@ class APIController extends Controller
     {
         try {
             $this->fosUserAuthenticationService->checkCredentials($request);
-        } catch (AccessDeniedException $exception) {
-            return $this->createJsonResponse($exception->getMessage(), $exception->getCode());
-        }
 
-        try {
             $filter = AudiencesFilter::buildAudiencesFilterFromRequest(
                 $request->get(AudiencesFilter::FILTER, null),
                 $request->get(AudiencesFilter::FIELDS, null)
@@ -441,34 +497,43 @@ class APIController extends Controller
                     $errorMessage [$invalidationField] = $invalidationMessage;
                 }
 
-                return $this->createJsonResponse($errorMessage, 400);
+                return $this->createJsonResponse(
+                    self::INVALID_FILTER_MESSAGE,
+                    $errorMessage,
+                    HttpStatusCodeEnum::HTTP_STATUS_CODE_BAD_REQUEST
+                );
             }
 
             $audiences = $this->statisticsService->getAudiences($filter);
 
+        } catch (AccessDeniedException $exception) {
+            return $this->createJsonResponse($exception->getMessage(), [], $exception->getCode());
         } catch (\Exception $exception) {
             return $this->createJsonResponse(
                 $exception->getMessage(),
+                [],
                 $exception->getCode()
             );
         }
 
-        return $this->createJsonResponse($audiences);
+        return $this->createJsonResponse(self::AUDIENCE_DETAIL_OBTAINED_MESSAGE, $audiences);
     }
 
     /**
      * Generates a Json Response
      *
-     * @param     $response
-     * @param int $code
+     * @param string     $message
+     * @param array|null $response
+     * @param int|null   $code
      *
      * @return JsonResponse
      */
-    private function createJsonResponse($response, $code = 200)
+    private function createJsonResponse(string $message, ?array $response = [], ?int $code = 200)
     {
         return new JsonResponse(
             [
                 'code'     => $code,
+                'message'  => $message,
                 'response' => $response,
             ], $code
         );
@@ -493,7 +558,7 @@ class APIController extends Controller
         }
 
         if (!empty($missingFields)) {
-            throw new \Exception(sprintf('Missing required fields: %s', implode(', ', $missingFields)), self::HTTP_BAD_REQUEST_CODE);
+            throw new \Exception(sprintf('Missing required fields: %s', implode(', ', $missingFields)), HttpStatusCodeEnum::HTTP_STATUS_CODE_BAD_REQUEST);
         }
 
         return true;

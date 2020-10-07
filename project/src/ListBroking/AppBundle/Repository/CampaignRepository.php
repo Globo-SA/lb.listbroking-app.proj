@@ -11,7 +11,7 @@ class CampaignRepository extends EntityRepository implements CampaignRepositoryI
     /**
      * {@inheritdoc}
      */
-    public function addCampaign(Client $client, array $campaignData): Campaign
+    public function createCampaign(Client $client, array $campaignData): Campaign
     {
         $newCampaign = new Campaign();
         $newCampaign->setName($campaignData[Campaign::NAME]);

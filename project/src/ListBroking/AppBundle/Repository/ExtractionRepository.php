@@ -13,8 +13,9 @@ use ListBroking\AppBundle\Entity\ExtractionContact;
 use ListBroking\AppBundle\Entity\Owner;
 use ListBroking\AppBundle\Entity\RevenueFilter;
 use ListBroking\AppBundle\Entity\Source;
+use ListBroking\AppBundle\Model\ExtractionFilter;
 
-class ExtractionRepository extends EntityRepository
+class ExtractionRepository extends EntityRepository implements ExtractionRepositoryInterface
 {
 
     /**
@@ -238,5 +239,23 @@ SQL;
                     ->getQuery()
                     ->setParameter('name', $name)
                     ->getResult();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function createExtraction(Campaign $campaign, ExtractionFilter $extractionFilter): Extraction
+    {
+        $newExtraction = new Extraction();
+        $newExtraction->setCampaign($campaign)
+                      ->setName($extractionFilter->getName())
+                      ->setQuantity($extractionFilter->getQuantity())
+                      ->setPayout($extractionFilter->getPayout())
+                      ->setStatus(Extraction::STATUS_FILTRATION);
+
+        $this->getEntityManager()->persist($newExtraction);
+        $this->getEntityManager()->flush();
+
+        return $newExtraction;
     }
 }

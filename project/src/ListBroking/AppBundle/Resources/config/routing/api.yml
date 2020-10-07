@@ -25,6 +25,11 @@ api_campaign_creation:
     defaults: { _controller: app.controller.api:createCampaignAction }
     methods: [POST]
 
+api_extraction_creation:
+    path: /v1/extraction
+    defaults: { _controller: app.controller.api:createExtractionAction }
+    methods: [POST]
+
 api_get_audiences:
     path: /v1/audiences
     defaults: { _controller: app.controller.api:getAudiencesAction }

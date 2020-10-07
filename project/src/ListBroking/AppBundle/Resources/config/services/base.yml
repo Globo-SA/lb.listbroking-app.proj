@@ -36,7 +36,13 @@ services:
   app.service.extraction:
     class: ListBroking\AppBundle\Service\BusinessLogic\ExtractionService
     parent: base
-    arguments: ["@request_stack", "@filter_engine" ]
+    arguments:
+        - "@request_stack"
+        - "@filter_engine"
+        - "@messaging"
+        - "@app.repository.extraction"
+        - "@app.repository.campaign"
+        - "@app.repository.gender"
 
   app.service.staging:
     class: ListBroking\AppBundle\Service\BusinessLogic\StagingService

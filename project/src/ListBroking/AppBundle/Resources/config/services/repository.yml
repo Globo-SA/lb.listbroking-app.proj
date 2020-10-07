@@ -29,6 +29,12 @@ services:
         arguments:
             - 'ListBroking\AppBundle\Entity\Source'
 
+    app.repository.extraction:
+        class: ListBroking\AppBundle\Repository\ExtractionRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\Extraction'
+
     app.repository.extraction_contact:
         class: ListBroking\AppBundle\Repository\ExtractionContactRepository
         factory: ["@doctrine", getRepository]
@@ -88,3 +94,9 @@ services:
         factory: ["@doctrine", getRepository]
         arguments:
             - 'ListBroking\AppBundle\Entity\AudiencesStats'
+
+    app.repository.gender:
+        class: ListBroking\AppBundle\Repository\GenderRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\Gender'

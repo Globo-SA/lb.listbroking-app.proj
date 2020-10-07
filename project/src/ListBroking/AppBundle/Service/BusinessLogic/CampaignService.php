@@ -3,6 +3,7 @@
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 use ListBroking\AppBundle\Entity\Campaign;
+use ListBroking\AppBundle\Enum\HttpStatusCodeEnum;
 use ListBroking\AppBundle\Repository\CampaignRepositoryInterface;
 use ListBroking\AppBundle\Repository\ClientRepositoryInterface;
 use ListBroking\AppBundle\Service\Base\BaseService;
@@ -40,14 +41,14 @@ class CampaignService extends BaseService implements CampaignServiceInterface
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function addCampaign(array $campaignData): Campaign
+    public function createCampaign(array $campaignData): Campaign
     {
         $client = $this->clientRepository->getById($campaignData[Campaign::CLIENT_ID]);
         if ($client === null) {
-            throw new \Exception('An invalid client_id was provided');
+            throw new \Exception('An invalid client_id was provided', HttpStatusCodeEnum::HTTP_STATUS_CODE_BAD_REQUEST);
         }
 
-        return $this->campaignRepository->addCampaign($client, $campaignData);
+        return $this->campaignRepository->createCampaign($client, $campaignData);
     }
 
 }

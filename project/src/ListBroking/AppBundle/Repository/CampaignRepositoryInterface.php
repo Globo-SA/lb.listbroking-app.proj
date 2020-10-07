@@ -16,5 +16,5 @@ interface CampaignRepositoryInterface
      * @return Campaign
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function addCampaign(Client $client, array $campaignData): Campaign;
+    public function createCampaign(Client $client, array $campaignData): Campaign;
 }

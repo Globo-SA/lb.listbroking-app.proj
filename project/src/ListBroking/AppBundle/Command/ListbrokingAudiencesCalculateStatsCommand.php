@@ -25,7 +25,7 @@ class ListbrokingAudiencesCalculateStatsCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // initialize services
-        $this->statisticsService = $this->getContainer()->get('statistics');
+        $this->statisticsService = $this->getContainer()->get('app.service.statistics');
 
         $this->statisticsService->calculateAudiences();
     }

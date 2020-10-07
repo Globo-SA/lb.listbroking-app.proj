@@ -143,7 +143,7 @@ class AudiencesStatsRepository extends EntityRepository implements AudiencesStat
         }
 
         if (!is_null($filter->getExcludedCategories())) {
-            $statement->andWhere('d.name NOT IN (:excluded_categories)')
+            $statement->andWhere('sc.name NOT IN (:excluded_categories)')
                       ->setParameter('excluded_categories', $filter->getExcludedCategories());
         }
 

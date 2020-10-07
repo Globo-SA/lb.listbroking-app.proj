@@ -19,19 +19,20 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
  */
 class Extraction
 {
+    use TimestampableEntityBehavior, BlameableEntityBehavior;
+
+    const CAMPAIGN_ID = 'campaign_id';
+    const NAME        = 'name';
+    const QUANTITY    = 'quantity';
+    const PAYOUT      = 'payout';
 
     const CACHE_ID = 'extraction';
 
-    use TimestampableEntityBehavior, BlameableEntityBehavior;
-
     const STATUS_FILTRATION          = 1;
-
     const STATUS_CONFIRMATION        = 2;
-
     const STATUS_FINAL               = 3;
 
     const EXCLUDE_DEDUPLICATION_TYPE = 'exclude';
-
     const INCLUDE_DEDUPLICATION_TYPE = 'include';
 
     public static $status_names = array(

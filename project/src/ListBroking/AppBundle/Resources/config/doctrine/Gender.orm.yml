@@ -1,6 +1,7 @@
 ListBroking\AppBundle\Entity\Gender:
     type: entity
     table: gender
+    repositoryClass: ListBroking\AppBundle\Repository\GenderRepository
     id:
         id:
             type: bigint

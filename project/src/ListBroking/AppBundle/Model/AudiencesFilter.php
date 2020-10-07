@@ -2,8 +2,6 @@
 
 namespace ListBroking\AppBundle\Model;
 
-use Symfony\Component\HttpFoundation\Request;
-
 /**
  * AudiencesFilter
  */
@@ -84,12 +82,12 @@ class AudiencesFilter
     /**
      * @var array
      */
-    private $invalidations;
+    protected $invalidations;
 
     /**
      * @var array
      */
-    private $fields;
+    protected $fields;
 
     /**
      * @return string
@@ -318,69 +316,20 @@ class AudiencesFilter
      */
     public function isValid(): bool
     {
-        // validate fields
-        $fieldAllowedValues = [
-            self::FIELD_AGE,
-            self::FIELD_CATEGORY,
-            self::FIELD_DISTRICT,
-            self::FIELD_GENDER,
-            self::FIELD_IS_MOBILE,
-        ];
-
-        if ($this->fields !== null && is_array($this->fields)) {
-            foreach ($this->fields as $field) {
-                if (!in_array($field, $fieldAllowedValues)) {
-                    $this->invalidations[self::FIELDS] = sprintf(
-                        'allowed values (%s)',
-                        implode(', ', $fieldAllowedValues)
-                    );
-
-                    break;
-                }
-            }
-        }
-
-        // validate country
-        if (strlen($this->country) !== self::FILTER_ALLOWED_VALUE_SIZE_COUNTRY) {
-            $this->invalidations[self::FILTER_COUNTRY] = sprintf(
-                'must be a valid Iso Code with %s characters',
-                self::FILTER_ALLOWED_VALUE_SIZE_COUNTRY
-            );
-        }
-
-        // validate gender
-        if ($this->gender !== null && is_array($this->gender)) {
-            foreach ($this->gender as $gender) {
-                if (!in_array($gender, self::FILTER_ALLOWED_VALUE_GENDER)) {
-                    $this->invalidations[self::FILTER_GENDER] = sprintf(
-                        'allowed values (%s)',
-                        implode(', ', self::FILTER_ALLOWED_VALUE_GENDER)
-                    );
-
-                    break;
-                }
-            }
-        }
-
-        // validate min age
-        if ($this->minAge !== null && !is_int($this->minAge) && $this->minAge < 18 && $this->minAge > 100) {
-            $this->invalidations[self::FILTER_MIN_AGE] = 'must be an integer value above 18';
-        }
-
-        // validate max age
-        if ($this->maxAge !== null && !is_int($this->maxAge) && $this->maxAge < 18 && $this->maxAge > 100) {
-            $this->invalidations[self::FILTER_MAX_AGE] = 'must be an integer value above 18';
-        }
-
-        // validate is mobile
-        if ($this->isMobile !== null && !in_array($this->isMobile, [0, 1])) {
-            $this->invalidations[self::FIELD_IS_MOBILE] = 'must be 0 or 1';
-        }
+        $this->validateAudiencesFields();
+        $this->validateCountry();
+        $this->validateGender();
+        $this->validateMinAge();
+        $this->validateMaxAge();
+        $this->validateIsMobile();
 
         return empty($this->invalidations);
     }
 
-    public function getInvalidations()
+    /**
+     * @return array
+     */
+    public function getInvalidations(): array
     {
         return $this->invalidations;
     }
@@ -413,5 +362,98 @@ class AudiencesFilter
         $filter->setFields($requestFields);
 
         return $filter;
+    }
+
+    /**
+     * Validates Country Code Format
+     */
+    protected function validateCountry(): void
+    {
+        if (strlen($this->country) !== self::FILTER_ALLOWED_VALUE_SIZE_COUNTRY) {
+            $this->invalidations[self::FILTER_COUNTRY] = sprintf(
+                'must be a valid Iso Code with %s characters',
+                self::FILTER_ALLOWED_VALUE_SIZE_COUNTRY
+            );
+        }
+    }
+
+    /**
+     * Validates Gender Allowed Values
+     */
+    protected function validateGender(): void
+    {
+        if ($this->gender !== null && is_array($this->gender)) {
+            foreach ($this->gender as $gender) {
+                if (!in_array($gender, self::FILTER_ALLOWED_VALUE_GENDER)) {
+                    $this->invalidations[self::FILTER_GENDER] = sprintf(
+                        'allowed values (%s)',
+                        implode(', ', self::FILTER_ALLOWED_VALUE_GENDER)
+                    );
+
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Validates Min Age Format
+     */
+    protected function validateMinAge(): void
+    {
+        if ($this->minAge !== null && !is_int($this->minAge) && $this->minAge < 18 && $this->minAge > 100) {
+            $this->invalidations[self::FILTER_MIN_AGE] = 'must be an integer value above 18';
+        }
+    }
+
+    /**
+     * Validates Max Age Format
+     */
+    protected function validateMaxAge(): void
+    {
+        if ($this->maxAge !== null && !is_int($this->maxAge) && $this->maxAge < 18 && $this->maxAge > 100) {
+            $this->invalidations[self::FILTER_MAX_AGE] = 'must be an integer value above 18';
+        }
+    }
+
+    /**
+     * Validates Is Mobile
+     */
+    protected function validateIsMobile(): void
+    {
+        if ($this->isMobile !== null && !in_array($this->isMobile, [0, 1])) {
+            $this->invalidations[self::FIELD_IS_MOBILE] = 'must be 0 or 1';
+        }
+    }
+
+    /**
+     * Validates Allowed Fields
+     */
+    protected function validateAudiencesFields(): void
+    {
+        if ($this->fields === null || !is_array($this->fields)) {
+            return;
+        }
+
+        $fieldAllowedValues = [
+            self::FIELD_AGE,
+            self::FIELD_CATEGORY,
+            self::FIELD_DISTRICT,
+            self::FIELD_GENDER,
+            self::FIELD_IS_MOBILE,
+        ];
+
+        foreach ($this->fields as $field) {
+            if (in_array($field, $fieldAllowedValues)) {
+                continue;
+            }
+
+            $this->invalidations[self::FIELDS] = sprintf(
+                'allowed values (%s)',
+                implode(', ', $fieldAllowedValues)
+            );
+
+            break;
+        }
     }
 }

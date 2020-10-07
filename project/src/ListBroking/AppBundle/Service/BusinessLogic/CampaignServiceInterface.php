@@ -15,5 +15,5 @@ interface CampaignServiceInterface extends BaseServiceInterface
      *
      * @return Campaign
      */
-    public function addCampaign(array $campaignData): Campaign;
+    public function createCampaign(array $campaignData): Campaign;
 }

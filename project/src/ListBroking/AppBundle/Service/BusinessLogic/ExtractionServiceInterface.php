@@ -6,6 +6,7 @@ use Doctrine\ORM\Query;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionLog;
 use ListBroking\AppBundle\Entity\RevenueFilter;
+use ListBroking\AppBundle\Model\ExtractionFilter;
 use ListBroking\AppBundle\Service\Base\BaseServiceInterface;
 use ListBroking\AppBundle\Service\Helper\FileHandlerServiceInterface;
 
@@ -132,8 +133,8 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      *
      * @param Extraction $extraction
      *
-     * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
      * @return boolean
+     * @throws \ListBroking\AppBundle\Exception\InvalidFilterObjectException
      */
     public function runExtraction(Extraction $extraction);
 
@@ -183,4 +184,14 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      * @return mixed
      */
     public function generateContactCampaignHistory(Extraction $extraction);
+
+    /**
+     * Create new Extraction
+     *
+     * @param ExtractionFilter $extractionFilter
+     *
+     * @return Extraction
+     * @throws \Exception
+     */
+    public function createExtraction(ExtractionFilter $extractionFilter): Extraction;
 }
