@@ -30,6 +30,11 @@ api_extraction_creation:
     defaults: { _controller: app.controller.api:createExtractionAction }
     methods: [POST]
 
+api_extraction_close:
+    path: /v1/extraction/{extraction_id}/close
+    defaults: { _controller: app.controller.api:closeExtractionAction }
+    methods: [PUT]
+
 api_get_audiences:
     path: /v1/audiences
     defaults: { _controller: app.controller.api:getAudiencesAction }

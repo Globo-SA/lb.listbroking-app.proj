@@ -3,6 +3,7 @@
 namespace ListBroking\AppBundle\Service\BusinessLogic;
 
 use DateTime;
+use Exception;
 use ListBroking\AppBundle\Engine\FilterEngine;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\ExtractionLog;
@@ -22,6 +23,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class ExtractionService extends BaseService implements ExtractionServiceInterface
 {
+    private const EXTRACTION_NOT_FOUND_MESSAGE = 'Extraction not found';
+    private const EXTRACTION_NOT_CONFIRMED     = 'Extraction\'s status is not \'Confirmed\'. Its status is \'%s\'';
+
     /**
      * @var Request
      */
@@ -444,6 +448,36 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
         $extraction->setIsAlreadyExtracted(true);
         $extraction->setQuery(json_encode($query));
+
+        $this->updateEntity($extraction);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws Exception
+     */
+    public function finishExtraction(int $extractionId): void
+    {
+        $extraction = $this->extractionRepository->findOneBy(['id' => $extractionId]);
+
+        // Validate if extraction exists
+        if (!$extraction instanceof Extraction) {
+            throw new Exception(static::EXTRACTION_NOT_FOUND_MESSAGE, HttpStatusCodeEnum::HTTP_STATUS_CODE_NOT_FOUND);
+        }
+
+        // Validate if extraction is in "confirmation" phase
+        if ($extraction->getStatus() !== Extraction::STATUS_CONFIRMATION) {
+            $currentStatus = Extraction::$status_names[$extraction->getStatus()] ?? Extraction::STATUS_UNKNOWN;
+
+            throw new Exception(
+                sprintf(static::EXTRACTION_NOT_CONFIRMED, $currentStatus),
+                HttpStatusCodeEnum::HTTP_STATUS_CODE_BAD_REQUEST
+            );
+        }
+
+        $extraction->setStatus(Extraction::STATUS_FINAL);
+        $extraction->setSoldAt(new \DateTime());
 
         $this->updateEntity($extraction);
     }

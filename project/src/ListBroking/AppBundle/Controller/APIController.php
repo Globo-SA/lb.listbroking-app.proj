@@ -42,6 +42,8 @@ class APIController extends Controller
     const EXTRACTION_NOT_CREATED_MESSAGE   = 'There was an error creating the extraction. Please contact support';
     const INVALID_FILTER_MESSAGE           = 'The requested filter is invalid';
     const AUDIENCE_DETAIL_OBTAINED_MESSAGE = 'Audience detail obtained';
+    const EXTRACTION_CLOSED_MESSAGE        = 'Extraction with id %s was closed';
+    const EXTRACTION_NOT_CLOSED_MESSAGE    = 'there was an error closing the extraction. Please contact support';
 
     /**
      * @var LoggerInterface $logger
@@ -517,6 +519,41 @@ class APIController extends Controller
         }
 
         return $this->createJsonResponse(self::AUDIENCE_DETAIL_OBTAINED_MESSAGE, $audiences);
+    }
+
+    /**
+     * Closes an extraction from a given extraction_id
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function closeExtractionAction(Request $request): JsonResponse
+    {
+        try {
+            $this->fosUserAuthenticationService->checkCredentials($request);
+        } catch (AccessDeniedException $exception) {
+            return $this->createJsonResponse($exception->getMessage(), $exception->getCode());
+        }
+
+        $extractionId = $request->get(Extraction::EXTRACTION_ID);
+
+        try {
+            $this->checkRequiredFields([Extraction::EXTRACTION_ID => $extractionId]);
+
+            $this->extractionService->finishExtraction($extractionId);
+
+        } catch (DBALException $exception){
+            return $this->createJsonResponse(
+                static::EXTRACTION_NOT_CLOSED_MESSAGE,
+                [],
+                HttpStatusCodeEnum::HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR
+            );
+        } catch (\Exception $exception) {
+            return $this->createJsonResponse($exception->getMessage(), [], $exception->getCode());
+        }
+
+        return $this->createJsonResponse(sprintf(static::EXTRACTION_CLOSED_MESSAGE, $extractionId));
     }
 
     /**

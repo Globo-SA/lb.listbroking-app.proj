@@ -194,4 +194,11 @@ interface ExtractionServiceInterface extends BaseServiceInterface
      * @throws \Exception
      */
     public function createExtraction(ExtractionFilter $extractionFilter): Extraction;
+
+    /**
+     * Set an extraction as "finished"
+     *
+     * @param int $extractionId
+     */
+    public function finishExtraction(int $extractionId): void;
 }

@@ -21,6 +21,9 @@ class Extraction
 {
     use TimestampableEntityBehavior, BlameableEntityBehavior;
 
+    public const EXTRACTION_ID  = 'extraction_id';
+    public const STATUS_UNKNOWN = 'Unkown';
+
     const CAMPAIGN_ID = 'campaign_id';
     const NAME        = 'name';
     const QUANTITY    = 'quantity';
