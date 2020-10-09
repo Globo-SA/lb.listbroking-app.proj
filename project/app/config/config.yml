@@ -49,3 +49,4 @@ doctrine:
                 MONTH: DoctrineExtensions\Query\Mysql\Month
                 YEAR: DoctrineExtensions\Query\Mysql\Year
                 group_concat: DoctrineExtensions\Query\Mysql\GroupConcat
+                timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff

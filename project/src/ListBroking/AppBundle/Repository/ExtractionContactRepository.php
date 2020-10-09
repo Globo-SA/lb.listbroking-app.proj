@@ -15,6 +15,7 @@ use ListBroking\AppBundle\Entity\Client;
 use ListBroking\AppBundle\Entity\Contact;
 use ListBroking\AppBundle\Entity\Extraction;
 use ListBroking\AppBundle\Entity\Lead;
+use ListBroking\AppBundle\Enum\ExtractionFieldsEnum;
 use PDO;
 
 class ExtractionContactRepository extends EntityRepository implements ExtractionContactRepositoryInterface
@@ -164,6 +165,56 @@ SQL;
         $statment->execute($parameters);
 
         return $statment->fetchAll();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getExtractionContacts(
+        Extraction $extraction,
+        array $fields = [],
+        int $limit = 1000,
+        int $offset = 0
+    ): array {
+        // Default query configuration
+        $queryBuilder = $this->createQueryBuilder('ec')
+            ->select('l.phone')
+            ->innerJoin('ec.contact', 'c')
+            ->innerJoin('c.lead', 'l')
+            ->where('ec.extraction = :extraction_id')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->setParameter('extraction_id', $extraction->getId());
+
+        // Discard unknown fields from our pre-defined list
+        $fields = array_intersect($fields, ExtractionFieldsEnum::getAll());
+
+        // Add requested fields (some may require joins)
+        foreach ($fields as $field) {
+            switch ($field) {
+                case ExtractionFieldsEnum::GENDER:
+                    $queryBuilder->leftJoin('c.gender', 'g');
+                    $queryBuilder->addSelect(sprintf('g.name as %s', ExtractionFieldsEnum::GENDER));
+                    break;
+                case ExtractionFieldsEnum::AGE:
+                    $queryBuilder->addSelect(sprintf(
+                        'timestampdiff(year, c.birthdate, current_date()) as %s',
+                        ExtractionFieldsEnum::AGE
+                    ));
+                    break;
+                case ExtractionFieldsEnum::DISTRICT:
+                    $queryBuilder->leftJoin('c.district', 'd');
+                    $queryBuilder->addSelect(sprintf('d.name as %s', ExtractionFieldsEnum::DISTRICT));
+                    break;
+                case ExtractionFieldsEnum::PHONE:
+                    // Phone already defined on the default query configuration
+                    break;
+                default:
+                    $queryBuilder->addSelect(sprintf('c.%s', $field));
+            }
+        }
+
+        return $queryBuilder->getQuery()->execute(null, Query::HYDRATE_ARRAY);
     }
 
     private function composeHeaders($headers){

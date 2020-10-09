@@ -196,6 +196,18 @@ interface ExtractionServiceInterface extends BaseServiceInterface
     public function createExtraction(ExtractionFilter $extractionFilter): Extraction;
 
     /**
+     * Get contacts from a given extraction ID
+     *
+     * @param int   $extractionId
+     * @param array $fields
+     * @param int   $limit
+     * @param int   $offset
+     *
+     * @return array
+     */
+    public function getExtractionContacts(int $extractionId, array $fields, int $limit, int $offset): array;
+
+    /**
      * Set an extraction as "finished"
      *
      * @param int $extractionId
