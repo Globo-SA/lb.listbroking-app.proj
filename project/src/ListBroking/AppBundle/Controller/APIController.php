@@ -43,7 +43,11 @@ class APIController extends Controller
     const INVALID_FILTER_MESSAGE           = 'The requested filter is invalid';
     const AUDIENCE_DETAIL_OBTAINED_MESSAGE = 'Audience detail obtained';
     const EXTRACTION_CLOSED_MESSAGE        = 'Extraction with id %s was closed';
-    const EXTRACTION_NOT_CLOSED_MESSAGE    = 'there was an error closing the extraction. Please contact support';
+    const EXTRACTION_NOT_CLOSED_MESSAGE    = 'There was an error closing the extraction. Please contact support';
+    const EXTRACTION_CONTACTS_OK_MESSAGE   = 'Extraction contacts obtained';
+    const EXTRACTION_CONTACTS_NOK_MESSAGE  = 'There was an error getting the extraction contacts. Please contact support';
+
+    private const EXTRACTION_CONTACTS_PER_PAGE = 100;
 
     /**
      * @var LoggerInterface $logger
@@ -554,6 +558,51 @@ class APIController extends Controller
         }
 
         return $this->createJsonResponse(sprintf(static::EXTRACTION_CLOSED_MESSAGE, $extractionId));
+    }
+
+    /**
+     * Returns contacts from a given extraction
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getExtractionContactsAction(Request $request): JsonResponse
+    {
+        try {
+            $this->fosUserAuthenticationService->checkCredentials($request);
+        } catch (AccessDeniedException $exception) {
+            return $this->createJsonResponse($exception->getMessage(), $exception->getCode());
+        }
+
+        // Getting request info
+        $extractionId = $request->get(Extraction::EXTRACTION_ID);
+        $fields       = $request->get('fields', []);
+        $page         = $request->get('page', 0);
+
+        // Prepare request info
+        $fields       = is_array($fields) ? $fields : [];
+        $limit        = static::EXTRACTION_CONTACTS_PER_PAGE;
+        $offset       = $page > 0 ? ($page - 1) * $limit : 0;
+
+        try {
+            $this->checkRequiredFields([Extraction::EXTRACTION_ID => $extractionId]);
+
+            $results = $this->extractionService->getExtractionContacts($extractionId, $fields, $limit, $offset);
+        } catch (DBALException $exception){
+            return $this->createJsonResponse(
+                static::EXTRACTION_CONTACTS_NOK_MESSAGE,
+                [],
+                HttpStatusCodeEnum::HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR
+            );
+        } catch (\Exception $exception) {
+            return $this->createJsonResponse($exception->getMessage(), [], $exception->getCode());
+        }
+
+        return $this->createJsonResponse(
+            sprintf(static::EXTRACTION_CONTACTS_OK_MESSAGE, $extractionId),
+            $results
+        );
     }
 
     /**

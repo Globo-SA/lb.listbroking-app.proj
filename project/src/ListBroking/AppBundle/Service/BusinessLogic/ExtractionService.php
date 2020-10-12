@@ -13,6 +13,7 @@ use ListBroking\AppBundle\Form\FiltersType;
 use ListBroking\AppBundle\Entity\RevenueFilter;
 use ListBroking\AppBundle\Model\ExtractionFilter;
 use ListBroking\AppBundle\Repository\CampaignRepositoryInterface;
+use ListBroking\AppBundle\Repository\ExtractionContactRepositoryInterface;
 use ListBroking\AppBundle\Repository\ExtractionRepositoryInterface;
 use ListBroking\AppBundle\Repository\GenderRepositoryInterface;
 use ListBroking\AppBundle\Service\Base\BaseService;
@@ -25,6 +26,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
 {
     private const EXTRACTION_NOT_FOUND_MESSAGE = 'Extraction not found';
     private const EXTRACTION_NOT_CONFIRMED     = 'Extraction\'s status is not \'Confirmed\'. Its status is \'%s\'';
+    private const EXTRACTION_NOT_READY_MESSAGE = 'Extraction not ready';
 
     /**
      * @var Request
@@ -57,14 +59,20 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     private $genderRepository;
 
     /**
+     * @var ExtractionContactRepositoryInterface
+     */
+    private $extractionContactRepository;
+
+    /**
      * ExtractionService constructor.
      *
-     * @param RequestStack                  $requestStack
-     * @param FilterEngine                  $filterEngine
-     * @param MessagingServiceInterface     $messagingService
-     * @param ExtractionRepositoryInterface $extractionRepository
-     * @param CampaignRepositoryInterface   $campaignRepository
-     * @param GenderRepositoryInterface     $genderRepository
+     * @param RequestStack                         $requestStack
+     * @param FilterEngine                         $filterEngine
+     * @param MessagingServiceInterface            $messagingService
+     * @param ExtractionRepositoryInterface        $extractionRepository
+     * @param CampaignRepositoryInterface          $campaignRepository
+     * @param GenderRepositoryInterface            $genderRepository
+     * @param ExtractionContactRepositoryInterface $extractionContactRepository
      */
     public function __construct(
         RequestStack $requestStack,
@@ -72,14 +80,16 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         MessagingServiceInterface $messagingService,
         ExtractionRepositoryInterface $extractionRepository,
         CampaignRepositoryInterface $campaignRepository,
-        GenderRepositoryInterface $genderRepository
+        GenderRepositoryInterface $genderRepository,
+        ExtractionContactRepositoryInterface $extractionContactRepository
     ) {
-        $this->request              = $requestStack->getCurrentRequest();
-        $this->f_engine             = $filterEngine;
-        $this->messagingService     = $messagingService;
-        $this->extractionRepository = $extractionRepository;
-        $this->campaignRepository   = $campaignRepository;
-        $this->genderRepository     = $genderRepository;
+        $this->request                     = $requestStack->getCurrentRequest();
+        $this->f_engine                    = $filterEngine;
+        $this->messagingService            = $messagingService;
+        $this->extractionRepository        = $extractionRepository;
+        $this->campaignRepository          = $campaignRepository;
+        $this->genderRepository            = $genderRepository;
+        $this->extractionContactRepository = $extractionContactRepository;
     }
 
     /**
@@ -384,6 +394,59 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @throws Exception
+     */
+    public function getExtractionContacts(int $extractionId, array $fields, int $limit, int $offset): array
+    {
+        $extraction = $this->extractionRepository->findOneBy(['id' => $extractionId]);
+
+        // Validate if extraction exists
+        if (!$extraction instanceof Extraction) {
+            throw new Exception(static::EXTRACTION_NOT_FOUND_MESSAGE, HttpStatusCodeEnum::HTTP_STATUS_CODE_NOT_FOUND);
+        }
+
+        // Validate if extraction is ready
+        if ($extraction->getIsAlreadyExtracted() === false) {
+            throw new Exception(static::EXTRACTION_NOT_READY_MESSAGE, HttpStatusCodeEnum::HTTP_STATUS_CODE_OK);
+        }
+
+        // Get contacts from repository
+        return $this->extractionContactRepository->getExtractionContacts($extraction, $fields, $limit, $offset);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws Exception
+     */
+    public function finishExtraction(int $extractionId): void
+    {
+        $extraction = $this->extractionRepository->findOneBy(['id' => $extractionId]);
+
+        // Validate if extraction exists
+        if (!$extraction instanceof Extraction) {
+            throw new Exception(static::EXTRACTION_NOT_FOUND_MESSAGE, HttpStatusCodeEnum::HTTP_STATUS_CODE_NOT_FOUND);
+        }
+
+        // Validate if extraction is in "confirmation" phase
+        if ($extraction->getStatus() !== Extraction::STATUS_CONFIRMATION) {
+            $currentStatus = Extraction::$status_names[$extraction->getStatus()] ?? Extraction::STATUS_UNKNOWN;
+
+            throw new Exception(
+                sprintf(static::EXTRACTION_NOT_CONFIRMED, $currentStatus),
+                HttpStatusCodeEnum::HTTP_STATUS_CODE_BAD_REQUEST
+            );
+        }
+
+        $extraction->setStatus(Extraction::STATUS_FINAL);
+        $extraction->setSoldAt(new \DateTime());
+
+        $this->updateEntity($extraction);
+    }
+
+    /**
      * Executes the filtering engine and adds the contacts
      * to the Extraction
      *
@@ -448,36 +511,6 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $extraction->setStatus(Extraction::STATUS_CONFIRMATION);
         $extraction->setIsAlreadyExtracted(true);
         $extraction->setQuery(json_encode($query));
-
-        $this->updateEntity($extraction);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @throws Exception
-     */
-    public function finishExtraction(int $extractionId): void
-    {
-        $extraction = $this->extractionRepository->findOneBy(['id' => $extractionId]);
-
-        // Validate if extraction exists
-        if (!$extraction instanceof Extraction) {
-            throw new Exception(static::EXTRACTION_NOT_FOUND_MESSAGE, HttpStatusCodeEnum::HTTP_STATUS_CODE_NOT_FOUND);
-        }
-
-        // Validate if extraction is in "confirmation" phase
-        if ($extraction->getStatus() !== Extraction::STATUS_CONFIRMATION) {
-            $currentStatus = Extraction::$status_names[$extraction->getStatus()] ?? Extraction::STATUS_UNKNOWN;
-
-            throw new Exception(
-                sprintf(static::EXTRACTION_NOT_CONFIRMED, $currentStatus),
-                HttpStatusCodeEnum::HTTP_STATUS_CODE_BAD_REQUEST
-            );
-        }
-
-        $extraction->setStatus(Extraction::STATUS_FINAL);
-        $extraction->setSoldAt(new \DateTime());
 
         $this->updateEntity($extraction);
     }
