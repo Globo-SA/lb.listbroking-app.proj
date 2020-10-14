@@ -10,11 +10,11 @@ interface CampaignRepositoryInterface
     /**
      * Persist new Campaign
      *
-     * @param Client $client
-     * @param array  $campaignData
+     * @param Client   $client
+     * @param int|null $accountId
+     * @param array    $campaignData
      *
      * @return Campaign
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function createCampaign(Client $client, array $campaignData): Campaign;
+    public function createCampaign(Client $client, ?int $accountId, array $campaignData): Campaign;
 }

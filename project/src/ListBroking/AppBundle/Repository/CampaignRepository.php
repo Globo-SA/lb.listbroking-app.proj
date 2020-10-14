@@ -11,7 +11,7 @@ class CampaignRepository extends EntityRepository implements CampaignRepositoryI
     /**
      * {@inheritdoc}
      */
-    public function createCampaign(Client $client, array $campaignData): Campaign
+    public function createCampaign(Client $client, ?int $accountId, array $campaignData): Campaign
     {
         $newCampaign = new Campaign();
         $newCampaign->setName($campaignData[Campaign::NAME]);
@@ -25,6 +25,10 @@ class CampaignRepository extends EntityRepository implements CampaignRepositoryI
 
         if ($campaignData[Campaign::EXTERNAL_ID] !== null) {
             $newCampaign->setExternalId($campaignData[Campaign::EXTERNAL_ID]);
+        }
+
+        if($accountId !== null){
+            $newCampaign->setAccountId($accountId);
         }
 
         $this->getEntityManager()->persist($newCampaign);

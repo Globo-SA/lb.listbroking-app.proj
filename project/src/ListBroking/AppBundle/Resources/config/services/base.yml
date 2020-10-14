@@ -101,3 +101,4 @@ services:
     arguments:
         - "@app.repository.campaign"
         - "@app.repository.client"
+        - "@hurry"
