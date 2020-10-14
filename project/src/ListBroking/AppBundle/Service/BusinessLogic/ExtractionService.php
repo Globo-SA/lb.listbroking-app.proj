@@ -442,6 +442,16 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
 
         $extraction->setStatus(Extraction::STATUS_FINAL);
         $extraction->setSoldAt(new \DateTime());
+        $extraction->setIsLocking(true);
+
+        // Publish Extraction to the Queue
+        $this->messagingService->publishMessage(
+            'lock_extraction',
+            [
+                'object_id'  => $extractionId,
+                'lock_types' => [0],
+            ]
+        );
 
         $this->updateEntity($extraction);
     }
@@ -582,7 +592,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             'contact:sub_category:array:basic:exclusion' => $requestedFilter->getExcludedCategories(),
             'contact_campaign:max_times_sold:integer:not_sold_more_than_x_times_after_date:inclusion' => null,
             'contact_campaign:created_at:greater_than:not_sold_more_than_x_times_after_date:inclusion' => null,
-            'lock:no_locks_lock_filter:boolean:no_locks:inclusion' => false,
+            'lock:no_locks_lock_filter:boolean:no_locks:inclusion' => true,
             'lock:client_lock_filter:array:client_lock:inclusion' => [
                 '1' => [
                     'client' => null,
