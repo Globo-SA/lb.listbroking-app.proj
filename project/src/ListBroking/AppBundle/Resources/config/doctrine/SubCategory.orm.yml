@@ -1,6 +1,7 @@
 ListBroking\AppBundle\Entity\SubCategory:
     type: entity
     table: sub_category
+    repositoryClass: ListBroking\AppBundle\Repository\SubCategoryRepository
     id:
         id:
             type: bigint

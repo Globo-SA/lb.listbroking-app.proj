@@ -13,9 +13,11 @@ use ListBroking\AppBundle\Form\FiltersType;
 use ListBroking\AppBundle\Entity\RevenueFilter;
 use ListBroking\AppBundle\Model\ExtractionFilter;
 use ListBroking\AppBundle\Repository\CampaignRepositoryInterface;
+use ListBroking\AppBundle\Repository\DistrictRepositoryInterface;
 use ListBroking\AppBundle\Repository\ExtractionContactRepositoryInterface;
 use ListBroking\AppBundle\Repository\ExtractionRepositoryInterface;
 use ListBroking\AppBundle\Repository\GenderRepositoryInterface;
+use ListBroking\AppBundle\Repository\SubCategoryRepositoryInterface;
 use ListBroking\AppBundle\Service\Base\BaseService;
 use ListBroking\AppBundle\Service\Helper\FileHandlerServiceInterface;
 use ListBroking\AppBundle\Service\Helper\MessagingServiceInterface;
@@ -59,6 +61,16 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     private $genderRepository;
 
     /**
+     * @var DistrictRepositoryInterface
+     */
+    private $districtRepository;
+
+    /**
+     * @var SubCategoryRepositoryInterface
+     */
+    private $subCategoryRepository;
+
+    /**
      * @var ExtractionContactRepositoryInterface
      */
     private $extractionContactRepository;
@@ -72,6 +84,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
      * @param ExtractionRepositoryInterface        $extractionRepository
      * @param CampaignRepositoryInterface          $campaignRepository
      * @param GenderRepositoryInterface            $genderRepository
+     * @param DistrictRepositoryInterface          $districtRepository
+     * @param SubCategoryRepositoryInterface       $subCategoryRepository
      * @param ExtractionContactRepositoryInterface $extractionContactRepository
      */
     public function __construct(
@@ -81,6 +95,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         ExtractionRepositoryInterface $extractionRepository,
         CampaignRepositoryInterface $campaignRepository,
         GenderRepositoryInterface $genderRepository,
+        DistrictRepositoryInterface $districtRepository,
+        SubCategoryRepositoryInterface $subCategoryRepository,
         ExtractionContactRepositoryInterface $extractionContactRepository
     ) {
         $this->request                     = $requestStack->getCurrentRequest();
@@ -89,6 +105,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
         $this->extractionRepository        = $extractionRepository;
         $this->campaignRepository          = $campaignRepository;
         $this->genderRepository            = $genderRepository;
+        $this->districtRepository          = $districtRepository;
+        $this->subCategoryRepository       = $subCategoryRepository;
         $this->extractionContactRepository = $extractionContactRepository;
     }
 
@@ -533,8 +551,38 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
     private function buildFilter(ExtractionFilter $requestedFilter): array
     {
         $filterGender = [];
-        foreach ($this->genderRepository->getByName($requestedFilter->getGender()) as $gender) {
-            $filterGender[] = $gender->getId();
+        if($requestedFilter->getGender() !== null) {
+            foreach ($this->genderRepository->getByName($requestedFilter->getGender()) as $gender) {
+                $filterGender[] = $gender->getId();
+            }
+        }
+
+        $filterIncludedDistricts = [];
+        if($requestedFilter->getIncludedDistricts() !== null) {
+            foreach ($this->districtRepository->getByName($requestedFilter->getIncludedDistricts()) as $district) {
+                $filterIncludedDistricts[] = $district->getId();
+            }
+        }
+
+        $filterExcludedDistricts = [];
+        if($requestedFilter->getExcludedDistricts() !== null) {
+            foreach ($this->districtRepository->getByName($requestedFilter->getExcludedDistricts()) as $district) {
+                $filterExcludedDistricts[] = $district->getId();
+            }
+        }
+
+        $filterIncludedSubCategories = [];
+        if($requestedFilter->getIncludedCategories() !== null) {
+            foreach ($this->subCategoryRepository->getByName($requestedFilter->getIncludedCategories()) as $subCategory) {
+                $filterIncludedSubCategories[] = $subCategory->getId();
+            }
+        }
+
+        $filterExcludedSubCategories = [];
+        if($requestedFilter->getExcludedCategories() !== null) {
+            foreach ($this->subCategoryRepository->getByName($requestedFilter->getExcludedCategories()) as $subCategory) {
+                $filterExcludedSubCategories[] = $subCategory->getId();
+            }
         }
 
         return [
@@ -574,8 +622,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             'contact:country:integer:basic:inclusion' => $this->entityManager->getRepository('ListBrokingAppBundle:Country')
                                                                              ->findOneBy(['name' => $requestedFilter->getCountry()])
                                                                              ->getId(),
-            'contact:district:array:basic:inclusion' => $requestedFilter->getIncludedDistricts(),
-            'contact:district:array:basic:exclusion' => $requestedFilter->getExcludedDistricts(),
+            'contact:district:array:basic:inclusion' => $filterIncludedDistricts,
+            'contact:district:array:basic:exclusion' => $filterExcludedDistricts,
             'contact:county:array:basic:inclusion' => null,
             'contact:county:array:basic:exclusion' => null,
             'contact:parish:array:basic:inclusion' => null,
@@ -588,8 +636,8 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             'contact:owner:array:basic:exclusion' => null,
             'contact:source:array:basic:inclusion' => null,
             'contact:source:array:basic:exclusion' => null,
-            'contact:sub_category:array:basic:inclusion' => $requestedFilter->getIncludedCategories(),
-            'contact:sub_category:array:basic:exclusion' => $requestedFilter->getExcludedCategories(),
+            'contact:sub_category:array:basic:inclusion' => $filterIncludedSubCategories,
+            'contact:sub_category:array:basic:exclusion' => $filterExcludedSubCategories,
             'contact_campaign:max_times_sold:integer:not_sold_more_than_x_times_after_date:inclusion' => null,
             'contact_campaign:created_at:greater_than:not_sold_more_than_x_times_after_date:inclusion' => null,
             'lock:no_locks_lock_filter:boolean:no_locks:inclusion' => true,

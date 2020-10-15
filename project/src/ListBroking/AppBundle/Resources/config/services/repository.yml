@@ -100,3 +100,15 @@ services:
         factory: ["@doctrine", getRepository]
         arguments:
             - 'ListBroking\AppBundle\Entity\Gender'
+
+    app.repository.district:
+        class: ListBroking\AppBundle\Repository\DistrictRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\District'
+
+    app.repository.sub_category:
+        class: ListBroking\AppBundle\Repository\SubCategoryRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\SubCategory'

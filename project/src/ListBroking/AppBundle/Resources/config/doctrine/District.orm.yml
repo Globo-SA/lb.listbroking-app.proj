@@ -1,6 +1,7 @@
 ListBroking\AppBundle\Entity\District:
     type: entity
     table: district
+    repositoryClass: ListBroking\AppBundle\Repository\DistrictRepository
     id:
         id:
             type: bigint
