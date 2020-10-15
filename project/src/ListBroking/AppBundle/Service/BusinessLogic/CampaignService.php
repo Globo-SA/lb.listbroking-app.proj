@@ -73,8 +73,8 @@ class CampaignService extends BaseService implements CampaignServiceInterface
         $accountId = null;
         try {
             foreach ($this->hurryService->fetchAccounts() as $hurryAccount) {
-                if (strtolower(trim($hurryAccount['client_name'])) == strtolower(trim($client->getName()))) {
-                    $accountId = $hurryAccount['id'];
+                if (strtolower(trim($hurryAccount->client_name)) == strtolower(trim($client->getName()))) {
+                    $accountId = $hurryAccount->id;
                 }
             }
         }catch (\Exception $exception){
