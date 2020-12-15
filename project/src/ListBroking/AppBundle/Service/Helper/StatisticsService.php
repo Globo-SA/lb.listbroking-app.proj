@@ -155,7 +155,8 @@ class StatisticsService extends BaseService implements StatisticsServiceInterfac
         $this->audiencesStatsRepository->truncate();
 
         // insert updated data
-        $restingTimeInMonths = str_replace('+', '', $this->findConfig('lock.time'));
+//        $restingTimeInMonths = str_replace('+', '', $this->findConfig('lock.time'));
+        $restingTimeInMonths = '1week';
         $minimumRestingDate  = new DateTime();
         $minimumRestingDate->modify(sprintf('-%s', $restingTimeInMonths));
 

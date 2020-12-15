@@ -640,7 +640,7 @@ class ExtractionService extends BaseService implements ExtractionServiceInterfac
             'contact:sub_category:array:basic:exclusion' => $filterExcludedSubCategories,
             'contact_campaign:max_times_sold:integer:not_sold_more_than_x_times_after_date:inclusion' => null,
             'contact_campaign:created_at:greater_than:not_sold_more_than_x_times_after_date:inclusion' => null,
-            'lock:no_locks_lock_filter:boolean:no_locks:inclusion' => true,
+            'lock:no_locks_lock_filter:boolean:no_locks:inclusion' => false,
             'lock:client_lock_filter:array:client_lock:inclusion' => [
                 '1' => [
                     'client' => null,
