@@ -1,0 +1,64 @@
+parameters:
+  database_driver:    pdo_mysql
+  database_host:      localhost
+  database_port:      ~
+  database_name:      listbroking-test
+  database_user:      root
+  database_password:  null
+  database_logging:   false
+  database_profiling: false
+
+  mailer_transport:  smtp
+  mailer_encryption: tls
+  mailer_host:       smtp.mailtrap.io
+  mailer_port:       25
+  mailer_user:       ''
+  mailer_password:   ''
+  mailer_from_email: ''
+  mailer_to_email:   ''
+
+  locale:            en
+  domain:            https://test.adc-lb.eu
+  secret:            ThisTokenIsNotSoSecretChangeIt
+
+  java_bin_path: /usr/bin/java
+  ruby_bin_path: /usr/bin/ruby
+  compass_bin_path: /usr/bin/compass
+
+  redis_host: ''
+  redis_port: ''
+  redis_password: ''
+
+  rabbitmq_host: ''
+  rabbitmq_port: ''
+  rabbitmq_user: ''
+  rabbitmq_password: ''
+  rabbitmq_vhost: /
+
+  filesystem_url: ''
+  filesystem_type: ''
+
+  aws_s3_region:   ''
+  aws_s3_key:      ''
+  aws_s3_secret:   ''
+  aws_s3_bucket:   ''
+
+  hurry_api_token:    ''
+  hurry_api_url:      ''
+
+  monolog.level.main: debug
+  monolog.level.service: debug
+
+  # GDPR
+  email_invalid_domain: 'adclick.invalid'
+
+  # Twilio
+  twilio_username:                    ''
+  twilio_password:                    ''
+  twilio_revalidation_flow_id:        ''
+  twilio_revalidation_phone_number:   ''
+  twilio_database_username:           ''
+  twilio_database_token:              ''
+
+  # Integromat
+  integromat_iuris_webhook: ''

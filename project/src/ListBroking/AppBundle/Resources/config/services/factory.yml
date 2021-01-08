@@ -7,3 +7,12 @@ services:
 
   app.factory.client_notification:
     class: ListBroking\AppBundle\Service\Factory\ClientNotificationFactory
+
+  app.factory.consent_revalidation:
+    class: ListBroking\AppBundle\Service\Factory\ConsentRevalidationFactory
+
+  app.factory.twilio_client:
+    class: ListBroking\AppBundle\Service\Factory\TwilioClientFactory
+    arguments:
+      - '%twilio_username%'
+      - '%twilio_password%'

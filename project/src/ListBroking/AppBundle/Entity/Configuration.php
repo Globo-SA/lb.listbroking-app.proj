@@ -11,6 +11,8 @@ use ListBroking\AppBundle\Behavior\TimestampableEntityBehavior;
  */
 class Configuration
 {
+    public const KEY_IVR_END_CALL_AUDIO_URL = 'ivr_end_call_audio_url';
+
     const CACHE_ID = 'configuration';
 
     public static $type_values = array(
