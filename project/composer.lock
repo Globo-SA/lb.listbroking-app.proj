@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "75fa5585879b1a9509c54bd101987f6d",
+    "content-hash": "1c0040bf03bbb18bf374c5534e7c9042",
     "packages": [
         {
             "name": "adclick/api-abstraction-bundle",
@@ -8841,11 +8841,10 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.1"
+        "php": ">=7.1",
+        "ext-json": "*"
     },
-    "platform-dev": {
-        "ext-json": "^1.5"
-    },
+    "platform-dev": [],
     "platform-overrides": {
         "php": "7.1"
     }
