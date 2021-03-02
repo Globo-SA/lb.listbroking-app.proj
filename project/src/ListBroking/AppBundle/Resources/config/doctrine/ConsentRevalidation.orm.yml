@@ -1,0 +1,42 @@
+ListBroking\AppBundle\Entity\ConsentRevalidation:
+    type: entity
+    table: consent_revalidation
+    repositoryClass: ListBroking\AppBundle\Repository\ConsentRevalidationRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        type:
+            type: string
+            length: 255
+        status:
+            type: string
+            nullable: true
+            length: 255
+        data:
+            type: text
+            nullable: true
+        createdAt:
+            type: datetime
+            column: created_at
+            gedmo:
+                timestampable:
+                    on: create
+        updatedAt:
+            type: datetime
+            column: updated_at
+            gedmo:
+                timestampable:
+                    on: update
+    manyToOne:
+        contact:
+            targetEntity: ListBroking\AppBundle\Entity\Contact
+            inversedBy:   consent_revalidations
+            joinColumn:
+                name:                 contact_id
+                referencedColumnName: id
+                onDelete:             restrict
+                nullable:             false

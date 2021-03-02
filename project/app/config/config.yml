@@ -50,3 +50,5 @@ doctrine:
                 YEAR: DoctrineExtensions\Query\Mysql\Year
                 group_concat: DoctrineExtensions\Query\Mysql\GroupConcat
                 timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
+            numeric_functions:
+                rand: DoctrineExtensions\Query\Mysql\Rand

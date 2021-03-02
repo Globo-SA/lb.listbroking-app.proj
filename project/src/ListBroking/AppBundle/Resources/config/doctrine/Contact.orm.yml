@@ -95,6 +95,10 @@ ListBroking\AppBundle\Entity\Contact:
             targetEntity: ListBroking\AppBundle\Entity\ContactCampaign
             mappedBy:     contact
             cascade:      [all]
+        consentRevalidations:
+            targetEntity: ListBroking\AppBundle\Entity\ConsentRevalidation
+            mappedBy:     contact
+            cascade: [ all ]
     manyToOne:
         lead:
             targetEntity: ListBroking\AppBundle\Entity\Lead

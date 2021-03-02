@@ -1,0 +1,55 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/php:7.1.25
+
+    working_directory: ~/lb.listbroking-app.proj/project
+
+    steps:
+      # Checkout code from github
+      - checkout:
+          path: ~/lb.listbroking-app.proj
+
+      # Needed for installing packages bellow
+      - run:
+          name:    Update packages
+          command: sudo apt-get update
+
+      # Needed by gd
+      - run:
+          name:    Install libpng-dev package
+          command: sudo apt-get install -y libpng-dev
+
+      # Needed by composer
+      - run:
+          name:    Install gd extension
+          command: sudo docker-php-ext-install gd
+
+      # Needed by composer
+      - run:
+          name:    Install sockets extension
+          command: sudo docker-php-ext-install sockets
+
+      # Needed by sfContext bootstrap
+      - run:
+          name:    Install test database parameters
+          command: sudo cp app/config/parameters/parameters_test.yml app/config/parameters.yml
+
+      # Composer install
+      - restore_cache:
+          keys:
+            # "composer.lock" can be used if it is committed to the repo
+            - v1-dependencies-{{ checksum "composer.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: composer install -n --prefer-dist --no-scripts
+      - save_cache:
+          key: v1-dependencies-{{ checksum "composer.json" }}
+          paths:
+            - ./vendor
+
+      # Tests
+      - run:
+          name: "Running tests"
+          command: ./vendor/bin/phpunit

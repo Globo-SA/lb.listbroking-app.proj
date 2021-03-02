@@ -99,6 +99,11 @@ class Contact
     private $contact_campaigns;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $consentRevalidations;
+
+    /**
      * @var Lead
      */
     private $lead;
@@ -805,5 +810,21 @@ class Contact
         $this->country = $country;
 
         return $this;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getConsentRevalidations(): \Doctrine\Common\Collections\Collection
+    {
+        return $this->consentRevalidations;
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\Collection $consentRevalidations
+     */
+    public function setConsentRevalidations(\Doctrine\Common\Collections\Collection $consentRevalidations): void
+    {
+        $this->consentRevalidations = $consentRevalidations;
     }
 }

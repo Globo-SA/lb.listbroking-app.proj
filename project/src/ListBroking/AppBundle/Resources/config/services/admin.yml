@@ -54,6 +54,12 @@ services:
       tags:
           - {name: sonata.admin, manager_type: orm, group: Categorization, label: Source}
 
+  listbroking.admin.brand:
+    class: ListBroking\AppBundle\Admin\BrandAdmin
+    arguments: [~, ListBroking\AppBundle\Entity\Brand, SonataAdminBundle:CRUD]
+    tags:
+      - {name: sonata.admin, manager_type: orm, group: Categorization, label: Brand}
+
   listbroking.admin.lead:
       class: ListBroking\AppBundle\Admin\LeadAdmin
       arguments: [~, ListBroking\AppBundle\Entity\Lead, SonataAdminBundle:CRUD ]

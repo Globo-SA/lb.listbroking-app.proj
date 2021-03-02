@@ -12,6 +12,7 @@ services:
             - '@app.service.client_notification'
             - '@app.service.campaign'
             - '@app.service.statistics'
+            - '@app.service.consent_revalidation'
 
     app.controller.webhook:
         class: ListBroking\AppBundle\Controller\WebhookController

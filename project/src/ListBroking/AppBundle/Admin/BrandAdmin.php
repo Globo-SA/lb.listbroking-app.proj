@@ -8,22 +8,17 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 
-class SourceAdmin extends Admin
+class BrandAdmin extends Admin
 {
-    protected $datagridValues = array(
-        '_sort_order' => 'DESC'
-    );
-
     /**
      * @param DatagridMapper $datagridMapper
      */
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
-            ->add('id')
             ->add('name')
-            ->add('external_id')
-            ->add('brand')
+            ->add('createdAt')
+            ->add('updatedAt')
         ;
     }
 
@@ -35,9 +30,9 @@ class SourceAdmin extends Admin
         $listMapper
             ->add('id')
             ->add('name')
-            ->add('external_id')
-            ->add('brand')
-            ->add('updated_at')
+            ->add('ivrAudioUrl')
+            ->add('createdAt')
+            ->add('updatedAt')
             ->add('_action', 'actions', array(
                 'actions' => array(
                     'show' => array(),
@@ -55,10 +50,7 @@ class SourceAdmin extends Admin
     {
         $formMapper
             ->add('name')
-            ->add('external_id')
-            ->add('country')
-            ->add('owner')
-            ->add('brand')
+            ->add('ivrAudioUrl')
         ;
     }
 
@@ -70,10 +62,9 @@ class SourceAdmin extends Admin
         $showMapper
             ->add('id')
             ->add('name')
-            ->add('external_id')
-            ->add('brand')
-            ->add('created_at')
-            ->add('updated_at')
+            ->add('ivrAudioUrl')
+            ->add('createdAt')
+            ->add('updatedAt')
         ;
     }
 }
