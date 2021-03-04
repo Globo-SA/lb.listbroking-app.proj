@@ -15,6 +15,7 @@ use ListBroking\AppBundle\Service\Factory\ConsentRevalidationFactoryInterface;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RequestContext;
 
 class ConsentRevalidationServiceTest extends TestCase
 {
@@ -66,6 +67,11 @@ class ConsentRevalidationServiceTest extends TestCase
     /**
      * @var string
      */
+    private $domain = 'https://foo.com';
+
+    /**
+     * @var string
+     */
     private $twilioRevalidationFlowIdMock = '123';
 
     /**
@@ -102,8 +108,11 @@ class ConsentRevalidationServiceTest extends TestCase
         $this->twilioServiceMock                 = $this->createMock(TwilioServiceInterface::class);
         $this->phoneNumberServiceMock            = $this->createMock(PhoneNumberServiceInterface::class);
         $this->integromatServiceMock             = $this->createMock(IntegromatServiceInterface::class);
-        $this->routerMock                        = $this->createMock(UrlGeneratorInterface::class);
         $this->loggerMock                        = $this->createMock(Logger::class);
+
+        $this->routerMock = $this->createConfiguredMock(UrlGeneratorInterface::class, [
+            'getContext' => $this->createMock(RequestContext::class)
+        ]);
 
         $this->consentRevalidationService = new ConsentRevalidationService(
             $this->contactRepositoryMock,
@@ -115,6 +124,7 @@ class ConsentRevalidationServiceTest extends TestCase
             $this->integromatServiceMock,
             $this->routerMock,
             $this->loggerMock,
+            $this->domain,
             $this->twilioRevalidationFlowIdMock,
             $this->twilioRevalidationPhoneNumberMock,
             $this->twilioDatabaseUsernameMock,

@@ -34,9 +34,7 @@ class ConsentRevalidationCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->consentRevalidationService = $this->getContainer()->get(
-            'app.service.consent_revalidation'
-        );
+        $this->consentRevalidationService = $this->getContainer()->get('app.service.consent_revalidation');
 
         try {
             $contactsRevalidated = $this->consentRevalidationService->revalidateWithIVR(

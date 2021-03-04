@@ -95,6 +95,7 @@ class ConsentRevalidationService implements ConsentRevalidationServiceInterface
      * @param IntegromatServiceInterface             $integromatService
      * @param UrlGeneratorInterface                  $router
      * @param Logger                                 $logger
+     * @param string                                 $domain
      * @param string                                 $twilioRevalidationFlowId
      * @param string                                 $twilioRevalidationPhoneNumber
      * @param string                                 $twilioDatabaseUsername
@@ -110,6 +111,7 @@ class ConsentRevalidationService implements ConsentRevalidationServiceInterface
         IntegromatServiceInterface $integromatService,
         UrlGeneratorInterface $router,
         Logger $logger,
+        string $domain,
         string $twilioRevalidationFlowId,
         string $twilioRevalidationPhoneNumber,
         string $twilioDatabaseUsername,
@@ -128,6 +130,8 @@ class ConsentRevalidationService implements ConsentRevalidationServiceInterface
         $this->twilioRevalidationPhoneNumber = $twilioRevalidationPhoneNumber;
         $this->twilioDatabaseUsername        = $twilioDatabaseUsername;
         $this->twilioDatabaseToken           = $twilioDatabaseToken;
+
+        $this->setRouterContext($domain);
     }
 
     /**
@@ -180,8 +184,8 @@ class ConsentRevalidationService implements ConsentRevalidationServiceInterface
                 'username' => $this->twilioDatabaseUsername,
                 'token'    => $this->twilioDatabaseToken
             ];
-            $acceptConsentWebhook = $this->router->generate('api_accept_consent_revalidation', $parameters, true);
-            $rejectConsentWebhook = $this->router->generate('api_reject_consent_revalidation', $parameters, true);
+            $acceptConsentWebhook = $this->router->generate('api_accept_consent_revalidation', $parameters);
+            $rejectConsentWebhook = $this->router->generate('api_reject_consent_revalidation', $parameters);
 
             // Trigger IVR call
             $execution = $this->twilioService->createStudioExecution(
@@ -269,5 +273,17 @@ class ConsentRevalidationService implements ConsentRevalidationServiceInterface
         $this->consentRevalidationRepository->saveConsentRevalidation($consentRevalidation);
 
         return $consentRevalidation;
+    }
+
+    /**
+     * @param string $domain
+     */
+    private function setRouterContext(string $domain): void
+    {
+        $domainParsed = parse_url($domain);
+
+        $context = $this->router->getContext();
+        $context->setHost($domainParsed['host']);
+        $context->setScheme($domainParsed['scheme']);
     }
 }

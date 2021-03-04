@@ -27,6 +27,7 @@ services:
       - '@app.service.external.integromat'
       - '@router'
       - '@logger'
+      - '%domain%'
       - '%twilio_revalidation_flow_id%'
       - '%twilio_revalidation_phone_number%'
       - '%twilio_database_username%'
