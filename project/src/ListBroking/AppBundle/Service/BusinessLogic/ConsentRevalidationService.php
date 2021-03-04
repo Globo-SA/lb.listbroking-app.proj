@@ -184,8 +184,8 @@ class ConsentRevalidationService implements ConsentRevalidationServiceInterface
                 'username' => $this->twilioDatabaseUsername,
                 'token'    => $this->twilioDatabaseToken
             ];
-            $acceptConsentWebhook = $this->router->generate('api_accept_consent_revalidation', $parameters);
-            $rejectConsentWebhook = $this->router->generate('api_reject_consent_revalidation', $parameters);
+            $acceptConsentWebhook = $this->router->generate('api_accept_consent_revalidation', $parameters, true);
+            $rejectConsentWebhook = $this->router->generate('api_reject_consent_revalidation', $parameters, true);
 
             // Trigger IVR call
             $execution = $this->twilioService->createStudioExecution(
