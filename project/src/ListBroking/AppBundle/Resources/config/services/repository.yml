@@ -112,3 +112,15 @@ services:
         factory: ["@doctrine", getRepository]
         arguments:
             - 'ListBroking\AppBundle\Entity\SubCategory'
+
+    app.repository.consent_revalidation:
+        class: ListBroking\AppBundle\Repository\ConsentRevalidationRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\ConsentRevalidation'
+
+    app.repository.configuration:
+        class: ListBroking\AppBundle\Repository\ConfigurationRepository
+        factory: ["@doctrine", getRepository]
+        arguments:
+            - 'ListBroking\AppBundle\Entity\Configuration'

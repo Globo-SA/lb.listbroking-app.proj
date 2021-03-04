@@ -127,6 +127,11 @@ class LoadConfigurationData extends AbstractFixture implements ContainerAwareInt
                 'type'  => 'json',
                 'value' => '{ "exception": 6, "lb_lock": 12, "extraction": 12, "staging_contact_processed": 6, "staging_contact_dqp": 6, "task": 6}',
             ],
+            [
+                'name'  => Configuration::KEY_IVR_END_CALL_AUDIO_URL,
+                'type'  => 'string',
+                'value' => ''
+            ]
         ];
     }
 }

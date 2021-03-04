@@ -25,6 +25,11 @@ class Source
      */
     protected $owner;
 
+    /**
+     * @var Brand
+     */
+    protected $brand;
+
     protected $country;
 
     protected $name;
@@ -32,6 +37,7 @@ class Source
     protected $external_id;
 
     protected $contacts;
+
 
     function __construct ()
     {
@@ -113,6 +119,22 @@ class Source
     public function setOwner($owner)
     {
         $this->owner = $owner;
+    }
+
+    /**
+     * @return Brand
+     */
+    public function getBrand()
+    {
+        return $this->brand;
+    }
+
+    /**
+     * @param Brand $brand
+     */
+    public function setBrand(Brand $brand): void
+    {
+        $this->brand = $brand;
     }
 
     /**

@@ -1,6 +1,7 @@
 ListBroking\AppBundle\Entity\Configuration:
     type: entity
     table: configuration
+    repositoryClass: ListBroking\AppBundle\Repository\ConfigurationRepository
     id:
         id:
             type: integer

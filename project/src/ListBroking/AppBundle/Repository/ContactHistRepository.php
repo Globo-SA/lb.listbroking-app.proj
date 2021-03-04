@@ -3,6 +3,7 @@
 namespace ListBroking\AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use ListBroking\AppBundle\Entity\Contact;
 use Symfony\Component\Intl\Exception\MethodNotImplementedException;
 
 /**
@@ -42,5 +43,34 @@ class ContactHistRepository extends EntityRepository implements ContactRepositor
     public function findByLeadAndEmailAndOwner($leadId, $email, $owner)
     {
         throw new MethodNotImplementedException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getContactByIdWithoutConsentRevalidations(int $contactId): ?Contact
+    {
+        throw new MethodNotImplementedException('getContactByIdWithoutConsentRevalidations');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getRandomContactsWithoutConsentRevalidations(
+        int $year,
+        string $countryCode,
+        string $owner,
+        int $limit,
+        int $contactId = null
+    ): array {
+        throw new MethodNotImplementedException('getRandomContactsWithoutConsentRevalidations');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function saveContact(Contact $contact): Contact
+    {
+        throw new MethodNotImplementedException('saveContact');
     }
 }
