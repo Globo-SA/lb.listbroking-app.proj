@@ -33,7 +33,7 @@
         "psr-4": { "ListBroking\\Tests\\": "Tests/" }
     },
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.4",
         "symfony/symfony": "^2.8",
         "symfony/polyfill-apcu": "^1.15",
         "symfony/assetic-bundle": "~2.8",
@@ -111,7 +111,7 @@
     },
     "config": {
         "platform": {
-            "php": "7.1"
+            "php": "7.4"
         }
     },
     "extra": {

@@ -5,7 +5,6 @@ imports:
 
     - { resource: bundles/monolog.yml }
     - { resource: bundles/doctrine_cache.yml }
-    - { resource: bundles/filesystems.yml }
     - { resource: bundles/rabbit_mq.yml }
     - { resource: bundles/framework.yml }
     - { resource: bundles/twig.yml }

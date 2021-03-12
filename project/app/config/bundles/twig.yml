@@ -5,4 +5,4 @@ twig:
     strict_variables: "%kernel.debug%"
     globals:
       domain: %domain%
-      logo:   'https://adc-lb.eu/bundles/listbrokingapp/images/logo.png'
+      logo:   'https://lb.globodigitalagency.com/bundles/listbrokingapp/images/logo.png'
