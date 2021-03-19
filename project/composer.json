@@ -84,7 +84,7 @@
         "adclick/api-abstraction-bundle": "1.*",
         "adclick/task-controller-bundle": "1.*",
         "phpoffice/phpspreadsheet": "^1.11",
-        "adclick/components-gdpr": "^1.3",
+        "adclick/components-gdpr": "dev-dev-globo",
         "predis/predis": "^1.1",
         "twilio/sdk": "^6.15",
         "ext-json": "*"
@@ -98,9 +98,7 @@
     },
     "scripts": {
         "symfony-scripts": [
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap"
         ],
         "post-install-cmd": [
             "@symfony-scripts"

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6604e930afe73f8008bbf64e6c673691",
+    "content-hash": "e4d03bd82a82c6b8d7909861cd5daa88",
     "packages": [
         {
             "name": "adclick/api-abstraction-bundle",
@@ -88,11 +88,11 @@
         },
         {
             "name": "adclick/components-gdpr",
-            "version": "v1.3.2",
+            "version": "dev-dev-globo",
             "source": {
                 "type": "git",
                 "url": "git@github.com:adclick/shared.gdpr.cmp.git",
-                "reference": "29940a185ff6b5ff6db6ff80bcf33fa1b8d80b8f"
+                "reference": "2b08f6c77999c9d286666d8d5e02090e4626a4a9"
             },
             "require": {
                 "composer/installers": "~1.0",
@@ -129,7 +129,7 @@
             "keywords": [
                 "adclick"
             ],
-            "time": "2020-11-24T16:52:57+00:00"
+            "time": "2021-03-19T17:09:29+00:00"
         },
         {
             "name": "adclick/task-controller-bundle",
@@ -175,16 +175,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.173.26",
+            "version": "3.174.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "cba5301aabe7f8bfac60a1ac2710b3fb25512d6c"
+                "reference": "d58a350b23810a3930f432364af2d7589cf672b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/cba5301aabe7f8bfac60a1ac2710b3fb25512d6c",
-                "reference": "cba5301aabe7f8bfac60a1ac2710b3fb25512d6c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d58a350b23810a3930f432364af2d7589cf672b3",
+                "reference": "d58a350b23810a3930f432364af2d7589cf672b3",
                 "shasum": ""
             },
             "require": {
@@ -259,9 +259,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.173.26"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.174.3"
             },
-            "time": "2021-03-10T19:18:24+00:00"
+            "time": "2021-03-18T18:16:53+00:00"
         },
         {
             "name": "beberlei/doctrineextensions",
@@ -8483,16 +8483,16 @@
         },
         {
             "name": "twilio/sdk",
-            "version": "6.18.0",
+            "version": "6.19.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twilio/twilio-php.git",
-                "reference": "158c2af294f4e35a5583303da81cf66c7751f720"
+                "reference": "e4288c184ad2fddbb637c1036626cf16814618b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/158c2af294f4e35a5583303da81cf66c7751f720",
-                "reference": "158c2af294f4e35a5583303da81cf66c7751f720",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/e4288c184ad2fddbb637c1036626cf16814618b0",
+                "reference": "e4288c184ad2fddbb637c1036626cf16814618b0",
                 "shasum": ""
             },
             "require": {
@@ -8531,9 +8531,9 @@
             ],
             "support": {
                 "issues": "https://github.com/twilio/twilio-php/issues",
-                "source": "https://github.com/twilio/twilio-php/tree/6.18.0"
+                "source": "https://github.com/twilio/twilio-php/tree/6.19.0"
             },
-            "time": "2021-02-24T20:58:34+00:00"
+            "time": "2021-03-15T22:38:22+00:00"
         },
         {
             "name": "videlalvaro/php-amqplib",
@@ -9502,16 +9502,16 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "1.12.2",
+            "version": "1.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "245710e971a030f42e08f4912863805570f23d39"
+                "reference": "be1996ed8adc35c3fd795488a653f4b518be70ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/245710e971a030f42e08f4912863805570f23d39",
-                "reference": "245710e971a030f42e08f4912863805570f23d39",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/be1996ed8adc35c3fd795488a653f4b518be70ea",
+                "reference": "be1996ed8adc35c3fd795488a653f4b518be70ea",
                 "shasum": ""
             },
             "require": {
@@ -9563,9 +9563,9 @@
             ],
             "support": {
                 "issues": "https://github.com/phpspec/prophecy/issues",
-                "source": "https://github.com/phpspec/prophecy/tree/1.12.2"
+                "source": "https://github.com/phpspec/prophecy/tree/1.13.0"
             },
-            "time": "2020-12-19T10:15:11+00:00"
+            "time": "2021-03-17T13:42:18+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -10777,7 +10777,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "adclick/components-gdpr": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
