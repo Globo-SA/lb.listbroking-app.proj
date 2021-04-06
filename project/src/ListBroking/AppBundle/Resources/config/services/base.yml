@@ -65,10 +65,6 @@ services:
     arguments:
         - "@app.repository.extraction_contact"
 
-  hurry:
-    class: ListBroking\AppBundle\Service\External\HurryService
-    arguments: [ "%hurry_api_url%", "%hurry_api_token%", "@logger" ]
-
   app.service.contact_obfuscation:
     class: ListBroking\AppBundle\Service\BusinessLogic\ContactObfuscationService
     parent: base
@@ -103,4 +99,3 @@ services:
     arguments:
         - "@app.repository.campaign"
         - "@app.repository.client"
-        - "@hurry"

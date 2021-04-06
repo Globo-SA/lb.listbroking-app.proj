@@ -52,8 +52,3 @@ ajax_staging_contact_import:
     options:
         expose: true
 
-ajax_hurry_accounts:
-    path: /ajax/hurry/accounts
-    defaults: { _controller: ListBrokingAppBundle:Ajax:hurryAccounts }
-    options:
-        expose: true
