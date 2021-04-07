@@ -44,13 +44,3 @@ parameters:
   # GDPR
   email_invalid_domain: 'adclick.invalid'
 
-  # Twilio
-  twilio_username:                    ''
-  twilio_password:                    ''
-  twilio_revalidation_flow_id:        ''
-  twilio_revalidation_phone_number:   ''
-  twilio_database_username:           ''
-  twilio_database_token:              ''
-
-  # Integromat
-  integromat_iuris_webhook: ''

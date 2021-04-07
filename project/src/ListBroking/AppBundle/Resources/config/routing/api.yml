@@ -44,13 +44,3 @@ api_get_audiences:
     path: /v1/audiences
     defaults: { _controller: app.controller.api:getAudiencesAction }
     methods: [GET]
-
-api_accept_consent_revalidation:
-    path: /v1/consent_revalidation/{id}/accept
-    defaults: { _controller: app.controller.api:acceptConsentRevalidation }
-    methods: [PUT,POST]
-
-api_reject_consent_revalidation:
-    path: /v1/consent_revalidation/{id}/reject
-    defaults: { _controller: app.controller.api:rejectConsentRevalidation }
-    methods: [PUT,POST]

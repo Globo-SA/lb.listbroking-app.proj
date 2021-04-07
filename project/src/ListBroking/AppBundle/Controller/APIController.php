@@ -17,7 +17,6 @@ use ListBroking\AppBundle\Service\Authentication\FosUserAuthenticationServiceInt
 use ListBroking\AppBundle\Service\BusinessLogic\CampaignServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ClientNotificationServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ContactObfuscationServiceInterface;
-use ListBroking\AppBundle\Service\BusinessLogic\ConsentRevalidationServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ExtractionContactServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\ExtractionServiceInterface;
 use ListBroking\AppBundle\Service\BusinessLogic\LeadServiceInterface;
@@ -103,11 +102,6 @@ class APIController extends Controller
     private $statisticsService;
 
     /**
-     * @var ConsentRevalidationServiceInterface
-     */
-    private $consentRevalidationService;
-
-    /**
      * APIController constructor.
      *
      * @param LoggerInterface                       $logger
@@ -120,7 +114,6 @@ class APIController extends Controller
      * @param ClientNotificationServiceInterface    $clientNotificationService
      * @param CampaignServiceInterface              $campaignService
      * @param StatisticsServiceInterface            $statisticsService
-     * @param ConsentRevalidationServiceInterface   $contactRevalidationService
      */
     public function __construct(
         LoggerInterface $logger,
@@ -132,8 +125,7 @@ class APIController extends Controller
         LeadServiceInterface $leadService,
         ClientNotificationServiceInterface $clientNotificationService,
         CampaignServiceInterface $campaignService,
-        StatisticsServiceInterface $statisticsService,
-        ConsentRevalidationServiceInterface $contactRevalidationService
+        StatisticsServiceInterface $statisticsService
     ) {
         $this->logger                       = $logger;
         $this->stagingService               = $stagingService;
@@ -145,7 +137,6 @@ class APIController extends Controller
         $this->clientNotificationService    = $clientNotificationService;
         $this->campaignService              = $campaignService;
         $this->statisticsService            = $statisticsService;
-        $this->consentRevalidationService   = $contactRevalidationService;
     }
 
 
@@ -614,48 +605,6 @@ class APIController extends Controller
             sprintf(static::EXTRACTION_CONTACTS_OK_MESSAGE, $extractionId),
             $results
         );
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function acceptConsentRevalidation(Request $request): JsonResponse
-    {
-        try {
-            $this->fosUserAuthenticationService->checkCredentials($request);
-
-            $id = $request->get('id', 0);
-
-            $this->consentRevalidationService->acceptConsent($id);
-        } catch (AccessDeniedException | \Exception $exception) {
-            $this->logger->error($exception->getTraceAsString());
-
-            return $this->createJsonResponse($exception->getMessage(), [], 500);
-        }
-
-        return $this->createJsonResponse(self::CONSENT_ACCEPTED_MESSAGE);
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function rejectConsentRevalidation(Request $request): JsonResponse
-    {
-        try {
-            $this->fosUserAuthenticationService->checkCredentials($request);
-
-            $id = $request->get('id', 0);
-
-            $this->consentRevalidationService->rejectConsent($id);
-        } catch (AccessDeniedException | \Exception $exception) {
-            $this->logger->error($exception->getTraceAsString());
-
-            return $this->createJsonResponse($exception->getMessage(), [], 500);
-        }
-
-        return $this->createJsonResponse(self::CONSENT_REJECTED_MESSAGE);
     }
 
     /**
